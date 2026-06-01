@@ -1,7 +1,7 @@
 {
   "name": "poupeja",
-  "version": "1.0.0",
-  "description": "Assistente de poupança para Portugal",
+  "version": "2.0.0",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,11 +11,12 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "next": "^14.0.0"
+    "next": "^14.0.0",
+    "lucide-react": "^latest"
   },
   "devDependencies": {
     "tailwindcss": "^3.3.0",
-    "postcss": "^8.4.31",
-    "autoprefixer": "^10.4.16"
+    "postcss": "^8.4.24",
+    "autoprefixer": "^10.4.14"
   }
 }
