@@ -1,55 +1,55 @@
 {
- "atualizadoEm": "2026-06-03",
- "folhetos": [
-   {
-     "id": 1,
-     "loja": "Continente",
-     "titulo": "Frescos em Destaque",
-     "validade": "até 8 Jun",
-     "url": "https://www.continente.pt/folheto",
-     "capa": "",
-     "categorias": ["Frescos", "Higiene"],
-     "destaque": true
-   },
-   {
-     "id": 2,
-     "loja": "Pingo Doce",
-     "titulo": "Semana de Poupança",
-     "validade": "até 7 Jun",
-     "url": "https://www.pingodoce.pt/folhetos/",
-     "capa": "",
-     "categorias": ["Frescos", "Padaria"],
-     "destaque": true
-   },
-   {
-     "id": 3,
-     "loja": "Lidl",
-     "titulo": "Semana Italiana",
-     "validade": "até 9 Jun",
-     "url": "https://www.lidl.pt/c/folhetos-e-ofertas/s10008915",
-     "capa": "",
-     "categorias": ["Especial", "Frescos"],
-     "destaque": true
-   },
-   {
-     "id": 4,
-     "loja": "Aldi",
-     "titulo": "Especial Verão",
-     "validade": "até 10 Jun",
-     "url": "https://www.aldi.pt/folheto-semanal.html",
-     "capa": "",
-     "categorias": ["Especial", "Bebidas"],
-     "destaque": false
-   },
-   {
-     "id": 5,
-     "loja": "Intermarché",
-     "titulo": "Peixe Fresco",
-     "validade": "até 8 Jun",
-     "url": "https://www.intermarche.pt/folhetos",
-     "capa": "",
-     "categorias": ["Frescos", "Charcutaria"],
-     "destaque": false
-   }
- ]
+  "atualizadoEm": "2026-06-03",
+  "folhetos": [
+    {
+      "id": 1,
+      "loja": "Continente",
+      "titulo": "Frescos em Destaque",
+      "validade": "até 8 Jun",
+      "url": "https://www.continente.pt/folhetos/",
+      "capa": "",
+      "categorias": ["Frescos", "Higiene"],
+      "destaque": true
+    },
+    {
+      "id": 2,
+      "loja": "Pingo Doce",
+      "titulo": "Semana de Poupança",
+      "validade": "até 7 Jun",
+      "url": "https://www.pingodoce.pt/folhetos/",
+      "capa": "",
+      "categorias": ["Frescos", "Padaria"],
+      "destaque": true
+    },
+    {
+      "id": 3,
+      "loja": "Lidl",
+      "titulo": "Semana Italiana",
+      "validade": "até 9 Jun",
+      "url": "https://www.lidl.pt/c/folhetos/s10020672",
+      "capa": "",
+      "categorias": ["Especial", "Frescos"],
+      "destaque": true
+    },
+    {
+      "id": 4,
+      "loja": "Aldi",
+      "titulo": "Especial Verão",
+      "validade": "até 10 Jun",
+      "url": "https://www.aldi.pt/folheto/esta-semana.html",
+      "capa": "",
+      "categorias": ["Especial", "Bebidas"],
+      "destaque": false
+    },
+    {
+      "id": 5,
+      "loja": "Intermarché",
+      "titulo": "Peixe Fresco",
+      "validade": "até 8 Jun",
+      "url": "https://www.intermarche.pt/folhetos/",
+      "capa": "",
+      "categorias": ["Frescos", "Charcutaria"],
+      "destaque": false
+    }
+  ]
 }
