@@ -34,4 +34,22 @@
     {
       "id": 4,
       "loja": "Aldi",
-      "titulo": "
+      "titulo": "Folheto desta semana",
+      "validade": "Ver datas no folheto",
+      "url": "https://www.aldi.pt/folheto/esta-semana.html",
+      "capa": "",
+      "categorias": ["Promoções"],
+      "destaque": false
+    },
+    {
+      "id": 5,
+      "loja": "Intermarché",
+      "titulo": "Folheto desta semana",
+      "validade": "Ver datas no folheto",
+      "url": "https://www.intermarche.pt/folhetos/",
+      "capa": "",
+      "categorias": ["Promoções"],
+      "destaque": false
+    }
+  ]
+}
