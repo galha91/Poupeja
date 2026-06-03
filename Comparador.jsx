@@ -57,15 +57,21 @@ const CATEGORIAS = ["Todas", ...new Set(SUPER_PRODUTOS.map(p => p.categoria))];
 function LogoLoja({ loja, size = 32 }) {
   const cor = SUPER_CORES[loja] || "#888";
   const dominio = DOMINIOS[loja];
-  const [erro, setErro] = useState(false);
+  const [nivel, setNivel] = useState(0);
   const iniciais = loja.split(/[\s&]+/).map(w => w[0]).join("").toUpperCase().slice(0, 2);
+
+  const fontes = dominio ? [
+    `https://www.google.com/s2/favicons?domain=${dominio}&sz=64`,
+    `https://logo.clearbit.com/${dominio}`,
+    `https://icon.horse/icon/${dominio}`,
+  ] : [];
 
   return (
     <div className="rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0"
       style={{ width: size, height: size, backgroundColor: cor + "18", border: `1.5px solid ${cor}33` }}>
-      {!erro && dominio ? (
-        <img src={`https://logo.clearbit.com/${dominio}`} alt={loja} onError={() => setErro(true)}
-          style={{ width: size * 0.7, height: size * 0.7, objectFit: "contain" }} />
+      {nivel < fontes.length ? (
+        <img src={fontes[nivel]} alt={loja} onError={() => setNivel(n => n + 1)}
+          style={{ width: size * 0.72, height: size * 0.72, objectFit: "contain" }} />
       ) : (
         <span style={{ fontSize: size * 0.32, fontWeight: 900, color: cor }}>{iniciais}</span>
       )}
