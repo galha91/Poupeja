@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import ComparadorPrecos from "../Comparador";
+import SecaoFolhetos from "../SecaoFolhetos";
 import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info } from "lucide-react";
@@ -159,6 +160,26 @@ function SecaoPoupanca(){
 
 // SecaoMobilidade agora vem do ficheiro SecaoMobilidade.jsx
 
+function SecaoMercados() {
+  const [sub, setSub] = React.useState("folhetos");
+  return (
+    <div className="pb-28 pt-4">
+      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
+        <button onClick={() => setSub("folhetos")}
+          className={"flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 " + (sub === "folhetos" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
+          📰 Folhetos
+        </button>
+        <button onClick={() => setSub("comparar")}
+          className={"flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 " + (sub === "comparar" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
+          🏷️ Comparar
+        </button>
+      </div>
+      {sub === "folhetos" && <SecaoFolhetos />}
+      {sub === "comparar" && <ComparadorPrecos />}
+    </div>
+  );
+}
+
 // ═══ APP PRINCIPAL ══════════════════════════════════════════════════════════
 export default function PoupeJa(){
   const [tab,setTab]=useState("inicio");
@@ -200,7 +221,7 @@ export default function PoupeJa(){
 
         <main>
           {tab==="inicio"&&<EcraInicio setTab={setTab}/>}
-          {tab==="mercados"&&<div className="pb-28 pt-4"><ComparadorPrecos/></div>}
+          {tab==="mercados"&&<SecaoMercados/>}
           {tab==="lojas"&&<SecaoLojas/>}
           {tab==="mobilidade"&&<SecaoMobilidade/>}
           {tab==="poupanca"&&<SecaoPoupanca/>}
