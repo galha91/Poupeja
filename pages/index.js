@@ -25,11 +25,11 @@ function Badge({children,color="blue"}){
 function EcraInicio({setTab}){
   const total = 117;
   const features = [
-    {icon:ShoppingBag,title:"Cesto Inteligente",desc:"Descobre o supermercado mais barato",grad:"from-emerald-500 to-emerald-600"},
-    {icon:Camera,title:"Leitura de Talão IA",desc:"Fotografa e compara com outros preços",grad:"from-violet-500 to-violet-600"},
-    {icon:Bell,title:"Alertas de Preço",desc:"Avisa-te quando baixar o preço",grad:"from-slate-700 to-slate-900"},
-    {icon:CreditCard,title:"Cartões Fidelização",desc:"Todos os pontos num só lugar",grad:"from-amber-500 to-orange-500"},
-    {icon:Users,title:"Modo Família",desc:"Orçamento partilhado do agregado",grad:"from-teal-500 to-teal-600"},
+    {icon:ShoppingBag,title:"Cesto inteligente",desc:"Descobre onde a tua lista fica mais barata",grad:"from-emerald-500 to-emerald-600"},
+    {icon:Camera,title:"Ler talão de compras",desc:"Tira uma foto e vê onde ficava mais barato",grad:"from-violet-500 to-violet-600"},
+    {icon:Bell,title:"Avisos de preço",desc:"Dizemos-te quando o preço de algo baixa",grad:"from-slate-700 to-slate-900"},
+    {icon:CreditCard,title:"Cartões de pontos",desc:"Tem os teus cartões sempre à mão",grad:"from-amber-500 to-orange-500"},
+    {icon:Users,title:"Modo Família",desc:"Juntem as contas de casa num só lugar",grad:"from-teal-500 to-teal-600"},
   ];
   
   return(
@@ -44,7 +44,7 @@ function EcraInicio({setTab}){
             <p className="text-sm opacity-80 mt-1">Este mês já poupaste</p>
             <p className="text-4xl font-black text-cyan-300">€ {total}</p>
             <button onClick={()=>setTab("poupanca")} className="mt-3 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl inline-flex items-center gap-1.5">
-              Ver poupança <ArrowRight size={12}/>
+              Ver detalhes <ArrowRight size={12}/>
             </button>
           </div>
           <div className="bg-white/10 px-5 py-3 flex gap-4">
@@ -60,7 +60,7 @@ function EcraInicio({setTab}){
       </div>
 
       <div className="px-4 mb-4">
-        <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Star size={14} className="text-amber-500"/>Funcionalidades exclusivas</p>
+        <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Star size={14} className="text-amber-500"/>O que podes fazer aqui</p>
         <div className="flex flex-col gap-2.5">
           {features.map((f,i)=>(
             <button key={i} className={`bg-gradient-to-r ${f.grad} rounded-2xl p-4 text-white text-left shadow-md active:scale-95 transition-all flex items-center gap-4`}>
@@ -73,7 +73,7 @@ function EcraInicio({setTab}){
       </div>
 
       <div className="px-4 mb-4">
-        <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Zap size={14} className="text-blue-500"/>Acesso rápido</p>
+        <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Zap size={14} className="text-blue-500"/>Atalhos</p>
         <div className="grid grid-cols-3 gap-2.5">
           {[{icon:Tag,label:"Folhetos",color:"text-blue-600 bg-blue-50",tab:"mercados"},{icon:BarChart2,label:"Comparar",color:"text-indigo-600 bg-indigo-50",tab:"mercados"},{icon:Shirt,label:"Moda",color:"text-violet-600 bg-violet-50",tab:"lojas"},{icon:Smartphone,label:"Eletrónica",color:"text-slate-700 bg-slate-100",tab:"lojas"},{icon:Fuel,label:"Combustíveis",color:"text-orange-600 bg-orange-50",tab:"mobilidade"},{icon:Battery,label:"Postos EV",color:"text-emerald-600 bg-emerald-50",tab:"mobilidade"}].map((it,i)=>(
             <button key={i} onClick={()=>setTab(it.tab)} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col items-center gap-2 active:scale-95 transition-all">
@@ -88,9 +88,9 @@ function EcraInicio({setTab}){
         <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0"><Tag size={18} className="text-amber-600"/></div>
         <div>
           <p className="text-xs font-black text-amber-800">Dica do dia</p>
-          <p className="text-sm font-bold text-slate-800 mt-0.5">Bazar Lidl com 60% desconto!</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Válido até 4 de Junho · Sem cartão</p>
-          <button onClick={()=>setTab("mercados")} className="mt-2 text-xs text-orange-600 font-black flex items-center gap-1">Ver folheto <ChevronRight size={10}/></button>
+          <p className="text-sm font-bold text-slate-800 mt-0.5">Vê os folhetos antes de ir às compras</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">Tens todos num só sítio, sempre a postos</p>
+          <button onClick={()=>setTab("mercados")} className="mt-2 text-xs text-orange-600 font-black flex items-center gap-1">Ver folhetos <ChevronRight size={10}/></button>
         </div>
       </div>
     </div>
@@ -108,9 +108,9 @@ function SecaoPoupanca(){
       <div className="mx-4 mt-0 mb-4 rounded-2xl overflow-hidden shadow-xl" style={{background:"linear-gradient(135deg,#1e3a8a,#2563eb,#3b82f6)"}}>
         <div className="p-5 text-white relative">
           <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-white/10 rounded-full"/>
-          <p className="text-sm font-bold opacity-80 flex items-center gap-1.5"><PiggyBank size={13}/>Poupança estimada — Junho</p>
+          <p className="text-sm font-bold opacity-80 flex items-center gap-1.5"><PiggyBank size={13}/>O que já poupaste este mês</p>
           <p className="text-5xl font-black mt-1">€ {total}</p>
-          <p className="text-sm opacity-70 mt-1 flex items-center gap-1">vs. mês anterior +€{total-117}</p>
+          <p className="text-sm opacity-70 mt-1 flex items-center gap-1">Continua assim e ainda poupas mais</p>
           <div className="flex gap-2 mt-4 relative z-10">
             <button className="bg-white/20 text-white text-xs font-bold px-3 py-2 rounded-xl border border-white/30 flex items-center gap-1"><BarChart size={11}/>Relatório</button>
             <button className="bg-white text-blue-700 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1"><Target size={11}/>Objetivos</button>
@@ -129,7 +129,7 @@ function SecaoPoupanca(){
         </div>
       </div>
 
-      <div className="px-4 mb-2"><p className="text-sm font-black text-slate-700 flex items-center gap-1.5"><Zap size={13} className="text-blue-500"/>Poupanças por categoria</p></div>
+      <div className="px-4 mb-2"><p className="text-sm font-black text-slate-700 flex items-center gap-1.5"><Zap size={13} className="text-blue-500"/>Onde tens poupado</p></div>
       <div className="px-4 flex flex-col gap-2.5 mb-4">
         {[{categoria:"Supermercado",economia:47,icon:ShoppingCart,cor:"text-blue-600"},{categoria:"Combustível",economia:23,icon:Fuel,cor:"text-orange-600"},{categoria:"Eletricidade",economia:12,icon:Battery,cor:"text-yellow-600"},{categoria:"Refeições",economia:35,icon:Coffee,cor:"text-amber-600"}].map((p,i)=>(
           <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
@@ -148,7 +148,7 @@ function SecaoPoupanca(){
 
       <div className="mx-4 bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-4">
         <div className="flex items-center gap-2 mb-2"><Trophy size={17} className="text-amber-600"/><p className="text-sm font-black text-amber-800">Desafio de Junho</p><Badge color="yellow">Em curso</Badge></div>
-        <p className="text-xs text-amber-700 mb-3">Poupa €100 usando folhetos do Lidl e Aldi.</p>
+        <p className="text-xs text-amber-700 mb-3">Aproveita os folhetos da semana e chega aos €100 poupados.</p>
         <div className="flex justify-between text-xs text-amber-700 mb-1 font-bold"><span>€ 38</span><span>Meta: € 100</span></div>
         <div className="h-3 bg-amber-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-amber-400 to-amber-500" style={{width:"38%"}}/></div>
       </div>
@@ -184,11 +184,11 @@ function SecaoMercados() {
 export default function PoupeJa(){
   const [tab,setTab]=useState("inicio");
   const titulos={
-    inicio:{t:"Olá, bem-vindo!",s:"Lisboa · Segunda-feira, 1 de Junho"},
-    mercados:{t:"Supermercados",s:"Comparar preços em 5 cadeias"},
-    lojas:{t:"Lojas",s:"Moda · Eletrónica · Promoções"},
-    mobilidade:{t:"Mobilidade",s:"Combustíveis & Postos EV"},
-    poupanca:{t:"A Tua Poupança",s:"Dashboard · Alertas · Cartões · Família"},
+    inicio:{t:"Olá! Bem-vindo de volta",s:"Vamos poupar nas compras de hoje?"},
+    mercados:{t:"Supermercados",s:"Folhetos e comparação de preços"},
+    lojas:{t:"Lojas",s:"Moda e eletrónica com desconto"},
+    mobilidade:{t:"Mobilidade",s:"Combustíveis e pontos de carregamento"},
+    poupanca:{t:"A tua poupança",s:"Vê quanto tens poupado nas compras"},
   };
   const info=titulos[tab];
   
