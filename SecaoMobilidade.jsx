@@ -407,14 +407,6 @@ function SubPostosEV() {
   );
 }
 
-function BadgeFonte({ fallback, fonte, atualizadoEm }) {
-  const hora = atualizadoEm ? new Date(atualizadoEm).toLocaleTimeString("pt-PT", { hour:"2-digit", minute:"2-digit" }) : "--:--";
-  return (
-    <div className={`mx-4 mt-4 mb-2 rounded-xl p-2.5 border flex items-center gap-2 ${fallback ? "bg-orange-50 border-orange-100" : "bg-emerald-50 border-emerald-100"}`}>
-      {fallback
-        ? <><span className="text-orange-500 text-xs">⚠️</span><p className="text-[10px] font-bold text-orange-700">Dados de referência — API temporariamente indisponível</p></>
-        : <><span className="text-emerald-600 text-xs">✅</span><p className="text-[10px] font-bold text-emerald-700">{fonte} · {hora}</p></>
-      }
     </div>
   );
 }
