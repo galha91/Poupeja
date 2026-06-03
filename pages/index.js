@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ComparadorPrecos from "../Comparador";
 import SecaoLojas from "../SecaoLojas";
+import SecaoMobilidade from "../SecaoMobilidade";
 import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info } from "lucide-react";
 
 // ═══ DADOS ═══════════════════════════════════════════════════════════════════
@@ -156,24 +157,7 @@ function SecaoPoupanca(){
 
 // SecaoLojas agora vem do ficheiro SecaoLojas.jsx
 
-function SecaoMobilidade(){
-  return(
-    <div className="pb-28 px-4 pt-4">
-      <div className="rounded-2xl overflow-hidden shadow-lg p-4" style={{background:"linear-gradient(135deg,#0f766e,#0d9488)"}}>
-        <div className="text-white">
-          <div className="flex items-center gap-2 mb-1"><Fuel size={18}/><span className="text-[10px] font-black uppercase tracking-widest opacity-70">Mobilidade</span></div>
-          <p className="text-xl font-black">Combustíveis & Postos EV</p>
-          <p className="text-xs opacity-75 mt-0.5">Preços em tempo real da DGEG e MOBI.E</p>
-        </div>
-      </div>
-      <div className="mt-4 bg-white rounded-2xl p-4 border border-slate-100 text-center">
-        <Battery size={40} className="text-teal-600 mx-auto mb-2"/>
-        <p className="text-sm font-black text-slate-700">Mobilidade em desenvolvimento</p>
-        <p className="text-xs text-slate-400 mt-1">Em breve: Preços e postos carregamento</p>
-      </div>
-    </div>
-  );
-}
+// SecaoMobilidade agora vem do ficheiro SecaoMobilidade.jsx
 
 // ═══ APP PRINCIPAL ══════════════════════════════════════════════════════════
 export default function PoupeJa(){
