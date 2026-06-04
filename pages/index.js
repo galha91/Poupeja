@@ -35,7 +35,6 @@ function EcraInicio({setTab}){
   const features = [
     {icon:Receipt,title:"Os meus talões",desc:"Guarda compras e garantias num só sítio",grad:"from-blue-500 to-blue-600",destino:"taloes"},
     {icon:ShoppingBag,title:"Cesto inteligente",desc:"Descobre onde a tua lista fica mais barata",grad:"from-emerald-500 to-emerald-600",destino:"mercados"},
-    {icon:Camera,title:"Ler talão de compras",desc:"Tira uma foto e vê onde ficava mais barato",grad:"from-violet-500 to-violet-600",destino:"taloes"},
     {icon:Bell,title:"Avisos de preço",desc:"Dizemos-te quando o preço de algo baixa",grad:"from-slate-700 to-slate-900",destino:"mobilidade"},
     {icon:CreditCard,title:"Cartões de pontos",desc:"Tem os teus cartões sempre à mão",grad:"from-amber-500 to-orange-500",destino:null},
     {icon:Users,title:"Modo Família",desc:"Juntem as contas de casa num só lugar",grad:"from-teal-500 to-teal-600",destino:null},
