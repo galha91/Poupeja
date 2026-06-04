@@ -5,7 +5,6 @@ import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info } from "lucide-react";
 
-// ═══ DADOS ═══════════════════════════════════════════════════════════════════
 const SUPER_LOJAS = [
   { id:1, nome:"Continente", cor:"#e63329" },
   { id:2, nome:"Pingo Doce", cor:"#009a3e" },
@@ -156,10 +155,6 @@ function SecaoPoupanca(){
   );
 }
 
-// SecaoLojas agora vem do ficheiro SecaoLojas.jsx
-
-// SecaoMobilidade agora vem do ficheiro SecaoMobilidade.jsx
-
 function SecaoMercados() {
   const [sub, setSub] = React.useState("folhetos");
   return (
@@ -180,7 +175,6 @@ function SecaoMercados() {
   );
 }
 
-// ═══ APP PRINCIPAL ══════════════════════════════════════════════════════════
 export default function PoupeJa(){
   const [tab,setTab]=useState("inicio");
   const titulos={
@@ -202,7 +196,6 @@ export default function PoupeJa(){
         body{margin:0;background:#f1f5f9}
       `}</style>
       <div className="min-h-screen bg-slate-100 max-w-md mx-auto relative">
-        {/* HEADER */}
         <div className="bg-white border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 shadow-sm">
           <div className="flex items-center justify-between mb-0.5">
             <div className="flex items-center gap-2">
@@ -227,7 +220,6 @@ export default function PoupeJa(){
           {tab==="poupanca"&&<SecaoPoupanca/>}
         </main>
 
-        {/* BOTTOM NAV */}
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-100 px-1 py-1.5 z-40 shadow-lg">
           <div className="flex items-center justify-around">
             {NAV.map(it=>(
