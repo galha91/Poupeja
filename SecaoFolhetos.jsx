@@ -119,7 +119,7 @@ export default function SecaoFolhetos() {
                   <p className="text-sm font-black text-slate-800">{f.loja}</p>
                   <div className="flex items-center justify-center gap-1 mt-1.5">
                     <ExternalLink size={11} style={{ color: cor }} />
-                    <span className="text-[11px] font-black" style={{ color: cor }}>Ver folheto</span>
+                    <span className="text-[11px] font-black" style={{ color: cor }}>Folheto</span>
                   </div>
                 </div>
               </button>
