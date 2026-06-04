@@ -3,17 +3,24 @@ import ComparadorPrecos from "../Comparador";
 import SecaoFolhetos from "../SecaoFolhetos";
 import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
-import SecaoTalao from "../SecaoTalao";
-import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft } from "lucide-react";
+import SecaoTaloes from "../SecaoTaloes";
+import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft, Receipt, ShieldCheck, AlertTriangle } from "lucide-react";
 
-// ═══ DADOS ═══════════════════════════════════════════════════════════════════
-const SUPER_LOJAS = [
-  { id:1, nome:"Continente", cor:"#e63329" },
-  { id:2, nome:"Pingo Doce", cor:"#009a3e" },
-  { id:3, nome:"Lidl", cor:"#0050aa" },
-  { id:4, nome:"Aldi", cor:"#1a3b6f" },
-  { id:5, nome:"Intermarché", cor:"#e2001a" },
+const GARANTIAS = [
+  { id:1, produto:"Máquina de Lavar Bosch", data:"2024-07-15", anos:2 },
+  { id:2, produto:"Telemóvel Samsung A55", data:"2025-11-20", anos:2 },
+  { id:3, produto:"Aspirador Dyson", data:"2026-03-10", anos:2 },
 ];
+function garantiasAAcabar(dias){
+  const limite = dias || 60;
+  const hoje = new Date();
+  return GARANTIAS.map(function(g){
+    const fim = new Date(g.data);
+    fim.setFullYear(fim.getFullYear() + g.anos);
+    const restam = Math.ceil((fim - hoje) / (1000*60*60*24));
+    return { produto:g.produto, restam:restam };
+  }).filter(function(g){ return g.restam >= 0 && g.restam <= limite; });
+}
 
 const SUPER_CORES = {Continente:"#e63329","Pingo Doce":"#009a3e",Lidl:"#0050aa",Aldi:"#1a3b6f","Intermarché":"#e2001a"};
 const NAV = [{id:"inicio",label:"Início",icon:Home},{id:"mercados",label:"Mercados",icon:ShoppingCart},{id:"lojas",label:"Lojas",icon:Store},{id:"mobilidade",label:"Mobilidade",icon:Fuel},{id:"poupanca",label:"Poupança",icon:PiggyBank}];
@@ -26,15 +33,32 @@ function Badge({children,color="blue"}){
 function EcraInicio({setTab}){
   const total = 117;
   const features = [
+    {icon:Receipt,title:"Os meus talões",desc:"Guarda compras e garantias num só sítio",grad:"from-blue-500 to-blue-600",destino:"taloes"},
     {icon:ShoppingBag,title:"Cesto inteligente",desc:"Descobre onde a tua lista fica mais barata",grad:"from-emerald-500 to-emerald-600",destino:"mercados"},
-    {icon:Camera,title:"Ler talão de compras",desc:"Tira uma foto e vê onde ficava mais barato",grad:"from-violet-500 to-violet-600",destino:"talao"},
+    {icon:Camera,title:"Ler talão de compras",desc:"Tira uma foto e vê onde ficava mais barato",grad:"from-violet-500 to-violet-600",destino:"taloes"},
     {icon:Bell,title:"Avisos de preço",desc:"Dizemos-te quando o preço de algo baixa",grad:"from-slate-700 to-slate-900",destino:"mobilidade"},
     {icon:CreditCard,title:"Cartões de pontos",desc:"Tem os teus cartões sempre à mão",grad:"from-amber-500 to-orange-500",destino:null},
     {icon:Users,title:"Modo Família",desc:"Juntem as contas de casa num só lugar",grad:"from-teal-500 to-teal-600",destino:null},
   ];
-  
+
+  const avisosGarantia = garantiasAAcabar(60);
+  const [verAviso, setVerAviso] = useState(true);
+
   return(
     <div className="pb-28">
+      {verAviso && avisosGarantia.length > 0 && (
+        <div className="px-4 pt-3">
+          <button onClick={()=>setTab("taloes")} className="w-full text-left rounded-2xl p-4 flex items-center gap-3 active:scale-95 transition-all relative overflow-hidden" style={{background:"linear-gradient(135deg,#b45309,#d97706)",boxShadow:"0 8px 24px -8px rgba(217,119,6,0.5)"}}>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0"><ShieldCheck size={20} className="text-white"/></div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black text-white/80 uppercase tracking-wider">Garantia a terminar</p>
+              <p className="text-sm font-black text-white leading-tight">{avisosGarantia[0].produto}</p>
+              <p className="text-[11px] text-white/80 mt-0.5">Acaba {avisosGarantia[0].restam === 0 ? "hoje" : "daqui a " + avisosGarantia[0].restam + " dias"}{avisosGarantia.length > 1 ? " · +" + (avisosGarantia.length-1) + " a acabar" : ""}</p>
+            </div>
+            <span onClick={(e)=>{e.stopPropagation();setVerAviso(false);}} className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0"><X size={15} className="text-white"/></span>
+          </button>
+        </div>
+      )}
       <div className="px-4 pt-3 pb-4">
         <div className="rounded-2xl overflow-hidden shadow-xl" style={{background:"linear-gradient(135deg,#1e3a8a,#2563eb,#0ea5e9)"}}>
           <div className="p-5 text-white relative">
@@ -99,7 +123,6 @@ function EcraInicio({setTab}){
 }
 
 function SecaoPoupanca(){
-  const [sub,setSub]=useState("dashboard");
   const total = 117;
   const historico = [{mes:"Mar",valor:98},{mes:"Abr",valor:112},{mes:"Mai",valor:117},{mes:"Jun",valor:total}];
   const maxH = Math.max(...historico.map(h=>h.valor));
@@ -157,10 +180,6 @@ function SecaoPoupanca(){
   );
 }
 
-// SecaoLojas agora vem do ficheiro SecaoLojas.jsx
-
-// SecaoMobilidade agora vem do ficheiro SecaoMobilidade.jsx
-
 function SecaoMercados() {
   const [sub, setSub] = React.useState("folhetos");
   return (
@@ -181,7 +200,6 @@ function SecaoMercados() {
   );
 }
 
-// ═══ APP PRINCIPAL ══════════════════════════════════════════════════════════
 export default function PoupeJa(){
   const [tab,setTab]=useState("inicio");
   const titulos={
@@ -190,7 +208,7 @@ export default function PoupeJa(){
     lojas:{t:"Lojas",s:"Moda e eletrónica com desconto"},
     mobilidade:{t:"Mobilidade",s:"Combustíveis e pontos de carregamento"},
     poupanca:{t:"A tua poupança",s:"Vê quanto tens poupado nas compras"},
-    talao:{t:"Ler talão de compras",s:"Tira uma foto e vê onde ficava mais barato"},
+    taloes:{t:"Os meus talões",s:"As tuas compras e garantias num só sítio"},
   };
   const info=titulos[tab];
   
@@ -204,7 +222,6 @@ export default function PoupeJa(){
         body{margin:0;background:#f1f5f9}
       `}</style>
       <div className="min-h-screen bg-slate-100 max-w-md mx-auto relative">
-        {/* HEADER */}
         <div className="bg-white border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 shadow-sm">
           <div className="flex items-center justify-between mb-0.5">
             <div className="flex items-center gap-2">
@@ -227,10 +244,9 @@ export default function PoupeJa(){
           {tab==="lojas"&&<SecaoLojas/>}
           {tab==="mobilidade"&&<SecaoMobilidade/>}
           {tab==="poupanca"&&<SecaoPoupanca/>}
-          {tab==="talao"&&<div className="pt-4"><button onClick={()=>setTab("inicio")} className="mx-4 mb-2 flex items-center gap-1 text-sm font-bold text-slate-500"><ArrowLeft size={16}/> Voltar</button><SecaoTalao/></div>}
+          {tab==="taloes"&&<div className="pt-4"><button onClick={()=>setTab("inicio")} className="mx-4 mb-2 flex items-center gap-1 text-sm font-bold text-slate-500"><ArrowLeft size={16}/> Voltar</button><SecaoTaloes/></div>}
         </main>
 
-        {/* BOTTOM NAV */}
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-100 px-1 py-1.5 z-40 shadow-lg">
           <div className="flex items-center justify-around">
             {NAV.map(it=>(
