@@ -61,13 +61,13 @@ const LOJAS = {
 const PROMOCOES = [
   { nome:"Worten", dominio:"worten.pt", cor:"#e30613", url:"https://www.worten.pt/promocoes" },
   { nome:"Parfois", dominio:"parfois.com", cor:"#d4a05a", url:"https://www.parfois.com/pt/sale/" },
-  { nome:"Mango", dominio:"mango.com", cor:"#000000", url:"https://shop.mango.com/pt/pt/c/promocoes_d10059077" },
-  { nome:"Nike", dominio:"nike.com", cor:"#000000", url:"https://www.nike.com/pt/w/sale-3yaep" },
+  { nome:"Mango", dominio:"mango.com", cor:"#000000", url:"https://shop.mango.com/pt/pt/l/mulher/promocoes" },
+  { nome:"Nike", dominio:"nike.com", cor:"#000000", url:"https://www.nike.com/pt/" },
   { nome:"Adidas", dominio:"adidas.pt", cor:"#000000", url:"https://www.adidas.pt/outlet" },
   { nome:"Decathlon", dominio:"decathlon.pt", cor:"#0082c3", url:"https://www.decathlon.pt/browse/c0-todos-os-desportos/_/N-1mb0eha" },
   { nome:"MediaMarkt", dominio:"mediamarkt.pt", cor:"#df0000", url:"https://www.mediamarkt.pt/pt/campaign/outlet" },
   { nome:"Puma", dominio:"pt.puma.com", cor:"#000000", url:"https://pt.puma.com/pt/pt/sale" },
-  { nome:"Tommy Hilfiger", dominio:"pt.tommy.com", cor:"#002d72", url:"https://pt.tommy.com/sale" },
+  { nome:"Tommy Hilfiger", dominio:"pt.tommy.com", cor:"#002d72", url:"https://pt.tommy.com/" },
   { nome:"Calvin Klein", dominio:"calvinklein.pt", cor:"#000000", url:"https://www.calvinklein.pt/sale" },
   { nome:"Levi's", dominio:"levi.com", cor:"#d6001c", url:"https://www.levi.com/PT/pt_PT/clothing/c/levi_clothing_sale" },
   { nome:"JD Sports", dominio:"jdsports.pt", cor:"#000000", url:"https://www.jdsports.pt/promocoes/" },
@@ -99,27 +99,24 @@ function LogoLoja({ loja, size }) {
 function GrelhaLojas({ lista, modoPromo }) {
   function abrir(url) { window.open(url, "_blank"); }
   return (
-    <div className="px-4 grid grid-cols-2 gap-3">
+    <div className="px-4 grid grid-cols-3 gap-2.5">
       {lista.map(function(loja){
         return (
           <button key={loja.nome}
             onClick={function(){ abrir(loja.url); }}
-            className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm active:scale-95 transition-all flex flex-col items-center gap-3 relative overflow-hidden">
+            className="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm active:scale-95 transition-all flex flex-col items-center gap-2 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1" style={{ background: loja.cor === "#000000" ? "#334155" : loja.cor }}/>
-            <LogoLoja loja={loja} size={64} />
-            <div className="text-center">
-              <p className="text-sm font-black text-slate-800 leading-tight">{loja.nome}</p>
-              <div className="flex items-center justify-center gap-1 mt-1.5">
+            <LogoLoja loja={loja} size={44} />
+            <div className="text-center w-full">
+              <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
+              <div className="flex items-center justify-center gap-0.5 mt-1">
                 {modoPromo ? (
                   <>
-                    <Tag size={11} className="text-orange-500" />
-                    <span className="text-[11px] font-black text-orange-500">Promoções</span>
+                    <Tag size={9} className="text-orange-500 flex-shrink-0" />
+                    <span className="text-[9px] font-black text-orange-500">Promoções</span>
                   </>
                 ) : (
-                  <>
-                    <ExternalLink size={11} className="text-slate-400" />
-                    <span className="text-[11px] font-black text-slate-400">Abrir</span>
-                  </>
+                  <ExternalLink size={11} className="text-slate-400" />
                 )}
               </div>
             </div>
