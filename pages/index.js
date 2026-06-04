@@ -23,7 +23,7 @@ function garantiasAAcabar(dias){
 }
 
 const SUPER_CORES = {Continente:"#e63329","Pingo Doce":"#009a3e",Lidl:"#0050aa",Aldi:"#1a3b6f","Intermarché":"#e2001a"};
-const NAV = [{id:"inicio",label:"Início",icon:Home},{id:"mercados",label:"Mercados",icon:ShoppingCart},{id:"lojas",label:"Lojas",icon:Store},{id:"mobilidade",label:"Mobilidade",icon:Fuel},{id:"poupanca",label:"Poupança",icon:PiggyBank}];
+const NAV = [{id:"inicio",label:"Início",icon:Home},{id:"mercados",label:"Mercado",icon:ShoppingCart},{id:"lojas",label:"Lojas",icon:Store},{id:"mobilidade",label:"Mobilidade",icon:Fuel},{id:"poupanca",label:"Poupança",icon:PiggyBank}];
 
 function Badge({children,color="blue"}){
   const c={blue:"bg-blue-100 text-blue-700",green:"bg-green-100 text-green-700",orange:"bg-orange-100 text-orange-700",red:"bg-red-100 text-red-700",gray:"bg-slate-100 text-slate-500",yellow:"bg-yellow-100 text-yellow-700",purple:"bg-purple-100 text-purple-700"};
