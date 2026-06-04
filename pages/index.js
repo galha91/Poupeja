@@ -3,8 +3,10 @@ import ComparadorPrecos from "../Comparador";
 import SecaoFolhetos from "../SecaoFolhetos";
 import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
-import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info } from "lucide-react";
+import SecaoTalao from "../SecaoTalao";
+import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft } from "lucide-react";
 
+// ═══ DADOS ═══════════════════════════════════════════════════════════════════
 const SUPER_LOJAS = [
   { id:1, nome:"Continente", cor:"#e63329" },
   { id:2, nome:"Pingo Doce", cor:"#009a3e" },
@@ -24,11 +26,11 @@ function Badge({children,color="blue"}){
 function EcraInicio({setTab}){
   const total = 117;
   const features = [
-    {icon:ShoppingBag,title:"Cesto inteligente",desc:"Descobre onde a tua lista fica mais barata",grad:"from-emerald-500 to-emerald-600"},
-    {icon:Camera,title:"Ler talão de compras",desc:"Tira uma foto e vê onde ficava mais barato",grad:"from-violet-500 to-violet-600"},
-    {icon:Bell,title:"Avisos de preço",desc:"Dizemos-te quando o preço de algo baixa",grad:"from-slate-700 to-slate-900"},
-    {icon:CreditCard,title:"Cartões de pontos",desc:"Tem os teus cartões sempre à mão",grad:"from-amber-500 to-orange-500"},
-    {icon:Users,title:"Modo Família",desc:"Juntem as contas de casa num só lugar",grad:"from-teal-500 to-teal-600"},
+    {icon:ShoppingBag,title:"Cesto inteligente",desc:"Descobre onde a tua lista fica mais barata",grad:"from-emerald-500 to-emerald-600",destino:"mercados"},
+    {icon:Camera,title:"Ler talão de compras",desc:"Tira uma foto e vê onde ficava mais barato",grad:"from-violet-500 to-violet-600",destino:"talao"},
+    {icon:Bell,title:"Avisos de preço",desc:"Dizemos-te quando o preço de algo baixa",grad:"from-slate-700 to-slate-900",destino:"mobilidade"},
+    {icon:CreditCard,title:"Cartões de pontos",desc:"Tem os teus cartões sempre à mão",grad:"from-amber-500 to-orange-500",destino:null},
+    {icon:Users,title:"Modo Família",desc:"Juntem as contas de casa num só lugar",grad:"from-teal-500 to-teal-600",destino:null},
   ];
   
   return(
@@ -62,7 +64,7 @@ function EcraInicio({setTab}){
         <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Star size={14} className="text-amber-500"/>O que podes fazer aqui</p>
         <div className="flex flex-col gap-2.5">
           {features.map((f,i)=>(
-            <button key={i} className={`bg-gradient-to-r ${f.grad} rounded-2xl p-4 text-white text-left shadow-md active:scale-95 transition-all flex items-center gap-4`}>
+            <button key={i} onClick={()=>f.destino&&setTab(f.destino)} className={`bg-gradient-to-r ${f.grad} rounded-2xl p-4 text-white text-left shadow-md active:scale-95 transition-all flex items-center gap-4`}>
               <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"><f.icon size={22}/></div>
               <div className="flex-1"><p className="text-sm font-black leading-tight">{f.title}</p><p className="text-[11px] opacity-75 mt-0.5">{f.desc}</p></div>
               <ChevronRight size={18} className="opacity-60 flex-shrink-0"/>
@@ -155,6 +157,10 @@ function SecaoPoupanca(){
   );
 }
 
+// SecaoLojas agora vem do ficheiro SecaoLojas.jsx
+
+// SecaoMobilidade agora vem do ficheiro SecaoMobilidade.jsx
+
 function SecaoMercados() {
   const [sub, setSub] = React.useState("folhetos");
   return (
@@ -175,6 +181,7 @@ function SecaoMercados() {
   );
 }
 
+// ═══ APP PRINCIPAL ══════════════════════════════════════════════════════════
 export default function PoupeJa(){
   const [tab,setTab]=useState("inicio");
   const titulos={
@@ -183,6 +190,7 @@ export default function PoupeJa(){
     lojas:{t:"Lojas",s:"Moda e eletrónica com desconto"},
     mobilidade:{t:"Mobilidade",s:"Combustíveis e pontos de carregamento"},
     poupanca:{t:"A tua poupança",s:"Vê quanto tens poupado nas compras"},
+    talao:{t:"Ler talão de compras",s:"Tira uma foto e vê onde ficava mais barato"},
   };
   const info=titulos[tab];
   
@@ -196,6 +204,7 @@ export default function PoupeJa(){
         body{margin:0;background:#f1f5f9}
       `}</style>
       <div className="min-h-screen bg-slate-100 max-w-md mx-auto relative">
+        {/* HEADER */}
         <div className="bg-white border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 shadow-sm">
           <div className="flex items-center justify-between mb-0.5">
             <div className="flex items-center gap-2">
@@ -218,8 +227,10 @@ export default function PoupeJa(){
           {tab==="lojas"&&<SecaoLojas/>}
           {tab==="mobilidade"&&<SecaoMobilidade/>}
           {tab==="poupanca"&&<SecaoPoupanca/>}
+          {tab==="talao"&&<div className="pt-4"><button onClick={()=>setTab("inicio")} className="mx-4 mb-2 flex items-center gap-1 text-sm font-bold text-slate-500"><ArrowLeft size={16}/> Voltar</button><SecaoTalao/></div>}
         </main>
 
+        {/* BOTTOM NAV */}
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-100 px-1 py-1.5 z-40 shadow-lg">
           <div className="flex items-center justify-around">
             {NAV.map(it=>(
