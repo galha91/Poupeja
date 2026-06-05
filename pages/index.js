@@ -8,20 +8,9 @@ import SecaoDefinicoes from "../SecaoDefinicoes";
 import PainelAvisos from "../PainelAvisos";
 import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft, Receipt, ShieldCheck, AlertTriangle } from "lucide-react";
 
-// ═══ DADOS ═══════════════════════════════════════════════════════════════════
-const SUPER_LOJAS = [
-  { id:1, nome:"Continente", cor:"#e63329" },
-  { id:2, nome:"Pingo Doce", cor:"#009a3e" },
-  { id:3, nome:"Lidl", cor:"#0050aa" },
-  { id:4, nome:"Aldi", cor:"#1a3b6f" },
-  { id:5, nome:"Intermarché", cor:"#e2001a" },
-];
-
 const SUPER_CORES = {Continente:"#e63329","Pingo Doce":"#009a3e",Lidl:"#0050aa",Aldi:"#1a3b6f","Intermarché":"#e2001a"};
 const NAV = [{id:"inicio",label:"Início",icon:Home},{id:"mercados",label:"Mercado",icon:ShoppingCart},{id:"lojas",label:"Lojas",icon:Store},{id:"mobilidade",label:"Mobilidade",icon:Fuel},{id:"poupanca",label:"Poupança",icon:PiggyBank}];
 
-
-// ═══ GARANTIAS (partilhado com a secção de talões) ═══════
 const GARANTIAS = [
   { id:1, produto:"Máquina de Lavar Bosch", data:"2024-07-15", anos:2 },
   { id:2, produto:"Telemóvel Samsung A55", data:"2025-11-20", anos:2 },
@@ -135,7 +124,6 @@ function EcraInicio({setTab}){
 }
 
 function SecaoPoupanca(){
-  const [sub,setSub]=useState("dashboard");
   const total = 117;
   const historico = [{mes:"Mar",valor:98},{mes:"Abr",valor:112},{mes:"Mai",valor:117},{mes:"Jun",valor:total}];
   const maxH = Math.max(...historico.map(h=>h.valor));
@@ -193,10 +181,6 @@ function SecaoPoupanca(){
   );
 }
 
-// SecaoLojas agora vem do ficheiro SecaoLojas.jsx
-
-// SecaoMobilidade agora vem do ficheiro SecaoMobilidade.jsx
-
 function SecaoMercados() {
   const [sub, setSub] = React.useState("folhetos");
   return (
@@ -217,7 +201,6 @@ function SecaoMercados() {
   );
 }
 
-// ═══ APP PRINCIPAL ══════════════════════════════════════════════════════════
 export default function PoupeJa(){
   const [tab,setTab]=useState("inicio");
   const [verAvisos,setVerAvisos]=useState(false);
@@ -246,7 +229,6 @@ export default function PoupeJa(){
           <SecaoDefinicoes onVoltar={()=>setVerDefinicoes(false)} />
         ) : (
         <>
-        {/* HEADER */}
         <div className="bg-white border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 shadow-sm">
           <div className="flex items-center justify-between mb-0.5">
             <div className="flex items-center gap-2">
@@ -255,7 +237,7 @@ export default function PoupeJa(){
               <span className="text-[9px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-md">PT</span>
             </div>
             <div className="flex gap-1.5">
-              <button onClick={()=>setVerAvisos(true)} className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 relative"><Bell size={16} className="text-slate-500"/>{garantiasAAcabar(60).length>0 && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"/>}</button>
+              <button onClick={()=>setVerAvisos(true)} className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100"><Bell size={16} className="text-slate-500"/></button>
               <button onClick={()=>{setVerDefinicoes(true);setTab("inicio");}} className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100"><Users size={16} className="text-blue-600"/></button>
             </div>
           </div>
@@ -272,7 +254,6 @@ export default function PoupeJa(){
           {tab==="taloes"&&<div className="pt-4"><button onClick={()=>setTab("inicio")} className="mx-4 mb-2 flex items-center gap-1 text-sm font-bold text-slate-500"><ArrowLeft size={16}/> Voltar</button><SecaoTaloes/></div>}
         </main>
 
-        {/* BOTTOM NAV */}
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-100 px-1 py-1.5 z-40 shadow-lg">
           <div className="flex items-center justify-around">
             {NAV.map(it=>(
