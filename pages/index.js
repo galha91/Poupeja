@@ -5,7 +5,6 @@ import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
-import PainelAvisos from "../PainelAvisos";
 import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft, Receipt, ShieldCheck, AlertTriangle } from "lucide-react";
 
 const SUPER_CORES = {Continente:"#e63329","Pingo Doce":"#009a3e",Lidl:"#0050aa",Aldi:"#1a3b6f","Intermarché":"#e2001a"};
@@ -268,11 +267,12 @@ export default function PoupeJa(){
         )}
 
         {verAvisos && (
-          <PainelAvisos
-            avisos={{ garantias: garantiasAAcabar(60) }}
-            onFechar={()=>setVerAvisos(false)}
-            onAbrirTaloes={()=>{ setVerAvisos(false); setTab("taloes"); }}
-          />
+          <div onClick={()=>setVerAvisos(false)} style={{position:"fixed",inset:0,zIndex:50,background:"rgba(15,23,42,0.5)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{background:"white",padding:"24px",borderRadius:"16px",maxWidth:"80%"}}>
+              <p style={{fontWeight:900,fontSize:"18px",color:"#1e293b"}}>Avisos</p>
+              <p style={{fontSize:"14px",color:"#64748b",marginTop:"8px"}}>O painel está a abrir! Toca para fechar.</p>
+            </div>
+          </div>
         )}
       </div>
     </>
