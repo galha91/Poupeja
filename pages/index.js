@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ComparadorPrecos from "../Comparador";
 import SecaoFolhetos from "../SecaoFolhetos";
 import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
@@ -36,10 +35,9 @@ function EcraInicio({setTab}){
   const total = 117;
   const features = [
     {icon:Receipt,title:"Os meus talões",desc:"Guarda compras e garantias num só sítio",grad:"from-blue-500 to-blue-600",destino:"taloes"},
-    {icon:ShoppingBag,title:"Cesto inteligente",desc:"Descobre onde a tua lista fica mais barata",grad:"from-emerald-500 to-emerald-600",destino:"mercados"},
-    {icon:Bell,title:"Avisos de preço",desc:"Dizemos-te quando o preço de algo baixa",grad:"from-slate-700 to-slate-900",destino:"mobilidade"},
-    {icon:CreditCard,title:"Cartões de pontos",desc:"Tem os teus cartões sempre à mão",grad:"from-amber-500 to-orange-500",destino:null},
-    {icon:Users,title:"Modo Família",desc:"Juntem as contas de casa num só lugar",grad:"from-teal-500 to-teal-600",destino:null},
+    {icon:Tag,title:"Folhetos da semana",desc:"Vê os folhetos de todos os supermercados",grad:"from-emerald-500 to-emerald-600",destino:"mercados"},
+    {icon:Fuel,title:"Combustíveis e EV",desc:"Preços reais e pontos de carregamento perto de ti",grad:"from-orange-500 to-amber-500",destino:"mobilidade"},
+    {icon:Store,title:"Lojas e promoções",desc:"Moda, eletrónica e desporto num só lugar",grad:"from-violet-500 to-purple-600",destino:"lojas"},
   ];
   
   const avisosGarantia = garantiasAAcabar(60);
@@ -101,7 +99,7 @@ function EcraInicio({setTab}){
       <div className="px-4 mb-4">
         <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Zap size={14} className="text-blue-500"/>Atalhos</p>
         <div className="grid grid-cols-3 gap-2.5">
-          {[{icon:Tag,label:"Folhetos",color:"text-blue-600 bg-blue-50",tab:"mercados"},{icon:BarChart2,label:"Comparar",color:"text-indigo-600 bg-indigo-50",tab:"mercados"},{icon:Shirt,label:"Moda",color:"text-violet-600 bg-violet-50",tab:"lojas"},{icon:Smartphone,label:"Eletrónica",color:"text-slate-700 bg-slate-100",tab:"lojas"},{icon:Fuel,label:"Combustíveis",color:"text-orange-600 bg-orange-50",tab:"mobilidade"},{icon:Battery,label:"Postos EV",color:"text-emerald-600 bg-emerald-50",tab:"mobilidade"}].map((it,i)=>(
+          {[{icon:Tag,label:"Folhetos",color:"text-blue-600 bg-blue-50",tab:"mercados"},{icon:Receipt,label:"Talões",color:"text-indigo-600 bg-indigo-50",tab:"taloes"},{icon:Shirt,label:"Moda",color:"text-violet-600 bg-violet-50",tab:"lojas"},{icon:Smartphone,label:"Eletrónica",color:"text-slate-700 bg-slate-100",tab:"lojas"},{icon:Fuel,label:"Combustíveis",color:"text-orange-600 bg-orange-50",tab:"mobilidade"},{icon:Battery,label:"Postos EV",color:"text-emerald-600 bg-emerald-50",tab:"mobilidade"}].map((it,i)=>(
             <button key={i} onClick={()=>setTab(it.tab)} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col items-center gap-2 active:scale-95 transition-all">
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${it.color}`}><it.icon size={22}/></div>
               <span className="text-[10px] font-black text-slate-700">{it.label}</span>
@@ -182,21 +180,9 @@ function SecaoPoupanca(){
 }
 
 function SecaoMercados() {
-  const [sub, setSub] = React.useState("folhetos");
   return (
     <div className="pb-28 pt-4">
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
-        <button onClick={() => setSub("folhetos")}
-          className={"flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 " + (sub === "folhetos" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
-          📰 Folhetos
-        </button>
-        <button onClick={() => setSub("comparar")}
-          className={"flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 " + (sub === "comparar" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
-          🏷️ Comparar
-        </button>
-      </div>
-      {sub === "folhetos" && <SecaoFolhetos />}
-      {sub === "comparar" && <ComparadorPrecos />}
+      <SecaoFolhetos />
     </div>
   );
 }
@@ -207,7 +193,7 @@ export default function PoupeJa(){
   const [verDefinicoes,setVerDefinicoes]=useState(false);
   const titulos={
     inicio:{t:"Olá! Bem-vindo de volta",s:"Vamos poupar nas compras de hoje?"},
-    mercados:{t:"Supermercados",s:"Folhetos e comparação de preços"},
+    mercados:{t:"Supermercados",s:"Os folhetos da semana num só sítio"},
     lojas:{t:"Lojas",s:"Moda e eletrónica com desconto"},
     mobilidade:{t:"Mobilidade",s:"Combustíveis e pontos de carregamento"},
     poupanca:{t:"A tua poupança",s:"Vê quanto tens poupado nas compras"},
