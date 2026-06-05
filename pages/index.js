@@ -5,6 +5,7 @@ import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
+import PainelAvisos from "../PainelAvisos";
 import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft, Receipt, ShieldCheck, AlertTriangle } from "lucide-react";
 
 const SUPER_CORES = {Continente:"#e63329","Pingo Doce":"#009a3e",Lidl:"#0050aa",Aldi:"#1a3b6f","Intermarché":"#e2001a"};
@@ -236,7 +237,7 @@ export default function PoupeJa(){
               <span className="text-[9px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-md">PT</span>
             </div>
             <div className="flex gap-1.5">
-              <button onClick={()=>setVerAvisos(true)} className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100"><Bell size={16} className="text-slate-500"/></button>
+              <button onClick={()=>setVerAvisos(true)} className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 relative"><Bell size={16} className="text-slate-500"/>{garantiasAAcabar(60).length>0 && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"/>}</button>
               <button onClick={()=>{setVerDefinicoes(true);setTab("inicio");}} className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100"><Users size={16} className="text-blue-600"/></button>
             </div>
           </div>
@@ -267,12 +268,11 @@ export default function PoupeJa(){
         )}
 
         {verAvisos && (
-          <div onClick={()=>setVerAvisos(false)} style={{position:"fixed",inset:0,zIndex:50,background:"rgba(15,23,42,0.5)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <div style={{background:"white",padding:"24px",borderRadius:"16px",maxWidth:"80%"}}>
-              <p style={{fontWeight:900,fontSize:"18px",color:"#1e293b"}}>Avisos</p>
-              <p style={{fontSize:"14px",color:"#64748b",marginTop:"8px"}}>O painel está a abrir! Toca para fechar.</p>
-            </div>
-          </div>
+          <PainelAvisos
+            avisos={{ garantias: garantiasAAcabar(60) }}
+            onFechar={()=>setVerAvisos(false)}
+            onAbrirTaloes={()=>{ setVerAvisos(false); setTab("taloes"); }}
+          />
         )}
       </div>
     </>
