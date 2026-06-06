@@ -29,7 +29,7 @@ function Campo({ label, type = "text", value, onChange, placeholder, action }) {
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-white text-slate-800 font-semibold text-sm placeholder:text-slate-300 focus:outline-none focus:border-emerald-400 transition-colors"
+          className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-white text-slate-800 font-semibold text-sm placeholder:text-slate-300 focus:outline-none focus:border-emerald-400 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.1)] transition-all"
         />
         {action && (
           <button

@@ -117,7 +117,7 @@ function EcraInicio({ user, setTab }) {
               <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">O teu assistente de poupança</span>
             </div>
             <p className="text-[13px] font-semibold text-white/80">Olá, {primeiroNome}!</p>
-            <p className="text-2xl font-black text-white mt-0.5 leading-snug">
+            <p className="text-2xl font-black text-white mt-0.5 leading-snug" style={{ fontFamily: "'Sora', system-ui" }}>
               Pronto para poupar<br />nas compras de hoje?
             </p>
             <button
@@ -165,8 +165,8 @@ function EcraInicio({ user, setTab }) {
               onClick={() => setTab(it.tab)}
               className="press card flex flex-col items-center gap-2 py-4 px-2"
             >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${it.bg}`}>
-                <it.icon size={20} className={it.color} />
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${it.bg}`}>
+                <it.icon size={19} className={it.color} />
               </div>
               <span className="text-[10px] font-black text-slate-700 text-center leading-tight">{it.label}</span>
             </button>
@@ -407,20 +407,20 @@ export default function PoupeJa() {
                     <button
                       key={it.id}
                       onClick={() => navClick(it.id)}
-                      className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors duration-150 ${active ? "bg-emerald-50" : ""}`}
+                      className="flex flex-col items-center gap-1 px-3 py-2 min-w-[56px] relative"
                     >
+                      <span
+                        className="absolute top-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-emerald-500 transition-all duration-300"
+                        style={{ width: active ? "20px" : "0px", opacity: active ? 1 : 0 }}
+                      />
                       <it.icon
                         size={20}
-                        className={`transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
+                        className={`transition-all duration-200 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
                         strokeWidth={active ? 2.5 : 1.8}
                       />
-                      <span className={`text-[9px] font-black transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"}`}>
+                      <span className={`text-[9px] font-black transition-colors duration-200 ${active ? "text-emerald-600" : "text-slate-400"}`}>
                         {it.label}
                       </span>
-                      <span
-                        className="w-1 h-1 rounded-full bg-emerald-500 transition-all duration-200"
-                        style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(0)" }}
-                      />
                     </button>
                   );
                 })}
