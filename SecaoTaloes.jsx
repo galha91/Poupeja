@@ -1,41 +1,8 @@
 import { useState } from "react";
 import {
   Camera, Upload, Receipt, ShieldCheck, ShoppingCart,
-  ChevronRight, X, Clock, AlertTriangle, Check, FileText,
-  TrendingUp, Plus, Package,
+  X, TrendingUp, Package, Plus,
 } from "lucide-react";
-
-const COMPRAS = [
-  { id: 1, loja: "Continente",  data: "2026-06-02", total: 23.47, itens: 8 },
-  { id: 2, loja: "Pingo Doce",  data: "2026-05-28", total: 41.10, itens: 14 },
-  { id: 3, loja: "Lidl",        data: "2026-05-24", total: 18.65, itens: 6 },
-  { id: 4, loja: "Continente",  data: "2026-05-19", total: 52.30, itens: 19 },
-];
-
-const GARANTIAS = [
-  { id: 1, produto: "Máquina de Lavar Bosch", loja: "Worten",    data: "2024-07-15", anos: 2, preco: 449.00 },
-  { id: 2, produto: "Telemóvel Samsung A55",  loja: "Fnac",      data: "2025-11-20", anos: 2, preco: 379.00 },
-  { id: 3, produto: "Aspirador Dyson",         loja: "MediaMarkt",data: "2026-03-10", anos: 2, preco: 299.00 },
-];
-
-const CORES = {
-  Continente: "#e63329", "Pingo Doce": "#009a3e", Lidl: "#0050aa",
-  Aldi: "#1a3b6f", "Intermarché": "#e2001a",
-  Worten: "#e30613", Fnac: "#e1a300", MediaMarkt: "#df0000",
-};
-
-function diasGarantia(dataCompra, anos) {
-  const fim = new Date(dataCompra);
-  fim.setFullYear(fim.getFullYear() + anos);
-  const dias = Math.ceil((fim - new Date()) / (1000 * 60 * 60 * 24));
-  return { dias, fim };
-}
-
-function fmtData(d) {
-  const meses = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-  const dt = new Date(d);
-  return `${dt.getDate()} ${meses[dt.getMonth()]} ${dt.getFullYear()}`;
-}
 
 function ModalGuardar({ onFechar }) {
   return (
@@ -73,13 +40,24 @@ function ModalGuardar({ onFechar }) {
   );
 }
 
-export default function SecaoTaloes() {
-  const [aba, setAba]         = useState("compras");
-  const [modal, setModal]     = useState(false);
+function EstadoVazio({ icon: Icon, titulo, descricao, corFundo, corIcone }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-14 px-8 text-center">
+      <div
+        className="w-16 h-16 rounded-3xl flex items-center justify-center mb-4"
+        style={{ background: corFundo }}
+      >
+        <Icon size={28} style={{ color: corIcone }} />
+      </div>
+      <p className="font-black text-slate-700 text-base mb-1">{titulo}</p>
+      <p className="text-[13px] text-slate-400 leading-relaxed">{descricao}</p>
+    </div>
+  );
+}
 
-  const totalMes = COMPRAS
-    .filter(c => c.data >= "2026-06-01")
-    .reduce((s, c) => s + c.total, 0);
+export default function SecaoTaloes() {
+  const [aba, setAba]     = useState("compras");
+  const [modal, setModal] = useState(false);
 
   return (
     <div className="pb-28">
@@ -116,8 +94,8 @@ export default function SecaoTaloes() {
             <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
               <TrendingUp size={11} /> Gasto este mês
             </p>
-            <p className="text-4xl font-black text-white mt-1">{totalMes.toFixed(2)} €</p>
-            <p className="text-xs text-white/60 mt-0.5">{COMPRAS.length} talões guardados</p>
+            <p className="text-4xl font-black text-white mt-1">0,00 €</p>
+            <p className="text-xs text-white/60 mt-0.5">Nenhum talão guardado</p>
           </div>
 
           {/* CTA */}
@@ -129,30 +107,15 @@ export default function SecaoTaloes() {
             <Camera size={17} /> Guardar novo talão
           </button>
 
-          {/* Lista */}
-          <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Histórico de compras</p>
-          <div className="px-4 flex flex-col gap-2.5">
-            {COMPRAS.map(c => {
-              const cor = CORES[c.loja] || "#888";
-              return (
-                <div key={c.id} className="card p-4 flex items-center gap-3 press active:scale-[0.98] cursor-pointer">
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${cor}18` }}
-                  >
-                    <Receipt size={19} style={{ color: cor }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-black text-slate-800 text-sm">{c.loja}</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{fmtData(c.data)} · {c.itens} artigos</p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-black text-slate-800 text-sm">{c.total.toFixed(2)} €</p>
-                    <ChevronRight size={13} className="text-slate-300 ml-auto mt-0.5" />
-                  </div>
-                </div>
-              );
-            })}
+          {/* Empty state */}
+          <div className="mx-4 card">
+            <EstadoVazio
+              icon={Receipt}
+              titulo="Ainda não tens talões guardados"
+              descricao="Tira foto ao próximo talão e começa a controlar as tuas compras."
+              corFundo="#eff6ff"
+              corIcone="#3b82f6"
+            />
           </div>
         </div>
       )}
@@ -169,7 +132,7 @@ export default function SecaoTaloes() {
             <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
               <ShieldCheck size={11} /> Garantias ativas
             </p>
-            <p className="text-4xl font-black text-white mt-1">{GARANTIAS.length}</p>
+            <p className="text-4xl font-black text-white mt-1">0</p>
             <p className="text-xs text-white/60 mt-0.5">produtos protegidos</p>
           </div>
 
@@ -182,50 +145,15 @@ export default function SecaoTaloes() {
             <Camera size={17} /> Guardar talão de garantia
           </button>
 
-          {/* Lista */}
-          <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Os teus produtos</p>
-          <div className="px-4 flex flex-col gap-2.5">
-            {GARANTIAS.map(g => {
-              const cor = CORES[g.loja] || "#888";
-              const { dias, fim } = diasGarantia(g.data, g.anos);
-              const expirada = dias < 0;
-              const urgente  = dias >= 0 && dias <= 60;
-
-              return (
-                <div key={g.id} className="card p-4">
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{ background: `${cor}18` }}
-                    >
-                      <Package size={19} style={{ color: cor }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-black text-slate-800 text-sm leading-snug">{g.produto}</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{g.loja} · Comprado a {fmtData(g.data)}</p>
-                      <p className="text-[12px] font-black text-slate-700 mt-0.5">{g.preco.toFixed(2)} €</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 pt-3 border-t border-slate-50 flex items-center justify-between">
-                    {expirada ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black text-slate-400">
-                        <Clock size={11} /> Garantia terminada
-                      </span>
-                    ) : urgente ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black text-orange-600">
-                        <AlertTriangle size={11} /> Acaba em {dias} dias
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-600">
-                        <Check size={11} /> Garantia válida
-                      </span>
-                    )}
-                    <span className="text-[11px] text-slate-400">até {fmtData(fim)}</span>
-                  </div>
-                </div>
-              );
-            })}
+          {/* Empty state */}
+          <div className="mx-4 card">
+            <EstadoVazio
+              icon={Package}
+              titulo="Ainda não tens garantias guardadas"
+              descricao="Guarda o talão dos teus eletrodomésticos e produtos para nunca perderes a garantia."
+              corFundo="#f0fdf4"
+              corIcone="#059669"
+            />
           </div>
 
           {/* Tip */}
