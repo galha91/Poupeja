@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   User, Fuel, MapPin, Store, Bell, ShieldCheck, Info,
   ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
-  PiggyBank,
+  PiggyBank, LogOut,
 } from "lucide-react";
 
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan","Minipreço"];
@@ -50,7 +50,7 @@ function Row({ border = true, children }) {
   );
 }
 
-export default function SecaoDefinicoes({ onVoltar }) {
+export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
   const [prefs, setPrefs] = useState(lerPrefs);
   const [saved, setSaved]  = useState(false);
 
@@ -88,8 +88,8 @@ export default function SecaoDefinicoes({ onVoltar }) {
           </div>
           <div>
             <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Conta</p>
-            <p className="text-lg font-black text-white leading-tight">{prefs.nome || "O teu perfil"}</p>
-            <p className="text-[11px] text-white/60">{prefs.email || "Adiciona o teu email"}</p>
+            <p className="text-lg font-black text-white leading-tight">{user?.nome || "O teu perfil"}</p>
+            <p className="text-[11px] text-white/60">{user?.email || ""}</p>
           </div>
         </div>
       </div>
@@ -109,27 +109,24 @@ export default function SecaoDefinicoes({ onVoltar }) {
             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
               <User size={18} className="text-emerald-600" />
             </div>
-            <div className="flex-1">
-              <input
-                value={prefs.nome}
-                onChange={e => set("nome", e.target.value)}
-                placeholder="O teu nome"
-                className="w-full text-sm font-black text-slate-800 outline-none placeholder:text-slate-300 placeholder:font-medium"
-              />
-              <input
-                value={prefs.email}
-                onChange={e => set("email", e.target.value)}
-                placeholder="O teu email"
-                className="w-full text-xs text-slate-500 outline-none placeholder:text-slate-300 mt-0.5"
-              />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-black text-slate-800 truncate">{user?.nome || "—"}</p>
+              <p className="text-xs text-slate-500 mt-0.5 truncate">{user?.email || "—"}</p>
             </div>
           </div>
         </Row>
-        <div className="px-4 py-2.5 bg-slate-50">
-          <p className="text-[10px] text-slate-400 leading-relaxed">
-            Os dados ficam guardados neste dispositivo. Com conta, ficam disponíveis em qualquer aparelho.
-          </p>
-        </div>
+        <Row border={false}>
+          <button
+            onClick={onLogout}
+            className="press w-full flex items-center justify-between text-red-500"
+          >
+            <div className="flex items-center gap-2.5">
+              <LogOut size={17} className="text-red-400" />
+              <p className="text-sm font-bold">Sair da conta</p>
+            </div>
+            <ChevronRight size={15} className="text-red-300" />
+          </button>
+        </Row>
       </Section>
 
       {/* Preferências */}
