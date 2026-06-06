@@ -1,121 +1,132 @@
 import { useState } from "react";
-import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store } from "lucide-react";
+import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store, ChevronRight, Sparkles } from "lucide-react";
 
 const LOJAS = {
   moda: [
-    { nome:"Zara", dominio:"zara.com", cor:"#000000", url:"https://www.zara.com/pt/" },
-    { nome:"H&M", dominio:"hm.com", cor:"#e50010", url:"https://www2.hm.com/pt_pt/index.html" },
-    { nome:"Mango", dominio:"mango.com", cor:"#000000", url:"https://shop.mango.com/pt/pt" },
-    { nome:"Bershka", dominio:"bershka.com", cor:"#000000", url:"https://www.bershka.com/pt/" },
-    { nome:"Pull&Bear", dominio:"pullandbear.com", cor:"#000000", url:"https://www.pullandbear.com/pt/" },
-    { nome:"Stradivarius", dominio:"stradivarius.com", cor:"#e84b7c", url:"https://www.stradivarius.com/pt/" },
-    { nome:"Lefties", dominio:"lefties.com", cor:"#000000", url:"https://www.lefties.com/pt/" },
-    { nome:"Primark", dominio:"primark.com", cor:"#0066b3", url:"https://www.primark.com/pt-pt" },
-    { nome:"Massimo Dutti", dominio:"massimodutti.com", cor:"#7a6a55", url:"https://www.massimodutti.com/pt/" },
-    { nome:"Springfield", dominio:"myspringfield.com", cor:"#1d4f3f", url:"https://www.myspringfield.com/pt/" },
-    { nome:"Parfois", dominio:"parfois.com", cor:"#d4a05a", url:"https://www.parfois.com/pt/" },
-    { nome:"Salsa", dominio:"salsajeans.com", cor:"#003da5", url:"https://www.salsajeans.com/pt" },
-    { nome:"Tiffosi", dominio:"tiffosi.com", cor:"#1a3c8c", url:"https://www.tiffosi.com/pt/" },
-    { nome:"MO", dominio:"mo-online.com", cor:"#e2001a", url:"https://www.mo-online.com/pt/" },
-    { nome:"Lanidor", dominio:"lanidor.com", cor:"#b8312f", url:"https://www.lanidor.com/" },
-    { nome:"Sacoor", dominio:"sacoorbrothers.com", cor:"#16243f", url:"https://www.sacoorbrothers.com/pt/" },
-    { nome:"C&A", dominio:"c-and-a.com", cor:"#003a78", url:"https://www.c-and-a.com/pt/pt/shop" },
-    { nome:"Quebramar", dominio:"quebramar.com", cor:"#00427a", url:"https://www.quebramar.com/" },
-    { nome:"Calzedonia", dominio:"calzedonia.com", cor:"#c8102e", url:"https://www.calzedonia.com/pt/" },
-    { nome:"Women'secret", dominio:"womensecret.com", cor:"#e6447f", url:"https://womensecret.com/pt/pt" },
-    { nome:"Calvin Klein", dominio:"calvinklein.pt", cor:"#000000", url:"https://www.calvinklein.pt/" },
-    { nome:"Tommy Hilfiger", dominio:"pt.tommy.com", cor:"#002d72", url:"https://pt.tommy.com/" },
-    { nome:"Levi's", dominio:"levi.com", cor:"#d6001c", url:"https://www.levi.com/PT/pt_PT/" },
-    { nome:"Zippy", dominio:"zippyonline.com", cor:"#ffb200", url:"https://www.zippyonline.com/pt/" },
+    { nome: "Zara",          dominio: "zara.com",           cor: "#000000", url: "https://www.zara.com/pt/" },
+    { nome: "H&M",           dominio: "hm.com",             cor: "#e50010", url: "https://www2.hm.com/pt_pt/index.html" },
+    { nome: "Mango",         dominio: "mango.com",          cor: "#000000", url: "https://shop.mango.com/pt/pt" },
+    { nome: "Bershka",       dominio: "bershka.com",        cor: "#000000", url: "https://www.bershka.com/pt/" },
+    { nome: "Pull&Bear",     dominio: "pullandbear.com",    cor: "#000000", url: "https://www.pullandbear.com/pt/" },
+    { nome: "Stradivarius",  dominio: "stradivarius.com",   cor: "#e84b7c", url: "https://www.stradivarius.com/pt/" },
+    { nome: "Lefties",       dominio: "lefties.com",        cor: "#000000", url: "https://www.lefties.com/pt/" },
+    { nome: "Primark",       dominio: "primark.com",        cor: "#0066b3", url: "https://www.primark.com/pt-pt" },
+    { nome: "Massimo Dutti", dominio: "massimodutti.com",   cor: "#7a6a55", url: "https://www.massimodutti.com/pt/" },
+    { nome: "Springfield",   dominio: "myspringfield.com",  cor: "#1d4f3f", url: "https://www.myspringfield.com/pt/" },
+    { nome: "Parfois",       dominio: "parfois.com",        cor: "#d4a05a", url: "https://www.parfois.com/pt/" },
+    { nome: "Salsa",         dominio: "salsajeans.com",     cor: "#003da5", url: "https://www.salsajeans.com/pt" },
+    { nome: "Tiffosi",       dominio: "tiffosi.com",        cor: "#1a3c8c", url: "https://www.tiffosi.com/pt/" },
+    { nome: "MO",            dominio: "mo-online.com",      cor: "#e2001a", url: "https://www.mo-online.com/pt/" },
+    { nome: "Lanidor",       dominio: "lanidor.com",        cor: "#b8312f", url: "https://www.lanidor.com/" },
+    { nome: "Sacoor",        dominio: "sacoorbrothers.com", cor: "#16243f", url: "https://www.sacoorbrothers.com/pt/" },
+    { nome: "C&A",           dominio: "c-and-a.com",        cor: "#003a78", url: "https://www.c-and-a.com/pt/pt/shop" },
+    { nome: "Quebramar",     dominio: "quebramar.com",      cor: "#00427a", url: "https://www.quebramar.com/" },
+    { nome: "Calzedonia",    dominio: "calzedonia.com",     cor: "#c8102e", url: "https://www.calzedonia.com/pt/" },
+    { nome: "Women'secret",  dominio: "womensecret.com",    cor: "#e6447f", url: "https://womensecret.com/pt/pt" },
+    { nome: "Calvin Klein",  dominio: "calvinklein.pt",     cor: "#000000", url: "https://www.calvinklein.pt/" },
+    { nome: "Tommy Hilfiger",dominio: "pt.tommy.com",       cor: "#002d72", url: "https://pt.tommy.com/" },
+    { nome: "Levi's",        dominio: "levi.com",           cor: "#d6001c", url: "https://www.levi.com/PT/pt_PT/" },
+    { nome: "Zippy",         dominio: "zippyonline.com",    cor: "#ffb200", url: "https://www.zippyonline.com/pt/" },
   ],
   eletronica: [
-    { nome:"Worten", dominio:"worten.pt", cor:"#e30613", url:"https://www.worten.pt/" },
-    { nome:"Fnac", dominio:"fnac.pt", cor:"#e1a300", url:"https://www.fnac.pt/" },
-    { nome:"Darty", dominio:"mediamarkt.pt", cor:"#df0000", url:"https://www.mediamarkt.pt/" },
-    { nome:"Radio Popular", dominio:"radiopopular.pt", cor:"#e2001a", url:"https://www.radiopopular.pt/" },
-    { nome:"PC Diga", dominio:"pcdiga.com", cor:"#0066b3", url:"https://www.pcdiga.com/" },
-    { nome:"PCComponentes", dominio:"pccomponentes.pt", cor:"#ff6000", url:"https://www.pccomponentes.pt/" },
-    { nome:"El Corte Inglés", dominio:"elcorteingles.pt", cor:"#00803e", url:"https://www.elcorteingles.pt/" },
-    { nome:"Apple", dominio:"apple.com", cor:"#555555", url:"https://www.apple.com/pt/shop" },
-    { nome:"Samsung", dominio:"samsung.com", cor:"#1428a0", url:"https://www.samsung.com/pt/" },
-    { nome:"Xiaomi", dominio:"mi.com", cor:"#ff6700", url:"https://www.mi.com/pt/" },
-    { nome:"Techinn", dominio:"tradeinn.com", cor:"#3b7dc4", url:"https://www.tradeinn.com/techinn/pt" },
-    { nome:"Auchan", dominio:"auchan.pt", cor:"#e2001a", url:"https://www.auchan.pt/" },
-    { nome:"Globaldata", dominio:"globaldata.pt", cor:"#0a4ea2", url:"https://www.globaldata.pt/" },
+    { nome: "Worten",         dominio: "worten.pt",         cor: "#e30613", url: "https://www.worten.pt/" },
+    { nome: "Fnac",           dominio: "fnac.pt",           cor: "#e1a300", url: "https://www.fnac.pt/" },
+    { nome: "MediaMarkt",     dominio: "mediamarkt.pt",     cor: "#df0000", url: "https://www.mediamarkt.pt/" },
+    { nome: "Radio Popular",  dominio: "radiopopular.pt",   cor: "#e2001a", url: "https://www.radiopopular.pt/" },
+    { nome: "PC Diga",        dominio: "pcdiga.com",        cor: "#0066b3", url: "https://www.pcdiga.com/" },
+    { nome: "PCComponentes",  dominio: "pccomponentes.pt",  cor: "#ff6000", url: "https://www.pccomponentes.pt/" },
+    { nome: "El Corte Inglés",dominio: "elcorteingles.pt",  cor: "#00803e", url: "https://www.elcorteingles.pt/" },
+    { nome: "Apple",          dominio: "apple.com",         cor: "#555555", url: "https://www.apple.com/pt/shop" },
+    { nome: "Samsung",        dominio: "samsung.com",       cor: "#1428a0", url: "https://www.samsung.com/pt/" },
+    { nome: "Xiaomi",         dominio: "mi.com",            cor: "#ff6700", url: "https://www.mi.com/pt/" },
+    { nome: "Techinn",        dominio: "tradeinn.com",      cor: "#3b7dc4", url: "https://www.tradeinn.com/techinn/pt" },
+    { nome: "Auchan",         dominio: "auchan.pt",         cor: "#e2001a", url: "https://www.auchan.pt/" },
+    { nome: "Globaldata",     dominio: "globaldata.pt",     cor: "#0a4ea2", url: "https://www.globaldata.pt/" },
   ],
   desporto: [
-    { nome:"Decathlon", dominio:"decathlon.pt", cor:"#0082c3", url:"https://www.decathlon.pt/" },
-    { nome:"Sport Zone", dominio:"sportzone.pt", cor:"#e2001a", url:"https://www.sportzone.pt/" },
-    { nome:"Nike", dominio:"nike.com", cor:"#000000", url:"https://www.nike.com/pt/" },
-    { nome:"Adidas", dominio:"adidas.pt", cor:"#000000", url:"https://www.adidas.pt/" },
-    { nome:"JD Sports", dominio:"jdsports.pt", cor:"#000000", url:"https://www.jdsports.pt/" },
-    { nome:"Puma", dominio:"pt.puma.com", cor:"#000000", url:"https://pt.puma.com/" },
-    { nome:"Foot Locker", dominio:"footlocker.pt", cor:"#000000", url:"https://www.footlocker.pt/" },
-    { nome:"New Balance", dominio:"newbalance.pt", cor:"#cf0a2c", url:"https://www.newbalance.pt/" },
-    { nome:"Sportsdirect", dominio:"sportsdirect.com", cor:"#003f87", url:"https://pt.sportsdirect.com/" },
-    { nome:"Tradeinn", dominio:"tradeinn.com", cor:"#3b7dc4", url:"https://www.tradeinn.com/" },
+    { nome: "Decathlon",    dominio: "decathlon.pt",    cor: "#0082c3", url: "https://www.decathlon.pt/" },
+    { nome: "Sport Zone",   dominio: "sportzone.pt",    cor: "#e2001a", url: "https://www.sportzone.pt/" },
+    { nome: "Nike",         dominio: "nike.com",        cor: "#000000", url: "https://www.nike.com/pt/" },
+    { nome: "Adidas",       dominio: "adidas.pt",       cor: "#000000", url: "https://www.adidas.pt/" },
+    { nome: "JD Sports",    dominio: "jdsports.pt",     cor: "#000000", url: "https://www.jdsports.pt/" },
+    { nome: "Puma",         dominio: "pt.puma.com",     cor: "#000000", url: "https://pt.puma.com/" },
+    { nome: "Foot Locker",  dominio: "footlocker.pt",   cor: "#000000", url: "https://www.footlocker.pt/" },
+    { nome: "New Balance",  dominio: "newbalance.pt",   cor: "#cf0a2c", url: "https://www.newbalance.pt/" },
+    { nome: "Sportsdirect", dominio: "sportsdirect.com",cor: "#003f87", url: "https://pt.sportsdirect.com/" },
+    { nome: "Tradeinn",     dominio: "tradeinn.com",    cor: "#3b7dc4", url: "https://www.tradeinn.com/" },
   ],
 };
 
 const PROMOCOES = [
-  { nome:"Worten", dominio:"worten.pt", cor:"#e30613", url:"https://www.worten.pt/promocoes" },
-  { nome:"Parfois", dominio:"parfois.com", cor:"#d4a05a", url:"https://www.parfois.com/pt/sale/" },
-  { nome:"Mango", dominio:"mango.com", cor:"#000000", url:"https://shop.mango.com/pt/pt/l/mulher/promocoes" },
-  { nome:"Nike", dominio:"nike.com", cor:"#000000", url:"https://www.nike.com/pt/" },
-  { nome:"Adidas", dominio:"adidas.pt", cor:"#000000", url:"https://www.adidas.pt/outlet" },
-  { nome:"Decathlon", dominio:"decathlon.pt", cor:"#0082c3", url:"https://www.decathlon.pt/browse/c0-todos-os-desportos/_/N-1mb0eha" },
-  { nome:"Darty", dominio:"mediamarkt.pt", cor:"#df0000", url:"https://www.mediamarkt.pt/pt/campaign/outlet" },
-  { nome:"Puma", dominio:"pt.puma.com", cor:"#000000", url:"https://pt.puma.com/pt/pt/sale" },
-  { nome:"Tommy Hilfiger", dominio:"pt.tommy.com", cor:"#002d72", url:"https://pt.tommy.com/" },
-  { nome:"Calvin Klein", dominio:"calvinklein.pt", cor:"#000000", url:"https://www.calvinklein.pt/sale" },
-  { nome:"Levi's", dominio:"levi.com", cor:"#d6001c", url:"https://www.levi.com/PT/pt_PT/clothing/c/levi_clothing_sale" },
-  { nome:"JD Sports", dominio:"jdsports.pt", cor:"#000000", url:"https://www.jdsports.pt/promocoes/" },
+  { nome: "Worten",         dominio: "worten.pt",      cor: "#e30613", url: "https://www.worten.pt/promocoes" },
+  { nome: "Parfois",        dominio: "parfois.com",    cor: "#d4a05a", url: "https://www.parfois.com/pt/sale/" },
+  { nome: "Mango",          dominio: "mango.com",      cor: "#000000", url: "https://shop.mango.com/pt/pt/l/mulher/promocoes" },
+  { nome: "Nike",           dominio: "nike.com",       cor: "#000000", url: "https://www.nike.com/pt/" },
+  { nome: "Adidas",         dominio: "adidas.pt",      cor: "#000000", url: "https://www.adidas.pt/outlet" },
+  { nome: "Decathlon",      dominio: "decathlon.pt",   cor: "#0082c3", url: "https://www.decathlon.pt/browse/c0-todos-os-desportos/_/N-1mb0eha" },
+  { nome: "MediaMarkt",     dominio: "mediamarkt.pt",  cor: "#df0000", url: "https://www.mediamarkt.pt/pt/campaign/outlet" },
+  { nome: "Puma",           dominio: "pt.puma.com",    cor: "#000000", url: "https://pt.puma.com/pt/pt/sale" },
+  { nome: "Tommy Hilfiger", dominio: "pt.tommy.com",   cor: "#002d72", url: "https://pt.tommy.com/" },
+  { nome: "Calvin Klein",   dominio: "calvinklein.pt", cor: "#000000", url: "https://www.calvinklein.pt/sale" },
+  { nome: "Levi's",         dominio: "levi.com",       cor: "#d6001c", url: "https://www.levi.com/PT/pt_PT/clothing/c/levi_clothing_sale" },
+  { nome: "JD Sports",      dominio: "jdsports.pt",    cor: "#000000", url: "https://www.jdsports.pt/promocoes/" },
 ];
 
-function LogoLoja({ loja, size }) {
-  const s = size || 64;
-  const cor = loja.cor || "#888";
+const CAT_CONFIG = {
+  moda:      { label: "Moda",      icon: Shirt,      grad: "from-violet-600 to-purple-500",   shadow: "rgba(124,58,237,0.35)",  count: LOJAS.moda.length },
+  eletronica:{ label: "Eletrónica",icon: Smartphone, grad: "from-blue-600 to-blue-500",       shadow: "rgba(37,99,235,0.35)",   count: LOJAS.eletronica.length },
+  desporto:  { label: "Desporto",  icon: Dumbbell,   grad: "from-emerald-600 to-teal-500",    shadow: "rgba(5,150,105,0.35)",   count: LOJAS.desporto.length },
+};
+
+function LogoLoja({ loja, size = 44 }) {
+  const s = size;
+  const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
   const [nivel, setNivel] = useState(0);
   const iniciais = loja.nome.slice(0, 2).toUpperCase();
   const fontes = [
-    "https://www.google.com/s2/favicons?domain=" + loja.dominio + "&sz=128",
-    "https://logo.clearbit.com/" + loja.dominio,
+    `https://www.google.com/s2/favicons?domain=${loja.dominio}&sz=128`,
+    `https://logo.clearbit.com/${loja.dominio}`,
   ];
   return (
-    <div className="rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-white"
-      style={{ width: s, height: s, padding: s*0.16, boxShadow:"0 2px 8px rgba(0,0,0,0.06)" }}>
+    <div
+      className="rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-white"
+      style={{ width: s, height: s, padding: s * 0.14, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}
+    >
       {nivel < fontes.length ? (
-        <img src={fontes[nivel]} alt={loja.nome}
-          onError={function(){ setNivel(function(n){ return n+1; }); }}
-          style={{ width:"100%", height:"100%", objectFit:"contain" }}/>
+        <img
+          src={fontes[nivel]} alt={loja.nome}
+          onError={() => setNivel(n => n + 1)}
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
       ) : (
-        <span style={{ fontSize: s*0.28, fontWeight:900, color:cor }}>{iniciais}</span>
+        <span style={{ fontSize: s * 0.28, fontWeight: 900, color: cor }}>{iniciais}</span>
       )}
     </div>
   );
 }
 
-function GrelhaLojas({ lista, modoPromo }) {
-  function abrir(url) { window.open(url, "_blank"); }
+function GrelhaLojas({ lista, promo }) {
   return (
     <div className="px-4 grid grid-cols-3 gap-2.5">
-      {lista.map(function(loja){
+      {lista.map(loja => {
+        const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
         return (
-          <button key={loja.nome}
-            onClick={function(){ abrir(loja.url); }}
-            className="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm active:scale-95 transition-all flex flex-col items-center gap-2 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1" style={{ background: loja.cor === "#000000" ? "#334155" : loja.cor }}/>
+          <button
+            key={loja.nome}
+            onClick={() => window.open(loja.url, "_blank")}
+            className="press card p-3 flex flex-col items-center gap-2 relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-[18px]" style={{ background: cor }} />
             <LogoLoja loja={loja} size={44} />
             <div className="text-center w-full">
               <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
-              <div className="flex items-center justify-center gap-0.5 mt-1">
-                {modoPromo ? (
-                  <>
-                    <Tag size={9} className="text-orange-500 flex-shrink-0" />
-                    <span className="text-[9px] font-black text-orange-500">Promoções</span>
-                  </>
+              <div className="mt-1 flex items-center justify-center gap-0.5">
+                {promo ? (
+                  <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
+                    <Tag size={8} /> Saldos
+                  </span>
                 ) : (
-                  <ExternalLink size={11} className="text-slate-400" />
+                  <ExternalLink size={9} className="text-slate-300" />
                 )}
               </div>
             </div>
@@ -128,83 +139,127 @@ function GrelhaLojas({ lista, modoPromo }) {
 
 export default function SecaoLojas() {
   const [topo, setTopo] = useState("lojas");
-  const [cat, setCat] = useState("moda");
-
-  const cores = {
-    moda: "linear-gradient(135deg,#7c3aed,#a855f7)",
-    eletronica: "linear-gradient(135deg,#1d4ed8,#3b82f6)",
-    desporto: "linear-gradient(135deg,#059669,#10b981)",
-  };
-  const titulos = {
-    moda: "Lojas de moda",
-    eletronica: "Eletrónica e tecnologia",
-    desporto: "Desporto e sapatilhas",
-  };
+  const [cat, setCat]   = useState("moda");
+  const cfg = CAT_CONFIG[cat];
 
   return (
     <div className="pb-28 pt-4">
 
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-3">
-        <button onClick={function(){ setTopo("lojas"); }}
-          className={"flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 " + (topo === "lojas" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
-          <Store size={14} /> Lojas
-        </button>
-        <button onClick={function(){ setTopo("promocoes"); }}
-          className={"flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 " + (topo === "promocoes" ? "bg-white shadow-sm text-orange-600" : "text-slate-500")}>
-          <Tag size={14} /> Promoções
-        </button>
+      {/* Tab principal */}
+      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
+        {[
+          { id: "lojas",    icon: Store, label: "Lojas" },
+          { id: "promocoes",icon: Tag,   label: "Promoções" },
+        ].map(t => (
+          <button
+            key={t.id}
+            onClick={() => setTopo(t.id)}
+            className={`press flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+              topo === t.id
+                ? topo === "promocoes" ? "bg-white shadow-sm text-orange-600" : "bg-white shadow-sm text-slate-900"
+                : "text-slate-400"
+            }`}
+          >
+            <t.icon size={13} /> {t.label}
+          </button>
+        ))}
       </div>
 
-      {topo === "lojas" ? (
-        <div>
-          <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
-            <button onClick={function(){ setCat("moda"); }}
-              className={"flex-1 py-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 " + (cat === "moda" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
-              <Shirt size={13} /> Moda
-            </button>
-            <button onClick={function(){ setCat("eletronica"); }}
-              className={"flex-1 py-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 " + (cat === "eletronica" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
-              <Smartphone size={13} /> Eletrónica
-            </button>
-            <button onClick={function(){ setCat("desporto"); }}
-              className={"flex-1 py-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 " + (cat === "desporto" ? "bg-white shadow-sm text-slate-900" : "text-slate-500")}>
-              <Dumbbell size={13} /> Desporto
-            </button>
+      {/* ── ABA LOJAS ── */}
+      {topo === "lojas" && (
+        <div className="anim-up">
+          {/* Tabs categoria */}
+          <div className="flex gap-2 px-4 mb-4 overflow-x-auto no-scrollbar">
+            {Object.entries(CAT_CONFIG).map(([id, c]) => {
+              const ativo = cat === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setCat(id)}
+                  className={`press flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all ${
+                    ativo ? "text-white shadow-md" : "bg-white text-slate-500 border border-slate-100"
+                  }`}
+                  style={ativo ? { background: `linear-gradient(135deg, ${c.grad.replace("from-", "").replace(" to-", ",")})` } : {}}
+                >
+                  <c.icon size={13} /> {c.label}
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${ativo ? "bg-white/25 text-white" : "bg-slate-100 text-slate-400"}`}>
+                    {c.count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="mx-4 mb-5 rounded-3xl overflow-hidden relative" style={{ background: cores[cat], boxShadow:"0 12px 30px -10px rgba(99,102,241,0.4)" }}>
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/10"/>
-            <div className="px-5 pt-5 pb-5 text-white relative z-10">
-              <p className="text-2xl font-black">{titulos[cat]}</p>
-              <p className="text-xs opacity-80 mt-1">Toca numa loja para abrir o site oficial</p>
+          {/* Hero */}
+          <div
+            className={`mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden bg-gradient-to-br ${cfg.grad}`}
+            style={{ boxShadow: `0 20px 50px -15px ${cfg.shadow}` }}
+          >
+            <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                <cfg.icon size={24} className="text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{cfg.count} lojas</p>
+                <p className="text-xl font-black text-white">{cfg.label}</p>
+                <p className="text-[11px] text-white/70 mt-0.5">Toca numa loja para abrir o site oficial</p>
+              </div>
             </div>
           </div>
 
-          <GrelhaLojas lista={LOJAS[cat]} modoPromo={false} />
+          <GrelhaLojas lista={LOJAS[cat]} promo={false} />
 
-          <div className="mx-4 mt-5">
-            <p className="text-[10px] text-slate-400 text-center">
-              As lojas abrem no site oficial, com as promoções sempre atualizadas.
-            </p>
-          </div>
+          <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
+            As lojas abrem no site oficial, com as promoções sempre atualizadas.
+          </p>
         </div>
-      ) : (
-        <div>
-          <div className="mx-4 mb-5 rounded-3xl overflow-hidden relative" style={{ background:"linear-gradient(135deg,#ea580c,#f97316)", boxShadow:"0 12px 30px -10px rgba(234,88,12,0.4)" }}>
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/10"/>
-            <div className="px-5 pt-5 pb-5 text-white relative z-10">
-              <p className="text-2xl font-black">Promoções diretas</p>
-              <p className="text-xs opacity-80 mt-1">Lojas com link direto para os saldos e outlet</p>
+      )}
+
+      {/* ── ABA PROMOÇÕES ── */}
+      {topo === "promocoes" && (
+        <div className="anim-up">
+          {/* Hero */}
+          <div
+            className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden"
+            style={{ background: "linear-gradient(135deg,#c2410c,#f97316)", boxShadow: "0 20px 50px -15px rgba(234,88,12,0.45)" }}
+          >
+            <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                <Sparkles size={22} className="text-white" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{PROMOCOES.length} marcas</p>
+                <p className="text-xl font-black text-white">Promoções e saldos</p>
+                <p className="text-[11px] text-white/70 mt-0.5">Link direto para outlet e saldos</p>
+              </div>
             </div>
           </div>
 
-          <GrelhaLojas lista={PROMOCOES} modoPromo={true} />
-
-          <div className="mx-4 mt-5">
-            <p className="text-[10px] text-slate-400 text-center">
-              Estas lojas abrem diretamente na página de promoções ou outlet.
-            </p>
+          {/* Lista horizontal de destaques */}
+          <div className="px-4 mb-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Destaques</p>
+            <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+              {PROMOCOES.slice(0, 5).map(loja => (
+                <button
+                  key={loja.nome}
+                  onClick={() => window.open(loja.url, "_blank")}
+                  className="press flex-shrink-0 card p-3.5 flex flex-col items-center gap-2 w-24"
+                >
+                  <LogoLoja loja={loja} size={40} />
+                  <p className="text-[10px] font-black text-slate-700 text-center leading-tight">{loja.nome}</p>
+                </button>
+              ))}
+            </div>
           </div>
+
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3">Todas as lojas</p>
+          <GrelhaLojas lista={PROMOCOES} promo={true} />
+
+          <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
+            Estas lojas abrem diretamente na página de promoções ou outlet.
+          </p>
         </div>
       )}
 
