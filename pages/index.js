@@ -5,180 +5,372 @@ import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import PainelAvisos from "../PainelAvisos";
-import { Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, CreditCard, Users, Search, ChevronRight, TrendingDown, Zap, ShoppingBag, BarChart2, Star, ArrowRight, Wallet, Tag, Battery, Package, Shirt, Smartphone, MapPin, CheckCircle, Clock, Plus, Minus, X, Camera, Trash2, RefreshCw, Trophy, Target, ChevronDown, ChevronUp, Navigation, Layers, Coffee, Droplet, BarChart, Upload, AlertCircle, Info, ArrowLeft, Receipt, ShieldCheck, AlertTriangle } from "lucide-react";
+import {
+  Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
+  Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
+  Zap, ArrowRight, BarChart, Target, Coffee, ShieldCheck,
+  Trophy, X, ArrowLeft, TrendingUp, TrendingDown, Sparkles,
+  Wallet, Star, CheckCircle
+} from "lucide-react";
 
-const SUPER_CORES = {Continente:"#e63329","Pingo Doce":"#009a3e",Lidl:"#0050aa",Aldi:"#1a3b6f","Intermarché":"#e2001a"};
-const NAV = [{id:"inicio",label:"Início",icon:Home},{id:"mercados",label:"Mercado",icon:ShoppingCart},{id:"lojas",label:"Lojas",icon:Store},{id:"mobilidade",label:"Mobilidade",icon:Fuel},{id:"poupanca",label:"Poupança",icon:PiggyBank}];
+/* ─── constants ─── */
+const SUPER_CORES = {
+  Continente: "#e63329", "Pingo Doce": "#009a3e",
+  Lidl: "#0050aa", Aldi: "#1a3b6f", "Intermarché": "#e2001a",
+};
+
+const NAV = [
+  { id: "inicio",     label: "Início",     icon: Home },
+  { id: "mercados",   label: "Mercado",    icon: ShoppingCart },
+  { id: "lojas",      label: "Lojas",      icon: Store },
+  { id: "mobilidade", label: "Mobilidade", icon: Fuel },
+  { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
+];
 
 const GARANTIAS = [
-  { id:1, produto:"Máquina de Lavar Bosch", data:"2024-07-15", anos:2 },
-  { id:2, produto:"Telemóvel Samsung A55", data:"2025-11-20", anos:2 },
-  { id:3, produto:"Aspirador Dyson", data:"2026-03-10", anos:2 },
+  { id: 1, produto: "Máquina de Lavar Bosch",  data: "2024-07-15", anos: 2 },
+  { id: 2, produto: "Telemóvel Samsung A55",   data: "2025-11-20", anos: 2 },
+  { id: 3, produto: "Aspirador Dyson",          data: "2026-03-10", anos: 2 },
 ];
-function garantiasAAcabar(dias){
+
+function garantiasAAcabar(dias) {
   const limite = dias || 60;
   const hoje = new Date();
-  return GARANTIAS.map(function(g){
+  return GARANTIAS.map(g => {
     const fim = new Date(g.data);
     fim.setFullYear(fim.getFullYear() + g.anos);
-    const restam = Math.ceil((fim - hoje) / (1000*60*60*24));
-    return { produto:g.produto, restam:restam };
-  }).filter(function(g){ return g.restam >= 0 && g.restam <= limite; });
+    const restam = Math.ceil((fim - hoje) / (1000 * 60 * 60 * 24));
+    return { produto: g.produto, restam };
+  }).filter(g => g.restam >= 0 && g.restam <= limite);
 }
 
-function Badge({children,color="blue"}){
-  const c={blue:"bg-blue-100 text-blue-700",green:"bg-green-100 text-green-700",orange:"bg-orange-100 text-orange-700",red:"bg-red-100 text-red-700",gray:"bg-slate-100 text-slate-500",yellow:"bg-yellow-100 text-yellow-700",purple:"bg-purple-100 text-purple-700"};
-  return <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${c[color]}`}>{children}</span>;
+/* ─── micro components ─── */
+function Chip({ children, color = "green" }) {
+  const map = {
+    green:  "bg-emerald-50  text-emerald-700 border-emerald-100",
+    blue:   "bg-blue-50    text-blue-700   border-blue-100",
+    amber:  "bg-amber-50   text-amber-700  border-amber-100",
+    red:    "bg-red-50     text-red-700    border-red-100",
+    slate:  "bg-slate-100  text-slate-500  border-slate-200",
+    purple: "bg-purple-50  text-purple-700 border-purple-100",
+  };
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${map[color]}`}>
+      {children}
+    </span>
+  );
 }
 
-function EcraInicio({setTab}){
+function SectionLabel({ children, icon: Icon, className = "" }) {
+  return (
+    <p className={`text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5 ${className}`}>
+      {Icon && <Icon size={12} className="text-slate-300" />}
+      {children}
+    </p>
+  );
+}
+
+/* ─── Ecrã Início ─── */
+function EcraInicio({ setTab }) {
   const total = 117;
-  const features = [
-    {icon:Receipt,title:"Os meus talões",desc:"Guarda compras e garantias num só sítio",grad:"from-blue-500 to-blue-600",destino:"taloes"},
-    {icon:Tag,title:"Folhetos da semana",desc:"Vê os folhetos de todos os supermercados",grad:"from-emerald-500 to-emerald-600",destino:"mercados"},
-    {icon:Fuel,title:"Combustíveis e EV",desc:"Preços reais e pontos de carregamento perto de ti",grad:"from-orange-500 to-amber-500",destino:"mobilidade"},
-    {icon:Store,title:"Lojas e promoções",desc:"Moda, eletrónica e desporto num só lugar",grad:"from-violet-500 to-purple-600",destino:"lojas"},
-  ];
-  
   const avisosGarantia = garantiasAAcabar(60);
   const [verAviso, setVerAviso] = useState(true);
 
-  return(
+  const FEATURES = [
+    {
+      icon: Receipt, label: "Os meus talões",
+      desc: "Compras e garantias num só sítio",
+      bg: "from-emerald-600 to-teal-500",
+      shadow: "rgba(5,150,105,0.3)", tab: "taloes",
+    },
+    {
+      icon: Tag, label: "Folhetos da semana",
+      desc: "Todos os supermercados comparados",
+      bg: "from-blue-600 to-blue-500",
+      shadow: "rgba(37,99,235,0.3)", tab: "mercados",
+    },
+    {
+      icon: Fuel, label: "Combustíveis e EV",
+      desc: "Preços reais e postos perto de ti",
+      bg: "from-orange-500 to-amber-400",
+      shadow: "rgba(245,158,11,0.3)", tab: "mobilidade",
+    },
+    {
+      icon: Store, label: "Lojas e promoções",
+      desc: "Moda, eletrónica e desporto",
+      bg: "from-violet-600 to-purple-500",
+      shadow: "rgba(124,58,237,0.3)", tab: "lojas",
+    },
+  ];
+
+  const SHORTCUTS = [
+    { icon: Tag,         label: "Folhetos",     color: "text-blue-600",    bg: "bg-blue-50",    tab: "mercados" },
+    { icon: Receipt,     label: "Talões",        color: "text-emerald-600", bg: "bg-emerald-50", tab: "taloes" },
+    { icon: Shirt,       label: "Moda",          color: "text-violet-600",  bg: "bg-violet-50",  tab: "lojas" },
+    { icon: Smartphone,  label: "Eletrónica",    color: "text-slate-700",   bg: "bg-slate-100",  tab: "lojas" },
+    { icon: Fuel,        label: "Combustíveis",  color: "text-orange-600",  bg: "bg-orange-50",  tab: "mobilidade" },
+    { icon: Battery,     label: "Postos EV",     color: "text-emerald-600", bg: "bg-emerald-50", tab: "mobilidade" },
+  ];
+
+  return (
     <div className="pb-28">
+
+      {/* ── Aviso garantia ── */}
       {verAviso && avisosGarantia.length > 0 && (
-        <div className="px-4 pt-3">
-          <button onClick={()=>setTab("taloes")} className="w-full text-left rounded-2xl p-4 flex items-center gap-3 active:scale-95 transition-all relative overflow-hidden" style={{background:"linear-gradient(135deg,#b45309,#d97706)",boxShadow:"0 8px 24px -8px rgba(217,119,6,0.5)"}}>
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0"><ShieldCheck size={20} className="text-white"/></div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black text-white/80 uppercase tracking-wider">Garantia a terminar</p>
-              <p className="text-sm font-black text-white leading-tight">{avisosGarantia[0].produto}</p>
-              <p className="text-[11px] text-white/80 mt-0.5">Acaba {avisosGarantia[0].restam === 0 ? "hoje" : "daqui a " + avisosGarantia[0].restam + " dias"}{avisosGarantia.length > 1 ? " · +" + (avisosGarantia.length-1) + " a acabar" : ""}</p>
+        <div className="px-4 pt-4 anim-up">
+          <button
+            onClick={() => setTab("taloes")}
+            className="press w-full text-left rounded-2xl p-4 flex items-center gap-3 relative overflow-hidden"
+            style={{ background: "linear-gradient(135deg,#92400e,#d97706)", boxShadow: "0 8px 24px -8px rgba(217,119,6,0.45)" }}
+          >
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full pointer-events-none" />
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ShieldCheck size={19} className="text-white" />
             </div>
-            <span onClick={(e)=>{e.stopPropagation();setVerAviso(false);}} className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0"><X size={15} className="text-white"/></span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[9px] font-black text-white/70 uppercase tracking-widest">Garantia a terminar</p>
+              <p className="text-sm font-black text-white leading-snug mt-0.5">{avisosGarantia[0].produto}</p>
+              <p className="text-[11px] text-white/75 mt-0.5">
+                {avisosGarantia[0].restam === 0 ? "Termina hoje" : `Termina em ${avisosGarantia[0].restam} dias`}
+                {avisosGarantia.length > 1 && ` · +${avisosGarantia.length - 1} a acabar`}
+              </p>
+            </div>
+            <button
+              onClick={e => { e.stopPropagation(); setVerAviso(false); }}
+              className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0"
+            >
+              <X size={14} className="text-white" />
+            </button>
           </button>
         </div>
       )}
-      <div className="px-4 pt-3 pb-4">
-        <div className="rounded-2xl overflow-hidden shadow-xl" style={{background:"linear-gradient(135deg,#1e3a8a,#2563eb,#0ea5e9)"}}>
-          <div className="p-5 text-white relative">
-            <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full"/>
-            <div className="absolute right-5 bottom-5 opacity-15"><PiggyBank size={80}/></div>
-            <p className="text-xs font-bold opacity-70 uppercase tracking-wider">O teu assistente de poupança</p>
-            <p className="text-3xl font-black mt-1">Poupe<span className="text-cyan-300">Já</span></p>
-            <p className="text-sm opacity-80 mt-1">Este mês já poupaste</p>
-            <p className="text-4xl font-black text-cyan-300">€ {total}</p>
-            <button onClick={()=>setTab("poupanca")} className="mt-3 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl inline-flex items-center gap-1.5">
-              Ver detalhes <ArrowRight size={12}/>
+
+      {/* ── Hero poupança ── */}
+      <div className="px-4 pt-4 pb-2 anim-up">
+        <div className="rounded-3xl overflow-hidden relative" style={{ background: "linear-gradient(135deg,#064e3b 0%,#059669 60%,#34d399 100%)", boxShadow: "0 20px 50px -15px rgba(5,150,105,0.45)" }}>
+          {/* deco circles */}
+          <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full pointer-events-none" />
+          <div className="absolute right-8 bottom-12 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+
+          <div className="px-6 pt-6 pb-2 relative z-10">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+                <PiggyBank size={15} className="text-white" />
+              </div>
+              <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">Poupança de junho</span>
+            </div>
+            <p className="text-[13px] font-semibold text-white/80">Este mês já poupaste</p>
+            <p className="text-5xl font-black text-white mt-1 leading-none">
+              € {total}
+              <span className="text-2xl text-emerald-300 ml-1">.00</span>
+            </p>
+            <button
+              onClick={() => setTab("poupanca")}
+              className="press mt-4 inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20 transition-colors"
+            >
+              Ver detalhes <ArrowRight size={13} />
             </button>
           </div>
-          <div className="bg-white/10 px-5 py-3 flex gap-4">
-            {[{label:"Supermercado",value:"€47",icon:ShoppingCart},{label:"Combustível",value:"€23",icon:Fuel},{label:"Lojas",value:"€47",icon:Store}].map((s,i)=>(
-              <div key={i} className="flex-1 text-center">
-                <div className="flex justify-center mb-1"><s.icon size={14} className="text-white/60"/></div>
-                <p className="text-sm font-black text-white">{s.value}</p>
-                <p className="text-[9px] text-white/60 mt-0.5">{s.label}</p>
+
+          {/* stats strip */}
+          <div className="mt-4 px-6 pb-5 pt-3 grid grid-cols-3 gap-0 border-t border-white/10">
+            {[
+              { label: "Supermercado", value: "€ 47", icon: ShoppingCart },
+              { label: "Combustível",  value: "€ 23", icon: Fuel },
+              { label: "Lojas",        value: "€ 47", icon: Store },
+            ].map((s, i) => (
+              <div key={i} className="flex flex-col items-center text-center gap-0.5">
+                <s.icon size={13} className="text-white/50 mb-0.5" />
+                <p className="text-base font-black text-white">{s.value}</p>
+                <p className="text-[9px] text-white/55 leading-none">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="px-4 mb-4">
-        <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Star size={14} className="text-amber-500"/>O que podes fazer aqui</p>
-        <div className="flex flex-col gap-2.5">
-          {features.map((f,i)=>(
-            <button key={i} onClick={()=>f.destino&&setTab(f.destino)} className={`bg-gradient-to-r ${f.grad} rounded-2xl p-4 text-white text-left shadow-md active:scale-95 transition-all flex items-center gap-4`}>
-              <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"><f.icon size={22}/></div>
-              <div className="flex-1"><p className="text-sm font-black leading-tight">{f.title}</p><p className="text-[11px] opacity-75 mt-0.5">{f.desc}</p></div>
-              <ChevronRight size={18} className="opacity-60 flex-shrink-0"/>
+      {/* ── Features grid ── */}
+      <div className="px-4 mt-4 anim-up anim-up-1">
+        <SectionLabel icon={Sparkles}>O que podes fazer</SectionLabel>
+        <div className="grid grid-cols-2 gap-2.5">
+          {FEATURES.map((f, i) => (
+            <button
+              key={i}
+              onClick={() => f.tab && setTab(f.tab)}
+              className={`press bg-gradient-to-br ${f.bg} rounded-2xl p-4 text-left text-white shadow-lg`}
+              style={{ boxShadow: `0 10px 25px -8px ${f.shadow}` }}
+            >
+              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <f.icon size={18} />
+              </div>
+              <p className="text-sm font-black leading-snug">{f.label}</p>
+              <p className="text-[10px] text-white/70 mt-0.5 leading-relaxed">{f.desc}</p>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="px-4 mb-4">
-        <p className="text-sm font-black text-slate-700 mb-3 flex items-center gap-1.5"><Zap size={14} className="text-blue-500"/>Atalhos</p>
+      {/* ── Atalhos rápidos ── */}
+      <div className="px-4 mt-5 anim-up anim-up-2">
+        <SectionLabel icon={Zap}>Atalhos rápidos</SectionLabel>
         <div className="grid grid-cols-3 gap-2.5">
-          {[{icon:Tag,label:"Folhetos",color:"text-blue-600 bg-blue-50",tab:"mercados"},{icon:Receipt,label:"Talões",color:"text-indigo-600 bg-indigo-50",tab:"taloes"},{icon:Shirt,label:"Moda",color:"text-violet-600 bg-violet-50",tab:"lojas"},{icon:Smartphone,label:"Eletrónica",color:"text-slate-700 bg-slate-100",tab:"lojas"},{icon:Fuel,label:"Combustíveis",color:"text-orange-600 bg-orange-50",tab:"mobilidade"},{icon:Battery,label:"Postos EV",color:"text-emerald-600 bg-emerald-50",tab:"mobilidade"}].map((it,i)=>(
-            <button key={i} onClick={()=>setTab(it.tab)} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col items-center gap-2 active:scale-95 transition-all">
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${it.color}`}><it.icon size={22}/></div>
-              <span className="text-[10px] font-black text-slate-700">{it.label}</span>
+          {SHORTCUTS.map((it, i) => (
+            <button
+              key={i}
+              onClick={() => setTab(it.tab)}
+              className="press card flex flex-col items-center gap-2 py-4 px-2"
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${it.bg}`}>
+                <it.icon size={20} className={it.color} />
+              </div>
+              <span className="text-[10px] font-black text-slate-700 text-center leading-tight">{it.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="mx-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100 flex gap-3">
-        <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0"><Tag size={18} className="text-amber-600"/></div>
-        <div>
-          <p className="text-xs font-black text-amber-800">Dica do dia</p>
-          <p className="text-sm font-bold text-slate-800 mt-0.5">Vê os folhetos antes de ir às compras</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Tens todos num só sítio, sempre a postos</p>
-          <button onClick={()=>setTab("mercados")} className="mt-2 text-xs text-orange-600 font-black flex items-center gap-1">Ver folhetos <ChevronRight size={10}/></button>
-        </div>
+      {/* ── Dica do dia ── */}
+      <div className="px-4 mt-5 mb-2 anim-up anim-up-3">
+        <button
+          onClick={() => setTab("mercados")}
+          className="press w-full text-left rounded-2xl p-4 flex gap-3 items-start"
+          style={{ background: "linear-gradient(135deg,#fffbeb,#fef3c7)", border: "1.5px solid #fde68a" }}
+        >
+          <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Star size={17} className="text-amber-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Dica do dia</p>
+            <p className="text-sm font-black text-slate-800 mt-0.5">Vê os folhetos antes de ir às compras</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Compara 5 supermercados num segundo e poupa mais.</p>
+            <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-amber-600">
+              Ver folhetos <ChevronRight size={11} />
+            </span>
+          </div>
+        </button>
       </div>
+
     </div>
   );
 }
 
-function SecaoPoupanca(){
+/* ─── Ecrã Poupança ─── */
+function SecaoPoupanca() {
   const total = 117;
-  const historico = [{mes:"Mar",valor:98},{mes:"Abr",valor:112},{mes:"Mai",valor:117},{mes:"Jun",valor:total}];
-  const maxH = Math.max(...historico.map(h=>h.valor));
-  
-  return(
-    <div className="pb-28">
-      <div className="mx-4 mt-0 mb-4 rounded-2xl overflow-hidden shadow-xl" style={{background:"linear-gradient(135deg,#1e3a8a,#2563eb,#3b82f6)"}}>
-        <div className="p-5 text-white relative">
-          <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-white/10 rounded-full"/>
-          <p className="text-sm font-bold opacity-80 flex items-center gap-1.5"><PiggyBank size={13}/>O que já poupaste este mês</p>
-          <p className="text-5xl font-black mt-1">€ {total}</p>
-          <p className="text-sm opacity-70 mt-1 flex items-center gap-1">Continua assim e ainda poupas mais</p>
-          <div className="flex gap-2 mt-4 relative z-10">
-            <button className="bg-white/20 text-white text-xs font-bold px-3 py-2 rounded-xl border border-white/30 flex items-center gap-1"><BarChart size={11}/>Relatório</button>
-            <button className="bg-white text-blue-700 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1"><Target size={11}/>Objetivos</button>
+  const historico = [
+    { mes: "Mar", valor: 98 },
+    { mes: "Abr", valor: 112 },
+    { mes: "Mai", valor: 89 },
+    { mes: "Jun", valor: total },
+  ];
+  const maxH = Math.max(...historico.map(h => h.valor));
+
+  const categorias = [
+    { label: "Supermercado", valor: 47,  icon: ShoppingCart, cor: "bg-blue-500",    pct: 40 },
+    { label: "Combustível",  valor: 23,  icon: Fuel,          cor: "bg-orange-400",  pct: 20 },
+    { label: "Eletricidade", valor: 12,  icon: Battery,       cor: "bg-yellow-400",  pct: 10 },
+    { label: "Refeições",    valor: 35,  icon: Coffee,        cor: "bg-amber-500",   pct: 30 },
+  ];
+
+  return (
+    <div className="pb-28 pt-4">
+
+      {/* Hero */}
+      <div className="px-4 mb-4 anim-up">
+        <div className="rounded-3xl overflow-hidden relative" style={{ background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#60a5fa 100%)", boxShadow: "0 20px 50px -15px rgba(37,99,235,0.4)" }}>
+          <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
+
+          <div className="px-6 pt-6 pb-2 relative z-10">
+            <p className="text-[11px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
+              <PiggyBank size={12} /> Total poupado este mês
+            </p>
+            <p className="text-5xl font-black text-white mt-1">
+              € {total}<span className="text-2xl text-blue-300">.00</span>
+            </p>
+            <p className="text-xs text-white/60 mt-1 flex items-center gap-1">
+              <TrendingUp size={11} /> +€15 face ao mês anterior
+            </p>
+            <div className="flex gap-2 mt-4">
+              <button className="press inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-black px-3 py-2 rounded-xl border border-white/20">
+                <BarChart size={11} /> Relatório
+              </button>
+              <button className="press inline-flex items-center gap-1.5 bg-white text-blue-700 text-xs font-black px-3 py-2 rounded-xl">
+                <Target size={11} /> Objetivos
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="bg-white/10 px-5 pb-4 pt-2">
-          <p className="text-[10px] text-white/60 mb-2 font-black uppercase tracking-wide">Histórico</p>
-          <div className="flex items-end gap-2 h-10">
-            {historico.map((h,i)=>(
-              <div key={h.mes} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full rounded-t" style={{height:`${(h.valor/maxH)*40}px`,backgroundColor:i===historico.length-1?"#fff":"rgba(255,255,255,0.4)"}}/>
-                <p className="text-[8px] text-white/60">{h.mes}</p>
-              </div>
-            ))}
+
+          {/* mini bar chart */}
+          <div className="px-6 py-4 mt-2 border-t border-white/10">
+            <p className="text-[9px] font-black text-white/50 uppercase tracking-widest mb-3">Histórico</p>
+            <div className="flex items-end gap-2" style={{ height: 44 }}>
+              {historico.map((h, i) => (
+                <div key={h.mes} className="flex-1 flex flex-col items-center gap-1">
+                  <div
+                    className="w-full rounded-t-md transition-all"
+                    style={{
+                      height: `${(h.valor / maxH) * 36}px`,
+                      background: i === historico.length - 1 ? "#fff" : "rgba(255,255,255,0.3)",
+                    }}
+                  />
+                  <p className="text-[8px] text-white/50">{h.mes}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="px-4 mb-2"><p className="text-sm font-black text-slate-700 flex items-center gap-1.5"><Zap size={13} className="text-blue-500"/>Onde tens poupado</p></div>
-      <div className="px-4 flex flex-col gap-2.5 mb-4">
-        {[{categoria:"Supermercado",economia:47,icon:ShoppingCart,cor:"text-blue-600"},{categoria:"Combustível",economia:23,icon:Fuel,cor:"text-orange-600"},{categoria:"Eletricidade",economia:12,icon:Battery,cor:"text-yellow-600"},{categoria:"Refeições",economia:35,icon:Coffee,cor:"text-amber-600"}].map((p,i)=>(
-          <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100"><p.icon size={20} className={p.cor}/></div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between"><p className="font-black text-slate-800 text-sm">{p.categoria}</p><span className="text-lg font-black text-emerald-600">€ {p.economia}</span></div>
+      {/* Categorias */}
+      <div className="px-4 mb-4 anim-up anim-up-1">
+        <SectionLabel icon={Zap}>Onde poupaste</SectionLabel>
+        <div className="flex flex-col gap-2.5">
+          {categorias.map((c, i) => (
+            <div key={i} className="card p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 border border-slate-100">
+                  <c.icon size={18} className="text-slate-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-sm font-black text-slate-800">{c.label}</p>
+                    <p className="text-sm font-black text-emerald-600">€ {c.valor}</p>
+                  </div>
+                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className={`h-full ${c.cor} rounded-full`} style={{ width: `${c.pct}%` }} />
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mt-2 flex gap-1">
-              <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-blue-400 to-blue-500" style={{width:"100%"}}/></div>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <div className="mx-4 bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-4">
-        <div className="flex items-center gap-2 mb-2"><Trophy size={17} className="text-amber-600"/><p className="text-sm font-black text-amber-800">Desafio de Junho</p><Badge color="yellow">Em curso</Badge></div>
-        <p className="text-xs text-amber-700 mb-3">Aproveita os folhetos da semana e chega aos €100 poupados.</p>
-        <div className="flex justify-between text-xs text-amber-700 mb-1 font-bold"><span>€ 38</span><span>Meta: € 100</span></div>
-        <div className="h-3 bg-amber-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-amber-400 to-amber-500" style={{width:"38%"}}/></div>
+      {/* Desafio */}
+      <div className="px-4 mb-2 anim-up anim-up-2">
+        <div className="rounded-2xl p-4" style={{ background: "linear-gradient(135deg,#fffbeb,#fef3c7)", border: "1.5px solid #fde68a" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Trophy size={16} className="text-amber-500" />
+            <p className="text-sm font-black text-amber-800">Desafio de Junho</p>
+            <Chip color="amber">Em curso</Chip>
+          </div>
+          <p className="text-[12px] text-amber-700 mb-3">Usa os folhetos da semana e chega aos € 100 poupados.</p>
+          <div className="flex justify-between text-xs font-black text-amber-700 mb-1.5">
+            <span>€ 38 poupados</span>
+            <span>Meta: € 100</span>
+          </div>
+          <div className="h-2.5 bg-amber-100 rounded-full overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: "38%", background: "linear-gradient(90deg,#f59e0b,#fbbf24)" }} />
+          </div>
+          <p className="text-[10px] text-amber-600 mt-2">Faltam € 62 para atingires o objetivo!</p>
+        </div>
       </div>
+
     </div>
   );
 }
 
+/* ─── Wrapper Mercados ─── */
 function SecaoMercados() {
   return (
     <div className="pb-28 pt-4">
@@ -187,77 +379,128 @@ function SecaoMercados() {
   );
 }
 
-export default function PoupeJa(){
-  const [tab,setTab]=useState("inicio");
-  const [verAvisos,setVerAvisos]=useState(false);
-  const [verDefinicoes,setVerDefinicoes]=useState(false);
-  const titulos={
-    inicio:{t:"Olá! Bem-vindo de volta",s:"Vamos poupar nas compras de hoje?"},
-    mercados:{t:"Supermercados",s:"Os folhetos da semana num só sítio"},
-    lojas:{t:"Lojas",s:"Moda e eletrónica com desconto"},
-    mobilidade:{t:"Mobilidade",s:"Combustíveis e pontos de carregamento"},
-    poupanca:{t:"A tua poupança",s:"Vê quanto tens poupado nas compras"},
-    taloes:{t:"Os meus talões",s:"As tuas compras e garantias num só sítio"},
+/* ─── Root App ─── */
+export default function PoupeJa() {
+  const [tab, setTab]             = useState("inicio");
+  const [verAvisos, setVerAvisos] = useState(false);
+  const [verDefs, setVerDefs]     = useState(false);
+
+  const titulos = {
+    inicio:     { t: "Olá! Bem-vindo de volta",            s: "Vamos poupar nas compras de hoje?" },
+    mercados:   { t: "Supermercados",                       s: "Os folhetos da semana num só sítio" },
+    lojas:      { t: "Lojas",                               s: "Moda, eletrónica e desporto com desconto" },
+    mobilidade: { t: "Mobilidade",                          s: "Combustíveis e pontos de carregamento" },
+    poupanca:   { t: "A tua poupança",                      s: "Quanto já poupaste este mês" },
+    taloes:     { t: "Os meus talões",                      s: "Compras e garantias num só sítio" },
   };
-  const info=titulos[tab];
-  
-  return(
+
+  const info = titulos[tab] || titulos.inicio;
+  const avisos = garantiasAAcabar(60);
+
+  return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        *{font-family:'Inter',system-ui,sans-serif;box-sizing:border-box}
-        .no-scrollbar::-webkit-scrollbar{display:none}
-        .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-        body{margin:0;background:#f1f5f9}
-      `}</style>
-      <div className="min-h-screen bg-slate-100 max-w-md mx-auto relative">
-        {verDefinicoes ? (
-          <SecaoDefinicoes onVoltar={()=>setVerDefinicoes(false)} />
+      <div className="min-h-screen bg-slate-50 max-w-md mx-auto relative select-none">
+
+        {verDefs ? (
+          <SecaoDefinicoes onVoltar={() => setVerDefs(false)} />
         ) : (
-        <>
-        <div className="bg-white border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 shadow-sm">
-          <div className="flex items-center justify-between mb-0.5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm"><PiggyBank size={18} color="white"/></div>
-              <span className="text-xl font-black tracking-tight text-slate-900">Poupe<span className="text-blue-600">Já</span></span>
-              <span className="text-[9px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-md">PT</span>
-            </div>
-            <div className="flex gap-1.5">
-              <button onClick={()=>setVerAvisos(true)} className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 relative"><Bell size={16} className="text-slate-500"/>{garantiasAAcabar(60).length>0 && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"/>}</button>
-              <button onClick={()=>{setVerDefinicoes(true);setTab("inicio");}} className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100"><Users size={16} className="text-blue-600"/></button>
-            </div>
-          </div>
-          <h1 className="text-base font-black text-slate-900 leading-tight">{info.t}</h1>
-          <p className="text-[10px] text-slate-400 font-medium">{info.s}</p>
-        </div>
+          <>
+            {/* ── Header ── */}
+            <header className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30" style={{ boxShadow: "0 1px 12px rgba(15,23,42,0.06)" }}>
+              <div className="flex items-center justify-between mb-1">
+                {/* Logo */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}>
+                    <PiggyBank size={17} color="white" />
+                  </div>
+                  <span className="text-xl font-black tracking-tight text-slate-900">
+                    Poupe<span className="text-emerald-600">Já</span>
+                  </span>
+                  <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-md leading-none">PT</span>
+                </div>
 
-        <main>
-          {tab==="inicio"&&<EcraInicio setTab={setTab}/>}
-          {tab==="mercados"&&<SecaoMercados/>}
-          {tab==="lojas"&&<SecaoLojas/>}
-          {tab==="mobilidade"&&<SecaoMobilidade/>}
-          {tab==="poupanca"&&<SecaoPoupanca/>}
-          {tab==="taloes"&&<div className="pt-4"><button onClick={()=>setTab("inicio")} className="mx-4 mb-2 flex items-center gap-1 text-sm font-bold text-slate-500"><ArrowLeft size={16}/> Voltar</button><SecaoTaloes/></div>}
-        </main>
+                {/* Actions */}
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setVerAvisos(true)}
+                    className="press w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center relative"
+                  >
+                    <Bell size={16} className="text-slate-500" />
+                    {avisos.length > 0 && (
+                      <span className="pulse-dot absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => { setVerDefs(true); setTab("inicio"); }}
+                    className="press w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center"
+                  >
+                    <Users size={16} className="text-emerald-600" />
+                  </button>
+                </div>
+              </div>
 
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-100 px-1 py-1.5 z-40 shadow-lg">
-          <div className="flex items-center justify-around">
-            {NAV.map(it=>(
-              <button key={it.id} onClick={()=>setTab(it.id)} className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${tab===it.id?"bg-blue-50":""}`}>
-                <it.icon size={20} className={tab===it.id?"text-blue-600":"text-slate-400"}/>
-                <span className={`text-[9px] font-black ${tab===it.id?"text-blue-600":"text-slate-400"}`}>{it.label}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
-        </>
+              <div className="mt-0.5">
+                <h1 className="text-[15px] font-black text-slate-900 leading-tight">{info.t}</h1>
+                <p className="text-[11px] text-slate-400 font-medium">{info.s}</p>
+              </div>
+            </header>
+
+            {/* ── Content ── */}
+            <main>
+              {tab === "inicio"     && <EcraInicio setTab={setTab} />}
+              {tab === "mercados"   && <SecaoMercados />}
+              {tab === "lojas"      && <SecaoLojas />}
+              {tab === "mobilidade" && <SecaoMobilidade />}
+              {tab === "poupanca"   && <SecaoPoupanca />}
+              {tab === "taloes"     && (
+                <div className="pt-4">
+                  <button onClick={() => setTab("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                    <ArrowLeft size={15} /> Voltar
+                  </button>
+                  <SecaoTaloes />
+                </div>
+              )}
+            </main>
+
+            {/* ── Bottom Nav ── */}
+            <nav
+              className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-100 z-40"
+              style={{ boxShadow: "0 -4px 24px rgba(15,23,42,0.07)", paddingBottom: "env(safe-area-inset-bottom)" }}
+            >
+              <div className="flex items-center justify-around px-2 py-2">
+                {NAV.map(it => {
+                  const active = tab === it.id;
+                  return (
+                    <button
+                      key={it.id}
+                      onClick={() => setTab(it.id)}
+                      className={`press flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all ${active ? "bg-emerald-50" : ""}`}
+                    >
+                      <it.icon
+                        size={20}
+                        className={active ? "text-emerald-600" : "text-slate-400"}
+                        strokeWidth={active ? 2.5 : 1.8}
+                      />
+                      <span className={`text-[9px] font-black ${active ? "text-emerald-600" : "text-slate-400"}`}>
+                        {it.label}
+                      </span>
+                      {active && (
+                        <span className="w-1 h-1 rounded-full bg-emerald-500 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </nav>
+          </>
         )}
 
+        {/* ── Painel Avisos overlay ── */}
         {verAvisos && (
           <PainelAvisos
-            avisos={{ garantias: garantiasAAcabar(60) }}
-            onFechar={()=>setVerAvisos(false)}
-            onAbrirTaloes={()=>{ setVerAvisos(false); setTab("taloes"); }}
+            avisos={{ garantias: avisos }}
+            onFechar={() => setVerAvisos(false)}
+            onAbrirTaloes={() => { setVerAvisos(false); setTab("taloes"); }}
           />
         )}
       </div>
