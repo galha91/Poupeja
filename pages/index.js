@@ -380,35 +380,63 @@ function SecaoMercados() {
 }
 
 /* ─── Root App ─── */
+const NAV_IDS = NAV.map(n => n.id);
+
+const TITULOS = {
+  inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
+  mercados:   { t: "Supermercados",                     s: "Os folhetos da semana num só sítio" },
+  lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
+  mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
+  poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
+  taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
+};
+
 export default function PoupeJa() {
-  const [tab, setTab]             = useState("inicio");
+  const [tab, setTabRaw]       = useState("inicio");
+  const [dir, setDir]          = useState("right");
+  const [bounce, setBounce]    = useState(null);
   const [verAvisos, setVerAvisos] = useState(false);
   const [verDefs, setVerDefs]     = useState(false);
 
-  const titulos = {
-    inicio:     { t: "Olá! Bem-vindo de volta",            s: "Vamos poupar nas compras de hoje?" },
-    mercados:   { t: "Supermercados",                       s: "Os folhetos da semana num só sítio" },
-    lojas:      { t: "Lojas",                               s: "Moda, eletrónica e desporto com desconto" },
-    mobilidade: { t: "Mobilidade",                          s: "Combustíveis e pontos de carregamento" },
-    poupanca:   { t: "A tua poupança",                      s: "Quanto já poupaste este mês" },
-    taloes:     { t: "Os meus talões",                      s: "Compras e garantias num só sítio" },
-  };
+  /* Calcula direção da animação com base na posição das tabs */
+  function go(newTab) {
+    if (newTab === tab) return;
+    const pi = NAV_IDS.indexOf(tab);
+    const ni = NAV_IDS.indexOf(newTab);
+    let d;
+    if (ni === -1)       d = "up";    // sub-página (taloes, defs)
+    else if (pi === -1)  d = "fade";  // volta de sub-página
+    else if (ni > pi)    d = "right"; // avança para a direita
+    else                 d = "left";  // recua para a esquerda
+    setDir(d);
+    setTabRaw(newTab);
+  }
 
-  const info = titulos[tab] || titulos.inicio;
+  /* Nav click com feedback de bounce no ícone */
+  function navClick(id) {
+    if (id === tab) return;
+    setBounce(id);
+    setTimeout(() => setBounce(null), 400);
+    go(id);
+  }
+
+  const info  = TITULOS[tab] || TITULOS.inicio;
   const avisos = garantiasAAcabar(60);
 
   return (
     <>
-      <div className="min-h-screen bg-slate-50 max-w-md mx-auto relative select-none">
+      <div className="min-h-screen bg-slate-50 max-w-md mx-auto relative select-none overflow-x-hidden">
 
         {verDefs ? (
-          <SecaoDefinicoes onVoltar={() => setVerDefs(false)} />
+          <SecaoDefinicoes onVoltar={() => { setDir("fade"); setTabRaw("inicio"); setVerDefs(false); }} />
         ) : (
           <>
             {/* ── Header ── */}
-            <header className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30" style={{ boxShadow: "0 1px 12px rgba(15,23,42,0.06)" }}>
+            <header
+              className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30"
+              style={{ boxShadow: "0 1px 12px rgba(15,23,42,0.06)" }}
+            >
               <div className="flex items-center justify-between mb-1">
-                {/* Logo */}
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}>
                     <PiggyBank size={17} color="white" />
@@ -419,7 +447,6 @@ export default function PoupeJa() {
                   <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-md leading-none">PT</span>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => setVerAvisos(true)}
@@ -431,7 +458,7 @@ export default function PoupeJa() {
                     )}
                   </button>
                   <button
-                    onClick={() => { setVerDefs(true); setTab("inicio"); }}
+                    onClick={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }}
                     className="press w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center"
                   >
                     <Users size={16} className="text-emerald-600" />
@@ -439,27 +466,33 @@ export default function PoupeJa() {
                 </div>
               </div>
 
-              <div className="mt-0.5">
+              {/* Título anima a cada mudança de tab */}
+              <div key={tab} className="mt-0.5 header-title">
                 <h1 className="text-[15px] font-black text-slate-900 leading-tight">{info.t}</h1>
                 <p className="text-[11px] text-slate-400 font-medium">{info.s}</p>
               </div>
             </header>
 
-            {/* ── Content ── */}
-            <main>
-              {tab === "inicio"     && <EcraInicio setTab={setTab} />}
-              {tab === "mercados"   && <SecaoMercados />}
-              {tab === "lojas"      && <SecaoLojas />}
-              {tab === "mobilidade" && <SecaoMobilidade />}
-              {tab === "poupanca"   && <SecaoPoupanca />}
-              {tab === "taloes"     && (
-                <div className="pt-4">
-                  <button onClick={() => setTab("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
-                    <ArrowLeft size={15} /> Voltar
-                  </button>
-                  <SecaoTaloes />
-                </div>
-              )}
+            {/* ── Conteúdo com transição direcional ── */}
+            <main style={{ overflow: "hidden" }}>
+              <div key={tab} data-dir={dir}>
+                {tab === "inicio"     && <EcraInicio setTab={go} />}
+                {tab === "mercados"   && <SecaoMercados />}
+                {tab === "lojas"      && <SecaoLojas />}
+                {tab === "mobilidade" && <SecaoMobilidade />}
+                {tab === "poupanca"   && <SecaoPoupanca />}
+                {tab === "taloes"     && (
+                  <div className="pt-4">
+                    <button
+                      onClick={() => go("inicio")}
+                      className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400"
+                    >
+                      <ArrowLeft size={15} /> Voltar
+                    </button>
+                    <SecaoTaloes />
+                  </div>
+                )}
+              </div>
             </main>
 
             {/* ── Bottom Nav ── */}
@@ -473,20 +506,22 @@ export default function PoupeJa() {
                   return (
                     <button
                       key={it.id}
-                      onClick={() => setTab(it.id)}
-                      className={`press flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all ${active ? "bg-emerald-50" : ""}`}
+                      onClick={() => navClick(it.id)}
+                      className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors duration-150 ${active ? "bg-emerald-50" : ""}`}
                     >
                       <it.icon
                         size={20}
-                        className={active ? "text-emerald-600" : "text-slate-400"}
+                        className={`transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
                         strokeWidth={active ? 2.5 : 1.8}
                       />
-                      <span className={`text-[9px] font-black ${active ? "text-emerald-600" : "text-slate-400"}`}>
+                      <span className={`text-[9px] font-black transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"}`}>
                         {it.label}
                       </span>
-                      {active && (
-                        <span className="w-1 h-1 rounded-full bg-emerald-500 mt-0.5" />
-                      )}
+                      {/* active indicator dot */}
+                      <span
+                        className="w-1 h-1 rounded-full bg-emerald-500 transition-all duration-200"
+                        style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(0)" }}
+                      />
                     </button>
                   );
                 })}
@@ -495,12 +530,11 @@ export default function PoupeJa() {
           </>
         )}
 
-        {/* ── Painel Avisos overlay ── */}
         {verAvisos && (
           <PainelAvisos
             avisos={{ garantias: avisos }}
             onFechar={() => setVerAvisos(false)}
-            onAbrirTaloes={() => { setVerAvisos(false); setTab("taloes"); }}
+            onAbrirTaloes={() => { setVerAvisos(false); go("taloes"); }}
           />
         )}
       </div>
