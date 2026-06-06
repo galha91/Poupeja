@@ -377,7 +377,7 @@ export default function PoupeJa() {
             </header>
 
             {/* Conteúdo */}
-            <main style={{ overflow: "hidden" }}>
+            <main style={{ overflowX: "hidden" }}>
               <div key={tab} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} />}
                 {tab === "mercados"   && <SecaoMercados />}
