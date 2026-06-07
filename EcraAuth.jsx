@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import {
   PiggyBank, Receipt, Tag, Fuel, BarChart2, ShieldCheck,
   ArrowRight, ArrowLeft, Eye, EyeOff, Check, AlertCircle,
@@ -113,12 +114,13 @@ function Landing({ onRegister, onLogin }) {
 
 /* ── Ecrã Registo ── */
 function Registo({ onVoltar, onAuth }) {
-  const [nome, setNome]         = useState("");
-  const [email, setEmail]       = useState("");
-  const [pass, setPass]         = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [erro, setErro]         = useState("");
-  const [loading, setLoading]   = useState(false);
+  const [nome, setNome]           = useState("");
+  const [email, setEmail]         = useState("");
+  const [pass, setPass]           = useState("");
+  const [showPass, setShowPass]   = useState(false);
+  const [aceitou, setAceitou]     = useState(false);
+  const [erro, setErro]           = useState("");
+  const [loading, setLoading]     = useState(false);
 
   function submeter(e) {
     e.preventDefault();
@@ -126,6 +128,7 @@ function Registo({ onVoltar, onAuth }) {
     if (!nome.trim())           return setErro("Escreve o teu nome.");
     if (!email.includes("@"))   return setErro("Escreve um email válido.");
     if (pass.length < 6)        return setErro("A password precisa de ter pelo menos 6 caracteres.");
+    if (!aceitou)               return setErro("Tens de aceitar a Política de Privacidade para continuar.");
 
     setLoading(true);
     const users = lerUtilizadores();
@@ -201,6 +204,26 @@ function Registo({ onVoltar, onAuth }) {
             Os teus dados ficam guardados de forma segura neste dispositivo.
           </p>
         </div>
+
+        {/* Checkbox privacidade */}
+        <label className="flex items-start gap-3 cursor-pointer">
+          <button
+            type="button"
+            onClick={() => setAceitou(a => !a)}
+            className={`w-5 h-5 rounded-md border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-all ${
+              aceitou ? "bg-emerald-500 border-emerald-500" : "border-slate-300 bg-white"
+            }`}
+          >
+            {aceitou && <Check size={12} className="text-white" strokeWidth={3} />}
+          </button>
+          <p className="text-[12px] text-slate-500 leading-relaxed">
+            Li e aceito a{" "}
+            <Link href="/privacidade" target="_blank" className="text-emerald-600 font-bold underline underline-offset-2">
+              Política de Privacidade
+            </Link>
+            . Compreendo que os meus dados ficam guardados apenas neste dispositivo.
+          </p>
+        </label>
 
         <button
           type="submit"
