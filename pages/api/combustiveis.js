@@ -1,64 +1,96 @@
+// Preços DGEG reais — endpoint PesquisarPostos (API actual do portal DGEG)
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
 
-  const tentar = async (url) => {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
+  const BASE    = "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/PesquisarPostos";
+  const FUELS   = "3400,3205,3405,3201,2105,2101,1120";
+  const DISTRITOS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+  const HEADERS = {
+    "Accept": "application/json",
+    "User-Agent": "Mozilla/5.0 (compatible; PoupeJa/1.0)",
+    "Referer": "https://precoscombustiveis.dgeg.gov.pt/",
+    "Origin": "https://precoscombustiveis.dgeg.gov.pt",
+  };
+
+  const TIPO_MAP = {
+    "gasolina simples 95":  "Gasolina 95",
+    "gasolina especial 95": "Gasolina 95",
+    "gasolina 95":          "Gasolina 95",
+    "gasolina 98":          "Gasolina 98",
+    "gasolina especial 98": "Gasolina 98",
+    "gasoleo simples":      "Gasóleo",
+    "gasoleo especial":     "Gasóleo",
+    "gasóleo simples":      "Gasóleo",
+    "gasóleo especial":     "Gasóleo",
+    "gasóleo":              "Gasóleo",
+    "gpl auto":             "GPL Auto",
+    "gpl":                  "GPL Auto",
+  };
+
+  function mapTipo(raw) {
+    if (!raw) return null;
+    const n = raw.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+    for (const [key, label] of Object.entries(TIPO_MAP)) {
+      const kn = key.normalize("NFD").replace(/[̀-ͯ]/g, "");
+      if (n.includes(kn) || kn.includes(n)) return label;
+    }
+    return null;
+  }
+
+  async function fetchDistrito(id) {
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 6000);
     try {
-      const r = await fetch(url, {
-        signal: ctrl.signal,
-        headers: { "Accept": "application/json", "User-Agent": "PoupeJa/1.0" },
-      });
+      const r = await fetch(
+        `${BASE}?idsTiposComb=${FUELS}&idDistrito=${id}&qtdPorPagina=99999&pagina=1`,
+        { signal: ctrl.signal, headers: HEADERS }
+      );
       clearTimeout(timer);
       const ct = r.headers.get("content-type") || "";
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      if (!ct.includes("json")) throw new Error(`Resposta não JSON (${ct})`);
-      return await r.json();
+      if (!r.ok || !ct.includes("json")) return [];
+      const json = await r.json();
+      return json?.resultado || [];
+    } catch {
+      return [];
     } finally {
       clearTimeout(timer);
     }
-  };
+  }
 
   try {
-    // Tentativa 1 — endpoint individual de postos, página pequena
-    let data = await tentar(
-      "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/GetListaPrecosPostos?qtd=500&pagina=1"
-    ).catch(async (e1) => {
-      // Tentativa 2 — endpoint alternativo
-      return await tentar(
-        "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/GetPesquisa?qtd=500&pagina=1"
-      ).catch(() => { throw e1; });
-    });
+    // Busca todos os 18 distritos em paralelo
+    const lotes = await Promise.all(DISTRITOS.map(fetchDistrito));
+    const postos = lotes.flat();
 
-    const postos = data?.resultado || data?.Resultado || data?.data || [];
-    if (!postos.length) throw new Error("Lista vazia");
+    if (!postos.length) throw new Error("Sem resultados da DGEG");
 
     const mapa = {};
-    postos.forEach(p => {
-      const marca = p.Marca || p.NomeMarca || p.marca || "";
-      const tipo  = p.TipoCombustivel || p.Combustivel || p.tipoCombustivel || "";
-      const raw   = p.Preco ?? p.PrecoVenda ?? p.preco ?? "0";
-      const preco = parseFloat(raw.toString().replace(",", "."));
-      if (!preco || !tipo || !marca) return;
-      const chave = `${marca}__${tipo}`;
-      if (!mapa[chave]) mapa[chave] = { marca, tipo, precos: [], totalPostos: 0 };
-      mapa[chave].precos.push(preco);
-      mapa[chave].totalPostos++;
+    postos.forEach(posto => {
+      const marca = posto.Marca || "";
+      if (!marca) return;
+      (posto.Combustiveis || []).forEach(c => {
+        const tipo  = mapTipo(c.TipoCombustivel);
+        if (!tipo) return;
+        const preco = parseFloat((c.Preco || "0").toString().replace(",", "."));
+        if (!preco) return;
+        const chave = `${marca}__${tipo}`;
+        if (!mapa[chave]) mapa[chave] = { marca, tipo, precos: [], totalPostos: 0 };
+        mapa[chave].precos.push(preco);
+        mapa[chave].totalPostos++;
+      });
     });
 
-    const tiposPrincipais = ["Gasolina 95", "Gasóleo", "Gasolina 98", "GPL Auto", "Gasóleo Colorido"];
     const resultado = Object.values(mapa)
-      .filter(item => tiposPrincipais.some(t => item.tipo.includes(t) || t.includes(item.tipo)))
       .map(item => ({
-        posto: item.marca,
-        tipo:  item.tipo,
-        preco: parseFloat(Math.min(...item.precos).toFixed(3)),
-        precoMedio: (item.precos.reduce((a, b) => a + b, 0) / item.precos.length).toFixed(3),
+        posto:       item.marca,
+        tipo:        item.tipo,
+        preco:       parseFloat(Math.min(...item.precos).toFixed(3)),
+        precoMedio:  parseFloat((item.precos.reduce((a, b) => a + b, 0) / item.precos.length).toFixed(3)),
         totalPostos: item.totalPostos,
       }))
       .sort((a, b) => a.preco - b.preco);
 
-    if (!resultado.length) throw new Error("Sem tipos principais após filtragem");
+    if (!resultado.length) throw new Error("Sem tipos reconhecidos após filtragem");
 
     return res.status(200).json({
       success: true,
