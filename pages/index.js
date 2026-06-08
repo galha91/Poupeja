@@ -6,7 +6,6 @@ import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { lerAuth, guardarAuth, apagarAuth } from "../EcraAuth";
-import BannerInstalar from "../BannerInstalar";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
@@ -438,7 +437,6 @@ export default function PoupeJa() {
           />
         )}
 
-        <BannerInstalar />
       </div>
     </>
   );
