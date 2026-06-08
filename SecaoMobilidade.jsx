@@ -170,8 +170,10 @@ function SubCombustiveis() {
       const dB = b.distancia !== null ? parseFloat(b.distancia) : 9999;
       return dA - dB;
     });
-  const maisProximo = filtrados[0];
-  const maisBarato  = [...filtrados].sort((a, b) => a.preco - b.preco)[0];
+  const maisBarato  = filtrados[0];
+  const maisProximo = [...filtrados].sort((a, b) =>
+    parseFloat(a.distancia ?? 9999) - parseFloat(b.distancia ?? 9999)
+  )[0];
   const melhor      = maisProximo;
   const min         = maisBarato?.preco || 0;
   const max         = filtrados.reduce((m, e) => Math.max(m, e.preco), 0);
