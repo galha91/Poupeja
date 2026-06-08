@@ -14,6 +14,20 @@ const BRAND_LOGOS = {
       <text x="22" y="41" textAnchor="middle" fill="white" fontWeight="900" fontSize="7" fontFamily="Arial,sans-serif" letterSpacing="0.5">prio</text>
     </svg>
   ),
+  plenergy: (s) => (
+    <svg viewBox="0 0 44 44" width={s} height={s}>
+      <rect width="44" height="44" rx="10" fill="#ff6600"/>
+      <text x="22" y="21" textAnchor="middle" fill="white" fontWeight="900" fontSize="13" fontFamily="Arial,sans-serif">PL</text>
+      <text x="22" y="33" textAnchor="middle" fill="white" fontWeight="700" fontSize="7.5" fontFamily="Arial,sans-serif" letterSpacing="0.5">ENERGY</text>
+    </svg>
+  ),
+  eclerc: (s) => (
+    <svg viewBox="0 0 44 44" width={s} height={s}>
+      <rect width="44" height="44" rx="10" fill="#003189"/>
+      <text x="22" y="25" textAnchor="middle" fill="white" fontWeight="900" fontSize="16" fontFamily="Arial,sans-serif">E.</text>
+      <text x="22" y="35" textAnchor="middle" fill="white" fontWeight="700" fontSize="6.5" fontFamily="Arial,sans-serif" letterSpacing="0.3">Leclerc</text>
+    </svg>
+  ),
 };
 
 /* ─── brand logo domains for Clearbit / Google favicons ─── */
@@ -37,6 +51,7 @@ const POSTO_CORES = {
   intermarche: "#e2001a", cepsa: "#0077c8", moeve: "#00a39b", prio: "#6dc82a",
   esso: "#e60000", shell: "#f7a600", auchan: "#e2001a", petroprix: "#003087",
   total: "#e30613", totalenergies: "#e30613", "prio energy": "#6dc82a",
+  plenergy: "#ff6600", eclerc: "#003189",
 };
 
 function resolverMarca(nome) {
@@ -46,9 +61,13 @@ function resolverMarca(nome) {
     "intermarché": "intermarche", "intermarche": "intermarche",
     "prio energy": "prio", "totalenergies": "total",
     "moeve": "moeve", "cepsa": "cepsa",
+    "e.leclerc": "eclerc", "e. leclerc": "eclerc", "leclerc": "eclerc",
+    "plenergy": "plenergy", "pl energy": "plenergy",
   };
-  const logoKey = ALIASES[key] || (BRAND_DOMAINS[key] ? key : null)
-    || Object.keys(BRAND_DOMAINS).find(k => key.startsWith(k) || k.startsWith(key.split(" ")[0]))
+  const ALL_KEYS = new Set([...Object.keys(BRAND_LOGOS), ...Object.keys(BRAND_DOMAINS)]);
+  const logoKey = ALIASES[key]
+    || (ALL_KEYS.has(key) ? key : null)
+    || [...ALL_KEYS].find(k => key.startsWith(k) || k.startsWith(key.split(" ")[0]))
     || null;
   const cor = POSTO_CORES[logoKey || key] || "#64748b";
   return { cor, logoKey };
