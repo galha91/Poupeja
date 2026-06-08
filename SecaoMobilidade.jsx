@@ -106,38 +106,64 @@ function ErroCard({ onRetry, mensagem }) {
 
 /* ═══ Combustíveis ═══ */
 function SubCombustiveis() {
-  const [dados, setDados]           = useState([]);
+  const [estacoes, setEstacoes]     = useState([]);
+  const [tipos, setTipos]           = useState([]);
   const [loading, setLoading]       = useState(true);
   const [erro, setErro]             = useState(null);
   const [fonte, setFonte]           = useState("");
   const [atualizado, setAtualizado] = useState(null);
   const [tipo, setTipo]             = useState("Gasolina 95");
+  const [loc, setLoc]               = useState(null);
+  const [locNome, setLocNome]       = useState(null);
+  const [locPedido, setLocPedido]   = useState(false);
 
-  function carregar() {
+  function obterLocalizacao() {
+    if (!navigator.geolocation) return;
+    setLocPedido(true);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setLoc({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setLocNome("A tua localização");
+      },
+      () => { setLocNome("Localização negada"); }
+    );
+  }
+
+  function carregar(latArg, lonArg) {
+    const useLat = latArg ?? loc?.lat;
+    const useLon = lonArg ?? loc?.lon;
     setLoading(true); setErro(null);
-    fetch("/api/combustiveis")
+    const url = useLat && useLon
+      ? `/api/combustiveis?lat=${useLat}&lon=${useLon}&raio=30`
+      : "/api/combustiveis";
+    fetch(url)
       .then(r => r.json())
       .then(json => {
-        if (!json.success || !json.dados?.length) {
-          setErro(json.erro || "Sem dados");
-          setLoading(false);
-          return;
-        }
-        setDados(json.dados);
+        if (!json.success) { setErro(json.erro || "Sem dados"); setLoading(false); return; }
+        const items = json.estacoes || json.dados || [];
+        setEstacoes(items);
+        setTipos(json.tipos || [...new Set(items.map(e => e.tipoLabel || e.tipo).filter(Boolean))]);
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);
         setLoading(false);
       })
       .catch(e => { setErro(e.message); setLoading(false); });
   }
-  useEffect(() => { carregar(); }, []);
 
-  const tipos = [...new Set(dados.map(c => c.tipo).filter(Boolean))];
-  const tipoAtivo = tipos.includes(tipo) ? tipo : (tipos[0] || "Gasolina 95");
-  const filtrados = dados.filter(c => c.tipo === tipoAtivo).sort((a, b) => a.preco - b.preco);
-  const melhor = filtrados[0];
-  const min = filtrados[0]?.preco || 0;
-  const max = filtrados[filtrados.length - 1]?.preco || 0;
+  useEffect(() => { obterLocalizacao(); }, []);
+  useEffect(() => {
+    if (loc) carregar(loc.lat, loc.lon);
+  }, [loc]);
+  useEffect(() => {
+    if (!loc && !locPedido) carregar();
+  }, []);
+
+  const tiposDisponiveis = tipos.length ? tipos : [...new Set(estacoes.map(e => e.tipoLabel || e.tipo).filter(Boolean))];
+  const tipoAtivo   = tiposDisponiveis.includes(tipo) ? tipo : (tiposDisponiveis[0] || "Gasolina 95");
+  const filtrados   = estacoes.filter(e => (e.tipoLabel || e.tipo) === tipoAtivo).sort((a, b) => a.preco - b.preco);
+  const melhor      = filtrados[0];
+  const min         = melhor?.preco || 0;
+  const max         = filtrados[filtrados.length - 1]?.preco || 0;
 
   return (
     <div>
@@ -151,9 +177,11 @@ function SubCombustiveis() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Fuel size={16} className="text-white/70" />
-              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Melhor preço · DGEG</span>
+              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">
+                {locNome ? `Raio 30 km · DGEG` : "Melhor preço · DGEG"}
+              </span>
             </div>
-            <button onClick={carregar} className="press w-8 h-8 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center">
+            <button onClick={() => carregar()} className="press w-8 h-8 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center">
               <RefreshCw size={14} className={`text-white ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
@@ -166,68 +194,86 @@ function SubCombustiveis() {
                 <span className="text-base font-semibold text-white/60 ml-1">/litro</span>
               </p>
               <p className="text-[12px] text-white/60 mt-0.5 flex items-center gap-1">
-                <TrendingDown size={12} /> {melhor.posto}
+                <TrendingDown size={12} />
+                {melhor.nome || melhor.posto}
+                {melhor.distancia && <span className="ml-1">· {melhor.distancia} km</span>}
               </p>
             </>
           ) : (
             <p className="text-sm text-white/60 py-3">Sem dados disponíveis</p>
           )}
+
+          {locNome && (
+            <p className="text-[11px] text-white/50 mt-1 flex items-center gap-1">
+              <MapPin size={11} /> {locNome}
+            </p>
+          )}
         </div>
 
         {/* Tipo selector */}
-        {!loading && tipos.length > 0 && (
+        {!loading && tiposDisponiveis.length > 0 && (
           <div className="px-4 pb-4 flex gap-2 overflow-x-auto no-scrollbar">
-            {tipos.map(t => (
-              <button
-                key={t}
-                onClick={() => setTipo(t)}
+            {tiposDisponiveis.map(t => (
+              <button key={t} onClick={() => setTipo(t)}
                 className={`press flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   tipoAtivo === t ? "bg-white text-orange-600" : "bg-white/15 text-white/80 border border-white/20"
                 }`}
-              >
-                {t}
-              </button>
+              >{t}</button>
             ))}
           </div>
         )}
       </div>
 
+      {/* Botão localização */}
+      {!loc && !loading && (
+        <div className="mx-4 mb-4">
+          <button
+            onClick={obterLocalizacao}
+            className="press w-full py-3 rounded-2xl bg-orange-50 text-orange-700 text-sm font-black border border-orange-100 flex items-center justify-center gap-2"
+          >
+            <MapPin size={15} /> Usar a minha localização (raio 30 km)
+          </button>
+        </div>
+      )}
+
       {/* Lista */}
-      {erro ? <ErroCard onRetry={carregar} mensagem={erro} /> : (
+      {erro ? <ErroCard onRetry={() => carregar()} mensagem={erro} /> : (
         <div className="px-4 flex flex-col gap-2.5">
           {filtrados.map((c, i) => {
             const isBest = i === 0;
-            const cor = POSTO_CORES[c.posto] || "#64748b";
-            const pct = Math.max(12, 100 - ((c.preco - min) / (max - min || 1)) * 82);
+            const nome   = c.nome || c.posto || "";
+            const marca  = c.marca || c.posto || "";
+            const cor    = POSTO_CORES[marca] || "#64748b";
+            const pct    = Math.max(12, 100 - ((c.preco - min) / (max - min || 1)) * 82);
             return (
-              <div
-                key={`${c.posto}-${i}`}
+              <div key={c.id || `${nome}-${i}`}
                 className={`card p-4 ${isBest ? "border-orange-200 ring-1 ring-orange-100" : ""}`}
               >
                 <div className="flex items-center gap-3">
-                  <LogoPosto posto={c.posto} size={44} />
+                  <LogoPosto posto={marca} size={44} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="font-black text-slate-800 text-sm">{c.posto}</p>
+                      <p className="font-black text-slate-800 text-sm truncate max-w-[160px]">{nome}</p>
                       {isBest && (
-                        <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full">
+                        <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full flex-shrink-0">
                           Mais barato
                         </span>
                       )}
-                      {c.totalPostos && (
-                        <span className="text-[9px] text-slate-400">{c.totalPostos} postos</span>
-                      )}
                     </div>
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: isBest ? "#f97316" : cor + "99" }}
-                      />
+                    {c.municipio && <p className="text-[10px] text-slate-400 mb-1">{c.municipio}</p>}
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all"
+                        style={{ width: `${pct}%`, backgroundColor: isBest ? "#f97316" : cor + "99" }} />
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-xl font-black text-slate-800">{c.preco.toFixed(3)}</p>
                     <p className="text-[9px] text-slate-400">€ / litro</p>
+                    {c.distancia && (
+                      <p className="text-[10px] text-slate-400 flex items-center gap-0.5 justify-end mt-0.5">
+                        <MapPin size={9} /> {c.distancia} km
+                      </p>
+                    )}
                     {!isBest && (
                       <p className="text-[10px] text-red-400 font-bold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
                     )}
