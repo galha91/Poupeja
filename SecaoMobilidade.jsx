@@ -116,6 +116,7 @@ function SubCombustiveis() {
   const [loc, setLoc]               = useState(null);
   const [locNome, setLocNome]       = useState(null);
   const [locPedido, setLocPedido]   = useState(false);
+  const [raio, setRaio]             = useState(30);
 
   function obterLocalizacao() {
     if (!navigator.geolocation) return;
@@ -129,12 +130,13 @@ function SubCombustiveis() {
     );
   }
 
-  function carregar(latArg, lonArg) {
-    const useLat = latArg ?? loc?.lat;
-    const useLon = lonArg ?? loc?.lon;
+  function carregar(latArg, lonArg, raioArg) {
+    const useLat  = latArg  ?? loc?.lat;
+    const useLon  = lonArg  ?? loc?.lon;
+    const useRaio = raioArg ?? raio;
     setLoading(true); setErro(null);
     const url = useLat && useLon
-      ? `/api/combustiveis?lat=${useLat}&lon=${useLon}&raio=30`
+      ? `/api/combustiveis?lat=${useLat}&lon=${useLon}&raio=${useRaio}`
       : "/api/combustiveis";
     fetch(url)
       .then(r => r.json())
@@ -152,7 +154,7 @@ function SubCombustiveis() {
 
   useEffect(() => { obterLocalizacao(); }, []);
   useEffect(() => {
-    if (loc) carregar(loc.lat, loc.lon);
+    if (loc) carregar(loc.lat, loc.lon, raio);
   }, [loc]);
   useEffect(() => {
     if (!loc && !locPedido) carregar();
@@ -224,14 +226,42 @@ function SubCombustiveis() {
         )}
       </div>
 
-      {/* Botão localização */}
+      {/* Controlos */}
+      {loc && (
+        <div className="mx-4 mb-4 card p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-black text-slate-700 flex items-center gap-1.5">
+              <MapPin size={13} className="text-orange-500" /> Raio de pesquisa
+            </p>
+            <span className="text-lg font-black text-orange-500">{raio} km</span>
+          </div>
+          <input
+            type="range" min="5" max="100" step="5" value={raio}
+            onChange={e => setRaio(parseInt(e.target.value))}
+            onMouseUp={() => carregar(loc.lat, loc.lon, raio)}
+            onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
+            className="w-full mb-3" style={{ accentColor: "#f97316" }}
+          />
+          <div className="flex justify-between text-[9px] text-slate-400 mb-3">
+            <span>5 km</span><span>50 km</span><span>100 km</span>
+          </div>
+          <button
+            onClick={obterLocalizacao}
+            className="press w-full py-2.5 rounded-xl bg-orange-50 text-orange-700 text-xs font-bold border border-orange-100 flex items-center justify-center gap-1.5"
+          >
+            <MapPin size={13} /> Atualizar localização
+          </button>
+        </div>
+      )}
+
+      {/* Botão localização (se ainda não autorizou) */}
       {!loc && !loading && (
         <div className="mx-4 mb-4">
           <button
             onClick={obterLocalizacao}
             className="press w-full py-3 rounded-2xl bg-orange-50 text-orange-700 text-sm font-black border border-orange-100 flex items-center justify-center gap-2"
           >
-            <MapPin size={15} /> Usar a minha localização (raio 30 km)
+            <MapPin size={15} /> Usar a minha localização
           </button>
         </div>
       )}
