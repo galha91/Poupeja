@@ -5,6 +5,17 @@ import {
   Check, Info, X, TrendingDown,
 } from "lucide-react";
 
+/* ─── inline SVG logos para marcas sem logo no Clearbit ─── */
+const BRAND_LOGOS = {
+  prio: (s) => (
+    <svg viewBox="0 0 44 44" width={s} height={s}>
+      <rect width="44" height="44" rx="10" fill="#00a04b"/>
+      <path d="M22 7 C20 12 13 19 13 25 C13 29.97 17.03 34 22 34 C26.97 34 31 29.97 31 25 C31 19 24 12 22 7Z" fill="white"/>
+      <text x="22" y="41" textAnchor="middle" fill="white" fontWeight="900" fontSize="7" fontFamily="Arial,sans-serif" letterSpacing="0.5">prio</text>
+    </svg>
+  ),
+};
+
 /* ─── brand logo domains for Clearbit / Google favicons ─── */
 const BRAND_DOMAINS = {
   galp:        "galp.com",
@@ -85,6 +96,13 @@ function LogoPosto({ posto, size = 44 }) {
   const { cor, logoKey } = resolverMarca(posto);
   const [nivel, setNivel] = useState(0);
   const iniciais = posto.slice(0, 2).toUpperCase();
+  if (logoKey && BRAND_LOGOS[logoKey]) {
+    return (
+      <div className="rounded-xl overflow-hidden flex-shrink-0" style={{ width: s, height: s }}>
+        {BRAND_LOGOS[logoKey](s)}
+      </div>
+    );
+  }
   const dominio = logoKey && BRAND_DOMAINS[logoKey];
   const fontes = dominio ? [
     `https://logo.clearbit.com/${dominio}?size=80`,
