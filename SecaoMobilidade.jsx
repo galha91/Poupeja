@@ -188,9 +188,13 @@ function SubCombustiveis() {
       return dA - dB;
     });
   const maisBarato  = filtrados[0];
-  const maisProximo = [...filtrados].sort((a, b) =>
-    parseFloat(a.distancia ?? 9999) - parseFloat(b.distancia ?? 9999)
-  )[0];
+  const maisProximo = filtrados.reduce((best, e) => {
+    const dE = parseFloat(e.distancia ?? 9999);
+    const dB = parseFloat(best?.distancia ?? 9999);
+    return dE < dB ? e : best;
+  }, null);
+  const keyMaisProximo = maisProximo ? `${maisProximo.nome}__${maisProximo.distancia}` : null;
+  const keyMaisBarato  = maisBarato  ? `${maisBarato.nome}__${maisBarato.preco}` : null;
   const melhor      = maisProximo;
   const min         = maisBarato?.preco || 0;
   const max         = filtrados.reduce((m, e) => Math.max(m, e.preco), 0);
@@ -312,10 +316,10 @@ function SubCombustiveis() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       <p className="font-black text-slate-800 text-sm truncate max-w-[160px]">{nome}</p>
-                      {c.id === maisProximo?.id && (
+                      {`${c.nome}__${c.distancia}` === keyMaisProximo && (
                         <span className="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
-                      {c.id === maisBarato?.id && (
+                      {`${c.nome}__${c.preco}` === keyMaisBarato && (
                         <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
