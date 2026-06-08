@@ -121,8 +121,9 @@ function Registo({ onVoltar, onAuth }) {
   const [aceitou, setAceitou]     = useState(false);
   const [erro, setErro]           = useState("");
   const [loading, setLoading]     = useState(false);
+  const [emailEnviado, setEmailEnviado] = useState(false);
 
-  function submeter(e) {
+  async function submeter(e) {
     e.preventDefault();
     setErro("");
     if (!nome.trim())           return setErro("Escreve o teu nome.");
@@ -137,16 +138,20 @@ function Registo({ onVoltar, onAuth }) {
       return setErro("Já existe uma conta com este email. Entra em vez disso.");
     }
 
-    const user = {
-      nome: nome.trim(),
-      email: email.toLowerCase().trim(),
-      password: pass,
-      criado: new Date().toISOString(),
-    };
-    guardarUtilizadores([...users, user]);
-    setTimeout(() => {
-      onAuth({ nome: user.nome, email: user.email, criado: user.criado });
-    }, 300);
+    try {
+      const res = await fetch("/api/enviar-confirmacao", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: nome.trim(), email: email.toLowerCase().trim(), password: pass }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro || "Erro desconhecido.");
+      setEmailEnviado(true);
+    } catch (err) {
+      setErro(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -165,6 +170,27 @@ function Registo({ onVoltar, onAuth }) {
         <p className="text-white/60 text-[12px] mt-0.5">Grátis, sem cartão, sem compromisso.</p>
       </div>
 
+      {emailEnviado ? (
+        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-4">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2"
+               style={{ background: "#f0fdf4", border: "2px solid #bbf7d0" }}>
+            <ShieldCheck size={36} className="text-emerald-500" />
+          </div>
+          <h2 className="text-2xl font-black text-slate-800">Confirma o teu email</h2>
+          <p className="text-[14px] text-slate-500 leading-relaxed">
+            Enviámos um email para <strong className="text-slate-700">{email}</strong>.{" "}
+            Clica no link para ativar a tua conta.
+          </p>
+          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-3.5 w-full text-left">
+            <p className="text-[12px] text-amber-700 leading-relaxed">
+              Não vês o email? Verifica a pasta de spam ou lixo.
+            </p>
+          </div>
+          <button type="button" onClick={onVoltar} className="text-sm text-slate-400 font-semibold mt-2">
+            Voltar ao início
+          </button>
+        </div>
+      ) : (
       <form onSubmit={submeter} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
         <Campo
           label="O teu nome"
@@ -231,9 +257,10 @@ function Registo({ onVoltar, onAuth }) {
           className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
           style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 8px 20px -8px rgba(5,150,105,0.45)", opacity: loading ? 0.7 : 1 }}
         >
-          {loading ? "A criar conta..." : <>Criar conta <ArrowRight size={17} /></>}
+          {loading ? "A enviar email..." : <>Criar conta <ArrowRight size={17} /></>}
         </button>
       </form>
+      )}
     </div>
   );
 }
