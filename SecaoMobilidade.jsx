@@ -91,12 +91,13 @@ function LoadingDots() {
   );
 }
 
-function ErroCard({ onRetry }) {
+function ErroCard({ onRetry, mensagem }) {
   return (
-    <div className="mx-4 card p-5 text-center border-red-100">
-      <AlertCircle size={28} className="text-red-300 mx-auto mb-2" />
-      <p className="text-sm font-black text-red-600 mb-3">Erro ao carregar dados</p>
-      <button onClick={onRetry} className="press text-xs font-black text-white bg-red-500 px-5 py-2.5 rounded-xl">
+    <div className="mx-4 card p-5 text-center">
+      <AlertCircle size={28} className="text-slate-300 mx-auto mb-2" />
+      <p className="text-sm font-black text-slate-500 mb-1">API temporariamente indisponível</p>
+      {mensagem && <p className="text-[10px] text-slate-400 mb-3 font-mono">{mensagem}</p>}
+      <button onClick={onRetry} className="press text-xs font-black text-white bg-slate-700 px-5 py-2.5 rounded-xl">
         Tentar de novo
       </button>
     </div>
@@ -107,23 +108,27 @@ function ErroCard({ onRetry }) {
 function SubCombustiveis() {
   const [dados, setDados]           = useState([]);
   const [loading, setLoading]       = useState(true);
-  const [erro, setErro]             = useState(false);
+  const [erro, setErro]             = useState(null);
   const [fonte, setFonte]           = useState("");
   const [atualizado, setAtualizado] = useState(null);
   const [tipo, setTipo]             = useState("Gasolina 95");
 
   function carregar() {
-    setLoading(true); setErro(false);
+    setLoading(true); setErro(null);
     fetch("/api/combustiveis")
       .then(r => r.json())
       .then(json => {
-        if (!json.success || !json.dados?.length) { setErro(true); setLoading(false); return; }
+        if (!json.success || !json.dados?.length) {
+          setErro(json.erro || "Sem dados");
+          setLoading(false);
+          return;
+        }
         setDados(json.dados);
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);
         setLoading(false);
       })
-      .catch(() => { setErro(true); setLoading(false); });
+      .catch(e => { setErro(e.message); setLoading(false); });
   }
   useEffect(() => { carregar(); }, []);
 
@@ -188,7 +193,7 @@ function SubCombustiveis() {
       </div>
 
       {/* Lista */}
-      {erro ? <ErroCard onRetry={carregar} /> : (
+      {erro ? <ErroCard onRetry={carregar} mensagem={erro} /> : (
         <div className="px-4 flex flex-col gap-2.5">
           {filtrados.map((c, i) => {
             const isBest = i === 0;

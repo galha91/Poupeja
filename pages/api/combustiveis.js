@@ -1,27 +1,45 @@
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
 
+  const tentar = async (url) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    try {
+      const r = await fetch(url, {
+        signal: ctrl.signal,
+        headers: { "Accept": "application/json", "User-Agent": "PoupeJa/1.0" },
+      });
+      clearTimeout(timer);
+      const ct = r.headers.get("content-type") || "";
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!ct.includes("json")) throw new Error(`Resposta não JSON (${ct})`);
+      return await r.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+
   try {
-    const response = await fetch(
-      "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/GetListaPrecosPostos?qtd=9999&pagina=1",
-      { headers: { "Accept": "application/json", "User-Agent": "PoupeJa/1.0" } }
-    );
+    // Tentativa 1 — endpoint individual de postos, página pequena
+    let data = await tentar(
+      "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/GetListaPrecosPostos?qtd=500&pagina=1"
+    ).catch(async (e1) => {
+      // Tentativa 2 — endpoint alternativo
+      return await tentar(
+        "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/GetPesquisa?qtd=500&pagina=1"
+      ).catch(() => { throw e1; });
+    });
 
-    if (!response.ok) throw new Error(`DGEG ${response.status}`);
-
-    const data = await response.json();
-    const postos = data?.resultado || [];
-
-    if (!postos.length) throw new Error("DGEG devolveu lista vazia");
+    const postos = data?.resultado || data?.Resultado || data?.data || [];
+    if (!postos.length) throw new Error("Lista vazia");
 
     const mapa = {};
-    postos.forEach(posto => {
-      const marca = posto.Marca || posto.NomeMarca || "";
-      const tipo  = posto.TipoCombustivel || posto.Combustivel || "";
-      const raw   = posto.Preco || posto.PrecoVenda || "0";
+    postos.forEach(p => {
+      const marca = p.Marca || p.NomeMarca || p.marca || "";
+      const tipo  = p.TipoCombustivel || p.Combustivel || p.tipoCombustivel || "";
+      const raw   = p.Preco ?? p.PrecoVenda ?? p.preco ?? "0";
       const preco = parseFloat(raw.toString().replace(",", "."));
       if (!preco || !tipo || !marca) return;
-
       const chave = `${marca}__${tipo}`;
       if (!mapa[chave]) mapa[chave] = { marca, tipo, precos: [], totalPostos: 0 };
       mapa[chave].precos.push(preco);
@@ -34,15 +52,15 @@ export default async function handler(req, res) {
       .map(item => ({
         posto: item.marca,
         tipo:  item.tipo,
-        preco: Math.min(...item.precos),
+        preco: parseFloat(Math.min(...item.precos).toFixed(3)),
         precoMedio: (item.precos.reduce((a, b) => a + b, 0) / item.precos.length).toFixed(3),
         totalPostos: item.totalPostos,
       }))
       .sort((a, b) => a.preco - b.preco);
 
-    if (!resultado.length) throw new Error("Sem dados após filtragem");
+    if (!resultado.length) throw new Error("Sem tipos principais após filtragem");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       dados: resultado,
       total: resultado.length,
@@ -51,7 +69,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    res.status(200).json({
+    return res.status(200).json({
       success: false,
       dados: [],
       atualizadoEm: new Date().toISOString(),
