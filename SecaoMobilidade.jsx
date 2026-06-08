@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
-  AlertCircle, Wifi, WifiOff, Bell, Plus, Trash2,
+  AlertCircle, Bell, Plus, Trash2,
   Check, Info, X, TrendingDown,
 } from "lucide-react";
 
@@ -39,21 +39,15 @@ function TabBar({ options, value, onChange }) {
   );
 }
 
-function FallbackBadge({ fallback, fonte, atualizadoEm }) {
+function FonteBadge({ fonte, atualizadoEm }) {
+  if (!fonte) return null;
   const hora = atualizadoEm
     ? new Date(atualizadoEm).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })
-    : "--:--";
+    : null;
   return (
-    <div className={`mx-4 mt-4 mb-2 rounded-xl p-3 border flex items-center gap-2 ${fallback ? "bg-orange-50 border-orange-100" : "bg-emerald-50 border-emerald-100"}`}>
-      {fallback
-        ? <WifiOff size={13} className="text-orange-500 flex-shrink-0" />
-        : <Wifi    size={13} className="text-emerald-600 flex-shrink-0" />}
-      <div className="flex-1 min-w-0">
-        <p className={`text-[10px] font-bold ${fallback ? "text-orange-700" : "text-emerald-700"}`}>
-          {fallback ? "Dados de referência — API temporariamente indisponível" : `Dados reais · ${fonte}`}
-        </p>
-        <p className="text-[9px] text-slate-400">Atualizado às {hora}</p>
-      </div>
+    <div className="mx-4 mt-4 mb-2 flex items-center gap-1.5">
+      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+      <p className="text-[10px] text-slate-400">{fonte}{hora ? ` · ${hora}` : ""}</p>
     </div>
   );
 }
@@ -111,21 +105,20 @@ function ErroCard({ onRetry }) {
 
 /* ═══ Combustíveis ═══ */
 function SubCombustiveis() {
-  const [dados, setDados]         = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [erro, setErro]           = useState(false);
-  const [fallback, setFallback]   = useState(false);
-  const [fonte, setFonte]         = useState("");
+  const [dados, setDados]           = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [erro, setErro]             = useState(false);
+  const [fonte, setFonte]           = useState("");
   const [atualizado, setAtualizado] = useState(null);
-  const [tipo, setTipo]           = useState("Gasolina 95");
+  const [tipo, setTipo]             = useState("Gasolina 95");
 
   function carregar() {
     setLoading(true); setErro(false);
     fetch("/api/combustiveis")
       .then(r => r.json())
       .then(json => {
-        setDados(json.dados || []);
-        setFallback(json.fallback || false);
+        if (!json.success || !json.dados?.length) { setErro(true); setLoading(false); return; }
+        setDados(json.dados);
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);
         setLoading(false);
@@ -241,23 +234,22 @@ function SubCombustiveis() {
         </div>
       )}
 
-      <FallbackBadge fallback={fallback} fonte={fonte} atualizadoEm={atualizado} />
+      <FonteBadge fonte={fonte} atualizadoEm={atualizado} />
     </div>
   );
 }
 
 /* ═══ Postos EV ═══ */
 function SubPostosEV() {
-  const [postos, setPostos]       = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [erro, setErro]           = useState(false);
-  const [fallback, setFallback]   = useState(false);
-  const [fonte, setFonte]         = useState("");
+  const [postos, setPostos]         = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [erro, setErro]             = useState(false);
+  const [fonte, setFonte]           = useState("");
   const [atualizado, setAtualizado] = useState(null);
-  const [raio, setRaio]           = useState(10);
-  const [filtroEstado, setFiltro] = useState("todos");
-  const [loc, setLoc]             = useState({ lat: 38.7169, lon: -9.1395 });
-  const [locNome, setLocNome]     = useState("Lisboa (padrão)");
+  const [raio, setRaio]             = useState(10);
+  const [filtroEstado, setFiltro]   = useState("todos");
+  const [loc, setLoc]               = useState({ lat: 38.7169, lon: -9.1395 });
+  const [locNome, setLocNome]       = useState("Lisboa (padrão)");
 
   function obterLocalizacao() {
     if (!navigator.geolocation) return;
@@ -275,8 +267,8 @@ function SubPostosEV() {
     fetch(`/api/ev?lat=${loc.lat}&lon=${loc.lon}&raio=${raio}`)
       .then(r => r.json())
       .then(json => {
+        if (!json.success) { setErro(true); setLoading(false); return; }
         setPostos(json.postos || []);
-        setFallback(json.fallback || false);
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);
         setLoading(false);
@@ -495,7 +487,7 @@ function SubPostosEV() {
           })}
         </div>
       )}
-      <FallbackBadge fallback={fallback} fonte={fonte} atualizadoEm={atualizado} />
+      <FonteBadge fonte={fonte} atualizadoEm={atualizado} />
     </div>
   );
 }
