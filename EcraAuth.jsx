@@ -4,7 +4,6 @@ import {
   PiggyBank, Receipt, Tag, Fuel, BarChart2, ShieldCheck,
   ArrowRight, ArrowLeft, Eye, EyeOff, Check, AlertCircle,
 } from "lucide-react";
-import BannerInstalar from "./BannerInstalar";
 
 const FEATURES = [
   { icon: Receipt,     text: "Guarda talões e garantias digitalmente" },
@@ -109,8 +108,6 @@ function Landing({ onRegister, onLogin }) {
           Já tenho conta — Entrar
         </button>
       </div>
-
-      <BannerInstalar />
     </div>
   );
 }

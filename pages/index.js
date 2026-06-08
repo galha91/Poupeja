@@ -6,6 +6,7 @@ import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { lerAuth, guardarAuth, apagarAuth } from "../EcraAuth";
+import BannerInstalar from "../BannerInstalar";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
@@ -380,6 +381,7 @@ export default function PoupeJa() {
             <main style={{ overflowX: "hidden" }}>
               <div key={tab} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} />}
+                {tab === "inicio"     && <BannerInstalar />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
