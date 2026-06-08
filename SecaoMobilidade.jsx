@@ -7,13 +7,31 @@ import {
 
 /* ─── lookup maps ─── */
 const POSTO_CORES = {
-  Galp: "#e63329", BP: "#007a33", Repsol: "#ff6b00", "Intermarché": "#e2001a",
-  Cepsa: "#0077c8", Prio: "#6dc82a", Esso: "#e60000", Shell: "#f7a600",
+  galp: "#e63329", bp: "#007a33", repsol: "#ff6b00", intermarché: "#e2001a",
+  intermarche: "#e2001a", cepsa: "#0077c8", prio: "#6dc82a", esso: "#e60000",
+  shell: "#f7a600", auchan: "#e2001a", petroprix: "#003087", avia: "#cc0000",
+  agip: "#e10000", rubis: "#e84142", q8: "#f7a600", total: "#e30613",
+  totalenergies: "#e30613", meo: "#003087", "prio energy": "#6dc82a",
 };
 const POSTO_DOMINIOS = {
-  Galp: "galp.com", BP: "bp.com", Repsol: "repsol.pt", "Intermarché": "intermarche.pt",
-  Cepsa: "cepsa.pt", Prio: "prioenergy.pt", Esso: "esso.com", Shell: "shell.pt",
+  galp: "galp.com", bp: "bp.com", repsol: "repsol.com",
+  intermarché: "intermarche.pt", intermarche: "intermarche.pt",
+  cepsa: "cepsa.com", prio: "prio.pt", "prio energy": "prio.pt",
+  esso: "esso.com", shell: "shell.com", auchan: "auchan.pt",
+  petroprix: "petroprix.com", avia: "avia.pt", total: "totalenergies.pt",
+  totalenergies: "totalenergies.pt", q8: "q8.com",
 };
+
+function resolverMarca(nome) {
+  if (!nome) return { cor: "#64748b", dominio: null };
+  const key = nome.toLowerCase().trim();
+  for (const k of Object.keys(POSTO_DOMINIOS)) {
+    if (key === k || key.startsWith(k) || k.startsWith(key.split(" ")[0])) {
+      return { cor: POSTO_CORES[k] || "#64748b", dominio: POSTO_DOMINIOS[k] };
+    }
+  }
+  return { cor: POSTO_CORES[key] || "#64748b", dominio: null };
+}
 const EST = {
   "disponível": { dot: "bg-emerald-500", txt: "text-emerald-600", label: "Disponível", border: "border-emerald-100" },
   "ocupado":    { dot: "bg-red-500",     txt: "text-red-500",     label: "Ocupado",    border: "border-red-100" },
@@ -54,13 +72,12 @@ function FonteBadge({ fonte, atualizadoEm }) {
 
 function LogoPosto({ posto, size = 44 }) {
   const s = size;
-  const cor = POSTO_CORES[posto] || "#64748b";
-  const dominio = POSTO_DOMINIOS[posto];
+  const { cor, dominio } = resolverMarca(posto);
   const [nivel, setNivel] = useState(0);
   const iniciais = posto.slice(0, 2).toUpperCase();
   const fontes = dominio ? [
-    `https://www.google.com/s2/favicons?domain=${dominio}&sz=64`,
-    `https://logo.clearbit.com/${dominio}`,
+    `https://logo.clearbit.com/${dominio}?size=80`,
+    `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
   ] : [];
   return (
     <div
@@ -71,7 +88,7 @@ function LogoPosto({ posto, size = 44 }) {
         <img
           src={fontes[nivel]} alt={posto}
           onError={() => setNivel(n => n + 1)}
-          style={{ width: s * 0.68, height: s * 0.68, objectFit: "contain" }}
+          style={{ width: s * 0.72, height: s * 0.72, objectFit: "contain" }}
         />
       ) : (
         <span style={{ fontSize: s * 0.32, fontWeight: 900, color: cor }}>{iniciais}</span>
