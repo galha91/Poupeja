@@ -165,10 +165,10 @@ function SubCombustiveis() {
   const filtrados   = estacoes
     .filter(e => (e.tipoLabel || e.tipo) === tipoAtivo)
     .sort((a, b) => {
+      if (Math.abs(a.preco - b.preco) > 0.001) return a.preco - b.preco;
       const dA = a.distancia !== null ? parseFloat(a.distancia) : 9999;
       const dB = b.distancia !== null ? parseFloat(b.distancia) : 9999;
-      if (dA !== dB) return dA - dB;
-      return a.preco - b.preco;
+      return dA - dB;
     });
   const maisProximo = filtrados[0];
   const maisBarato  = [...filtrados].sort((a, b) => a.preco - b.preco)[0];
