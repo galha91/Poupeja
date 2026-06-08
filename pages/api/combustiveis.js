@@ -2,10 +2,10 @@
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
 
-  const BASE    = "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/PesquisarPostos";
-  const FUELS   = "3400,3205,3405,3201,2105,2101,1120";
+  const BASE     = "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/PesquisarPostos";
+  const FUELS    = "3400,3205,3405,3201,2105,2101,1120";
   const DISTRITOS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
-  const HEADERS = {
+  const HEADERS  = {
     "Accept": "application/json",
     "User-Agent": "Mozilla/5.0 (compatible; PoupeJa/1.0)",
     "Referer": "https://precoscombustiveis.dgeg.gov.pt/",
@@ -46,20 +46,33 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Busca todos os 18 distritos em paralelo
-    const lotes = await Promise.all(DISTRITOS.map(fetchDistrito));
+    const lotes  = await Promise.all(DISTRITOS.map(fetchDistrito));
     const postos = lotes.flat();
 
     if (!postos.length) throw new Error("Sem resultados da DGEG");
 
+    // Debug: mostrar estrutura do primeiro posto se não houver resultados depois
+    const primeiroPostoKeys = postos[0] ? Object.keys(postos[0]) : [];
+
     const mapa = {};
     postos.forEach(posto => {
-      const marca = posto.Marca || "";
+      const marca = posto.Marca || posto.marca || posto.NomeMarca || posto.nomeMarca || "";
       if (!marca) return;
-      (posto.Combustiveis || []).forEach(c => {
-        const tipo  = mapTipo(c.TipoCombustivel);
+
+      const combs = posto.Combustiveis   || posto.combustiveis
+                 || posto.ListaCombustiveis || posto.listaCombustiveis
+                 || posto.TiposCombustivel  || posto.tiposCombustivel
+                 || [];
+
+      combs.forEach(c => {
+        const tipoRaw = c.TipoCombustivel || c.tipoCombustivel
+                     || c.Tipo || c.tipo
+                     || c.Descritivo || c.descritivo
+                     || c.Nome || c.nome || "";
+        const tipo = mapTipo(tipoRaw);
         if (!tipo) return;
-        const preco = parseFloat((c.Preco || "0").toString().replace(",", "."));
+        const precoRaw = c.Preco || c.preco || c.PrecoVenda || c.precoVenda || "0";
+        const preco = parseFloat(precoRaw.toString().replace(",", "."));
         if (!preco) return;
         const chave = `${marca}__${tipo}`;
         if (!mapa[chave]) mapa[chave] = { marca, tipo, precos: [], totalPostos: 0 };
@@ -79,8 +92,7 @@ export default async function handler(req, res) {
       .sort((a, b) => a.preco - b.preco);
 
     if (!resultado.length) {
-      const tiposRaw = [...new Set(postos.flatMap(p => (p.Combustiveis || []).map(c => c.TipoCombustivel)))].slice(0, 10);
-      throw new Error(`Sem tipos reconhecidos. Exemplos: ${tiposRaw.join(" | ")}`);
+      throw new Error(`Sem tipos. Keys do posto: ${primeiroPostoKeys.join(",")}`);
     }
 
     return res.status(200).json({
