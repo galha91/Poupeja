@@ -236,14 +236,14 @@ function SubCombustiveis() {
             <span className="text-lg font-black text-orange-500">{raio} km</span>
           </div>
           <input
-            type="range" min="5" max="100" step="5" value={raio}
+            type="range" min="5" max="30" step="5" value={raio}
             onChange={e => setRaio(parseInt(e.target.value))}
             onMouseUp={() => carregar(loc.lat, loc.lon, raio)}
             onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
             className="w-full mb-3" style={{ accentColor: "#f97316" }}
           />
           <div className="flex justify-between text-[9px] text-slate-400 mb-3">
-            <span>5 km</span><span>50 km</span><span>100 km</span>
+            <span>5 km</span><span>15 km</span><span>30 km</span>
           </div>
           <button
             onClick={obterLocalizacao}
