@@ -463,7 +463,7 @@ function SubPostosEV() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Zap size={16} className="text-white/70" />
-              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Rede MOBI.E</span>
+              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Postos EV</span>
             </div>
             <button onClick={carregar} className="press w-8 h-8 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center">
               <RefreshCw size={14} className={`text-white ${loading ? "animate-spin" : ""}`} />
@@ -539,7 +539,7 @@ function SubPostosEV() {
 
       <div className="px-4 mb-3 flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        <p className="text-[10px] text-slate-400">{filtrados.length} postos · Dados MOBI.E em tempo real</p>
+        <p className="text-[10px] text-slate-400">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
       </div>
 
       {/* Lista postos */}
