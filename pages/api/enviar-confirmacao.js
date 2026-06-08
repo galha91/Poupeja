@@ -39,8 +39,8 @@ export default async function handler(req, res) {
         <!-- Header verde -->
         <tr>
           <td style="background:linear-gradient(135deg,#064e3b,#059669);padding:40px 32px;text-align:center;">
-            <div style="width:64px;height:64px;background:rgba(255,255,255,0.2);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
-              <span style="font-size:28px;">🐷</span>
+            <div style="width:64px;height:64px;background:rgba(255,255,255,0.2);border-radius:16px;display:inline-block;line-height:64px;text-align:center;margin-bottom:16px;">
+              <span style="font-size:32px;font-weight:900;color:#ffffff;font-family:'Segoe UI',Arial,sans-serif;">P</span>
             </div>
             <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:900;letter-spacing:-0.5px;">PoupeJá</h1>
             <p style="margin:6px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">A tua carteira digital portuguesa</p>
