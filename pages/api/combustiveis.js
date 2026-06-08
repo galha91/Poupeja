@@ -12,27 +12,15 @@ export default async function handler(req, res) {
     "Origin": "https://precoscombustiveis.dgeg.gov.pt",
   };
 
-  const TIPO_MAP = {
-    "gasolina simples 95":  "Gasolina 95",
-    "gasolina especial 95": "Gasolina 95",
-    "gasolina 95":          "Gasolina 95",
-    "gasolina 98":          "Gasolina 98",
-    "gasolina especial 98": "Gasolina 98",
-    "gasoleo simples":      "Gasóleo",
-    "gasoleo especial":     "Gasóleo",
-    "gasóleo simples":      "Gasóleo",
-    "gasóleo especial":     "Gasóleo",
-    "gasóleo":              "Gasóleo",
-    "gpl auto":             "GPL Auto",
-    "gpl":                  "GPL Auto",
-  };
-
   function mapTipo(raw) {
     if (!raw) return null;
-    const n = raw.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
-    for (const [key, label] of Object.entries(TIPO_MAP)) {
-      const kn = key.normalize("NFD").replace(/[̀-ͯ]/g, "");
-      if (n.includes(kn) || kn.includes(n)) return label;
+    const n = raw.toLowerCase();
+    if (n.includes("95"))  return "Gasolina 95";
+    if (n.includes("98"))  return "Gasolina 98";
+    if (n.includes("gpl")) return "GPL Auto";
+    if (n.includes("gasoleo") || n.includes("gasóleo") || n.includes("gasoleo")) {
+      if (n.includes("colorido") || n.includes("marcado") || n.includes("aquecimento")) return null;
+      return "Gasóleo";
     }
     return null;
   }
@@ -90,7 +78,10 @@ export default async function handler(req, res) {
       }))
       .sort((a, b) => a.preco - b.preco);
 
-    if (!resultado.length) throw new Error("Sem tipos reconhecidos após filtragem");
+    if (!resultado.length) {
+      const tiposRaw = [...new Set(postos.flatMap(p => (p.Combustiveis || []).map(c => c.TipoCombustivel)))].slice(0, 10);
+      throw new Error(`Sem tipos reconhecidos. Exemplos: ${tiposRaw.join(" | ")}`);
+    }
 
     return res.status(200).json({
       success: true,
