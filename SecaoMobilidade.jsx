@@ -162,10 +162,19 @@ function SubCombustiveis() {
 
   const tiposDisponiveis = tipos.length ? tipos : [...new Set(estacoes.map(e => e.tipoLabel || e.tipo).filter(Boolean))];
   const tipoAtivo   = tiposDisponiveis.includes(tipo) ? tipo : (tiposDisponiveis[0] || "Gasolina 95");
-  const filtrados   = estacoes.filter(e => (e.tipoLabel || e.tipo) === tipoAtivo).sort((a, b) => a.preco - b.preco);
-  const melhor      = filtrados[0];
-  const min         = melhor?.preco || 0;
-  const max         = filtrados[filtrados.length - 1]?.preco || 0;
+  const filtrados   = estacoes
+    .filter(e => (e.tipoLabel || e.tipo) === tipoAtivo)
+    .sort((a, b) => {
+      const dA = a.distancia !== null ? parseFloat(a.distancia) : 9999;
+      const dB = b.distancia !== null ? parseFloat(b.distancia) : 9999;
+      if (dA !== dB) return dA - dB;
+      return a.preco - b.preco;
+    });
+  const maisProximo = filtrados[0];
+  const maisBarato  = [...filtrados].sort((a, b) => a.preco - b.preco)[0];
+  const melhor      = maisProximo;
+  const min         = maisBarato?.preco || 0;
+  const max         = filtrados.reduce((m, e) => Math.max(m, e.preco), 0);
 
   return (
     <div>
@@ -284,10 +293,11 @@ function SubCombustiveis() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       <p className="font-black text-slate-800 text-sm truncate max-w-[160px]">{nome}</p>
-                      {isBest && (
-                        <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                          Mais barato
-                        </span>
+                      {c.id === maisProximo?.id && (
+                        <span className="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
+                      )}
+                      {c.id === maisBarato?.id && (
+                        <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
                     {c.municipio && <p className="text-[10px] text-slate-400 mb-1">{c.municipio}</p>}
