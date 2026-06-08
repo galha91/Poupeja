@@ -5,83 +5,20 @@ import {
   Check, Info, X, TrendingDown,
 } from "lucide-react";
 
-/* ─── brand logos (SVG inline — sem dependências externas) ─── */
-const BRAND_LOGOS = {
-  galp: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#e63329"/>
-      <text x="22" y="28" textAnchor="middle" fill="white" fontWeight="900" fontSize="13" fontFamily="Arial,sans-serif">GALP</text>
-    </svg>
-  ),
-  bp: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#007a33"/>
-      <text x="22" y="30" textAnchor="middle" fill="#f7d000" fontWeight="900" fontSize="18" fontFamily="Arial,sans-serif">bp</text>
-    </svg>
-  ),
-  shell: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#f7a600"/>
-      <text x="22" y="28" textAnchor="middle" fill="#e2001a" fontWeight="900" fontSize="9" fontFamily="Arial,sans-serif">SHELL</text>
-      <path d="M22 8 L26 18 L36 18 L28 24 L31 34 L22 28 L13 34 L16 24 L8 18 L18 18 Z" fill="#e2001a" opacity="0.85"/>
-    </svg>
-  ),
-  repsol: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#ff6b00"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="11" fontFamily="Arial,sans-serif">REPSOL</text>
-    </svg>
-  ),
-  moeve: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#00a39b"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="11" fontFamily="Arial,sans-serif">MOEVE</text>
-    </svg>
-  ),
-  cepsa: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#0077c8"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="11" fontFamily="Arial,sans-serif">CEPSA</text>
-    </svg>
-  ),
-  prio: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#6dc82a"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="16" fontFamily="Arial,sans-serif">PRIO</text>
-    </svg>
-  ),
-  intermarche: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#e2001a"/>
-      <text x="22" y="26" textAnchor="middle" fill="white" fontWeight="900" fontSize="8" fontFamily="Arial,sans-serif">INTER-</text>
-      <text x="22" y="35" textAnchor="middle" fill="white" fontWeight="900" fontSize="8" fontFamily="Arial,sans-serif">MARCHÉ</text>
-    </svg>
-  ),
-  auchan: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#e2001a"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="10" fontFamily="Arial,sans-serif">AUCHAN</text>
-    </svg>
-  ),
-  petroprix: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#003087"/>
-      <text x="22" y="26" textAnchor="middle" fill="white" fontWeight="900" fontSize="7" fontFamily="Arial,sans-serif">PETRO-</text>
-      <text x="22" y="35" textAnchor="middle" fill="white" fontWeight="900" fontSize="7" fontFamily="Arial,sans-serif">PRIX</text>
-    </svg>
-  ),
-  total: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#e30613"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="11" fontFamily="Arial,sans-serif">TOTAL</text>
-    </svg>
-  ),
-  esso: (s) => (
-    <svg viewBox="0 0 44 44" width={s} height={s}>
-      <rect width="44" height="44" rx="10" fill="#e60000"/>
-      <text x="22" y="30" textAnchor="middle" fill="white" fontWeight="900" fontSize="16" fontFamily="Arial,sans-serif">ESSO</text>
-    </svg>
-  ),
+/* ─── brand logo domains for Clearbit / Google favicons ─── */
+const BRAND_DOMAINS = {
+  galp:        "galp.com",
+  bp:          "bp.com",
+  shell:       "shell.com",
+  repsol:      "repsol.com",
+  cepsa:       "cepsa.com",
+  moeve:       "moeve.com",
+  prio:        "prioenergy.pt",
+  intermarche: "intermarche.pt",
+  auchan:      "auchan.pt",
+  petroprix:   "petroprix.com",
+  total:       "totalenergies.com",
+  esso:        "esso.com",
 };
 
 const POSTO_CORES = {
@@ -99,8 +36,8 @@ function resolverMarca(nome) {
     "prio energy": "prio", "totalenergies": "total",
     "moeve": "moeve", "cepsa": "cepsa",
   };
-  const logoKey = ALIASES[key] || (BRAND_LOGOS[key] ? key : null)
-    || Object.keys(BRAND_LOGOS).find(k => key.startsWith(k) || k.startsWith(key.split(" ")[0]))
+  const logoKey = ALIASES[key] || (BRAND_DOMAINS[key] ? key : null)
+    || Object.keys(BRAND_DOMAINS).find(k => key.startsWith(k) || k.startsWith(key.split(" ")[0]))
     || null;
   const cor = POSTO_CORES[logoKey || key] || "#64748b";
   return { cor, logoKey };
@@ -146,21 +83,27 @@ function FonteBadge({ fonte, atualizadoEm }) {
 function LogoPosto({ posto, size = 44 }) {
   const s = size;
   const { cor, logoKey } = resolverMarca(posto);
+  const [nivel, setNivel] = useState(0);
   const iniciais = posto.slice(0, 2).toUpperCase();
-  if (logoKey && BRAND_LOGOS[logoKey]) {
-    return (
-      <div className="rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
-        style={{ width: s, height: s }}>
-        {BRAND_LOGOS[logoKey](s)}
-      </div>
-    );
-  }
+  const dominio = logoKey && BRAND_DOMAINS[logoKey];
+  const fontes = dominio ? [
+    `https://logo.clearbit.com/${dominio}?size=80`,
+    `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
+  ] : [];
   return (
     <div
       className="rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0"
       style={{ width: s, height: s, backgroundColor: cor + "18", border: `1.5px solid ${cor}33` }}
     >
-      <span style={{ fontSize: s * 0.32, fontWeight: 900, color: cor }}>{iniciais}</span>
+      {nivel < fontes.length ? (
+        <img
+          src={fontes[nivel]} alt={posto}
+          onError={() => setNivel(n => n + 1)}
+          style={{ width: s * 0.72, height: s * 0.72, objectFit: "contain" }}
+        />
+      ) : (
+        <span style={{ fontSize: s * 0.32, fontWeight: 900, color: cor }}>{iniciais}</span>
+      )}
     </div>
   );
 }
