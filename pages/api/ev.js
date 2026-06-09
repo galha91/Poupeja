@@ -52,6 +52,8 @@ export default async function handler(req, res) {
         const tipos = [...new Set(conns.map(c => c.type?.localizedValue || c.type?.value).filter(Boolean))];
         const livres = conns.reduce((s, c) => s + (c.availability?.available ?? c.freeSetCount ?? 0), 0);
         const slots  = conns.reduce((s, c) => s + (c.availability?.total   ?? c.totalSetCount ?? 0), 0);
+        // Timestamp da última atualização da disponibilidade
+        const ultimaAtualizacao = av?.updatedAt || av?.lastUpdatedTimestamp || av?.timestamp || null;
 
         return {
           id:        p.id || String(Math.random()),
@@ -62,10 +64,13 @@ export default async function handler(req, res) {
           lon:       p.position?.lon || 0,
           operador:  p.poi?.brands?.[0]?.name || p.poi?.classifications?.[0]?.name || "Desconhecido",
           potencia:  maxKW ? `${maxKW} kW` : "22 kW",
+          potenciaNum: maxKW,
           tipo:      tipos.join(" / ") || "Tipo 2",
           estado:    mapEstadoTomTom(av, livres, slots),
-          slots:     slots || p.poi?.openingHours ? slots || 1 : 1,
+          slots:     slots || 1,
           livres,
+          temTempoReal: !!av,
+          ultimaAtualizacao,
           distancia: p.dist != null ? parseFloat((p.dist / 1000).toFixed(1)) : null,
         };
       });

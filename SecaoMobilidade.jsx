@@ -566,83 +566,118 @@ function SubPostosEV() {
       ) : (
         <div className="px-4 flex flex-col gap-3">
           {filtrados.map((posto, i) => {
-            const est = EST[posto.estado] || EST["disponível"];
-            const kwNum = parseInt(posto.potencia);
-            const kwCls = kwNum >= 100
-              ? "text-purple-600 bg-purple-50 border-purple-200"
-              : kwNum >= 50
-                ? "text-blue-600 bg-blue-50 border-blue-200"
-                : "text-emerald-700 bg-emerald-50 border-emerald-200";
+            const est    = EST[posto.estado] || EST["disponível"];
+            const kwNum  = posto.potenciaNum || parseInt(posto.potencia) || 0;
+            const kwCls  = kwNum >= 150 ? "text-purple-600 bg-purple-50 border-purple-200"
+                         : kwNum >= 50  ? "text-blue-600 bg-blue-50 border-blue-200"
+                         : "text-emerald-700 bg-emerald-50 border-emerald-200";
+            const kwLabel = kwNum >= 150 ? "Ultra-Rápido" : kwNum >= 50 ? "Rápido" : "Normal";
+
+            const ultimaStr = (() => {
+              if (!posto.ultimaAtualizacao) return null;
+              const d = new Date(posto.ultimaAtualizacao);
+              if (isNaN(d)) return null;
+              const diff = Math.round((Date.now() - d) / 60000);
+              if (diff < 1)  return "agora mesmo";
+              if (diff < 60) return `há ${diff} min`;
+              const h = Math.round(diff / 60);
+              if (h < 24)   return `há ${h}h`;
+              return `há ${Math.round(h / 24)}d`;
+            })();
+
             return (
-              <div key={posto.id || i} className={`card p-4 ${est.border}`}>
-                <div className="flex items-start gap-3 mb-3">
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border ${kwCls}`}>
-                    <Zap size={19} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-black text-sm text-slate-800 leading-tight">{posto.nome}</p>
-                    {posto.morada && (
-                      <p className="text-[10px] text-slate-400 mt-0.5">
-                        {posto.morada}{posto.cidade ? `, ${posto.cidade}` : ""}
-                      </p>
+              <div key={posto.id || i} className={`card overflow-hidden border ${est.border}`}>
+                {/* Header com status */}
+                <div className={`px-4 py-2.5 flex items-center justify-between ${
+                  posto.estado === "disponível" ? "bg-emerald-50" :
+                  posto.estado === "ocupado"    ? "bg-red-50" : "bg-orange-50"
+                }`}>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`w-2 h-2 rounded-full ${est.dot}${posto.estado === "disponível" ? " animate-pulse" : ""}`} />
+                    <span className={`text-[11px] font-black ${est.txt}`}>{est.label}</span>
+                    {posto.temTempoReal && (
+                      <span className="text-[9px] text-slate-400 font-medium">· tempo real</span>
                     )}
-                    <p className="text-[10px] text-slate-400">{posto.operador}</p>
-                    <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                      <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-black border ${kwCls}`}>
-                        <Zap size={9} /> {posto.potencia}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {ultimaStr && (
+                      <span className="text-[9px] text-slate-400">atualizado {ultimaStr}</span>
+                    )}
+                    {posto.distancia && (
+                      <span className="text-[10px] text-slate-500 font-bold flex items-center gap-0.5">
+                        <MapPin size={9} /> {posto.distancia} km
                       </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  {/* Nome + operador + velocidade */}
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center flex-shrink-0 border gap-0 ${kwCls}`}>
+                      <Zap size={14} />
+                      <span className="text-[8px] font-black leading-none">{kwLabel}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-black text-sm text-slate-800 leading-tight">{posto.nome}</p>
+                      {posto.morada && (
+                        <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+                          {posto.morada}{posto.cidade ? `, ${posto.cidade}` : ""}
+                        </p>
+                      )}
+                      <p className="text-[10px] text-slate-400">{posto.operador}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`px-2 py-1 rounded-lg border text-center ${kwCls}`}>
+                        <p className="text-sm font-black leading-none">{kwNum || "?"}</p>
+                        <p className="text-[8px] font-bold leading-none mt-0.5">kW</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tipo de conector */}
+                  {posto.tipo && (
+                    <div className="mb-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
                         {posto.tipo}
                       </span>
                     </div>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className="flex items-center gap-1 justify-end">
-                      <span className={`w-2 h-2 rounded-full ${est.dot}${posto.estado === "disponível" ? " animate-pulse" : ""}`} />
-                      <span className={`text-[11px] font-black ${est.txt}`}>{est.label}</span>
+                  )}
+
+                  {/* Tomadas */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-[10px] text-slate-500 mb-1.5">
+                      <span className="font-medium">Tomadas</span>
+                      <span className={`font-black ${posto.livres > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {posto.livres} livre{posto.livres !== 1 ? "s" : ""} de {posto.slots}
+                      </span>
                     </div>
-                    {posto.distancia && (
-                      <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-0.5 justify-end">
-                        <MapPin size={9} /> {posto.distancia} km
-                      </p>
-                    )}
+                    <div className="flex gap-1">
+                      {Array.from({ length: Math.min(posto.slots, 12) }).map((_, si) => (
+                        <div key={si} className={`flex-1 h-2.5 rounded-full ${
+                          si < posto.livres
+                            ? "bg-emerald-400"
+                            : posto.estado === "manutenção"
+                              ? "bg-orange-300"
+                              : "bg-red-300"
+                        }`} />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Tomadas */}
-                <div className="mb-3">
-                  <div className="flex justify-between text-[10px] text-slate-500 mb-1.5">
-                    <span className="font-medium">Tomadas disponíveis</span>
-                    <span className={`font-black ${posto.livres > 0 ? "text-emerald-600" : "text-red-500"}`}>
-                      {posto.livres}/{posto.slots} livres
-                    </span>
-                  </div>
-                  <div className="flex gap-1">
-                    {Array.from({ length: Math.min(posto.slots, 12) }).map((_, si) => (
-                      <div
-                        key={si}
-                        className={`flex-1 h-2 rounded-full ${
-                          si < posto.livres ? "bg-emerald-400" : posto.estado === "manutenção" ? "bg-orange-300" : "bg-red-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Ações */}
-                <div className="flex gap-2">
-                  <button
-                    className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 ${
+                  {/* Ações */}
+                  <div className="flex gap-2">
+                    <button className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 ${
                       posto.estado === "disponível"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                         : "bg-slate-50 text-slate-400 border-slate-100"
-                    }`}
-                  >
-                    <Navigation size={12} /> Navegar
-                  </button>
-                  <button className="press flex-1 py-2.5 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100 flex items-center justify-center gap-1">
-                    <Bell size={12} /> Alertar
-                  </button>
+                    }`}>
+                      <Navigation size={12} /> Navegar
+                    </button>
+                    <button className="press flex-1 py-2.5 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100 flex items-center justify-center gap-1">
+                      <Bell size={12} /> Alertar
+                    </button>
+                  </div>
                 </div>
               </div>
             );
