@@ -635,14 +635,41 @@ function SubPostosEV() {
                     </div>
                   </div>
 
-                  {/* Tipo de conector */}
-                  {posto.tipo && (
+                  {/* Conectores por tipo */}
+                  {posto.conectores?.length > 0 ? (
+                    <div className="mb-3 flex flex-col gap-1.5">
+                      {posto.conectores.map((c, ci) => {
+                        const dcCls = c.corrente === "DC"
+                          ? (c.kw >= 150 ? "bg-purple-50 border-purple-200 text-purple-700" : "bg-blue-50 border-blue-200 text-blue-700")
+                          : "bg-slate-50 border-slate-200 text-slate-600";
+                        return (
+                          <div key={ci} className={`flex items-center justify-between px-3 py-1.5 rounded-xl border ${dcCls}`}>
+                            <div className="flex items-center gap-1.5">
+                              <Zap size={11} />
+                              <span className="text-[11px] font-black">{c.tipo}</span>
+                              <span className="text-[10px] font-medium opacity-70">{c.corrente}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {c.kw > 0 && (
+                                <span className="text-[10px] font-black">{c.kw} kW</span>
+                              )}
+                              {c.total > 0 && (
+                                <span className={`text-[10px] font-black ${c.livres > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                                  {c.livres}/{c.total}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : posto.tipo ? (
                     <div className="mb-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
                         {posto.tipo}
                       </span>
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Tomadas */}
                   <div className="mb-3">

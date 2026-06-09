@@ -49,11 +49,21 @@ export default async function handler(req, res) {
         const av    = avId ? availMap[avId] : null;
         const conns = av?.connectors || [];
         const maxKW = conns.reduce((m, c) => Math.max(m, c.ratedPowerKW || 0), 0);
-        const tipos = [...new Set(conns.map(c => c.type?.localizedValue || c.type?.value).filter(Boolean))];
         const livres = conns.reduce((s, c) => s + (c.availability?.available ?? c.freeSetCount ?? 0), 0);
         const slots  = conns.reduce((s, c) => s + (c.availability?.total   ?? c.totalSetCount ?? 0), 0);
-        // Timestamp da última atualização da disponibilidade
         const ultimaAtualizacao = av?.updatedAt || av?.lastUpdatedTimestamp || av?.timestamp || null;
+
+        // Por conector: tipo normalizado + potência + disponibilidade
+        const conectores = conns.map(c => ({
+          tipo:    normalizarConector(c.type?.value || c.type?.localizedValue || ""),
+          kw:      c.ratedPowerKW || 0,
+          livres:  c.availability?.available ?? c.freeSetCount ?? 0,
+          total:   c.availability?.total ?? c.totalSetCount ?? 0,
+          corrente: tipoCorrente(c.type?.value || ""),
+        }));
+
+        // Tipos únicos para texto resumido
+        const tiposUnicos = [...new Set(conectores.map(c => c.tipo))].join(" · ");
 
         return {
           id:        p.id || String(Math.random()),
@@ -63,9 +73,10 @@ export default async function handler(req, res) {
           lat:       p.position?.lat || 0,
           lon:       p.position?.lon || 0,
           operador:  p.poi?.brands?.[0]?.name || p.poi?.classifications?.[0]?.name || "Desconhecido",
-          potencia:  maxKW ? `${maxKW} kW` : "22 kW",
+          potencia:  maxKW ? `${maxKW} kW` : "?",
           potenciaNum: maxKW,
-          tipo:      tipos.join(" / ") || "Tipo 2",
+          tipo:      tiposUnicos || "Tipo 2",
+          conectores,
           estado:    mapEstadoTomTom(av, livres, slots),
           slots:     slots || 1,
           livres,
@@ -139,6 +150,26 @@ export default async function handler(req, res) {
       erro: "Serviços EV temporariamente indisponíveis",
     });
   }
+}
+
+function normalizarConector(raw) {
+  const v = raw.toLowerCase();
+  if (v.includes("type2ccs") || v.includes("combo2") || v.includes("combo_type2")) return "CCS2";
+  if (v.includes("type1ccs") || v.includes("combo1") || v.includes("combo_type1")) return "CCS1";
+  if (v.includes("chademo"))                             return "CHAdeMO";
+  if (v.includes("type2") || v.includes("iec62196_t2") || v.includes("mennekes")) return "Tipo 2";
+  if (v.includes("type1") || v.includes("j1772"))        return "Tipo 1";
+  if (v.includes("tesla"))                               return "Tesla";
+  if (v.includes("schuko") || v.includes("cee7"))        return "Schuko";
+  if (v.includes("gbt") || v.includes("gb/t"))           return "GB/T";
+  return raw || "Desconhecido";
+}
+
+function tipoCorrente(raw) {
+  const v = raw.toLowerCase();
+  if (v.includes("ccs") || v.includes("chademo") || v.includes("gbt")) return "DC";
+  if (v.includes("tesla") && v.includes("dc")) return "DC";
+  return "AC";
 }
 
 function mapEstadoTomTom(av, livres, slots) {
