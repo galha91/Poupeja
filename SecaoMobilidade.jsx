@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import CARROS_EV from "./data/carrosEV";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   AlertCircle, Bell, Plus, Trash2,
-  Check, Info, X, TrendingDown,
+  Check, Info, X, TrendingDown, Car, Clock,
 } from "lucide-react";
 
 /* ─── ícones dos conectores EV ─── */
@@ -83,6 +84,22 @@ const CONECTOR_ICONS = {
     </svg>
   ),
 };
+
+/* ─── cálculo de tempo de carregamento ─── */
+function calcTempo(bateriaKwh, de, ate, chargerKw, carMaxKw) {
+  if (!chargerKw || !carMaxKw || ate <= de) return null;
+  const kw = Math.min(chargerKw, carMaxKw);
+  if (!kw) return null;
+  // Curva realista: 100% potência até 80%, depois cai para ~35%
+  const low  = Math.max(0, Math.min(ate, 80) - Math.max(de, 0));
+  const high = Math.max(0, ate - Math.max(de, 80));
+  const timeH = (low / 100 * bateriaKwh + high / 100 * bateriaKwh / 0.35) / kw;
+  const mins = Math.round(timeH * 60);
+  if (mins < 1) return "< 1 min";
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return m ? `${h}h ${m}min` : `${h}h`;
+}
 
 /* ─── inline SVG logos para marcas sem logo no Clearbit ─── */
 const BRAND_LOGOS = {
@@ -481,6 +498,12 @@ function SubCombustiveis() {
 }
 
 /* ═══ Postos EV ═══ */
+// Agrupa carros por marca para o select
+const MARCAS_EV = CARROS_EV.reduce((acc, c) => {
+  (acc[c.marca] = acc[c.marca] || []).push(c);
+  return acc;
+}, {});
+
 function SubPostosEV() {
   const [postos, setPostos]         = useState([]);
   const [loading, setLoading]       = useState(true);
@@ -491,6 +514,12 @@ function SubPostosEV() {
   const [filtroEstado, setFiltro]   = useState("todos");
   const [loc, setLoc]               = useState({ lat: 38.7169, lon: -9.1395 });
   const [locNome, setLocNome]       = useState("Lisboa (padrão)");
+  // Simulador
+  const [carroId, setCarroId]       = useState("");
+  const [batDe, setBatDe]           = useState(20);
+  const [batAte, setBatAte]         = useState(80);
+  const [simOpen, setSimOpen]       = useState(false);
+  const carro = CARROS_EV.find(c => c.id === carroId) || null;
 
   function obterLocalizacao() {
     if (!navigator.geolocation) return;
@@ -592,6 +621,82 @@ function SubPostosEV() {
         >
           <MapPin size={13} /> Usar a minha localização atual
         </button>
+      </div>
+
+      {/* Simulador de carregamento */}
+      <div className="mx-4 mb-3 rounded-2xl border border-slate-100 overflow-hidden bg-white">
+        <button
+          onClick={() => setSimOpen(v => !v)}
+          className="press w-full px-4 py-3 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+              <Car size={14} className="text-emerald-600" />
+            </div>
+            <div className="text-left">
+              <p className="text-[11px] font-black text-slate-700">
+                {carro ? carro.marca + " " + carro.modelo : "Simular carregamento"}
+              </p>
+              {carro && (
+                <p className="text-[10px] text-slate-400">{batDe}% → {batAte}% · {carro.bateria} kWh</p>
+              )}
+            </div>
+          </div>
+          <span className="text-slate-400 text-xs">{simOpen ? "▲" : "▼"}</span>
+        </button>
+
+        {simOpen && (
+          <div className="px-4 pb-4 border-t border-slate-50">
+            {/* Seletor de carro */}
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wide mt-3 mb-1.5">O meu carro</p>
+            <select
+              value={carroId}
+              onChange={e => setCarroId(e.target.value)}
+              className="w-full text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-3"
+            >
+              <option value="">— Selecionar modelo —</option>
+              {Object.keys(MARCAS_EV).sort().map(marca => (
+                <optgroup key={marca} label={marca}>
+                  {MARCAS_EV[marca].map(c => (
+                    <option key={c.id} value={c.id}>{c.modelo} ({c.bateria} kWh)</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+
+            {/* Percentagem de bateria */}
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wide mb-2">Bateria</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <p className="text-[9px] text-slate-400 mb-1">De</p>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="range" min={0} max={99} step={5} value={batDe}
+                    onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
+                    className="flex-1 accent-emerald-500"
+                  />
+                  <span className="text-xs font-black text-emerald-600 w-8 text-right">{batDe}%</span>
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-[9px] text-slate-400 mb-1">Até</p>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="range" min={1} max={100} step={5} value={batAte}
+                    onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
+                    className="flex-1 accent-emerald-500"
+                  />
+                  <span className="text-xs font-black text-emerald-600 w-8 text-right">{batAte}%</span>
+                </div>
+              </div>
+            </div>
+            {carro && (
+              <p className="text-[10px] text-slate-400 mt-2 text-center">
+                {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh a carregar
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Filtros de estado */}
@@ -723,6 +828,15 @@ function SubPostosEV() {
                           ? "border-emerald-200 bg-emerald-50"
                           : "border-slate-200 bg-slate-50";
                         const icon = CONECTOR_ICONS[c.tipo];
+                        // Tempo estimado com o carro selecionado
+                        const carMaxKw = carro
+                          ? (c.corrente === "DC"
+                              ? (carro.conectorDC === c.tipo ? carro.maxDC : null)
+                              : carro.maxAC)
+                          : null;
+                        const tempo = carro && carMaxKw
+                          ? calcTempo(carro.bateria, batDe, batAte, c.kw || 22, carMaxKw)
+                          : null;
                         return (
                           <div key={ci} className={`flex items-center gap-3 px-3 py-2 rounded-2xl border ${statusCls}`}>
                             {icon ? (
@@ -735,6 +849,15 @@ function SubPostosEV() {
                             <div className="flex-1 min-w-0">
                               <p className="text-[12px] font-black text-slate-800">{c.tipo}</p>
                               <p className="text-[10px] text-slate-400">{c.corrente}{c.kw > 0 ? ` · ${c.kw} kW` : ""}</p>
+                              {tempo && (
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  <Clock size={9} className="text-emerald-600" />
+                                  <span className="text-[10px] font-black text-emerald-600">{tempo}</span>
+                                </div>
+                              )}
+                              {carro && c.corrente === "DC" && carro.conectorDC !== c.tipo && (
+                                <p className="text-[9px] text-red-400 font-bold mt-0.5">Incompatível</p>
+                              )}
                             </div>
                             <div className="text-right flex-shrink-0">
                               {c.total > 0 ? (
