@@ -682,7 +682,7 @@ function SubPostosEV() {
                 <p className="text-[9px] text-slate-400 mb-1">Até</p>
                 <div className="flex items-center gap-1.5">
                   <input
-                    type="range" min={1} max={100} step={5} value={batAte}
+                    type="range" min={0} max={100} step={5} value={batAte}
                     onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
                     className="flex-1 accent-emerald-500"
                   />
