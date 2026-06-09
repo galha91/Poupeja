@@ -5,6 +5,85 @@ import {
   Check, Info, X, TrendingDown,
 } from "lucide-react";
 
+/* ─── ícones dos conectores EV ─── */
+const CONECTOR_ICONS = {
+  "Tipo 2": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 36">
+      <polygon points="13,2 23,2 34,13 34,23 23,34 13,34 2,23 2,13" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.8" strokeLinejoin="round"/>
+      <circle cx="18" cy="9"  r="2.2" fill="#64748b"/>
+      <circle cx="11" cy="14" r="2.2" fill="#64748b"/>
+      <circle cx="25" cy="14" r="2.2" fill="#64748b"/>
+      <circle cx="11" cy="22" r="2.2" fill="#64748b"/>
+      <circle cx="25" cy="22" r="2.2" fill="#64748b"/>
+      <circle cx="15" cy="28" r="2.2" fill="#64748b"/>
+      <circle cx="21" cy="28" r="2.2" fill="#64748b"/>
+    </svg>
+  ),
+  "CCS2": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 40">
+      <polygon points="12,2 24,2 34,12 34,22 24,30 12,30 2,22 2,12" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8" strokeLinejoin="round"/>
+      <circle cx="18" cy="8"  r="1.8" fill="#3b82f6"/>
+      <circle cx="12" cy="13" r="1.8" fill="#3b82f6"/>
+      <circle cx="24" cy="13" r="1.8" fill="#3b82f6"/>
+      <circle cx="12" cy="20" r="1.8" fill="#3b82f6"/>
+      <circle cx="24" cy="20" r="1.8" fill="#3b82f6"/>
+      <rect x="2" y="32" width="32" height="8" rx="4" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8"/>
+      <circle cx="11" cy="36" r="2.8" fill="#3b82f6"/>
+      <circle cx="25" cy="36" r="2.8" fill="#3b82f6"/>
+    </svg>
+  ),
+  "CHAdeMO": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="16" fill="#fef3c7" stroke="#d97706" strokeWidth="1.8"/>
+      <circle cx="18" cy="18" r="6"  fill="none"    stroke="#d97706" strokeWidth="1.5"/>
+      <circle cx="18" cy="4"   r="2.2" fill="#d97706"/>
+      <circle cx="28" cy="8"   r="2.2" fill="#d97706"/>
+      <circle cx="32" cy="18"  r="2.2" fill="#d97706"/>
+      <circle cx="28" cy="28"  r="2.2" fill="#d97706"/>
+      <circle cx="18" cy="32"  r="2.2" fill="#d97706"/>
+      <circle cx="8"  cy="28"  r="2.2" fill="#d97706"/>
+      <circle cx="4"  cy="18"  r="2.2" fill="#d97706"/>
+      <circle cx="8"  cy="8"   r="2.2" fill="#d97706"/>
+    </svg>
+  ),
+  "CCS1": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 40">
+      <circle cx="18" cy="16" r="14" fill="#ede9fe" stroke="#7c3aed" strokeWidth="1.8"/>
+      <circle cx="13" cy="12" r="2"  fill="#7c3aed"/>
+      <circle cx="23" cy="12" r="2"  fill="#7c3aed"/>
+      <circle cx="13" cy="20" r="2"  fill="#7c3aed"/>
+      <circle cx="23" cy="20" r="2"  fill="#7c3aed"/>
+      <rect x="6"  cy="14" x="6"  y="32" width="24" height="7" rx="3.5" fill="#ede9fe" stroke="#7c3aed" strokeWidth="1.8"/>
+      <circle cx="11" cy="35.5" r="2.5" fill="#7c3aed"/>
+      <circle cx="25" cy="35.5" r="2.5" fill="#7c3aed"/>
+    </svg>
+  ),
+  "Tipo 1": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="16" fill="#f0fdf4" stroke="#16a34a" strokeWidth="1.8"/>
+      <circle cx="12" cy="13" r="2.2" fill="#16a34a"/>
+      <circle cx="24" cy="13" r="2.2" fill="#16a34a"/>
+      <circle cx="12" cy="22" r="2.2" fill="#16a34a"/>
+      <circle cx="24" cy="22" r="2.2" fill="#16a34a"/>
+      <rect x="16" y="24" width="4" height="6" rx="2" fill="#16a34a"/>
+    </svg>
+  ),
+  "Tesla": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 36">
+      <rect width="36" height="36" rx="10" fill="#fee2e2" stroke="#dc2626" strokeWidth="1.5"/>
+      <path d="M9 10 L27 10 L27 12 L20 12 L20 28 L16 28 L16 12 L9 12 Z" fill="#dc2626"/>
+      <path d="M13 10 L23 10 Q27 10 27 10 L18 14 Q9 10 9 10 Z" fill="#dc2626"/>
+    </svg>
+  ),
+  "Schuko": (s = 36) => (
+    <svg width={s} height={s} viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="16" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8"/>
+      <circle cx="12" cy="18" r="3"  fill="#94a3b8"/>
+      <circle cx="24" cy="18" r="3"  fill="#94a3b8"/>
+    </svg>
+  ),
+};
+
 /* ─── inline SVG logos para marcas sem logo no Clearbit ─── */
 const BRAND_LOGOS = {
   prio: (s) => (
@@ -637,25 +716,37 @@ function SubPostosEV() {
 
                   {/* Conectores por tipo */}
                   {posto.conectores?.length > 0 ? (
-                    <div className="mb-3 flex flex-col gap-1.5">
+                    <div className="mb-3 flex flex-col gap-2">
                       {posto.conectores.map((c, ci) => {
-                        const dcCls = c.corrente === "DC"
-                          ? (c.kw >= 150 ? "bg-purple-50 border-purple-200 text-purple-700" : "bg-blue-50 border-blue-200 text-blue-700")
-                          : "bg-slate-50 border-slate-200 text-slate-600";
+                        const livre = c.livres > 0;
+                        const statusCls = livre
+                          ? "border-emerald-200 bg-emerald-50"
+                          : "border-slate-200 bg-slate-50";
+                        const icon = CONECTOR_ICONS[c.tipo];
                         return (
-                          <div key={ci} className={`flex items-center justify-between px-3 py-1.5 rounded-xl border ${dcCls}`}>
-                            <div className="flex items-center gap-1.5">
-                              <Zap size={11} />
-                              <span className="text-[11px] font-black">{c.tipo}</span>
-                              <span className="text-[10px] font-medium opacity-70">{c.corrente}</span>
+                          <div key={ci} className={`flex items-center gap-3 px-3 py-2 rounded-2xl border ${statusCls}`}>
+                            {icon ? (
+                              <div className="flex-shrink-0">{icon(34)}</div>
+                            ) : (
+                              <div className="w-9 h-9 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
+                                <Zap size={16} className="text-slate-500" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[12px] font-black text-slate-800">{c.tipo}</p>
+                              <p className="text-[10px] text-slate-400">{c.corrente}{c.kw > 0 ? ` · ${c.kw} kW` : ""}</p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {c.kw > 0 && (
-                                <span className="text-[10px] font-black">{c.kw} kW</span>
-                              )}
-                              {c.total > 0 && (
-                                <span className={`text-[10px] font-black ${c.livres > 0 ? "text-emerald-600" : "text-red-500"}`}>
-                                  {c.livres}/{c.total}
+                            <div className="text-right flex-shrink-0">
+                              {c.total > 0 ? (
+                                <>
+                                  <p className={`text-[13px] font-black ${livre ? "text-emerald-600" : "text-red-500"}`}>
+                                    {c.livres}/{c.total}
+                                  </p>
+                                  <p className="text-[9px] text-slate-400">livres</p>
+                                </>
+                              ) : (
+                                <span className={`text-[10px] font-black ${livre ? "text-emerald-600" : "text-slate-400"}`}>
+                                  {livre ? "Disponível" : "—"}
                                 </span>
                               )}
                             </div>
