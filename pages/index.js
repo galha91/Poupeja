@@ -57,13 +57,19 @@ function SectionLabel({ children, icon: Icon, className = "" }) {
   );
 }
 
-function EmptyState({ icon: Icon, titulo, sub, cta, onCta }) {
+function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
+  const paleta = {
+    slate: { wrap: "bg-slate-50 border-slate-100",       icon: "text-slate-300" },
+    blue:  { wrap: "bg-blue-50 border-blue-100",         icon: "text-blue-300" },
+    green: { wrap: "bg-emerald-50 border-emerald-100",   icon: "text-emerald-300" },
+  };
+  const c = paleta[color] || paleta.slate;
   return (
     <div className="mx-4 card p-8 flex flex-col items-center text-center">
-      <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
-        <Icon size={28} className="text-slate-300" />
+      <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center mb-4 ${c.wrap}`}>
+        <Icon size={30} className={c.icon} />
       </div>
-      <p className="text-sm font-black text-slate-500">{titulo}</p>
+      <p className="text-sm font-black text-slate-600">{titulo}</p>
       <p className="text-[12px] text-slate-400 mt-1 leading-relaxed">{sub}</p>
       {cta && (
         <button
@@ -138,19 +144,22 @@ function EcraInicio({ user, setTab }) {
       {/* Features grid */}
       <div className="px-4 mt-4 anim-up anim-up-1">
         <SectionLabel icon={Sparkles}>O que podes fazer</SectionLabel>
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-3">
           {FEATURES.map((f, i) => (
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-gradient-to-br ${f.bg} rounded-2xl p-4 text-left text-white shadow-lg`}
-              style={{ boxShadow: `0 10px 25px -8px ${f.shadow}` }}
+              className={`press bg-gradient-to-br ${f.bg} rounded-2xl p-5 text-left text-white`}
+              style={{ boxShadow: `0 12px 28px -8px ${f.shadow}` }}
             >
-              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                <f.icon size={18} />
+              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center mb-3.5">
+                <f.icon size={21} />
               </div>
-              <p className="text-sm font-black leading-snug">{f.label}</p>
-              <p className="text-[10px] text-white/70 mt-0.5 leading-relaxed">{f.desc}</p>
+              <p className="text-[15px] font-black leading-snug">{f.label}</p>
+              <p className="text-[11px] text-white/75 mt-1 leading-relaxed">{f.desc}</p>
+              <div className="mt-3 flex items-center gap-1 text-[10px] font-black text-white/60">
+                Ver mais <ChevronRight size={10} />
+              </div>
             </button>
           ))}
         </div>
@@ -159,17 +168,17 @@ function EcraInicio({ user, setTab }) {
       {/* Atalhos */}
       <div className="px-4 mt-5 anim-up anim-up-2">
         <SectionLabel icon={Zap}>Atalhos rápidos</SectionLabel>
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-3 gap-3">
           {SHORTCUTS.map((it, i) => (
             <button
               key={i}
               onClick={() => setTab(it.tab)}
-              className="press card flex flex-col items-center gap-2 py-4 px-2"
+              className="press card flex flex-col items-center gap-2.5 py-4 px-2"
             >
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${it.bg}`}>
-                <it.icon size={19} className={it.color} />
+              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${it.bg}`}>
+                <it.icon size={21} className={it.color} />
               </div>
-              <span className="text-[10px] font-black text-slate-700 text-center leading-tight">{it.label}</span>
+              <span className="text-[11px] font-black text-slate-700 text-center leading-tight">{it.label}</span>
             </button>
           ))}
         </div>
@@ -215,8 +224,8 @@ function SecaoPoupanca({ setTab }) {
           <p className="text-[11px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5 mb-2">
             <PiggyBank size={12} /> Total poupado este mês
           </p>
-          <p className="text-5xl font-black text-white/30">€ 0</p>
-          <p className="text-[12px] text-white/60 mt-2">
+          <p className="text-5xl font-black text-white">€ 0</p>
+          <p className="text-[12px] text-white/70 mt-2">
             Começa a guardar talões para acompanhar a tua poupança aqui.
           </p>
           <div className="flex gap-2 mt-4">
@@ -239,6 +248,7 @@ function SecaoPoupanca({ setTab }) {
           sub="À medida que fores guardando talões, vês aqui o breakdown por categoria."
           cta="Guardar primeiro talão"
           onCta={() => setTab("taloes")}
+          color="blue"
         />
       </div>
 
@@ -409,20 +419,20 @@ export default function PoupeJa() {
                     <button
                       key={it.id}
                       onClick={() => navClick(it.id)}
-                      className="flex flex-col items-center gap-1 px-3 py-2 min-w-[56px] relative"
+                      className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors duration-150 ${active ? "bg-emerald-50" : ""}`}
                     >
-                      <span
-                        className="absolute top-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-emerald-500 transition-all duration-300"
-                        style={{ width: active ? "20px" : "0px", opacity: active ? 1 : 0 }}
-                      />
                       <it.icon
                         size={20}
-                        className={`transition-all duration-200 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
+                        className={`transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
                         strokeWidth={active ? 2.5 : 1.8}
                       />
-                      <span className={`text-[9px] font-black transition-colors duration-200 ${active ? "text-emerald-600" : "text-slate-400"}`}>
+                      <span className={`text-[9px] font-black transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"}`}>
                         {it.label}
                       </span>
+                      <span
+                        className="w-1 h-1 rounded-full bg-emerald-500 transition-all duration-200"
+                        style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(0)" }}
+                      />
                     </button>
                   );
                 })}
