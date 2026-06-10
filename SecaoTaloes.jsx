@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
   Camera, Upload, Receipt, ShieldCheck, ShoppingCart,
-  X, TrendingUp, Package, Check, Trash2, Image, ChevronRight,
+  X, TrendingUp, Package, Check, Trash2, Image, ChevronRight, Loader2, Euro,
 } from "lucide-react";
 
 const STORAGE_KEY = "poupeja_taloes";
@@ -30,12 +30,30 @@ const DURACOES = [
 function ModalGuardar({ onFechar, onGuardar, modo }) {
   const cameraRef  = useRef(null);
   const galeriaRef = useRef(null);
-  const [fase, setFase]           = useState("foto");
-  const [preview, setPreview]     = useState(null);
-  const [nome, setNome]           = useState("");
-  const [dataCompra, setDataCompra] = useState(new Date().toISOString().split("T")[0]);
-  const [duracao, setDuracao]     = useState(24);
-  const [erroNome, setErroNome]   = useState(false);
+  const [fase, setFase]               = useState("foto");
+  const [preview, setPreview]         = useState(null);
+  const [valorPoupado, setValorPoupado] = useState("");
+  const [lendo, setLendo]             = useState(false);
+  const [nome, setNome]               = useState("");
+  const [dataCompra, setDataCompra]   = useState(new Date().toISOString().split("T")[0]);
+  const [duracao, setDuracao]         = useState(24);
+  const [erroNome, setErroNome]       = useState(false);
+
+  async function lerValorTalao(base64) {
+    try {
+      const res = await fetch("/api/ler-talao", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imagem: base64 }),
+      });
+      const data = await res.json();
+      if (data.valor !== null && data.valor !== undefined) {
+        setValorPoupado(data.valor.toFixed(2));
+      }
+    } catch {}
+    setLendo(false);
+    setFase("confirmar");
+  }
 
   function handleFile(e) {
     const file = e.target.files?.[0];
@@ -43,7 +61,13 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
     const reader = new FileReader();
     reader.onload = ev => {
       setPreview(ev.target.result);
-      if (modo === "garantia") setFase("detalhes");
+      if (modo === "garantia") {
+        setFase("detalhes");
+      } else {
+        setLendo(true);
+        setFase("lendo");
+        lerValorTalao(ev.target.result);
+      }
     };
     reader.readAsDataURL(file);
     e.target.value = "";
@@ -57,11 +81,12 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
       d.setMonth(d.getMonth() + duracao);
       dataExpiracao = d.toISOString().split("T")[0];
     }
-    onGuardar(preview, { nome: nome.trim(), dataCompra, duracao, dataExpiracao });
+    const valor = valorPoupado ? parseFloat(valorPoupado.replace(",", ".")) : null;
+    onGuardar(preview, { nome: nome.trim(), dataCompra, duracao, dataExpiracao, valorPoupado: isNaN(valor) ? null : valor });
     onFechar();
   }
 
-  const fecharSafe = fase === "foto" ? onFechar : undefined;
+  const fecharSafe = (fase === "foto" || fase === "lendo") ? onFechar : undefined;
 
   return (
     <div
@@ -88,6 +113,14 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
         {/* ── fase: foto ── */}
         {fase === "foto" && !preview && (
           <>
+            {modo === "compra" && (
+              <div className="mb-4 rounded-2xl p-3.5 flex gap-2.5" style={{ background: "#eff6ff", border: "1.5px solid #bfdbfe" }}>
+                <Receipt size={15} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <p className="text-[11px] text-blue-800 leading-relaxed font-semibold">
+                  Fotografa o <strong>talão inteiro</strong>, incluindo o final onde aparece o <strong>total poupado</strong>. Assim lemos o valor automaticamente.
+                </p>
+              </div>
+            )}
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => cameraRef.current?.click()}
@@ -107,14 +140,49 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
           </>
         )}
 
+        {/* ── fase: lendo (OCR a decorrer) ── */}
+        {fase === "lendo" && (
+          <div className="flex flex-col items-center justify-center py-10 gap-4">
+            {preview && <img src={preview} alt="talão" className="w-full rounded-2xl object-cover max-h-40 opacity-70" />}
+            <div className="flex items-center gap-2.5 text-slate-600">
+              <Loader2 size={20} className="animate-spin text-blue-500" />
+              <p className="text-sm font-bold">A ler o talão…</p>
+            </div>
+          </div>
+        )}
+
         {/* ── fase: confirmar compra ── */}
-        {fase === "foto" && preview && modo === "compra" && (
-          <div className="flex flex-col gap-3">
-            <img src={preview} alt="talão" className="w-full rounded-2xl object-cover max-h-52" />
-            <button onClick={confirmar} className="press w-full py-4 rounded-2xl text-white font-black flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg,#1d4ed8,#3b82f6)" }}>
+        {fase === "confirmar" && preview && (
+          <div className="flex flex-col gap-4">
+            <img src={preview} alt="talão" className="w-full rounded-2xl object-cover max-h-44" />
+
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                <Euro size={10} /> Valor poupado (€)
+              </p>
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                min="0"
+                value={valorPoupado}
+                onChange={e => setValorPoupado(e.target.value)}
+                placeholder="Insere manualmente"
+                className="w-full px-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-white text-slate-800 font-bold text-base placeholder:text-slate-300 focus:outline-none focus:border-blue-400 transition-all"
+              />
+              {valorPoupado ? (
+                <p className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                  <Check size={11} /> Valor lido automaticamente — podes editar se necessário.
+                </p>
+              ) : (
+                <p className="text-[11px] text-slate-400 mt-1">Não foi possível ler o valor. Insere manualmente (opcional).</p>
+              )}
+            </div>
+
+            <button onClick={confirmar} className="press w-full py-4 rounded-2xl text-white font-black flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg,#1d4ed8,#3b82f6)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}>
               <Check size={19} /> Guardar talão
             </button>
-            <button onClick={() => setPreview(null)} className="press w-full py-3 rounded-2xl text-sm font-bold text-slate-500 bg-slate-100">
+            <button onClick={() => { setPreview(null); setValorPoupado(""); setFase("foto"); }} className="press w-full py-3 rounded-2xl text-sm font-bold text-slate-500 bg-slate-100">
               Tirar outra foto
             </button>
           </div>
@@ -230,8 +298,13 @@ function CardTalao({ talao, onApagar }) {
       <div className="p-3">
         <p className="text-[12px] font-black text-slate-800 leading-snug line-clamp-1">{talao.nome || "Talão"}</p>
         <p className="text-[10px] text-slate-400 mt-0.5">{talao.dataCompra ? new Date(talao.dataCompra).toLocaleDateString("pt-PT") : talao.data}</p>
+        {talao.valorPoupado != null && (
+          <div className="mt-1.5 px-2 py-1 rounded-lg" style={{ background: "#f0fdf4" }}>
+            <p className="text-[10px] font-black text-emerald-700">Poupou €{talao.valorPoupado.toFixed(2)}</p>
+          </div>
+        )}
         {label && (
-          <div className="mt-1.5 px-2 py-1 rounded-lg" style={{ background: bgCor }}>
+          <div className="mt-1 px-2 py-1 rounded-lg" style={{ background: bgCor }}>
             <p className="text-[10px] font-black" style={{ color: cor }}>{label}</p>
           </div>
         )}
@@ -266,6 +339,7 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
       dataCompra: meta.dataCompra || null,
       duracao: meta.duracao || null,
       dataExpiracao: meta.dataExpiracao || null,
+      valorPoupado: meta.valorPoupado ?? null,
       data: new Date().toLocaleDateString("pt-PT"),
       criadoEm: new Date().toISOString(),
     };
@@ -315,6 +389,15 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
             </p>
             <p className="text-4xl font-black text-white mt-1">{compras.length}</p>
             <p className="text-xs text-white/60 mt-0.5">{compras.length === 1 ? "talão" : "talões"} no histórico</p>
+            {(() => {
+              const totalPoupado = compras.reduce((acc, t) => acc + (t.valorPoupado ?? 0), 0);
+              return totalPoupado > 0 ? (
+                <div className="mt-3 pt-3 border-t border-white/20">
+                  <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Total poupado</p>
+                  <p className="text-xl font-black text-white mt-0.5">€{totalPoupado.toFixed(2)}</p>
+                </div>
+              ) : null;
+            })()}
           </div>
 
           <button onClick={() => setModal(true)}
