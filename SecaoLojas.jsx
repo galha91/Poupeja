@@ -107,17 +107,17 @@ function LogoLoja({ loja, size = 44 }) {
 
 function GrelhaLojas({ lista, promo }) {
   return (
-    <div className="px-4 grid grid-cols-3 gap-2.5">
+    <div className="px-4 grid grid-cols-3 gap-3">
       {lista.map(loja => {
         const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
         return (
           <button
             key={loja.nome}
             onClick={() => window.open(loja.url, "_blank")}
-            className="press card p-3 flex flex-col items-center gap-2 relative overflow-hidden"
+            className="press card p-3.5 flex flex-col items-center gap-2.5 relative overflow-hidden"
           >
-            <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-[18px]" style={{ background: cor }} />
-            <LogoLoja loja={loja} size={44} />
+            <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]" style={{ background: cor }} />
+            <LogoLoja loja={loja} size={52} />
             <div className="text-center w-full">
               <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
               <div className="mt-1 flex items-center justify-center gap-0.5">
