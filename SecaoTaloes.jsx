@@ -136,7 +136,7 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
                 type="text"
                 value={nome}
                 onChange={e => { setNome(e.target.value); setErroNome(false); }}
-                placeholder="Ex: TV Samsung 55\", Frigorífico Bosch..."
+                placeholder={'Ex: TV Samsung 55", Frigorífico Bosch...'}
                 className={`w-full px-4 py-3.5 rounded-2xl border-2 bg-white text-slate-800 font-semibold text-sm placeholder:text-slate-300 focus:outline-none transition-all ${erroNome ? "border-red-300 focus:border-red-400" : "border-slate-100 focus:border-emerald-400"}`}
               />
               {erroNome && <p className="text-[11px] text-red-500 mt-1 font-semibold">Escreve o nome do produto.</p>}
