@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store, ChevronRight, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store, ChevronRight, Sparkles, Heart } from "lucide-react";
+
+const FAV_KEY = "poupeja_favoritos_lojas";
+function lerFavs() { try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch { return new Set(); } }
+function guardarFavs(s) { try { localStorage.setItem(FAV_KEY, JSON.stringify([...s])); } catch {} }
 
 const LOJAS = {
   moda: [
@@ -105,32 +109,43 @@ function LogoLoja({ loja, size = 44 }) {
   );
 }
 
-function GrelhaLojas({ lista, promo }) {
+function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
   return (
     <div className="px-4 grid grid-cols-3 gap-3">
       {lista.map(loja => {
         const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
+        const isFav = favs?.has(loja.nome);
         return (
-          <button
-            key={loja.nome}
-            onClick={() => window.open(loja.url, "_blank")}
-            className="press card p-3.5 flex flex-col items-center gap-2.5 relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]" style={{ background: cor }} />
-            <LogoLoja loja={loja} size={52} />
-            <div className="text-center w-full">
-              <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
-              <div className="mt-1 flex items-center justify-center gap-0.5">
-                {promo ? (
-                  <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
-                    <Tag size={8} /> Saldos
-                  </span>
-                ) : (
-                  <ExternalLink size={9} className="text-slate-300" />
-                )}
+          <div key={loja.nome} className="relative">
+            <button
+              onClick={() => window.open(loja.url, "_blank")}
+              className="press card p-3.5 flex flex-col items-center gap-2.5 w-full relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]" style={{ background: cor }} />
+              <LogoLoja loja={loja} size={52} />
+              <div className="text-center w-full">
+                <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
+                <div className="mt-1 flex items-center justify-center gap-0.5">
+                  {promo ? (
+                    <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
+                      <Tag size={8} /> Saldos
+                    </span>
+                  ) : (
+                    <ExternalLink size={9} className="text-slate-300" />
+                  )}
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+            {onToggleFav && (
+              <button
+                onClick={e => { e.stopPropagation(); onToggleFav(loja.nome); }}
+                className="press absolute top-2 right-2 w-6 h-6 rounded-lg flex items-center justify-center"
+                style={{ background: isFav ? "#fef2f2" : "rgba(255,255,255,0.9)" }}
+              >
+                <Heart size={11} className={isFav ? "text-red-400 fill-red-400" : "text-slate-300"} />
+              </button>
+            )}
+          </div>
         );
       })}
     </div>
@@ -140,7 +155,17 @@ function GrelhaLojas({ lista, promo }) {
 export default function SecaoLojas() {
   const [topo, setTopo] = useState("lojas");
   const [cat, setCat]   = useState("moda");
+  const [favs, setFavs] = useState(() => lerFavs());
   const cfg = CAT_CONFIG[cat];
+
+  function toggleFav(nome) {
+    const nova = new Set(favs);
+    nova.has(nome) ? nova.delete(nome) : nova.add(nome);
+    setFavs(nova);
+    guardarFavs(nova);
+  }
+
+  const favoritasAtuais = LOJAS[cat]?.filter(l => favs.has(l.nome)) || [];
 
   return (
     <div className="pb-28 pt-4">
@@ -208,10 +233,21 @@ export default function SecaoLojas() {
             </div>
           </div>
 
-          <GrelhaLojas lista={LOJAS[cat]} promo={false} />
+          {favoritasAtuais.length > 0 && (
+            <div className="mb-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3 flex items-center gap-1.5">
+                <Heart size={10} className="text-red-400 fill-red-400" /> Favoritas
+              </p>
+              <GrelhaLojas lista={favoritasAtuais} promo={false} favs={favs} onToggleFav={toggleFav} />
+              <div className="mx-4 mt-4 mb-1 border-t border-slate-100" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-3 mb-3">Todas</p>
+            </div>
+          )}
+
+          <GrelhaLojas lista={LOJAS[cat]} promo={false} favs={favs} onToggleFav={toggleFav} />
 
           <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
-            As lojas abrem no site oficial, com as promoções sempre atualizadas.
+            Toca no ❤ para guardar favoritas. As lojas abrem no site oficial.
           </p>
         </div>
       )}
@@ -255,7 +291,7 @@ export default function SecaoLojas() {
           </div>
 
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3">Todas as lojas</p>
-          <GrelhaLojas lista={PROMOCOES} promo={true} />
+          <GrelhaLojas lista={PROMOCOES} promo={true} favs={favs} onToggleFav={toggleFav} />
 
           <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
             Estas lojas abrem diretamente na página de promoções ou outlet.

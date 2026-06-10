@@ -4,6 +4,7 @@ import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
+import SecaoListaCompras from "../SecaoListaCompras";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { lerAuth, guardarAuth, apagarAuth } from "../EcraAuth";
 import BannerInstalar from "../BannerInstalar";
@@ -11,7 +12,7 @@ import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
-  Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck,
+  Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks,
 } from "lucide-react";
 
 /* ─── nav config ─── */
@@ -31,6 +32,7 @@ const TITULOS = {
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
+  lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
 };
 
 /* ─── micro components ─── */
@@ -98,8 +100,8 @@ function EcraInicio({ user, setTab, goGarantias }) {
   const SHORTCUTS = [
     { icon: Tag,         label: "Folhetos",    color: "text-violet-600",  bg: "bg-violet-50",   tab: "mercados" },
     { icon: Receipt,     label: "Talões",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "taloes" },
+    { icon: ListChecks,  label: "Lista",       color: "text-purple-600",  bg: "bg-purple-50",   tab: "lista" },
     { icon: ShieldCheck, label: "Garantias",   color: "text-emerald-600", bg: "bg-emerald-50",  action: goGarantias },
-    { icon: Shirt,       label: "Moda",        color: "text-violet-600",  bg: "bg-violet-50",   tab: "lojas" },
     { icon: Fuel,        label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",   tab: "mobilidade" },
     { icon: Battery,     label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50",  tab: "mobilidade" },
   ];
@@ -230,10 +232,45 @@ function EcraInicio({ user, setTab, goGarantias }) {
 
 /* ─── Ecrã Poupança ─── */
 function SecaoPoupanca({ setTab }) {
+  const [dados, setDados] = useState(null);
+
+  useEffect(() => {
+    try {
+      const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
+      const compras = taloes.filter(t => t.tipo === "compra" && t.valorPoupado != null);
+      const agora = new Date();
+      const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+
+      // Agrupar por mês (últimos 6 meses)
+      const porMes = {};
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+        const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        porMes[k] = 0;
+      }
+      compras.forEach(t => {
+        const data = t.dataCompra || t.criadoEm?.slice(0, 7) || mesAtual;
+        const k = data.slice(0, 7);
+        if (k in porMes) porMes[k] += t.valorPoupado;
+      });
+
+      const meses = Object.entries(porMes).map(([k, v]) => ({
+        k, v, label: new Date(k + "-01").toLocaleDateString("pt-PT", { month: "short" })
+      }));
+      const totalMes = porMes[mesAtual] || 0;
+      const totalGeral = compras.reduce((acc, t) => acc + (t.valorPoupado || 0), 0);
+      const maxBar = Math.max(...meses.map(m => m.v), 0.01);
+
+      setDados({ meses, totalMes, totalGeral, count: compras.length, maxBar });
+    } catch {}
+  }, []);
+
+  const semDados = !dados || dados.totalGeral === 0;
+
   return (
     <div className="pb-28 pt-4">
 
-      {/* Hero vazio */}
+      {/* Hero */}
       <div className="px-4 mb-5 anim-up">
         <div
           className="rounded-3xl p-6 relative overflow-hidden"
@@ -243,36 +280,84 @@ function SecaoPoupanca({ setTab }) {
           <p className="text-[11px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5 mb-2">
             <PiggyBank size={12} /> Total poupado este mês
           </p>
-          <p className="text-5xl font-black text-white">€ 0</p>
-          <p className="text-[12px] text-white/70 mt-2">
-            Começa a guardar talões para acompanhar a tua poupança aqui.
+          <p className="text-5xl font-black text-white">
+            {dados ? `€${dados.totalMes.toFixed(2)}` : "€0"}
           </p>
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={() => setTab("taloes")}
-              className="press inline-flex items-center gap-1.5 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl"
-            >
-              <Plus size={12} /> Guardar primeiro talão
-            </button>
-          </div>
+          {dados && dados.totalGeral > 0 ? (
+            <p className="text-[12px] text-white/70 mt-2">
+              Total guardado: <strong className="text-white">€{dados.totalGeral.toFixed(2)}</strong> em {dados.count} talões
+            </p>
+          ) : (
+            <p className="text-[12px] text-white/70 mt-2">Guarda talões com o valor poupado para ver aqui.</p>
+          )}
+          <button
+            onClick={() => setTab("taloes")}
+            className="press mt-4 inline-flex items-center gap-1.5 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl"
+          >
+            <Plus size={12} /> {semDados ? "Guardar primeiro talão" : "Adicionar talão"}
+          </button>
         </div>
       </div>
 
-      {/* Empty state categorias */}
-      <div className="px-4 mb-5 anim-up anim-up-1">
-        <SectionLabel icon={Zap}>Onde poupaste</SectionLabel>
-        <EmptyState
-          icon={BarChart}
-          titulo="Ainda sem dados de poupança"
-          sub="À medida que fores guardando talões, vês aqui o breakdown por categoria."
-          cta="Guardar primeiro talão"
-          onCta={() => setTab("taloes")}
-          color="blue"
-        />
+      {/* Gráfico de barras mensais */}
+      {dados && dados.totalGeral > 0 ? (
+        <div className="px-4 mb-5 anim-up anim-up-1">
+          <SectionLabel icon={BarChart}>Últimos 6 meses</SectionLabel>
+          <div className="card p-4">
+            <div className="flex items-end gap-2 h-24">
+              {dados.meses.map(m => {
+                const pct = dados.maxBar > 0 ? (m.v / dados.maxBar) * 100 : 0;
+                const isAtual = m.k === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+                return (
+                  <div key={m.k} className="flex-1 flex flex-col items-center gap-1">
+                    <p className="text-[8px] font-black text-blue-600">{m.v > 0 ? `€${m.v.toFixed(0)}` : ""}</p>
+                    <div className="w-full rounded-t-lg transition-all" style={{
+                      height: `${Math.max(pct, m.v > 0 ? 8 : 4)}%`,
+                      background: isAtual ? "linear-gradient(180deg,#3b82f6,#1d4ed8)" : "#e2e8f0",
+                      minHeight: 4,
+                    }} />
+                    <p className="text-[9px] text-slate-400 font-bold">{m.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="px-4 mb-5 anim-up anim-up-1">
+          <SectionLabel icon={Zap}>Histórico</SectionLabel>
+          <EmptyState
+            icon={BarChart}
+            titulo="Ainda sem dados de poupança"
+            sub="Quando guardares talões com o valor poupado, o teu histórico aparece aqui."
+            cta="Guardar talão"
+            onCta={() => setTab("taloes")}
+            color="blue"
+          />
+        </div>
+      )}
+
+      {/* Lista de compras shortcut */}
+      <div className="px-4 mb-5 anim-up anim-up-2">
+        <button
+          onClick={() => setTab("lista")}
+          className="press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left"
+          style={{ background: "linear-gradient(135deg,#5b21b6,#7c3aed)", boxShadow: "0 12px 28px -10px rgba(124,58,237,0.4)" }}
+        >
+          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <ListChecks size={24} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Novo</p>
+            <p className="text-[15px] font-black text-white leading-snug">Lista de compras</p>
+            <p className="text-[11px] text-white/70 mt-0.5">Organiza o que precisas antes de ir às compras</p>
+          </div>
+          <ChevronRight size={18} className="text-white/50 flex-shrink-0" />
+        </button>
       </div>
 
-      {/* Desafio bloqueado */}
-      <div className="px-4 anim-up anim-up-2">
+      {/* Desafios */}
+      <div className="px-4 anim-up anim-up-3">
         <div
           className="rounded-2xl p-4"
           style={{ background: "linear-gradient(135deg,#fffbeb,#fef3c7)", border: "1.5px solid #fde68a" }}
@@ -453,6 +538,14 @@ export default function PoupeJa() {
                       <ArrowLeft size={15} /> Voltar
                     </button>
                     <SecaoTaloes inicioAba={subTabTaloes} />
+                  </div>
+                )}
+                {tab === "lista" && (
+                  <div className="pt-4">
+                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
+                      <ArrowLeft size={15} /> Voltar
+                    </button>
+                    <SecaoListaCompras />
                   </div>
                 )}
               </div>

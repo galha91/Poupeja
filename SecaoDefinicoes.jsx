@@ -51,8 +51,25 @@ function Row({ border = true, children }) {
 }
 
 export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
-  const [prefs, setPrefs] = useState(lerPrefs);
-  const [saved, setSaved]  = useState(false);
+  const [prefs, setPrefs]   = useState(lerPrefs);
+  const [saved, setSaved]   = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado]   = useState(false);
+
+  async function enviarEmailSemanal() {
+    if (!user?.email) return;
+    setEnviando(true);
+    try {
+      await fetch("/api/email-semanal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email, nome: user.nome }),
+      });
+      setEnviado(true);
+      setTimeout(() => setEnviado(false), 4000);
+    } catch {}
+    setEnviando(false);
+  }
 
   useEffect(() => {
     try { localStorage.setItem("poupeja_prefs", JSON.stringify(prefs)); } catch (_) {}
@@ -221,6 +238,32 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
             className="w-full"
             style={{ accentColor: "#f59e0b" }}
           />
+        </Row>
+      </Section>
+
+      {/* Email */}
+      <Section label="Email semanal">
+        <Row border={false}>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
+              <Mail size={18} className="text-violet-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-black text-slate-800">Folhetos da semana</p>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Recebe um resumo com todos os folhetos ativos no teu email.</p>
+              <button
+                onClick={enviarEmailSemanal}
+                disabled={enviando || enviado}
+                className={`press mt-3 w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
+                  enviado ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  : "text-white"
+                }`}
+                style={!enviado ? { background: "linear-gradient(135deg,#7c3aed,#a855f7)" } : {}}
+              >
+                {enviando ? "A enviar…" : enviado ? <><Check size={13} /> Enviado!</> : <><Mail size={13} /> Enviar para {user?.email}</>}
+              </button>
+            </div>
+          </div>
         </Row>
       </Section>
 
