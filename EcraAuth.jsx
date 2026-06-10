@@ -2,7 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   PiggyBank, Receipt, Tag, Fuel, BarChart2, ShieldCheck,
-  ArrowRight, ArrowLeft, Eye, EyeOff, Check, AlertCircle,
+  ArrowRight, ArrowLeft, Eye, EyeOff, Check, AlertCircle, KeyRound,
 } from "lucide-react";
 
 const FEATURES = [
@@ -265,8 +265,120 @@ function Registo({ onVoltar, onAuth }) {
   );
 }
 
+/* ── Ecrã Recuperar Password ── */
+function RecuperarPass({ onVoltar }) {
+  const [fase, setFase]           = useState("email"); // "email" | "nova" | "ok"
+  const [email, setEmail]         = useState("");
+  const [novaPass, setNovaPass]   = useState("");
+  const [showPass, setShowPass]   = useState(false);
+  const [erro, setErro]           = useState("");
+
+  function verificarEmail(e) {
+    e.preventDefault();
+    setErro("");
+    const users = lerUtilizadores();
+    const existe = users.find(u => u.email === email.toLowerCase().trim());
+    if (!existe) return setErro("Não encontrámos nenhuma conta com esse email.");
+    setFase("nova");
+  }
+
+  function guardarNovaPass(e) {
+    e.preventDefault();
+    setErro("");
+    if (novaPass.length < 6) return setErro("A password precisa de ter pelo menos 6 caracteres.");
+    const users = lerUtilizadores();
+    const atualizados = users.map(u =>
+      u.email === email.toLowerCase().trim() ? { ...u, password: novaPass } : u
+    );
+    guardarUtilizadores(atualizados);
+    setFase("ok");
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div
+        className="px-4 pt-12 pb-6 relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)" }}
+      >
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
+        <button onClick={onVoltar} className="press flex items-center gap-1.5 text-white/70 text-sm font-bold mb-4">
+          <ArrowLeft size={16} /> Voltar
+        </button>
+        <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Recuperar acesso</p>
+        <h2 className="text-2xl font-black text-white mt-0.5">Esqueceu a password?</h2>
+        <p className="text-white/60 text-[12px] mt-0.5">
+          {fase === "email" ? "Diz-nos o teu email para encontrar a conta." : fase === "nova" ? "Define uma nova palavra-passe." : ""}
+        </p>
+      </div>
+
+      {fase === "ok" ? (
+        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-4">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2"
+               style={{ background: "#f0fdf4", border: "2px solid #bbf7d0" }}>
+            <ShieldCheck size={36} className="text-emerald-500" />
+          </div>
+          <h2 className="text-2xl font-black text-slate-800">Password atualizada!</h2>
+          <p className="text-[14px] text-slate-500 leading-relaxed">
+            A tua nova palavra-passe foi guardada. Podes entrar agora.
+          </p>
+          <button
+            onClick={onVoltar}
+            className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
+            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}
+          >
+            Entrar agora <ArrowRight size={17} />
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={fase === "email" ? verificarEmail : guardarNovaPass} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+            <KeyRound size={26} className="text-blue-500" />
+          </div>
+
+          {fase === "email" ? (
+            <Campo
+              label="Email da conta"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="exemplo@email.com"
+            />
+          ) : (
+            <Campo
+              label="Nova password"
+              type={showPass ? "text" : "password"}
+              value={novaPass}
+              onChange={setNovaPass}
+              placeholder="Mínimo 6 caracteres"
+              action={{
+                onClick: () => setShowPass(s => !s),
+                icon: showPass ? <EyeOff size={16} /> : <Eye size={16} />,
+              }}
+            />
+          )}
+
+          {erro && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
+              <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
+              <p className="text-[12px] font-bold text-red-600">{erro}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
+            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}
+          >
+            {fase === "email" ? <>Continuar <ArrowRight size={17} /></> : <>Guardar nova password <ArrowRight size={17} /></>}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
 /* ── Ecrã Login ── */
-function Login({ onVoltar, onAuth }) {
+function Login({ onVoltar, onAuth, onEsqueceu }) {
   const [email, setEmail]       = useState("");
   const [pass, setPass]         = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -342,6 +454,14 @@ function Login({ onVoltar, onAuth }) {
         >
           {loading ? "A entrar..." : <>Entrar <ArrowRight size={17} /></>}
         </button>
+
+        <button
+          type="button"
+          onClick={onEsqueceu}
+          className="press text-center text-sm text-blue-600 font-bold mt-1 py-1"
+        >
+          Esqueceu a palavra-passe?
+        </button>
       </form>
     </div>
   );
@@ -349,10 +469,11 @@ function Login({ onVoltar, onAuth }) {
 
 /* ── Export principal ── */
 export default function EcraAuth({ onAuth }) {
-  const [ecra, setEcra] = useState("landing"); // "landing" | "registo" | "login"
+  const [ecra, setEcra] = useState("landing"); // "landing" | "registo" | "login" | "recuperar"
 
-  if (ecra === "registo") return <Registo onVoltar={() => setEcra("landing")} onAuth={onAuth} />;
-  if (ecra === "login")   return <Login   onVoltar={() => setEcra("landing")} onAuth={onAuth} />;
+  if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} onAuth={onAuth} />;
+  if (ecra === "login")     return <Login        onVoltar={() => setEcra("landing")} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
+  if (ecra === "recuperar") return <RecuperarPass onVoltar={() => setEcra("login")} />;
   return <Landing onRegister={() => setEcra("registo")} onLogin={() => setEcra("login")} />;
 }
 
