@@ -73,9 +73,9 @@ const PROMOCOES = [
 ];
 
 const CAT_CONFIG = {
-  moda:      { label: "Moda",      icon: Shirt,      grad: "from-violet-600 to-purple-500",   shadow: "rgba(124,58,237,0.35)",  count: LOJAS.moda.length },
-  eletronica:{ label: "Eletrónica",icon: Smartphone, grad: "from-blue-600 to-blue-500",       shadow: "rgba(37,99,235,0.35)",   count: LOJAS.eletronica.length },
-  desporto:  { label: "Desporto",  icon: Dumbbell,   grad: "from-emerald-600 to-teal-500",    shadow: "rgba(5,150,105,0.35)",   count: LOJAS.desporto.length },
+  moda:      { label: "Moda",      icon: Shirt,      grad: "from-violet-600 to-purple-500",   css: "linear-gradient(135deg,#7c3aed,#a855f7)", shadow: "rgba(124,58,237,0.35)",  count: LOJAS.moda.length },
+  eletronica:{ label: "Eletrónica",icon: Smartphone, grad: "from-blue-600 to-blue-500",       css: "linear-gradient(135deg,#1d4ed8,#3b82f6)", shadow: "rgba(37,99,235,0.35)",   count: LOJAS.eletronica.length },
+  desporto:  { label: "Desporto",  icon: Dumbbell,   grad: "from-emerald-600 to-teal-500",    css: "linear-gradient(135deg,#059669,#14b8a6)", shadow: "rgba(5,150,105,0.35)",   count: LOJAS.desporto.length },
 };
 
 function LogoLoja({ loja, size = 44 }) {
@@ -179,7 +179,7 @@ export default function SecaoLojas() {
                   className={`press flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all ${
                     ativo ? "text-white shadow-md" : "bg-white text-slate-500 border border-slate-100"
                   }`}
-                  style={ativo ? { background: `linear-gradient(135deg, ${c.grad.replace("from-", "").replace(" to-", ",")})` } : {}}
+                  style={ativo ? { background: c.css } : {}}
                 >
                   <c.icon size={13} /> {c.label}
                   <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${ativo ? "bg-white/25 text-white" : "bg-slate-100 text-slate-400"}`}>
