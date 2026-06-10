@@ -3,6 +3,7 @@ import SecaoFolhetos from "../SecaoFolhetos";
 import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
+import SecaoListaCompras from "../SecaoListaCompras";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { lerAuth, guardarAuth, apagarAuth } from "../EcraAuth";
@@ -10,7 +11,7 @@ import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
-  Trophy, Star, Sparkles, TrendingUp, Plus,
+  Trophy, Star, Sparkles, TrendingUp, Plus, ListChecks,
 } from "lucide-react";
 
 /* ─── nav config ─── */
@@ -30,6 +31,7 @@ const TITULOS = {
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
+  lista:      { t: "Lista de compras",                  s: "Organiza o que precisas comprar" },
 };
 
 /* ─── micro components ─── */
@@ -88,6 +90,7 @@ function EcraInicio({ user, setTab }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
   const FEATURES = [
+    { icon: ListChecks, label: "Lista de compras", desc: "Adiciona artigos por categoria e acompanha o que falta", bg: "from-emerald-500 to-teal-400", shadow: "rgba(16,185,129,0.35)", tab: "lista", full: true },
     { icon: Receipt, label: "Os meus talões",   desc: "Guarda compras e garantias num só sítio", bg: "from-emerald-600 to-teal-500",  shadow: "rgba(5,150,105,0.3)",   tab: "taloes" },
     { icon: Tag,     label: "Folhetos",          desc: "Todos os supermercados comparados",       bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",   tab: "mercados" },
     { icon: Fuel,    label: "Combustíveis e EV", desc: "Preços reais e postos perto de ti",       bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)",  tab: "mobilidade" },
@@ -95,10 +98,10 @@ function EcraInicio({ user, setTab }) {
   ];
 
   const SHORTCUTS = [
+    { icon: ListChecks, label: "Lista",        color: "text-teal-600",    bg: "bg-teal-50",    tab: "lista" },
     { icon: Tag,        label: "Folhetos",    color: "text-blue-600",    bg: "bg-blue-50",    tab: "mercados" },
     { icon: Receipt,    label: "Talões",      color: "text-emerald-600", bg: "bg-emerald-50", tab: "taloes" },
     { icon: Shirt,      label: "Moda",        color: "text-violet-600",  bg: "bg-violet-50",  tab: "lojas" },
-    { icon: Smartphone, label: "Eletrónica",  color: "text-slate-700",   bg: "bg-slate-100",  tab: "lojas" },
     { icon: Fuel,       label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",  tab: "mobilidade" },
     { icon: Battery,    label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50", tab: "mobilidade" },
   ];
@@ -148,17 +151,22 @@ function EcraInicio({ user, setTab }) {
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-gradient-to-br ${f.bg} rounded-2xl p-5 text-left text-white`}
+              className={`press bg-gradient-to-br ${f.bg} rounded-2xl text-left text-white ${f.full ? "col-span-2 flex items-center gap-4 px-5 py-4" : "p-5"}`}
               style={{ boxShadow: `0 12px 28px -8px ${f.shadow}` }}
             >
-              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center mb-3.5">
-                <f.icon size={21} />
+              <div className={`bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ${f.full ? "w-14 h-14" : "w-11 h-11 mb-3.5"}`}>
+                <f.icon size={f.full ? 26 : 21} />
               </div>
-              <p className="text-[15px] font-black leading-snug">{f.label}</p>
-              <p className="text-[11px] text-white/75 mt-1 leading-relaxed">{f.desc}</p>
-              <div className="mt-3 flex items-center gap-1 text-[10px] font-black text-white/60">
-                Ver mais <ChevronRight size={10} />
+              <div className={f.full ? "flex-1 min-w-0" : ""}>
+                <p className="text-[15px] font-black leading-snug">{f.label}</p>
+                <p className="text-[11px] text-white/75 mt-1 leading-relaxed">{f.desc}</p>
+                {!f.full && (
+                  <div className="mt-3 flex items-center gap-1 text-[10px] font-black text-white/60">
+                    Ver mais <ChevronRight size={10} />
+                  </div>
+                )}
               </div>
+              {f.full && <ChevronRight size={18} className="text-white/50 flex-shrink-0" />}
             </button>
           ))}
         </div>
@@ -394,6 +402,7 @@ export default function PoupeJa() {
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
+                {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
