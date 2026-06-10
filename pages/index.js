@@ -11,7 +11,7 @@ import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
-  Trophy, Star, Sparkles, TrendingUp, Plus,
+  Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck,
 } from "lucide-react";
 
 /* ─── nav config ─── */
@@ -85,23 +85,23 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
 }
 
 /* ─── Ecrã Início ─── */
-function EcraInicio({ user, setTab }) {
+function EcraInicio({ user, setTab, goGarantias }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
   const FEATURES = [
-    { icon: Receipt, label: "Os meus talões",   desc: "Guarda compras e garantias num só sítio", bg: "from-emerald-600 to-teal-500",  shadow: "rgba(5,150,105,0.3)",   tab: "taloes" },
-    { icon: Tag,     label: "Folhetos",          desc: "Todos os supermercados comparados",       bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",   tab: "mercados" },
-    { icon: Fuel,    label: "Combustíveis e EV", desc: "Preços reais e postos perto de ti",       bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)",  tab: "mobilidade" },
-    { icon: Store,   label: "Lojas e promoções", desc: "Moda, eletrónica e desporto",             bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "lojas" },
+    { icon: Receipt,    label: "Os meus talões",   desc: "Guarda as tuas compras e despesas",       bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",   tab: "taloes" },
+    { icon: Tag,        label: "Folhetos",          desc: "Todos os supermercados comparados",       bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "mercados" },
+    { icon: Fuel,       label: "Combustíveis e EV", desc: "Preços reais e postos perto de ti",       bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)",  tab: "mobilidade" },
+    { icon: Store,      label: "Lojas e promoções", desc: "Moda, eletrónica e desporto",             bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",   tab: "lojas" },
   ];
 
   const SHORTCUTS = [
-    { icon: Tag,        label: "Folhetos",    color: "text-blue-600",    bg: "bg-blue-50",    tab: "mercados" },
-    { icon: Receipt,    label: "Talões",      color: "text-emerald-600", bg: "bg-emerald-50", tab: "taloes" },
-    { icon: Shirt,      label: "Moda",        color: "text-violet-600",  bg: "bg-violet-50",  tab: "lojas" },
-    { icon: Smartphone, label: "Eletrónica",  color: "text-slate-700",   bg: "bg-slate-100",  tab: "lojas" },
-    { icon: Fuel,       label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",  tab: "mobilidade" },
-    { icon: Battery,    label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50", tab: "mobilidade" },
+    { icon: Tag,         label: "Folhetos",    color: "text-violet-600",  bg: "bg-violet-50",   tab: "mercados" },
+    { icon: Receipt,     label: "Talões",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "taloes" },
+    { icon: ShieldCheck, label: "Garantias",   color: "text-emerald-600", bg: "bg-emerald-50",  action: goGarantias },
+    { icon: Shirt,       label: "Moda",        color: "text-violet-600",  bg: "bg-violet-50",   tab: "lojas" },
+    { icon: Fuel,        label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",   tab: "mobilidade" },
+    { icon: Battery,     label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50",  tab: "mobilidade" },
   ];
 
   return (
@@ -141,8 +141,27 @@ function EcraInicio({ user, setTab }) {
         </div>
       </div>
 
-      {/* Features grid */}
+      {/* Garantias highlight */}
       <div className="px-4 mt-4 anim-up anim-up-1">
+        <button
+          onClick={goGarantias}
+          className="press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left"
+          style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 12px 28px -10px rgba(5,150,105,0.4)" }}
+        >
+          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <ShieldCheck size={24} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Exclusivo PoupeJá</p>
+            <p className="text-[15px] font-black text-white leading-snug">Garantias digitais</p>
+            <p className="text-[11px] text-white/70 mt-0.5">Nunca percas a validade dos teus produtos</p>
+          </div>
+          <ChevronRight size={18} className="text-white/50 flex-shrink-0" />
+        </button>
+      </div>
+
+      {/* Features grid */}
+      <div className="px-4 mt-3 anim-up anim-up-1">
         <SectionLabel icon={Sparkles}>O que podes fazer</SectionLabel>
         <div className="grid grid-cols-2 gap-3">
           {FEATURES.map((f, i) => (
@@ -172,7 +191,7 @@ function EcraInicio({ user, setTab }) {
           {SHORTCUTS.map((it, i) => (
             <button
               key={i}
-              onClick={() => setTab(it.tab)}
+              onClick={it.action || (() => setTab(it.tab))}
               className="press card flex flex-col items-center gap-2.5 py-4 px-2"
             >
               <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${it.bg}`}>
@@ -289,8 +308,9 @@ export default function PoupeJa() {
   const [tab, setTabRaw]          = useState("inicio");
   const [dir, setDir]             = useState("right");
   const [bounce, setBounce]       = useState(null);
-  const [verAvisos, setVerAvisos] = useState(false);
-  const [verDefs, setVerDefs]     = useState(false);
+  const [verAvisos, setVerAvisos]       = useState(false);
+  const [verDefs, setVerDefs]           = useState(false);
+  const [subTabTaloes, setSubTabTaloes] = useState("compras");
 
   /* Lê auth do localStorage apenas no cliente */
   useEffect(() => {
@@ -312,11 +332,18 @@ export default function PoupeJa() {
 
   function go(newTab) {
     if (newTab === tab) return;
+    if (newTab === "taloes") setSubTabTaloes("compras");
     const pi = NAV_IDS.indexOf(tab);
     const ni = NAV_IDS.indexOf(newTab);
     const d = ni === -1 ? "up" : pi === -1 ? "fade" : ni > pi ? "right" : "left";
     setDir(d);
     setTabRaw(newTab);
+  }
+
+  function goGarantias() {
+    setSubTabTaloes("garantias");
+    setDir("up");
+    setTabRaw("taloes");
   }
 
   function navClick(id) {
@@ -390,7 +417,7 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
               <div key={tab} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} />}
                 {tab === "inicio"     && <BannerInstalar />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
@@ -401,7 +428,7 @@ export default function PoupeJa() {
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
                       <ArrowLeft size={15} /> Voltar
                     </button>
-                    <SecaoTaloes />
+                    <SecaoTaloes inicioAba={subTabTaloes} />
                   </div>
                 )}
               </div>

@@ -55,8 +55,8 @@ function EstadoVazio({ icon: Icon, titulo, descricao, corFundo, corIcone }) {
   );
 }
 
-export default function SecaoTaloes() {
-  const [aba, setAba]     = useState("compras");
+export default function SecaoTaloes({ inicioAba = "compras" }) {
+  const [aba, setAba]     = useState(inicioAba);
   const [modal, setModal] = useState(false);
 
   return (
