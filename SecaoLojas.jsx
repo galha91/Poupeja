@@ -31,7 +31,7 @@ const LOJAS = {
   eletronica: [
     { nome: "Worten",         dominio: "worten.pt",         cor: "#e30613", url: "https://www.worten.pt/" },
     { nome: "Fnac",           dominio: "fnac.pt",           cor: "#e1a300", url: "https://www.fnac.pt/" },
-    { nome: "MediaMarkt",     dominio: "mediamarkt.pt",     cor: "#df0000", url: "https://www.mediamarkt.pt/" },
+    { nome: "Darty",           dominio: "darty.pt",          cor: "#e2001a", url: "https://www.darty.pt/" },
     { nome: "Radio Popular",  dominio: "radiopopular.pt",   cor: "#e2001a", url: "https://www.radiopopular.pt/" },
     { nome: "PC Diga",        dominio: "pcdiga.com",        cor: "#0066b3", url: "https://www.pcdiga.com/" },
     { nome: "PCComponentes",  dominio: "pccomponentes.pt",  cor: "#ff6000", url: "https://www.pccomponentes.pt/" },
@@ -64,7 +64,7 @@ const PROMOCOES = [
   { nome: "Nike",           dominio: "nike.com",       cor: "#000000", url: "https://www.nike.com/pt/" },
   { nome: "Adidas",         dominio: "adidas.pt",      cor: "#000000", url: "https://www.adidas.pt/outlet" },
   { nome: "Decathlon",      dominio: "decathlon.pt",   cor: "#0082c3", url: "https://www.decathlon.pt/browse/c0-todos-os-desportos/_/N-1mb0eha" },
-  { nome: "MediaMarkt",     dominio: "mediamarkt.pt",  cor: "#df0000", url: "https://www.mediamarkt.pt/pt/campaign/outlet" },
+  { nome: "Darty",          dominio: "darty.pt",        cor: "#e2001a", url: "https://www.darty.pt/promocoes" },
   { nome: "Puma",           dominio: "pt.puma.com",    cor: "#000000", url: "https://pt.puma.com/pt/pt/sale" },
   { nome: "Tommy Hilfiger", dominio: "pt.tommy.com",   cor: "#002d72", url: "https://pt.tommy.com/" },
   { nome: "Calvin Klein",   dominio: "calvinklein.pt", cor: "#000000", url: "https://www.calvinklein.pt/sale" },
