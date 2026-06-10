@@ -311,11 +311,29 @@ export default function PoupeJa() {
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
   const [subTabTaloes, setSubTabTaloes] = useState("compras");
+  const [garantiasAviso, setGarantiasAviso] = useState([]);
+
+  function calcGarantiasAviso() {
+    try {
+      const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
+      const agora = new Date();
+      const lista = taloes
+        .filter(t => t.tipo === "garantia" && t.dataExpiracao)
+        .map(t => {
+          const dias = Math.ceil((new Date(t.dataExpiracao) - agora) / 86400000);
+          return { produto: t.nome, restam: dias, dataExpiracao: t.dataExpiracao };
+        })
+        .filter(t => t.restam >= 0 && t.restam <= 30)
+        .sort((a, b) => a.restam - b.restam);
+      setGarantiasAviso(lista);
+    } catch {}
+  }
 
   /* Lê auth do localStorage apenas no cliente */
   useEffect(() => {
     setUser(lerAuth());
     setHydrated(true);
+    calcGarantiasAviso();
   }, []);
 
   function handleAuth(u) {
@@ -333,6 +351,7 @@ export default function PoupeJa() {
   function go(newTab) {
     if (newTab === tab) return;
     if (newTab === "taloes") setSubTabTaloes("compras");
+    if (tab === "taloes") calcGarantiasAviso();
     const pi = NAV_IDS.indexOf(tab);
     const ni = NAV_IDS.indexOf(newTab);
     const d = ni === -1 ? "up" : pi === -1 ? "fade" : ni > pi ? "right" : "left";
@@ -395,10 +414,15 @@ export default function PoupeJa() {
                 </div>
                 <div className="flex gap-1.5">
                   <button
-                    onClick={() => setVerAvisos(true)}
+                    onClick={() => { calcGarantiasAviso(); setVerAvisos(true); }}
                     className="press w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center relative"
                   >
                     <Bell size={16} className="text-slate-500" />
+                    {garantiasAviso.length > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[9px] font-black text-white">
+                        {garantiasAviso.length}
+                      </span>
+                    )}
                   </button>
                   <button
                     onClick={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }}
@@ -470,9 +494,9 @@ export default function PoupeJa() {
 
         {verAvisos && (
           <PainelAvisos
-            avisos={{ garantias: [] }}
+            avisos={{ garantias: garantiasAviso }}
             onFechar={() => setVerAvisos(false)}
-            onAbrirTaloes={() => { setVerAvisos(false); go("taloes"); }}
+            onAbrirTaloes={() => { setVerAvisos(false); goGarantias(); }}
           />
         )}
 
