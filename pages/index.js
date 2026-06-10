@@ -91,10 +91,11 @@ function EcraInicio({ user, setTab, goGarantias }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
   const FEATURES = [
-    { icon: Receipt,    label: "Os meus talões",   desc: "Guarda as tuas compras e despesas",       bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",   tab: "taloes" },
-    { icon: Tag,        label: "Folhetos",          desc: "Todos os supermercados comparados",       bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "mercados" },
-    { icon: Fuel,       label: "Combustíveis e EV", desc: "Preços reais e postos perto de ti",       bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)",  tab: "mobilidade" },
-    { icon: Store,      label: "Lojas e promoções", desc: "Moda, eletrónica e desporto",             bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",   tab: "lojas" },
+    { icon: ListChecks, label: "Lista de compras",  desc: "Organiza o que levas antes de sair",     bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "lista",      full: true },
+    { icon: Receipt,    label: "Os meus talões",    desc: "Guarda compras e garantias",              bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",  tab: "taloes" },
+    { icon: Tag,        label: "Folhetos",           desc: "Todos os supermercados num só sítio",    bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "mercados" },
+    { icon: Fuel,       label: "Combustíveis e EV",  desc: "Preços reais e postos perto de ti",     bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)", tab: "mobilidade" },
+    { icon: Store,      label: "Lojas e promoções",  desc: "Moda, eletrónica e desporto",           bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",  tab: "lojas" },
   ];
 
   const SHORTCUTS = [
@@ -170,17 +171,22 @@ function EcraInicio({ user, setTab, goGarantias }) {
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-gradient-to-br ${f.bg} rounded-2xl p-5 text-left text-white`}
+              className={`press bg-gradient-to-br ${f.bg} rounded-2xl text-left text-white ${f.full ? "col-span-2 flex items-center gap-4 px-5 py-4" : "p-5"}`}
               style={{ boxShadow: `0 12px 28px -8px ${f.shadow}` }}
             >
-              <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center mb-3.5">
-                <f.icon size={21} />
+              <div className={`bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ${f.full ? "w-14 h-14" : "w-11 h-11 mb-3.5"}`}>
+                <f.icon size={f.full ? 26 : 21} />
               </div>
-              <p className="text-[15px] font-black leading-snug">{f.label}</p>
-              <p className="text-[11px] text-white/75 mt-1 leading-relaxed">{f.desc}</p>
-              <div className="mt-3 flex items-center gap-1 text-[10px] font-black text-white/60">
-                Ver mais <ChevronRight size={10} />
+              <div className={f.full ? "flex-1" : ""}>
+                <p className={`font-black leading-snug ${f.full ? "text-[17px]" : "text-[15px]"}`}>{f.label}</p>
+                <p className="text-[11px] text-white/75 mt-1 leading-relaxed">{f.desc}</p>
+                {!f.full && (
+                  <div className="mt-3 flex items-center gap-1 text-[10px] font-black text-white/60">
+                    Ver mais <ChevronRight size={10} />
+                  </div>
+                )}
               </div>
+              {f.full && <ChevronRight size={20} className="text-white/50 flex-shrink-0" />}
             </button>
           ))}
         </div>

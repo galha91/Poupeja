@@ -150,7 +150,7 @@ export default function SecaoListaCompras() {
       <div className="pb-28 no-scrollbar">
 
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 mb-4">
+        <div className="flex items-center gap-3 px-4 mb-3">
           <button onClick={() => { setModo("lista"); setBusca(""); }} className="press w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
             <ChevronLeft size={18} className="text-slate-500" />
           </button>
@@ -166,6 +166,48 @@ export default function SecaoListaCompras() {
             />
           </div>
         </div>
+
+        {/* ── Mini-lista: sempre visível enquanto adiciona ── */}
+        {pendentes.length > 0 && (
+          <div className="px-4 mb-3">
+            <div className="rounded-2xl border border-violet-100 overflow-hidden" style={{ background: "#f5f3ff" }}>
+              <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
+                <p className="text-[10px] font-black text-violet-600 uppercase tracking-widest flex items-center gap-1.5">
+                  <ShoppingCart size={10} /> Na lista ({pendentes.length})
+                </p>
+                <button onClick={() => setModo("lista")} className="press text-[10px] font-black text-violet-500">
+                  Ver tudo →
+                </button>
+              </div>
+              <div className="flex gap-2 px-3 pb-3 overflow-x-auto no-scrollbar">
+                {pendentes.map(it => {
+                  const catC = it.categoria ? CATS[it.categoria] : null;
+                  return (
+                    <div
+                      key={it.id}
+                      className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border"
+                      style={{
+                        background: catC ? catC.bg : "#fff",
+                        borderColor: catC ? catC.cor + "44" : "#e2e8f0",
+                      }}
+                    >
+                      <span className="text-base leading-none">{it.emoji || "🛒"}</span>
+                      <span className="text-[11px] font-black text-slate-700 max-w-[64px] truncate">{it.nome}</span>
+                      {it.qty > 1 && (
+                        <span className="text-[9px] font-black text-white px-1 py-0.5 rounded-full" style={{ background: catC?.cor || "#7c3aed" }}>
+                          ×{it.qty}
+                        </span>
+                      )}
+                      <button onClick={() => remover(it.id)} className="press w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
+                        <X size={8} className="text-slate-500" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Custom input */}
         <div className="px-4 mb-4 flex gap-2">
