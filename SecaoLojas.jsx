@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store, ChevronRight, Sparkles, Heart } from "lucide-react";
+import { useState } from "react";
+import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store, Sparkles, Heart, BadgePercent } from "lucide-react";
+import { getUrlLoja, temAfiliado } from "./afiliados";
 
 const FAV_KEY = "poupeja_favoritos_lojas";
 function lerFavs() { try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch { return new Set(); } }
@@ -115,10 +116,11 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
       {lista.map(loja => {
         const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
         const isFav = favs?.has(loja.nome);
+        const afiliado = temAfiliado(loja.nome);
         return (
           <div key={loja.nome} className="relative">
             <button
-              onClick={() => window.open(loja.url, "_blank")}
+              onClick={() => window.open(getUrlLoja(loja), "_blank", "noopener,noreferrer")}
               className="press card p-3.5 flex flex-col items-center gap-2.5 w-full relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]" style={{ background: cor }} />
@@ -126,7 +128,11 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
               <div className="text-center w-full">
                 <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
                 <div className="mt-1 flex items-center justify-center gap-0.5">
-                  {promo ? (
+                  {afiliado ? (
+                    <span className="text-[9px] font-black text-emerald-600 flex items-center gap-0.5">
+                      <BadgePercent size={8} /> Cashback
+                    </span>
+                  ) : promo ? (
                     <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
                       <Tag size={8} /> Saldos
                     </span>
@@ -280,7 +286,7 @@ export default function SecaoLojas() {
               {PROMOCOES.slice(0, 5).map(loja => (
                 <button
                   key={loja.nome}
-                  onClick={() => window.open(loja.url, "_blank")}
+                  onClick={() => window.open(getUrlLoja(loja), "_blank", "noopener,noreferrer")}
                   className="press flex-shrink-0 card p-3.5 flex flex-col items-center gap-2 w-24"
                 >
                   <LogoLoja loja={loja} size={40} />
