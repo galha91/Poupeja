@@ -21,6 +21,9 @@ export default function Document() {
         {/* Favicon */}
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 
+        {/* Google Search Console */}
+        <meta name="google-site-verification" content="cttSk3-ygwGp1WFEaAoVoSrthAlBMSMmIItaYh5VpPc" />
+
         {/* OG */}
         <meta property="og:title" content="PoupeJá" />
         <meta property="og:description" content="A tua carteira digital portuguesa" />
