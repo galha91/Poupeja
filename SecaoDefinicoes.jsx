@@ -56,6 +56,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado]   = useState(false);
   const [modalTermos, setModalTermos] = useState(false);
+  const [modalSobre, setModalSobre]   = useState(false);
 
   async function enviarEmailSemanal() {
     if (!user?.email) return;
@@ -271,6 +272,15 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       {/* Sobre */}
       <Section label="Sobre">
         <Row>
+          <button onClick={() => setModalSobre(true)} className="press w-full flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Heart size={17} className="text-slate-400" />
+              <p className="text-sm font-bold text-slate-800">Sobre nós</p>
+            </div>
+            <ChevronRight size={15} className="text-slate-300" />
+          </button>
+        </Row>
+        <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Info size={17} className="text-slate-400" />
@@ -300,6 +310,73 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       </Section>
 
       <p className="text-[10px] text-slate-300 text-center mt-2 pb-4">PoupeJá · feito com orgulho em Portugal 🇵🇹</p>
+
+      {/* Modal Sobre nós */}
+      {modalSobre && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setModalSobre(false)}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl overflow-hidden max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+
+            {/* Hero */}
+            <div className="relative p-6 pb-5" style={{ background: "linear-gradient(135deg,#064e3b,#059669,#34d399)" }}>
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
+              <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">✕</span>
+              </button>
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-3">
+                <PiggyBank size={24} className="text-white" />
+              </div>
+              <p className="text-2xl font-black text-white leading-tight">PoupeJá</p>
+              <p className="text-sm text-white/70 mt-1">Feito com orgulho em Portugal 🇵🇹</p>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Missão */}
+              <div>
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">A nossa missão</p>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  A PoupeJá nasceu com um objetivo simples: ajudar as famílias portuguesas a gastar menos nas compras do dia a dia. Num país onde o custo de vida continua a subir, acreditamos que informação clara e acessível faz toda a diferença.
+                </p>
+              </div>
+
+              {/* O que oferecemos */}
+              <div>
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">O que oferecemos</p>
+                <div className="space-y-2.5">
+                  {[
+                    { emoji: "⛽", titulo: "Combustíveis em tempo real", desc: "Preços atualizados da DGEG, ordenados pelo mais barato perto de ti" },
+                    { emoji: "⚡", titulo: "Postos de carregamento EV", desc: "Localização e disponibilidade em tempo real dos postos elétricos" },
+                    { emoji: "🛒", titulo: "Folhetos de supermercados", desc: "Continente, Pingo Doce, Lidl, Aldi e Intermarché num só sítio" },
+                    { emoji: "📋", titulo: "Lista de compras", desc: "Organiza o que precisas antes de sair de casa" },
+                    { emoji: "🧾", titulo: "Talões e garantias digitais", desc: "Guarda os teus recibos e nunca mais percas uma garantia" },
+                  ].map(f => (
+                    <div key={f.titulo} className="flex gap-3 items-start bg-slate-50 rounded-2xl p-3">
+                      <span className="text-xl flex-shrink-0">{f.emoji}</span>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">{f.titulo}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{f.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contacto */}
+              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+                <p className="text-[11px] font-black text-emerald-700 uppercase tracking-widest mb-2">Fala connosco</p>
+                <p className="text-sm text-slate-600 mb-3">Tens uma sugestão, encontraste um erro ou queres saber mais? Adoramos receber feedback.</p>
+                <button
+                  onClick={() => window.location.href = "mailto:contacto@poupeja.com"}
+                  className="press w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-black flex items-center justify-center gap-2"
+                >
+                  <Mail size={13} /> contacto@poupeja.com
+                </button>
+              </div>
+
+              <p className="text-[10px] text-slate-300 text-center pb-2">PoupeJá v2.0.2 · © 2026 · Todos os direitos reservados</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Termos */}
       {modalTermos && (
