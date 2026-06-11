@@ -511,6 +511,7 @@ function SubPostosEV() {
   const [fonte, setFonte]           = useState("");
   const [atualizado, setAtualizado] = useState(null);
   const [raio, setRaio]             = useState(10);
+  const [raioInput, setRaioInput]   = useState(10);
   const [filtroEstado, setFiltro]   = useState("todos");
   const [loc, setLoc]               = useState({ lat: 38.7169, lon: -9.1395 });
   const [locNome, setLocNome]       = useState("Lisboa (padrão)");
@@ -605,11 +606,13 @@ function SubPostosEV() {
           <p className="text-sm font-black text-slate-700 flex items-center gap-1.5">
             <MapPin size={13} className="text-emerald-600" /> Raio de pesquisa
           </p>
-          <span className="text-lg font-black text-emerald-600">{raio} km</span>
+          <span className="text-lg font-black text-emerald-600">{raioInput} km</span>
         </div>
         <input
-          type="range" min="1" max="50" value={raio}
-          onChange={e => setRaio(parseInt(e.target.value))}
+          type="range" min="1" max="50" value={raioInput}
+          onChange={e => setRaioInput(parseInt(e.target.value))}
+          onMouseUp={e => setRaio(parseInt(e.target.value))}
+          onTouchEnd={e => setRaio(parseInt(e.target.value))}
           className="w-full mb-3" style={{ accentColor: "#059669" }}
         />
         <div className="flex justify-between text-[9px] text-slate-400 mb-3">
@@ -908,7 +911,9 @@ function SubPostosEV() {
 
                   {/* Ações */}
                   <div className="flex gap-2">
-                    <button className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 ${
+                    <button
+                      onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${posto.lat},${posto.lon}`, "_blank")}
+                      className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 ${
                       posto.estado === "disponível"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                         : "bg-slate-50 text-slate-400 border-slate-100"
