@@ -28,26 +28,33 @@ export default async function handler(req, res) {
           },
           {
             type: "text",
-            text: `Analisa este talão de supermercado português e extrai a informação. Responde APENAS com JSON válido, sem texto adicional, neste formato:
-{
-  "loja": "nome do supermercado (ex: Continente, Pingo Doce, Lidl, Aldi, Intermarché, Auchan)",
-  "data": "YYYY-MM-DD ou null",
-  "total": 0.00,
-  "produtos": [
-    { "nome": "nome do produto", "qtd": 1, "preco": 0.00, "total": 0.00 }
-  ]
-}
-Regras: inclui todos os produtos; se a qtd não constar usa 1; preço é unitário; se não conseguires ler um campo usa null. Responde APENAS com JSON, sem markdown.`,
+            text: `Lê este talão de supermercado português. Devolve APENAS o seguinte JSON (sem texto antes nem depois, sem markdown):
+{"loja":"Continente","data":"2026-06-06","total":23.17,"produtos":[{"nome":"Spaghetti Picante Milaneza 500g","qtd":1,"preco":2.63,"total":2.63}]}
+
+Regras:
+- loja: nome do supermercado
+- data: formato YYYY-MM-DD
+- total: valor "TOTAL A PAGAR" ou "TOTAL"
+- produtos: lista de artigos comprados (ignora linhas de IVA, descontos globais, poupanças)
+- se qtd não constar usa 1; se um valor for ilegível usa null
+Responde APENAS com JSON válido.`,
           },
         ],
       }],
     });
 
     const texto = msg.content[0]?.text?.trim() ?? "";
-    const jsonStr = texto.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+
+    // Extrai o bloco JSON mesmo que o modelo adicione texto à volta
+    const jsonMatch = texto.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("ler-talao: sem JSON na resposta:", texto.slice(0, 300));
+      return res.status(200).json({ erro: "Não foi possível ler o talão. Tenta com uma foto mais nítida e bem iluminada." });
+    }
 
     let dados;
-    try { dados = JSON.parse(jsonStr); } catch {
+    try { dados = JSON.parse(jsonMatch[0]); } catch (e) {
+      console.error("ler-talao: JSON inválido:", jsonMatch[0].slice(0, 300));
       return res.status(200).json({ erro: "Não foi possível ler o talão. Tenta com uma foto mais nítida e bem iluminada." });
     }
 
