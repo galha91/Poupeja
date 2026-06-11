@@ -148,12 +148,20 @@ function EcraInicio({ user, setTab, goGarantias }) {
                   €{totalMes.toFixed(2)}
                 </p>
                 <p className="text-[12px] text-white/60 mt-1.5">em {nTaloes} talão{nTaloes !== 1 ? "s" : ""} guardado{nTaloes !== 1 ? "s" : ""}</p>
-                <button
-                  onClick={() => setTab("poupanca")}
-                  className="press mt-4 inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
-                >
-                  Ver detalhes <ArrowRight size={13} />
-                </button>
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => setTab("poupanca")}
+                    className="press inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
+                  >
+                    Ver detalhes <ArrowRight size={13} />
+                  </button>
+                  <button
+                    onClick={() => setTab("taloes")}
+                    className="press inline-flex items-center gap-2 bg-white text-emerald-700 text-xs font-black px-4 py-2 rounded-xl"
+                  >
+                    <Plus size={13} /> Adicionar talão
+                  </button>
+                </div>
               </>
             ) : (
               <>
