@@ -48,22 +48,53 @@ export default async function handler(req, res) {
         const avId  = p.dataSources?.chargingAvailability?.id;
         const av    = avId ? availMap[avId] : null;
         const conns = av?.connectors || [];
-        const maxKW = conns.reduce((m, c) => Math.max(m, c.ratedPowerKW || 0), 0);
-        const livres = conns.reduce((s, c) => s + (c.availability?.available ?? c.freeSetCount ?? 0), 0);
-        const slots  = conns.reduce((s, c) => s + (c.availability?.total   ?? c.totalSetCount ?? 0), 0);
+        // O nearbySearch também traz os conectores físicos (tipo + potência)
+        const parkConns = p.chargingPark?.connectors || [];
         const ultimaAtualizacao = av?.updatedAt || av?.lastUpdatedTimestamp || av?.timestamp || null;
 
+        // Potência: do chargingPark, do ratedPowerKW ou dos níveis de potência da disponibilidade
+        const kwDe = c => {
+          const niveis = c.availability?.perPowerLevel || [];
+          const maxNivel = niveis.reduce((m, l) => Math.max(m, l.powerKW || 0), 0);
+          return c.ratedPowerKW || maxNivel || 0;
+        };
+        const maxKW = Math.max(
+          conns.reduce((m, c) => Math.max(m, kwDe(c)), 0),
+          parkConns.reduce((m, c) => Math.max(m, c.ratedPowerKW || 0), 0),
+        );
+
+        // A disponibilidade vem em availability.current.{available,occupied,outOfService}
+        const livresDe = c => c.availability?.current?.available ?? c.availability?.available ?? c.freeSetCount ?? 0;
+        const totalDe  = c => {
+          const cur = c.availability?.current;
+          const somaCur = cur ? (cur.available ?? 0) + (cur.occupied ?? 0) + (cur.reserved ?? 0) + (cur.unknown ?? 0) + (cur.outOfService ?? 0) : 0;
+          return c.total ?? (somaCur || (c.availability?.total ?? c.totalSetCount ?? 0));
+        };
+        const livres      = conns.reduce((s, c) => s + livresDe(c), 0);
+        const slots       = conns.reduce((s, c) => s + totalDe(c), 0);
+        const foraServico = conns.reduce((s, c) => s + (c.availability?.current?.outOfService ?? 0), 0);
+
         // Por conector: tipo normalizado + potência + disponibilidade
-        const conectores = conns.map(c => ({
-          tipo:    normalizarConector(c.type?.value || c.type?.localizedValue || ""),
-          kw:      c.ratedPowerKW || 0,
-          livres:  c.availability?.available ?? c.freeSetCount ?? 0,
-          total:   c.availability?.total ?? c.totalSetCount ?? 0,
-          corrente: tipoCorrente(c.type?.value || ""),
+        let conectores = conns.map(c => ({
+          tipo:    normalizarConector(typeof c.type === "string" ? c.type : (c.type?.value || c.type?.localizedValue || "")),
+          kw:      kwDe(c),
+          livres:  livresDe(c),
+          total:   totalDe(c),
+          corrente: tipoCorrente(typeof c.type === "string" ? c.type : (c.type?.value || "")),
         }));
+        // Sem dados em tempo real → usa os conectores físicos do chargingPark
+        if (!conectores.length && parkConns.length) {
+          conectores = parkConns.map(c => ({
+            tipo:    normalizarConector(c.connectorType || c.type || ""),
+            kw:      c.ratedPowerKW || 0,
+            livres:  0,
+            total:   0,
+            corrente: (c.currentType || "").toUpperCase().includes("DC") ? "DC" : tipoCorrente(c.connectorType || ""),
+          }));
+        }
 
         // Tipos únicos para texto resumido
-        const tiposUnicos = [...new Set(conectores.map(c => c.tipo))].join(" · ");
+        const tiposUnicos = [...new Set(conectores.map(c => c.tipo).filter(t => t && t !== "Desconhecido"))].join(" · ");
 
         return {
           id:        p.id || String(Math.random()),
@@ -77,7 +108,7 @@ export default async function handler(req, res) {
           potenciaNum: maxKW,
           tipo:      tiposUnicos || "Tipo 2",
           conectores,
-          estado:    mapEstadoTomTom(av, livres, slots),
+          estado:    mapEstadoTomTom(av, livres, slots, foraServico),
           slots:     slots || 1,
           livres,
           temTempoReal: !!av,
@@ -172,11 +203,12 @@ function tipoCorrente(raw) {
   return "AC";
 }
 
-function mapEstadoTomTom(av, livres, slots) {
-  if (!av) return "disponível";
+function mapEstadoTomTom(av, livres, slots, foraServico = 0) {
+  // Sem dados em tempo real não assumimos avaria — mostramos como disponível
+  if (!av || slots === 0) return "disponível";
   if (livres > 0) return "disponível";
-  if (slots > 0 && livres === 0) return "ocupado";
-  return "manutenção";
+  if (foraServico >= slots) return "manutenção";
+  return "ocupado";
 }
 
 function mapEstadoOCM(statusType) {
