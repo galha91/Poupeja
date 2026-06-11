@@ -91,6 +91,19 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
 function EcraInicio({ user, setTab, goGarantias }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
+  const [totalMes, setTotalMes] = useState(0);
+  const [nTaloes, setNTaloes]   = useState(0);
+  useEffect(() => {
+    try {
+      const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
+      const mesAtual = new Date().toISOString().slice(0, 7);
+      const compras = taloes.filter(t => t.tipo === "compra" && t.valorPoupado > 0);
+      const doMes = compras.filter(t => (t.dataCompra || t.criadoEm || "").slice(0, 7) === mesAtual);
+      setTotalMes(doMes.reduce((s, t) => s + (t.valorPoupado || 0), 0));
+      setNTaloes(compras.length);
+    } catch {}
+  }, []);
+
   const FEATURES = [
     { icon: ListChecks, label: "Lista de compras",  desc: "Organiza o que levas antes de sair",     bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "lista",      full: true },
     { icon: Receipt,    label: "Os meus talões",    desc: "Guarda compras e garantias",              bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",  tab: "taloes" },
@@ -120,27 +133,43 @@ function EcraInicio({ user, setTab, goGarantias }) {
           <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full pointer-events-none" />
           <div className="absolute right-8 bottom-12 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
 
-          <div className="px-6 pt-6 pb-4 relative z-10">
+          <div className="px-6 pt-6 pb-5 relative z-10">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
                 <PiggyBank size={15} className="text-white" />
               </div>
               <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">O teu assistente de poupança</span>
             </div>
-            <p className="text-[13px] font-semibold text-white/80">Olá, {primeiroNome}!</p>
-            <p className="text-2xl font-black text-white mt-0.5 leading-snug" style={{ fontFamily: "'Sora', system-ui" }}>
-              Pronto para poupar<br />nas compras de hoje?
-            </p>
-            <button
-              onClick={() => setTab("taloes")}
-              className="press mt-4 inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20 transition-colors"
-            >
-              Guardar primeiro talão <ArrowRight size={13} />
-            </button>
-          </div>
 
-          <div className="px-6 pb-5 pt-3 border-t border-white/10">
-            <p className="text-[10px] text-white/50 font-semibold">Começa a usar e a tua poupança aparece aqui automaticamente.</p>
+            {totalMes > 0 ? (
+              <>
+                <p className="text-[13px] font-semibold text-white/70">Olá, {primeiroNome}! Este mês já poupaste</p>
+                <p className="text-5xl font-black text-white mt-1 leading-none" style={{ fontFamily: "'Sora', system-ui" }}>
+                  €{totalMes.toFixed(2)}
+                </p>
+                <p className="text-[12px] text-white/60 mt-1.5">em {nTaloes} talão{nTaloes !== 1 ? "s" : ""} guardado{nTaloes !== 1 ? "s" : ""}</p>
+                <button
+                  onClick={() => setTab("poupanca")}
+                  className="press mt-4 inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
+                >
+                  Ver detalhes <ArrowRight size={13} />
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-[13px] font-semibold text-white/80">Olá, {primeiroNome}!</p>
+                <p className="text-2xl font-black text-white mt-0.5 leading-snug" style={{ fontFamily: "'Sora', system-ui" }}>
+                  Pronto para poupar<br />nas compras de hoje?
+                </p>
+                <button
+                  onClick={() => setTab("taloes")}
+                  className="press mt-4 inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
+                >
+                  Guardar primeiro talão <ArrowRight size={13} />
+                </button>
+                <p className="text-[10px] text-white/40 mt-3">Começa a usar e a tua poupança aparece aqui automaticamente.</p>
+              </>
+            )}
           </div>
         </div>
       </div>
