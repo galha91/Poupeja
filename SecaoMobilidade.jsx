@@ -522,6 +522,18 @@ function SubPostosEV() {
   const [batAte, setBatAte]         = useState(80);
   const [simOpen, setSimOpen]       = useState(false);
   const carro = CARROS_EV.find(c => c.id === carroId) || null;
+  // Alertas
+  const [alertas, setAlertas]       = useState([]);
+  useEffect(() => {
+    try { const raw = localStorage.getItem("poupeja_alertas_ev"); if (raw) setAlertas(JSON.parse(raw)); } catch {}
+  }, []);
+  function toggleAlerta(posto) {
+    const existe = alertas.some(a => a.id === posto.id);
+    const nova = existe ? alertas.filter(a => a.id !== posto.id) : [...alertas, { id: posto.id, nome: posto.nome }];
+    setAlertas(nova);
+    try { localStorage.setItem("poupeja_alertas_ev", JSON.stringify(nova)); } catch {}
+  }
+  const alertasDisparados = alertas.filter(a => postos.find(p => p.id === a.id && p.estado === "disponível"));
 
   function obterLocalizacao() {
     if (!navigator.geolocation) { setLocDenied(true); return; }
@@ -729,6 +741,22 @@ function SubPostosEV() {
           </div>
         )}
       </div>
+
+      {/* Alertas disparados */}
+      {alertasDisparados.map(a => (
+        <div key={a.id} className="mx-4 mb-3 rounded-2xl p-4 border border-emerald-200 bg-emerald-50 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
+            <Bell size={16} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Alerta ativo</p>
+            <p className="text-sm font-bold text-emerald-800 truncate">{a.nome} está disponível!</p>
+          </div>
+          <button onClick={() => toggleAlerta(a)} className="press text-[10px] font-black text-emerald-600 bg-emerald-100 px-2.5 py-1.5 rounded-lg">
+            Dispensar
+          </button>
+        </div>
+      ))}
 
       {/* Filtros de estado */}
       <div className="px-4 mb-3 flex gap-2 overflow-x-auto no-scrollbar">
@@ -948,9 +976,21 @@ function SubPostosEV() {
                     }`}>
                       <Navigation size={12} /> Navegar
                     </button>
-                    <button className="press flex-1 py-2.5 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100 flex items-center justify-center gap-1">
-                      <Bell size={12} /> Alertar
-                    </button>
+                    {(() => {
+                      const ativo = alertas.some(a => a.id === posto.id);
+                      return (
+                        <button
+                          onClick={() => toggleAlerta(posto)}
+                          className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 transition-all ${
+                            ativo
+                              ? "bg-emerald-600 text-white border-emerald-600"
+                              : "bg-blue-50 text-blue-700 border-blue-100"
+                          }`}
+                        >
+                          <Bell size={12} /> {ativo ? "Ativo ✓" : "Alertar"}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
