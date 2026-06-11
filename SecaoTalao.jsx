@@ -48,6 +48,17 @@ export default function SecaoTalao() {
     setTalao(null);
   }
 
+  function criarCesto() {
+    const LS = "poupeja_lista_compras";
+    const existentes = (() => { try { return JSON.parse(localStorage.getItem(LS) || "[]"); } catch { return []; } })();
+    const nomesExist = new Set(existentes.map(i => i.nome.toLowerCase()));
+    const novos = (talao?.produtos || [])
+      .filter(p => !nomesExist.has(p.nome.toLowerCase()))
+      .map((p, i) => ({ id: Date.now() + i, nome: p.nome, emoji: "🛒", cat: "", feito: false, qty: Math.ceil(p.qtd) }));
+    try { localStorage.setItem(LS, JSON.stringify([...novos, ...existentes])); } catch {}
+    window.dispatchEvent(new CustomEvent("poupeja:nav", { detail: "lista" }));
+  }
+
   const totalPoupancaPossivel = COMPARACOES.reduce(function(s, c){ return s + c.poupanca; }, 0);
 
   return (
@@ -230,7 +241,7 @@ export default function SecaoTalao() {
 
           {/* Ações */}
           <div className="flex flex-col gap-2.5">
-            <button className="w-full py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
+            <button onClick={criarCesto} className="w-full py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
               style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7)" }}>
               <ShoppingCart size={18}/> Criar cesto com estes produtos
             </button>

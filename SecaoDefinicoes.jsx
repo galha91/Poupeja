@@ -55,6 +55,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
   const [saved, setSaved]   = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado]   = useState(false);
+  const [modalTermos, setModalTermos] = useState(false);
 
   async function enviarEmailSemanal() {
     if (!user?.email) return;
@@ -279,7 +280,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
           </div>
         </Row>
         <Row>
-          <button className="press w-full flex items-center justify-between">
+          <button onClick={() => setModalTermos(true)} className="press w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <FileText size={17} className="text-slate-400" />
               <p className="text-sm font-bold text-slate-800">Termos e privacidade</p>
@@ -288,7 +289,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
           </button>
         </Row>
         <Row border={false}>
-          <button className="press w-full flex items-center justify-between">
+          <button onClick={() => window.location.href = "mailto:contacto@poupeja.com"} className="press w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Mail size={17} className="text-slate-400" />
               <p className="text-sm font-bold text-slate-800">Contacto e ajuda</p>
@@ -299,6 +300,31 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       </Section>
 
       <p className="text-[10px] text-slate-300 text-center mt-2 pb-4">PoupeJá · feito com orgulho em Portugal 🇵🇹</p>
+
+      {/* Modal Termos */}
+      {modalTermos && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setModalTermos(false)}>
+          <div className="w-full max-w-lg bg-white rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-lg font-black text-slate-800">Termos e Privacidade</p>
+              <button onClick={() => setModalTermos(false)} className="press w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center">
+                <span className="text-slate-500 text-lg font-bold">✕</span>
+              </button>
+            </div>
+            <div className="text-sm text-slate-600 leading-relaxed space-y-4">
+              <p><strong className="text-slate-800">Última atualização:</strong> junho 2026</p>
+              <p><strong className="text-slate-800">O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências são guardados localmente no teu dispositivo.</p>
+              <p><strong className="text-slate-800">Para que usamos os dados</strong><br/>Apenas para te mostrar os teus próprios dados dentro da app. Não partilhamos dados com terceiros nem usamos publicidade.</p>
+              <p><strong className="text-slate-800">Cookies</strong><br/>Usamos apenas cookies essenciais para o funcionamento da app (sessão de autenticação).</p>
+              <p><strong className="text-slate-800">Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em contacto@poupeja.com</p>
+              <p><strong className="text-slate-800">Dados de terceiros</strong><br/>Os preços de combustíveis são fornecidos pela DGEG. Os postos EV e combustíveis usam a API TomTom. Os folhetos são links para os sites oficiais dos supermercados.</p>
+            </div>
+            <button onClick={() => setModalTermos(false)} className="press w-full mt-6 py-3 rounded-2xl bg-slate-800 text-white font-black text-sm">
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

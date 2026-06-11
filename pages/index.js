@@ -437,6 +437,12 @@ export default function PoupeJa() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    function onNav(e) { go(e.detail); }
+    window.addEventListener("poupeja:nav", onNav);
+    return () => window.removeEventListener("poupeja:nav", onNav);
+  }, [tab]);
+
   function handleAuth(u) {
     setUser(u);
   }
