@@ -58,7 +58,7 @@ function Landing({ onRegister, onLogin }) {
     <div className="min-h-dvh flex flex-col bg-slate-50">
       {/* Hero verde */}
       <div
-        className="flex flex-col items-center justify-center px-6 pt-20 pb-10 relative overflow-hidden"
+        className="flex flex-col items-center justify-center px-6 pt-12 pb-6 relative overflow-hidden"
         style={{ background: "linear-gradient(160deg,#064e3b 0%,#059669 55%,#34d399 100%)" }}
       >
         <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full pointer-events-none" />
@@ -79,7 +79,7 @@ function Landing({ onRegister, onLogin }) {
         </p>
 
         {/* Features */}
-        <div className="mt-8 flex flex-col gap-2.5 w-full max-w-xs relative z-10">
+        <div className="mt-5 flex flex-col gap-2.5 w-full max-w-xs relative z-10">
           {FEATURES.map((f, i) => (
             <div
               key={i}
