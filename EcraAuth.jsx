@@ -55,7 +55,7 @@ function Campo({ label, type = "text", value, onChange, placeholder, action }) {
 /* ── Ecrã Landing ── */
 function Landing({ onRegister, onLogin }) {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-dvh flex flex-col bg-slate-50">
       {/* Hero verde */}
       <div
         className="flex flex-col items-center justify-center px-6 pt-20 pb-10 relative overflow-hidden"
@@ -96,7 +96,7 @@ function Landing({ onRegister, onLogin }) {
       </div>
 
       {/* CTAs */}
-      <div className="flex-1 bg-white rounded-t-3xl -mt-4 px-6 pt-8 pb-12 flex flex-col gap-3">
+      <div className="flex-1 bg-white rounded-t-3xl -mt-4 px-6 pt-8 flex flex-col gap-3" style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom, 2rem) + 1rem)" }}>
         <p className="text-center text-slate-400 text-[11px] font-medium mb-1">
           Grátis · Sem cartão · Conta válida em qualquer dispositivo
         </p>
