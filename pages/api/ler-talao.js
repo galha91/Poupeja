@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -6,6 +7,13 @@ export const config = { api: { bodyParser: { sizeLimit: "10mb" } } };
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
+
+  if (!origemValida(req)) {
+    return res.status(403).json({ erro: "Origem não autorizada." });
+  }
+  if (excedeuLimite(req, "ler-talao", 10)) {
+    return res.status(429).json({ erro: "Demasiados pedidos. Aguarda um minuto e tenta de novo." });
+  }
 
   const { imagem } = req.body;
   if (!imagem) return res.status(400).json({ erro: "Imagem em falta" });

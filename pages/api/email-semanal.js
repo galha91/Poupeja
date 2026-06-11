@@ -1,11 +1,20 @@
 import { Resend } from "resend";
 import fs from "fs";
 import path from "path";
+import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
+
+  if (!origemValida(req)) {
+    return res.status(403).json({ erro: "Origem não autorizada." });
+  }
+  // Email é mais sensível a abuso (spam com o nosso domínio) — limite apertado
+  if (excedeuLimite(req, "email-semanal", 2, 5 * 60_000)) {
+    return res.status(429).json({ erro: "Já pediste o resumo há pouco. Aguarda uns minutos." });
+  }
 
   const { email, nome } = req.body;
   if (!email || !nome) return res.status(400).json({ erro: "Dados incompletos." });
