@@ -25,13 +25,13 @@ export default function Document() {
         <meta name="google-site-verification" content="cttSk3-ygwGp1WFEaAoVoSrthAlBMSMmIItaYh5VpPc" />
 
         {/* Google Analytics GA4 — script inline para ser detetável no HTML estático */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-03J0G95879"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q3JQG95879"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-03J0G95879');`,
+gtag('config', 'G-Q3JQG95879');`,
           }}
         />
 
