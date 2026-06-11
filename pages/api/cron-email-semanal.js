@@ -1,0 +1,93 @@
+import { Resend } from "resend";
+import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
+import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
+
+/*
+ * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
+ * desativaram o resumo. Disparado pelo Vercel Cron (ver vercel.json).
+ *
+ * Protegido por CRON_SECRET: o Vercel envia o header
+ * "Authorization: Bearer <CRON_SECRET>" automaticamente.
+ *
+ * Requer env vars: SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, CRON_SECRET.
+ */
+export default async function handler(req, res) {
+  // 1. Autenticação do cron
+  const secret = process.env.CRON_SECRET;
+  const auth = req.headers.authorization || "";
+  if (!secret || auth !== `Bearer ${secret}`) {
+    return res.status(401).json({ erro: "Não autorizado." });
+  }
+
+  const admin = getSupabaseAdmin();
+  if (!admin) {
+    return res.status(500).json({ erro: "SUPABASE_SERVICE_ROLE_KEY em falta." });
+  }
+  if (!process.env.RESEND_API_KEY) {
+    return res.status(500).json({ erro: "RESEND_API_KEY em falta." });
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  const folhetos = lerFolhetos();
+  if (!folhetos.length) {
+    return res.status(500).json({ erro: "Sem folhetos para enviar." });
+  }
+  const base = process.env.NEXT_PUBLIC_URL || "https://xn--poupej-uta.com";
+
+  // 2. Quem desativou o resumo (pref emailSemanal === false)
+  const desativados = new Set();
+  try {
+    const { data: prefsRows } = await admin
+      .from("dados_utilizador")
+      .select("user_id, valor")
+      .eq("chave", "poupeja_prefs");
+    for (const row of prefsRows || []) {
+      const v = typeof row.valor === "string" ? JSON.parse(row.valor) : row.valor;
+      if (v && v.emailSemanal === false) desativados.add(row.user_id);
+    }
+  } catch (e) {
+    console.error("cron-email: erro a ler prefs:", e);
+  }
+
+  // 3. Listar utilizadores (paginado) e enviar
+  let enviados = 0, ignorados = 0, falhas = 0, pagina = 1;
+  const PER_PAGE = 1000;
+
+  while (true) {
+    const { data, error } = await admin.auth.admin.listUsers({ page: pagina, perPage: PER_PAGE });
+    if (error) {
+      console.error("cron-email: listUsers erro:", error);
+      break;
+    }
+    const users = data?.users || [];
+    if (!users.length) break;
+
+    for (const u of users) {
+      if (!u.email || u.email_confirmed_at == null) { ignorados++; continue; }
+      if (desativados.has(u.id)) { ignorados++; continue; }
+
+      const nome = u.user_metadata?.nome || u.email.split("@")[0];
+      const { subject, html } = construirEmailFolhetos({ nome, folhetos, base });
+      try {
+        await resend.emails.send({
+          from: "PoupeJá <noreply@xn--poupej-uta.com>",
+          to: u.email,
+          subject,
+          html,
+        });
+        enviados++;
+      } catch (e) {
+        falhas++;
+        console.error("cron-email: falha para", u.email, e?.message);
+      }
+      // Pausa curta para respeitar o rate limit do Resend
+      await new Promise(r => setTimeout(r, 120));
+    }
+
+    if (users.length < PER_PAGE) break;
+    pagina++;
+  }
+
+  console.log(`cron-email: enviados=${enviados} ignorados=${ignorados} falhas=${falhas}`);
+  return res.status(200).json({ ok: true, enviados, ignorados, falhas });
+}

@@ -17,6 +17,7 @@ function lerPrefs() {
     nome: "", email: "", combustivel: "Gasolina 95",
     distancia: 10, favoritos: ["Continente","Pingo Doce"],
     avisoGarantias: true, avisoPrecos: true, diasGarantia: 60,
+    emailSemanal: true,
   };
 }
 
@@ -245,14 +246,26 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
 
       {/* Email */}
       <Section label="Email semanal">
+        <Row>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Mail size={17} className="text-violet-600" />
+              <div>
+                <p className="text-sm font-bold text-slate-800">Resumo automático semanal</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Todas as quintas, com os folhetos da semana.</p>
+              </div>
+            </div>
+            <Toggle on={prefs.emailSemanal !== false} onChange={v => set("emailSemanal", v)} />
+          </div>
+        </Row>
         <Row border={false}>
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
               <Mail size={18} className="text-violet-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-black text-slate-800">Folhetos da semana</p>
-              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Recebe um resumo com todos os folhetos ativos no teu email.</p>
+              <p className="text-sm font-black text-slate-800">Enviar agora</p>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Recebe já um resumo com todos os folhetos ativos.</p>
               <button
                 onClick={enviarEmailSemanal}
                 disabled={enviando || enviado}

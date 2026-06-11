@@ -2,6 +2,15 @@
   "functions": {
     "pages/api/*.js": {
       "maxDuration": 30
+    },
+    "pages/api/cron-email-semanal.js": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron-email-semanal",
+      "schedule": "0 9 * * 4"
+    }
+  ]
 }
