@@ -367,7 +367,7 @@ export default function SecaoListaCompras() {
         {busca.length > 1 ? (
           <div className="px-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{resultadosBusca.length} resultado{resultadosBusca.length !== 1 ? "s" : ""}</p>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
               {resultadosBusca.map(it => {
                 const na = itens.find(i => i.nome === it.nome && !i.feito);
                 const cfg = CATS[it.cat];
@@ -401,7 +401,7 @@ export default function SecaoListaCompras() {
             </div>
 
             {/* Items grid */}
-            <div className="px-4 grid grid-cols-3 gap-2.5">
+            <div className="px-4 grid grid-cols-3 lg:grid-cols-6 gap-2.5">
               {catCfg.items.map(it => {
                 const naLista = itens.find(i => i.nome === it.nome && !i.feito);
                 return (
@@ -487,7 +487,7 @@ export default function SecaoListaCompras() {
       {pendentes.length > 0 && (
         <div className="px-4 mb-4 anim-up anim-up-2">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Por comprar ({pendentes.length})</p>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
             {pendentes.map(it => {
               const catCfg = it.categoria ? CATS[it.categoria] : null;
               return (
@@ -536,7 +536,7 @@ export default function SecaoListaCompras() {
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comprados ({feitos.length})</p>
             <button onClick={limparFeitos} className="press text-[11px] font-bold text-red-400">Limpar tudo</button>
           </div>
-          <div className="grid grid-cols-3 gap-2.5 opacity-40">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5 opacity-40">
             {feitos.map(it => (
               <button key={it.id} onClick={() => marcar(it.id)}
                 className="press card p-3.5 flex flex-col items-center gap-1.5 relative">

@@ -413,7 +413,7 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
                 corFundo="#eff6ff" corIcone="#3b82f6" />
             </div>
           ) : (
-            <div className="px-4 grid grid-cols-2 gap-3">
+            <div className="px-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
               {compras.map(t => <CardTalao key={t.id} talao={t} onApagar={apagarTalao} />)}
             </div>
           )}
@@ -454,7 +454,7 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
               </div>
             </>
           ) : (
-            <div className="px-4 grid grid-cols-2 gap-3">
+            <div className="px-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
               {garantias.map(t => <CardTalao key={t.id} talao={t} onApagar={apagarTalao} />)}
             </div>
           )}

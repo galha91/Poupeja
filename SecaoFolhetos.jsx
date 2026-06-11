@@ -120,7 +120,7 @@ export default function SecaoFolhetos() {
       )}
 
       {/* Grid */}
-      <div className="px-4 grid grid-cols-2 gap-3">
+      <div className="px-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
         {loading
           ? [1, 2, 3, 4].map(i => <CardSkeleton key={i} />)
           : folhetos.map(f => {

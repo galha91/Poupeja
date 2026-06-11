@@ -167,12 +167,12 @@ function EcraInicio({ user, setTab, goGarantias }) {
       {/* Features grid */}
       <div className="px-4 mt-3 anim-up anim-up-1">
         <SectionLabel icon={Sparkles}>O que podes fazer</SectionLabel>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {FEATURES.map((f, i) => (
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-gradient-to-br ${f.bg} rounded-2xl text-left text-white ${f.full ? "col-span-2 flex items-center gap-4 px-5 py-4" : "p-5"}`}
+              className={`press bg-gradient-to-br ${f.bg} rounded-2xl text-left text-white ${f.full ? "col-span-2 lg:col-span-4 flex items-center gap-4 px-5 py-4" : "p-5"}`}
               style={{ boxShadow: `0 12px 28px -8px ${f.shadow}` }}
             >
               <div className={`bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ${f.full ? "w-14 h-14" : "w-11 h-11 mb-3.5"}`}>
@@ -196,7 +196,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
       {/* Atalhos */}
       <div className="px-4 mt-5 anim-up anim-up-2">
         <SectionLabel icon={Zap}>Atalhos rápidos</SectionLabel>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
           {SHORTCUTS.map((it, i) => (
             <button
               key={i}
@@ -492,7 +492,62 @@ export default function PoupeJa() {
 
   return (
     <>
-      <div className="min-h-screen bg-slate-50 max-w-md mx-auto relative select-none overflow-x-hidden">
+      <div className="min-h-screen bg-slate-50 mx-auto max-w-md lg:max-w-none lg:mx-0 relative select-none overflow-x-hidden">
+
+        {/* Sidebar (apenas desktop) */}
+        <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-60 bg-white border-r border-slate-100 z-40 px-4 py-6">
+          <div className="flex items-center gap-2 px-2 mb-8">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}>
+              <PiggyBank size={19} color="white" />
+            </div>
+            <span className="text-xl font-black tracking-tight text-slate-900">
+              Poupe<span className="text-emerald-600">Já</span>
+            </span>
+            <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-md leading-none">PT</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            {NAV.map(it => {
+              const active = !verDefs && tab === it.id;
+              return (
+                <button
+                  key={it.id}
+                  onClick={() => { setVerDefs(false); navClick(it.id); }}
+                  className={`press flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${active ? "bg-emerald-50 text-emerald-700" : "text-slate-500 hover:bg-slate-50"}`}
+                >
+                  <it.icon size={18} strokeWidth={active ? 2.5 : 1.8} />
+                  <span className="text-[13px] font-black">{it.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-auto flex flex-col gap-1 border-t border-slate-100 pt-4">
+            <button
+              onClick={() => { calcGarantiasAviso(); setVerAvisos(true); }}
+              className="press flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-500 hover:bg-slate-50"
+            >
+              <span className="relative">
+                <Bell size={18} strokeWidth={1.8} />
+                {garantiasAviso.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center text-[8px] font-black text-white">
+                    {garantiasAviso.length}
+                  </span>
+                )}
+              </span>
+              <span className="text-[13px] font-black">Avisos</span>
+            </button>
+            <button
+              onClick={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }}
+              className={`press flex items-center gap-3 px-3 py-2.5 rounded-xl text-left ${verDefs ? "bg-emerald-50 text-emerald-700" : "text-slate-500 hover:bg-slate-50"}`}
+            >
+              <Users size={18} strokeWidth={1.8} />
+              <span className="text-[13px] font-black">A minha conta</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Coluna de conteúdo (desloca-se para a direita da sidebar em desktop) */}
+        <div className="lg:pl-60">
+        <div className="lg:max-w-5xl lg:mx-auto">
 
         {verDefs ? (
           <SecaoDefinicoes
@@ -504,10 +559,10 @@ export default function PoupeJa() {
           <>
             {/* Header */}
             <header
-              className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30"
+              className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 lg:pt-5 lg:px-8"
               style={{ boxShadow: "0 1px 12px rgba(15,23,42,0.06)" }}
             >
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1 lg:hidden">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}>
                     <PiggyBank size={17} color="white" />
@@ -573,7 +628,7 @@ export default function PoupeJa() {
 
             {/* Bottom Nav */}
             <nav
-              className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-100 z-40"
+              className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-100 z-40"
               style={{ boxShadow: "0 -4px 24px rgba(15,23,42,0.07)", paddingBottom: "env(safe-area-inset-bottom)" }}
             >
               <div className="flex items-center justify-around px-2 py-2">
@@ -604,6 +659,9 @@ export default function PoupeJa() {
             </nav>
           </>
         )}
+
+        </div>
+        </div>
 
         {verAvisos && (
           <PainelAvisos

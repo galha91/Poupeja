@@ -112,7 +112,7 @@ function LogoLoja({ loja, size = 44 }) {
 
 function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
   return (
-    <div className="px-4 grid grid-cols-3 gap-3">
+    <div className="px-4 grid grid-cols-3 lg:grid-cols-5 gap-3">
       {lista.map(loja => {
         const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
         const isFav = favs?.has(loja.nome);
