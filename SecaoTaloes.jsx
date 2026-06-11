@@ -47,9 +47,13 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
         body: JSON.stringify({ imagem: base64 }),
       });
       const data = await res.json();
-      if (data.valor !== null && data.valor !== undefined) {
-        setValorPoupado(data.valor.toFixed(2));
+      // suporta resposta nova {poupanca} e antiga {valor}
+      const v = data.poupanca ?? data.valor ?? null;
+      if (v !== null && !isNaN(parseFloat(v))) {
+        setValorPoupado(parseFloat(v).toFixed(2));
       }
+      if (data.loja && !nome) setNome(data.loja);
+      if (data.data) setDataCompra(data.data);
     } catch {}
     setLendo(false);
     setFase("confirmar");

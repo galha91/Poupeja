@@ -29,13 +29,14 @@ export default async function handler(req, res) {
           {
             type: "text",
             text: `Lê este talão de supermercado português. Devolve APENAS o seguinte JSON (sem texto antes nem depois, sem markdown):
-{"loja":"Continente","data":"2026-06-06","total":23.17,"produtos":[{"nome":"Spaghetti Picante Milaneza 500g","qtd":1,"preco":2.63,"total":2.63}]}
+{"loja":"Continente","data":"2026-06-06","total":23.17,"poupanca":7.51,"produtos":[{"nome":"Spaghetti Picante Milaneza 500g","qtd":1,"preco":2.63,"total":2.63}]}
 
 Regras:
 - loja: nome do supermercado
 - data: formato YYYY-MM-DD
 - total: valor "TOTAL A PAGAR" ou "TOTAL"
-- produtos: lista de artigos comprados (ignora linhas de IVA, descontos globais, poupanças)
+- poupanca: valor de "Total de descontos e poupanças", "POUPOU", "TOTAL POUPADO", "TOTAL DESCONTO" ou similar (null se não existir)
+- produtos: lista de artigos comprados (ignora linhas de IVA, tabelas de descontos, totais)
 - se qtd não constar usa 1; se um valor for ilegível usa null
 Responde APENAS com JSON válido.`,
           },
