@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Download, Smartphone } from "lucide-react";
 
-export default function BannerInstalar() {
+// inline=true → card integrado no layout (para a landing screen, sem fixed)
+// inline=false (default) → banner flutuante fixed no fundo do ecrã
+export default function BannerInstalar({ inline = false }) {
   const [visivel, setVisivel]             = useState(false);
   const [isIOS, setIsIOS]                 = useState(false);
   const [deferredPrompt, setDeferred]     = useState(null);
@@ -9,7 +11,6 @@ export default function BannerInstalar() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Já está instalada — não mostrar
     if (window.matchMedia("(display-mode: standalone)").matches) return;
     if (window.navigator.standalone) return;
 
@@ -17,7 +18,7 @@ export default function BannerInstalar() {
     setIsIOS(ios);
 
     if (ios) {
-      setTimeout(() => setVisivel(true), 1500);
+      setTimeout(() => setVisivel(true), inline ? 0 : 1500);
     } else {
       const handler = (e) => {
         e.preventDefault();
@@ -27,7 +28,7 @@ export default function BannerInstalar() {
       window.addEventListener("beforeinstallprompt", handler);
       return () => window.removeEventListener("beforeinstallprompt", handler);
     }
-  }, []);
+  }, [inline]);
 
   function instalar() {
     if (isIOS) {
@@ -43,35 +44,39 @@ export default function BannerInstalar() {
 
   if (!visivel) return null;
 
+  const card = (
+    <div
+      className="bg-white rounded-3xl p-4 flex items-center gap-3"
+      style={{ boxShadow: "0 8px 40px -8px rgba(15,23,42,0.2)", border: "1px solid #e8eaed" }}
+    >
+      <div
+        className="w-11 h-11 rounded-2xl flex-shrink-0 flex items-center justify-center"
+        style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}
+      >
+        <Smartphone size={20} className="text-white" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-black text-slate-800 text-[14px] leading-tight">Instala o PoupeJá</p>
+        <p className="text-[11px] text-slate-400 mt-0.5">Disponível para iOS e Android · Grátis</p>
+      </div>
+      <button
+        onClick={instalar}
+        className="press flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-white font-black text-[13px]"
+        style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 4px 12px -4px rgba(5,150,105,0.5)" }}
+      >
+        <Download size={14} /> Instalar
+      </button>
+    </div>
+  );
+
   return (
     <>
-      {/* Banner */}
-      <div className="fixed bottom-24 left-0 right-0 z-50 px-4 anim-up">
-        <div
-          className="max-w-md mx-auto bg-white rounded-3xl p-4 flex items-center gap-3"
-          style={{ boxShadow: "0 8px 40px -8px rgba(15,23,42,0.2)", border: "1px solid #e8eaed" }}
-        >
-          <div
-            className="w-11 h-11 rounded-2xl flex-shrink-0 flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}
-          >
-            <Smartphone size={20} className="text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-black text-slate-800 text-[14px] leading-tight">Instala o PoupeJá</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Disponível para iOS e Android · Grátis</p>
-          </div>
-          <button
-            onClick={instalar}
-            className="press flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-white font-black text-[13px]"
-            style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 4px 12px -4px rgba(5,150,105,0.5)" }}
-          >
-            <Download size={14} /> Instalar
-          </button>
-        </div>
-      </div>
+      {inline
+        ? <div className="w-full anim-up">{card}</div>
+        : <div className="fixed bottom-24 left-0 right-0 z-50 px-4 anim-up"><div className="max-w-md mx-auto">{card}</div></div>
+      }
 
-      {/* Modal iOS */}
+      {/* Modal iOS — instruções de instalação */}
       {instrucoesIOS && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center"

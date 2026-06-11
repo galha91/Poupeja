@@ -113,9 +113,9 @@ function Landing({ onRegister, onLogin }) {
         >
           Já tenho conta — Entrar
         </button>
-      </div>
 
-      <BannerInstalar />
+        <BannerInstalar inline />
+      </div>
     </div>
   );
 }
