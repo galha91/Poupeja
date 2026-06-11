@@ -4,6 +4,7 @@ import {
   PiggyBank, Receipt, Tag, Fuel, BarChart2, ShieldCheck,
   ArrowRight, ArrowLeft, Eye, EyeOff, Check, AlertCircle, KeyRound,
 } from "lucide-react";
+import { supabase } from "./lib/supabase";
 
 const FEATURES = [
   { icon: Receipt,     text: "Guarda talões e garantias digitalmente" },
@@ -12,11 +13,15 @@ const FEATURES = [
   { icon: Fuel,        text: "Preços de combustível em tempo real" },
 ];
 
-function lerUtilizadores() {
-  try { return JSON.parse(localStorage.getItem("poupeja_users") || "[]"); } catch { return []; }
-}
-function guardarUtilizadores(lista) {
-  try { localStorage.setItem("poupeja_users", JSON.stringify(lista)); } catch (_) {}
+/* Mensagens de erro do Supabase traduzidas */
+function traduzErro(msg = "") {
+  const m = msg.toLowerCase();
+  if (m.includes("invalid login credentials")) return "Email ou password incorretos. Tenta novamente.";
+  if (m.includes("email not confirmed"))       return "Confirma primeiro o teu email. Verifica a caixa de entrada (e o spam).";
+  if (m.includes("user already registered"))   return "Já existe uma conta com este email. Entra em vez disso.";
+  if (m.includes("rate limit"))                return "Demasiadas tentativas. Aguarda uns minutos e tenta de novo.";
+  if (m.includes("password should be"))        return "A password precisa de ter pelo menos 6 caracteres.";
+  return msg || "Ocorreu um erro. Tenta novamente.";
 }
 
 /* ── Campo de input reutilizável ── */
@@ -92,7 +97,7 @@ function Landing({ onRegister, onLogin }) {
       {/* CTAs */}
       <div className="flex-1 bg-white rounded-t-3xl -mt-4 px-6 pt-8 pb-12 flex flex-col gap-3">
         <p className="text-center text-slate-400 text-[11px] font-medium mb-1">
-          Grátis · Sem cartão · Dados guardados em segurança
+          Grátis · Sem cartão · Conta válida em qualquer dispositivo
         </p>
         <button
           onClick={onRegister}
@@ -113,7 +118,7 @@ function Landing({ onRegister, onLogin }) {
 }
 
 /* ── Ecrã Registo ── */
-function Registo({ onVoltar, onAuth }) {
+function Registo({ onVoltar }) {
   const [nome, setNome]           = useState("");
   const [email, setEmail]         = useState("");
   const [pass, setPass]           = useState("");
@@ -132,20 +137,20 @@ function Registo({ onVoltar, onAuth }) {
     if (!aceitou)               return setErro("Tens de aceitar a Política de Privacidade para continuar.");
 
     setLoading(true);
-    const users = lerUtilizadores();
-    if (users.find(u => u.email === email.toLowerCase().trim())) {
-      setLoading(false);
-      return setErro("Já existe uma conta com este email. Entra em vez disso.");
-    }
-
     try {
-      const res = await fetch("/api/enviar-confirmacao", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome: nome.trim(), email: email.toLowerCase().trim(), password: pass }),
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase().trim(),
+        password: pass,
+        options: {
+          data: { nome: nome.trim() },
+          emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+        },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.erro || "Erro desconhecido.");
+      if (error) throw new Error(traduzErro(error.message));
+      // Quando o email já existe, o Supabase devolve user sem identities
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        throw new Error("Já existe uma conta com este email. Entra em vez disso.");
+      }
       setEmailEnviado(true);
     } catch (err) {
       setErro(err.message);
@@ -227,7 +232,7 @@ function Registo({ onVoltar, onAuth }) {
         <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100 flex gap-2">
           <ShieldCheck size={14} className="text-emerald-600 flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-emerald-700 leading-relaxed">
-            Os teus dados ficam guardados de forma segura neste dispositivo.
+            A tua conta fica guardada em segurança e funciona em qualquer dispositivo.
           </p>
         </div>
 
@@ -247,7 +252,7 @@ function Registo({ onVoltar, onAuth }) {
             <Link href="/privacidade" target="_blank" className="text-emerald-600 font-bold underline underline-offset-2">
               Política de Privacidade
             </Link>
-            . Compreendo que os meus dados ficam guardados apenas neste dispositivo.
+            .
           </p>
         </label>
 
@@ -257,7 +262,7 @@ function Registo({ onVoltar, onAuth }) {
           className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
           style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 8px 20px -8px rgba(5,150,105,0.45)", opacity: loading ? 0.7 : 1 }}
         >
-          {loading ? "A enviar email..." : <>Criar conta <ArrowRight size={17} /></>}
+          {loading ? "A criar conta..." : <>Criar conta <ArrowRight size={17} /></>}
         </button>
       </form>
       )}
@@ -267,31 +272,27 @@ function Registo({ onVoltar, onAuth }) {
 
 /* ── Ecrã Recuperar Password ── */
 function RecuperarPass({ onVoltar }) {
-  const [fase, setFase]           = useState("email"); // "email" | "nova" | "ok"
-  const [email, setEmail]         = useState("");
-  const [novaPass, setNovaPass]   = useState("");
-  const [showPass, setShowPass]   = useState(false);
-  const [erro, setErro]           = useState("");
+  const [email, setEmail]     = useState("");
+  const [enviado, setEnviado] = useState(false);
+  const [erro, setErro]       = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function verificarEmail(e) {
+  async function submeter(e) {
     e.preventDefault();
     setErro("");
-    const users = lerUtilizadores();
-    const existe = users.find(u => u.email === email.toLowerCase().trim());
-    if (!existe) return setErro("Não encontrámos nenhuma conta com esse email.");
-    setFase("nova");
-  }
-
-  function guardarNovaPass(e) {
-    e.preventDefault();
-    setErro("");
-    if (novaPass.length < 6) return setErro("A password precisa de ter pelo menos 6 caracteres.");
-    const users = lerUtilizadores();
-    const atualizados = users.map(u =>
-      u.email === email.toLowerCase().trim() ? { ...u, password: novaPass } : u
-    );
-    guardarUtilizadores(atualizados);
-    setFase("ok");
+    if (!email.includes("@")) return setErro("Escreve um email válido.");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
+        redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+      });
+      if (error) throw new Error(traduzErro(error.message));
+      setEnviado(true);
+    } catch (err) {
+      setErro(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -307,55 +308,38 @@ function RecuperarPass({ onVoltar }) {
         <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Recuperar acesso</p>
         <h2 className="text-2xl font-black text-white mt-0.5">Esqueceu a password?</h2>
         <p className="text-white/60 text-[12px] mt-0.5">
-          {fase === "email" ? "Diz-nos o teu email para encontrar a conta." : fase === "nova" ? "Define uma nova palavra-passe." : ""}
+          Enviamos-te um link por email para definires uma nova.
         </p>
       </div>
 
-      {fase === "ok" ? (
+      {enviado ? (
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-4">
           <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2"
                style={{ background: "#f0fdf4", border: "2px solid #bbf7d0" }}>
             <ShieldCheck size={36} className="text-emerald-500" />
           </div>
-          <h2 className="text-2xl font-black text-slate-800">Password atualizada!</h2>
+          <h2 className="text-2xl font-black text-slate-800">Verifica o teu email</h2>
           <p className="text-[14px] text-slate-500 leading-relaxed">
-            A tua nova palavra-passe foi guardada. Podes entrar agora.
+            Se existir uma conta com <strong className="text-slate-700">{email}</strong>,{" "}
+            vais receber um link para definir uma nova password.
           </p>
-          <button
-            onClick={onVoltar}
-            className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
-            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}
-          >
-            Entrar agora <ArrowRight size={17} />
+          <button type="button" onClick={onVoltar} className="text-sm text-slate-400 font-semibold mt-2">
+            Voltar ao login
           </button>
         </div>
       ) : (
-        <form onSubmit={fase === "email" ? verificarEmail : guardarNovaPass} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
+        <form onSubmit={submeter} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
           <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
             <KeyRound size={26} className="text-blue-500" />
           </div>
 
-          {fase === "email" ? (
-            <Campo
-              label="Email da conta"
-              type="email"
-              value={email}
-              onChange={setEmail}
-              placeholder="exemplo@email.com"
-            />
-          ) : (
-            <Campo
-              label="Nova password"
-              type={showPass ? "text" : "password"}
-              value={novaPass}
-              onChange={setNovaPass}
-              placeholder="Mínimo 6 caracteres"
-              action={{
-                onClick: () => setShowPass(s => !s),
-                icon: showPass ? <EyeOff size={16} /> : <Eye size={16} />,
-              }}
-            />
-          )}
+          <Campo
+            label="Email da conta"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="exemplo@email.com"
+          />
 
           {erro && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
@@ -366,13 +350,86 @@ function RecuperarPass({ onVoltar }) {
 
           <button
             type="submit"
+            disabled={loading}
             className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
-            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}
+            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)", opacity: loading ? 0.7 : 1 }}
           >
-            {fase === "email" ? <>Continuar <ArrowRight size={17} /></> : <>Guardar nova password <ArrowRight size={17} /></>}
+            {loading ? "A enviar..." : <>Enviar link <ArrowRight size={17} /></>}
           </button>
         </form>
       )}
+    </div>
+  );
+}
+
+/* ── Ecrã Definir Nova Password (após clicar no link de recuperação) ── */
+export function DefinirNovaPass({ onConcluido }) {
+  const [novaPass, setNovaPass] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [erro, setErro]         = useState("");
+  const [loading, setLoading]   = useState(false);
+
+  async function submeter(e) {
+    e.preventDefault();
+    setErro("");
+    if (novaPass.length < 6) return setErro("A password precisa de ter pelo menos 6 caracteres.");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: novaPass });
+      if (error) throw new Error(traduzErro(error.message));
+      onConcluido();
+    } catch (err) {
+      setErro(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div
+        className="px-4 pt-12 pb-6 relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)" }}
+      >
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
+        <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Recuperar acesso</p>
+        <h2 className="text-2xl font-black text-white mt-0.5">Define a nova password</h2>
+        <p className="text-white/60 text-[12px] mt-0.5">Escolhe uma password segura para a tua conta.</p>
+      </div>
+
+      <form onSubmit={submeter} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+          <KeyRound size={26} className="text-blue-500" />
+        </div>
+
+        <Campo
+          label="Nova password"
+          type={showPass ? "text" : "password"}
+          value={novaPass}
+          onChange={setNovaPass}
+          placeholder="Mínimo 6 caracteres"
+          action={{
+            onClick: () => setShowPass(s => !s),
+            icon: showPass ? <EyeOff size={16} /> : <Eye size={16} />,
+          }}
+        />
+
+        {erro && (
+          <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
+            <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
+            <p className="text-[12px] font-bold text-red-600">{erro}</p>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="press w-full py-4 rounded-2xl text-white font-black text-[15px] flex items-center justify-center gap-2 mt-2"
+          style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)", opacity: loading ? 0.7 : 1 }}
+        >
+          {loading ? "A guardar..." : <>Guardar nova password <ArrowRight size={17} /></>}
+        </button>
+      </form>
     </div>
   );
 }
@@ -385,23 +442,28 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
   const [erro, setErro]         = useState("");
   const [loading, setLoading]   = useState(false);
 
-  function submeter(e) {
+  async function submeter(e) {
     e.preventDefault();
     setErro("");
     if (!email || !pass) return setErro("Preenche o email e a password.");
 
     setLoading(true);
-    const users = lerUtilizadores();
-    const user = users.find(
-      u => u.email === email.toLowerCase().trim() && u.password === pass
-    );
-    if (!user) {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password: pass,
+      });
+      if (error) throw new Error(traduzErro(error.message));
+      const u = data.user;
+      onAuth({
+        nome: u.user_metadata?.nome || u.email.split("@")[0],
+        email: u.email,
+        criado: u.created_at,
+      });
+    } catch (err) {
+      setErro(err.message);
       setLoading(false);
-      return setErro("Email ou password incorretos. Tenta novamente.");
     }
-    setTimeout(() => {
-      onAuth({ nome: user.nome, email: user.email, criado: user.criado });
-    }, 300);
   }
 
   return (
@@ -471,22 +533,19 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
 export default function EcraAuth({ onAuth }) {
   const [ecra, setEcra] = useState("landing"); // "landing" | "registo" | "login" | "recuperar"
 
-  if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} onAuth={onAuth} />;
+  if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} />;
   if (ecra === "login")     return <Login        onVoltar={() => setEcra("landing")} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
   if (ecra === "recuperar") return <RecuperarPass onVoltar={() => setEcra("login")} />;
   return <Landing onRegister={() => setEcra("registo")} onLogin={() => setEcra("login")} />;
 }
 
-/* ── Helper para ler auth do localStorage ── */
-export function lerAuth() {
-  try {
-    const raw = localStorage.getItem("poupeja_auth");
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-export function guardarAuth(user) {
-  try { localStorage.setItem("poupeja_auth", JSON.stringify(user)); } catch (_) {}
-}
-export function apagarAuth() {
-  try { localStorage.removeItem("poupeja_auth"); } catch (_) {}
+/* ── Helpers de sessão Supabase ── */
+export function sessionParaUser(session) {
+  if (!session?.user) return null;
+  const u = session.user;
+  return {
+    nome: u.user_metadata?.nome || (u.email ? u.email.split("@")[0] : "Utilizador"),
+    email: u.email,
+    criado: u.created_at,
+  };
 }

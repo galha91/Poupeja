@@ -6,7 +6,8 @@ import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import SecaoListaCompras from "../SecaoListaCompras";
 import PainelAvisos from "../PainelAvisos";
-import EcraAuth, { lerAuth, guardarAuth, apagarAuth } from "../EcraAuth";
+import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
+import { supabase } from "../lib/supabase";
 import BannerInstalar from "../BannerInstalar";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
@@ -396,6 +397,7 @@ function SecaoMercados() {
 export default function PoupeJa() {
   const [user, setUser]           = useState(null);
   const [hydrated, setHydrated]   = useState(false);
+  const [recovery, setRecovery]   = useState(false);
   const [tab, setTabRaw]          = useState("inicio");
   const [dir, setDir]             = useState("right");
   const [bounce, setBounce]       = useState(null);
@@ -420,20 +422,27 @@ export default function PoupeJa() {
     } catch {}
   }
 
-  /* Lê auth do localStorage apenas no cliente */
+  /* Lê a sessão Supabase e fica a ouvir alterações (login, logout, recuperação) */
   useEffect(() => {
-    setUser(lerAuth());
-    setHydrated(true);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(sessionParaUser(session));
+      setHydrated(true);
+    });
     calcGarantiasAviso();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") setRecovery(true);
+      setUser(sessionParaUser(session));
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   function handleAuth(u) {
-    guardarAuth(u);
     setUser(u);
   }
 
-  function handleLogout() {
-    apagarAuth();
+  async function handleLogout() {
+    try { await supabase.auth.signOut(); } catch {}
     setUser(null);
     setTabRaw("inicio");
     setVerDefs(false);
@@ -465,6 +474,11 @@ export default function PoupeJa() {
 
   /* Não renderiza nada até hidratar (evita flash) */
   if (!hydrated) return null;
+
+  /* Veio do link de recuperação → definir nova password */
+  if (recovery) {
+    return <DefinirNovaPass onConcluido={() => setRecovery(false)} />;
+  }
 
   /* Utilizador não autenticado → ecrã de auth */
   if (!user) {
