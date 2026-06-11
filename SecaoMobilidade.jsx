@@ -506,15 +506,16 @@ const MARCAS_EV = CARROS_EV.reduce((acc, c) => {
 
 function SubPostosEV() {
   const [postos, setPostos]         = useState([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading]       = useState(false);
   const [erro, setErro]             = useState(false);
   const [fonte, setFonte]           = useState("");
   const [atualizado, setAtualizado] = useState(null);
   const [raio, setRaio]             = useState(10);
   const [raioInput, setRaioInput]   = useState(10);
   const [filtroEstado, setFiltro]   = useState("todos");
-  const [loc, setLoc]               = useState({ lat: 38.7169, lon: -9.1395 });
-  const [locNome, setLocNome]       = useState("Lisboa (padrão)");
+  const [loc, setLoc]               = useState(null);
+  const [locNome, setLocNome]       = useState(null);
+  const [locDenied, setLocDenied]   = useState(false);
   // Simulador
   const [carroId, setCarroId]       = useState("");
   const [batDe, setBatDe]           = useState(20);
@@ -523,19 +524,29 @@ function SubPostosEV() {
   const carro = CARROS_EV.find(c => c.id === carroId) || null;
 
   function obterLocalizacao() {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) { setLocDenied(true); return; }
+    setLoading(true);
     navigator.geolocation.getCurrentPosition(
       pos => {
+        setLocDenied(false);
         setLoc({ lat: pos.coords.latitude, lon: pos.coords.longitude });
         setLocNome("A tua localização");
       },
-      () => {}
+      () => { setLocDenied(true); setLoading(false); }
     );
   }
 
-  function carregar() {
+  function usarLisboa() {
+    setLocDenied(false);
+    setLoc({ lat: 38.7169, lon: -9.1395 });
+    setLocNome("Lisboa");
+  }
+
+  function carregar(locArg) {
+    const useLoc = locArg || loc;
+    if (!useLoc) return;
     setLoading(true); setErro(false);
-    fetch(`/api/ev?lat=${loc.lat}&lon=${loc.lon}&raio=${raio}`)
+    fetch(`/api/ev?lat=${useLoc.lat}&lon=${useLoc.lon}&raio=${raio}`)
       .then(r => r.json())
       .then(json => {
         if (!json.success) { setErro(true); setLoading(false); return; }
@@ -548,7 +559,7 @@ function SubPostosEV() {
   }
 
   useEffect(() => { obterLocalizacao(); }, []);
-  useEffect(() => { carregar(); }, [loc.lat, loc.lon, raio]);
+  useEffect(() => { if (loc) carregar(loc); }, [loc?.lat, loc?.lon, raio]);
 
   const filtrados = postos
     .filter(p => filtroEstado === "todos" || p.estado === filtroEstado)
@@ -580,7 +591,7 @@ function SubPostosEV() {
           </div>
           <p className="text-xl font-black text-white">Postos de Carregamento EV</p>
           <p className="text-[12px] text-white/60 mt-0.5 flex items-center gap-1">
-            <MapPin size={11} /> {locNome}
+            <MapPin size={11} /> {locNome || "A obter localização..."}
           </p>
 
           {loading ? <LoadingDots /> : (
@@ -600,8 +611,25 @@ function SubPostosEV() {
         </div>
       </div>
 
+      {/* Localização negada */}
+      {locDenied && (
+        <div className="mx-4 mb-4 card p-5 text-center border-orange-100">
+          <MapPin size={28} className="text-orange-300 mx-auto mb-2" />
+          <p className="text-sm font-black text-slate-700 mb-1">Localização não disponível</p>
+          <p className="text-xs text-slate-400 mb-4">Ativa a localização no browser ou usa Lisboa como ponto de partida</p>
+          <div className="flex gap-2">
+            <button onClick={obterLocalizacao} className="press flex-1 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white flex items-center justify-center gap-1.5">
+              <MapPin size={13} /> Tentar de novo
+            </button>
+            <button onClick={usarLisboa} className="press flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 flex items-center justify-center gap-1.5">
+              Usar Lisboa
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Controlos */}
-      <div className="mx-4 mb-4 card p-4">
+      {loc && <div className="mx-4 mb-4 card p-4">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-black text-slate-700 flex items-center gap-1.5">
             <MapPin size={13} className="text-emerald-600" /> Raio de pesquisa
@@ -624,7 +652,7 @@ function SubPostosEV() {
         >
           <MapPin size={13} /> Usar a minha localização atual
         </button>
-      </div>
+      </div>}
 
       {/* Simulador de carregamento */}
       <div className="mx-4 mb-3 rounded-2xl border border-slate-100 overflow-hidden bg-white">
@@ -730,7 +758,7 @@ function SubPostosEV() {
       </div>
 
       {/* Lista postos */}
-      {erro ? <ErroCard onRetry={carregar} /> : loading ? (
+      {erro ? <ErroCard onRetry={() => carregar()} /> : loading ? (
         <div className="px-4 flex flex-col gap-3">
           {[1, 2, 3].map(i => (
             <div key={i} className="card p-4 animate-pulse">
