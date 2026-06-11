@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import BannerInstalar from "./BannerInstalar";
+import Onboarding from "./Onboarding";
 
 const FEATURES = [
   { icon: Receipt,     text: "Guarda talões e garantias digitalmente" },
@@ -534,8 +535,20 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
 
 /* ── Export principal ── */
 export default function EcraAuth({ onAuth }) {
-  const [ecra, setEcra] = useState("landing"); // "landing" | "registo" | "login" | "recuperar"
+  // Onboarding só na 1ª visita (EcraAuth renderiza apenas no cliente)
+  const [ecra, setEcra] = useState(() => {
+    try {
+      if (typeof window !== "undefined" && !localStorage.getItem("poupeja_onboarding_v1")) return "onboarding";
+    } catch {}
+    return "landing";
+  });
 
+  function concluirOnboarding() {
+    try { localStorage.setItem("poupeja_onboarding_v1", "1"); } catch {}
+    setEcra("landing");
+  }
+
+  if (ecra === "onboarding") return <Onboarding onConcluido={concluirOnboarding} />;
   if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} />;
   if (ecra === "login")     return <Login        onVoltar={() => setEcra("landing")} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
   if (ecra === "recuperar") return <RecuperarPass onVoltar={() => setEcra("login")} />;
@@ -547,6 +560,7 @@ export function sessionParaUser(session) {
   if (!session?.user) return null;
   const u = session.user;
   return {
+    id: u.id,
     nome: u.user_metadata?.nome || (u.email ? u.email.split("@")[0] : "Utilizador"),
     email: u.email,
     criado: u.created_at,

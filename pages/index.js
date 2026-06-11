@@ -8,12 +8,14 @@ import SecaoListaCompras from "../SecaoListaCompras";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
+import { iniciarSync, pararSync } from "../lib/sync";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
-  Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks,
+  Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
 } from "lucide-react";
+import { partilharPoupanca } from "../lib/partilhar";
 
 /* ─── nav config ─── */
 const NAV = [
@@ -90,8 +92,10 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
 function EcraInicio({ user, setTab, goGarantias }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
-  const [totalMes, setTotalMes] = useState(0);
-  const [nTaloes, setNTaloes]   = useState(0);
+  const [totalMes, setTotalMes]       = useState(0);
+  const [totalSempre, setTotalSempre] = useState(0);
+  const [nTaloes, setNTaloes]         = useState(0);
+  const [feedbackPartilha, setFeedbackPartilha] = useState("");
   useEffect(() => {
     try {
       const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
@@ -99,9 +103,20 @@ function EcraInicio({ user, setTab, goGarantias }) {
       const compras = taloes.filter(t => t.tipo === "compra" && t.valorPoupado > 0);
       const doMes = compras.filter(t => (t.dataCompra || t.criadoEm || "").slice(0, 7) === mesAtual);
       setTotalMes(doMes.reduce((s, t) => s + (t.valorPoupado || 0), 0));
+      setTotalSempre(compras.reduce((s, t) => s + (t.valorPoupado || 0), 0));
       setNTaloes(compras.length);
     } catch {}
   }, []);
+
+  async function partilhar() {
+    const valor = totalMes > 0 ? totalMes : totalSempre;
+    const periodo = totalMes > 0 ? "este mês" : "até hoje";
+    const r = await partilharPoupanca(valor, periodo);
+    if (r === "copiado") {
+      setFeedbackPartilha("Copiado ✓");
+      setTimeout(() => setFeedbackPartilha(""), 2500);
+    }
+  }
 
   const FEATURES = [
     { icon: ListChecks, label: "Lista de compras",  desc: "Organiza o que levas antes de sair",     bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "lista",      full: true },
@@ -140,14 +155,20 @@ function EcraInicio({ user, setTab, goGarantias }) {
               <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">O teu assistente de poupança</span>
             </div>
 
-            {totalMes > 0 ? (
+            {totalSempre > 0 ? (
               <>
-                <p className="text-[13px] font-semibold text-white/70">Olá, {primeiroNome}! Este mês já poupaste</p>
-                <p className="text-5xl font-black text-white mt-1 leading-none" style={{ fontFamily: "'Sora', system-ui" }}>
-                  €{totalMes.toFixed(2)}
+                <p className="text-[13px] font-semibold text-white/70">
+                  Olá, {primeiroNome}! {totalMes > 0 ? "Este mês já poupaste" : "Já poupaste no total"}
                 </p>
-                <p className="text-[12px] text-white/60 mt-1.5">em {nTaloes} talão{nTaloes !== 1 ? "s" : ""} guardado{nTaloes !== 1 ? "s" : ""}</p>
-                <div className="mt-4 flex gap-2">
+                <p className="text-5xl font-black text-white mt-1 leading-none" style={{ fontFamily: "'Sora', system-ui" }}>
+                  €{(totalMes > 0 ? totalMes : totalSempre).toFixed(2)}
+                </p>
+                <p className="text-[12px] text-white/60 mt-1.5">
+                  {totalMes > 0 && totalSempre > totalMes
+                    ? <>€{totalSempre.toFixed(2)} no total · {nTaloes} tal{nTaloes !== 1 ? "ões" : "ão"}</>
+                    : <>em {nTaloes} talão{nTaloes !== 1 ? "s" : ""} guardado{nTaloes !== 1 ? "s" : ""}</>}
+                </p>
+                <div className="mt-4 flex gap-2 flex-wrap">
                   <button
                     onClick={() => setTab("poupanca")}
                     className="press inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
@@ -159,6 +180,12 @@ function EcraInicio({ user, setTab, goGarantias }) {
                     className="press inline-flex items-center gap-2 bg-white text-emerald-700 text-xs font-black px-4 py-2 rounded-xl"
                   >
                     <Plus size={13} /> Adicionar talão
+                  </button>
+                  <button
+                    onClick={partilhar}
+                    className="press inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-white/20"
+                  >
+                    <Share2 size={13} /> {feedbackPartilha || "Partilhar"}
                   </button>
                 </div>
               </>
@@ -276,6 +303,18 @@ function EcraInicio({ user, setTab, goGarantias }) {
 /* ─── Ecrã Poupança ─── */
 function SecaoPoupanca({ setTab }) {
   const [dados, setDados] = useState(null);
+  const [feedbackPartilha, setFeedbackPartilha] = useState("");
+
+  async function partilhar() {
+    if (!dados) return;
+    const valor = dados.totalMes > 0 ? dados.totalMes : dados.totalGeral;
+    const periodo = dados.totalMes > 0 ? "este mês" : "até hoje";
+    const r = await partilharPoupanca(valor, periodo);
+    if (r === "copiado") {
+      setFeedbackPartilha("Copiado ✓");
+      setTimeout(() => setFeedbackPartilha(""), 2500);
+    }
+  }
 
   useEffect(() => {
     try {
@@ -333,12 +372,22 @@ function SecaoPoupanca({ setTab }) {
           ) : (
             <p className="text-[12px] text-white/70 mt-2">Guarda talões com o valor poupado para ver aqui.</p>
           )}
-          <button
-            onClick={() => setTab("taloes")}
-            className="press mt-4 inline-flex items-center gap-1.5 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl"
-          >
-            <Plus size={12} /> {semDados ? "Guardar primeiro talão" : "Adicionar talão"}
-          </button>
+          <div className="mt-4 flex gap-2 flex-wrap">
+            <button
+              onClick={() => setTab("taloes")}
+              className="press inline-flex items-center gap-1.5 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl"
+            >
+              <Plus size={12} /> {semDados ? "Guardar primeiro talão" : "Adicionar talão"}
+            </button>
+            {!semDados && (
+              <button
+                onClick={partilhar}
+                className="press inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-white/20"
+              >
+                <Share2 size={12} /> {feedbackPartilha || "Partilhar"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -441,6 +490,7 @@ export default function PoupeJa() {
   const [verDefs, setVerDefs]           = useState(false);
   const [subTabTaloes, setSubTabTaloes] = useState("compras");
   const [garantiasAviso, setGarantiasAviso] = useState([]);
+  const [syncTick, setSyncTick]         = useState(0);
 
   function calcGarantiasAviso() {
     try {
@@ -473,6 +523,21 @@ export default function PoupeJa() {
     return () => subscription.unsubscribe();
   }, []);
 
+  /* Sincroniza dados locais com a conta (talões, lista, prefs…) */
+  useEffect(() => {
+    if (user?.id) iniciarSync(user.id);
+  }, [user?.id]);
+
+  /* Dados chegaram de outro dispositivo → re-renderiza o ecrã atual */
+  useEffect(() => {
+    function onSync() {
+      setSyncTick(t => t + 1);
+      calcGarantiasAviso();
+    }
+    window.addEventListener("poupeja:sync-updated", onSync);
+    return () => window.removeEventListener("poupeja:sync-updated", onSync);
+  }, []);
+
   useEffect(() => {
     function onNav(e) { go(e.detail); }
     window.addEventListener("poupeja:nav", onNav);
@@ -484,6 +549,7 @@ export default function PoupeJa() {
   }
 
   async function handleLogout() {
+    pararSync();
     try { await supabase.auth.signOut(); } catch {}
     setUser(null);
     setTabRaw("inicio");
@@ -642,7 +708,7 @@ export default function PoupeJa() {
 
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
-              <div key={tab} data-dir={dir}>
+              <div key={`${tab}-${syncTick}`} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
