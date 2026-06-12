@@ -3,8 +3,8 @@ import SecaoFolhetos from "../SecaoFolhetos";
 import SecaoLojas from "../SecaoLojas";
 import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
-import SecaoDefinicoes from "../SecaoDefinicoes";
 import SecaoListaCompras from "../SecaoListaCompras";
+import SecaoDefinicoes from "../SecaoDefinicoes";
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
@@ -747,6 +747,7 @@ export default function PoupeJa() {
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
+                {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
