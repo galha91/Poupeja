@@ -15,6 +15,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
+  ExternalLink, TrendingDown, Lightbulb,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -495,12 +496,91 @@ function SecaoPoupanca({ setTab }) {
         </button>
       </div>
 
+      {/* Poupa nas contas */}
+      <div className="px-4 mb-5 anim-up anim-up-3">
+        <SectionLabel icon={Lightbulb}>Poupa também nas contas</SectionLabel>
+        <div className="flex flex-col gap-3">
+          {LEADS_FINANCEIROS.map(lead => (
+            <a
+              key={lead.id}
+              href={lead.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press card p-4 flex items-center gap-4 text-left no-underline"
+            >
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-xl"
+                style={{ background: lead.bg }}
+              >
+                {lead.emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <p className="text-[13px] font-black text-slate-800">{lead.nome}</p>
+                  <span
+                    className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: lead.bg, color: lead.cor }}
+                  >
+                    {lead.badge}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">{lead.desc}</p>
+                <p className="text-[10px] font-black mt-1" style={{ color: lead.cor }}>
+                  {lead.cta} →
+                </p>
+              </div>
+              <ExternalLink size={14} className="text-slate-300 flex-shrink-0" />
+            </a>
+          ))}
+        </div>
+        <p className="text-[10px] text-slate-400 text-center mt-2">
+          Serviços de comparação gratuitos e sem compromisso
+        </p>
+      </div>
+
       {/* Desafios */}
       <DesafiosMensais setTab={setTab} />
 
     </div>
   );
 }
+
+/* ─── Leads financeiros ─── */
+const LEADS_FINANCEIROS = [
+  {
+    id: "comparaja",
+    nome: "ComparaJá",
+    emoji: "⚡",
+    bg: "#fef3c7",
+    cor: "#d97706",
+    badge: "Energia & Telecom",
+    desc: "Compara tarifas de eletricidade, gás, internet e seguros. Poupas centenas por ano sem sair de casa.",
+    cta: "Comparar agora",
+    url: "https://www.comparaja.pt/?ref=poupeja",
+  },
+  {
+    id: "doutorfinancas",
+    nome: "Doutor Finanças",
+    emoji: "🏦",
+    bg: "#eff6ff",
+    cor: "#2563eb",
+    badge: "Crédito & Seguros",
+    desc: "Simula crédito habitação, pessoal e seguros. Negociação gratuita com os melhores bancos.",
+    cta: "Simular grátis",
+    url: "https://www.doutorfinancas.pt/?ref=poupeja",
+  },
+  {
+    id: "goldmantelecom",
+    nome: "Mudar de operadora",
+    emoji: "📱",
+    bg: "#f0fdf4",
+    cor: "#16a34a",
+    badge: "Telecomunicações",
+    desc: "Compara pacotes NOS, MEO, Vodafone e NOWO. A melhor oferta para o teu perfil em 2 minutos.",
+    cta: "Ver ofertas",
+    url: "https://www.comparaja.pt/telecomunicacoes/?ref=poupeja",
+  },
+];
 
 /* ─── Wrapper Mercados ─── */
 function SecaoMercados() {
