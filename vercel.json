@@ -5,12 +5,19 @@
     },
     "pages/api/cron-email-semanal.js": {
       "maxDuration": 60
+    },
+    "pages/api/cron-validar-urls.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
     {
       "path": "/api/cron-email-semanal",
       "schedule": "0 9 * * 4"
+    },
+    {
+      "path": "/api/cron-validar-urls",
+      "schedule": "0 8 * * *"
     }
   ]
 }
