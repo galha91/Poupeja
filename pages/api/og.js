@@ -7,94 +7,228 @@ export default function handler() {
     (
       <div
         style={{
-          width: "1200px",
-          height: "630px",
+          width: "100%",
+          height: "100%",
           display: "flex",
           flexDirection: "column",
-          background: "linear-gradient(135deg, #064e3b 0%, #065f46 45%, #047857 100%)",
+          justifyContent: "space-between",
+          background: "linear-gradient(135deg, #064e3b 0%, #047857 100%)",
+          padding: "60px 80px",
+          color: "#fff",
           position: "relative",
           overflow: "hidden",
-          fontFamily: "system-ui, sans-serif",
+          fontFamily: "system-ui",
         }}
       >
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", top: "-100px", right: "-100px", width: "480px", height: "480px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", display: "flex" }} />
-        <div style={{ position: "absolute", bottom: "-60px", left: "-60px", width: "340px", height: "340px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", display: "flex" }} />
-        <div style={{ position: "absolute", top: "180px", right: "80px", width: "160px", height: "160px", borderRadius: "50%", background: "rgba(255,255,255,0.03)", display: "flex" }} />
+        {/* Bg circles */}
+        <div
+          style={{
+            position: "absolute",
+            top: -150,
+            right: -100,
+            width: 500,
+            height: 500,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.05)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: -80,
+            left: -80,
+            width: 380,
+            height: 380,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.04)",
+          }}
+        />
 
-        {/* Top bar */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "52px 72px 0 72px" }}>
-          {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
-            <div style={{ width: "72px", height: "72px", borderRadius: "20px", background: "rgba(255,255,255,0.15)", border: "2px solid rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ fontSize: "38px", display: "flex" }}>🐷</div>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            zIndex: 10,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            <div
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: 18,
+                background: "rgba(255,255,255,0.15)",
+                border: "2px solid rgba(255,255,255,0.25)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 36,
+              }}
+            >
+              🐷
             </div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: "40px", fontWeight: "900", color: "#ffffff", letterSpacing: "-1.5px", lineHeight: "1", display: "flex" }}>PoupeJá</div>
-              <div style={{ fontSize: "15px", fontWeight: "600", color: "rgba(167,243,208,0.9)", marginTop: "3px", display: "flex" }}>poupejá.com</div>
+            <div>
+              <div
+                style={{
+                  fontSize: 40,
+                  fontWeight: 900,
+                  lineHeight: 1,
+                  marginBottom: 4,
+                }}
+              >
+                PoupeJá
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(167,243,208,0.9)" }}>
+                poupejá.com
+              </div>
             </div>
           </div>
-
-          {/* Free badge */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(251,191,36,0.15)", border: "1.5px solid rgba(251,191,36,0.45)", borderRadius: "40px", padding: "12px 26px" }}>
-            <div style={{ fontSize: "18px", color: "#fbbf24", display: "flex" }}>★</div>
-            <div style={{ fontSize: "17px", fontWeight: "800", color: "#fcd34d", display: "flex" }}>100% Grátis</div>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 800,
+              background: "rgba(251,191,36,0.2)",
+              border: "1.5px solid rgba(251,191,36,0.5)",
+              borderRadius: 40,
+              padding: "10px 22px",
+              color: "#fcd34d",
+            }}
+          >
+            ★ 100% Grátis
           </div>
         </div>
 
-        {/* Main headline */}
-        <div style={{ display: "flex", flexDirection: "column", padding: "42px 72px 0 72px", gap: "16px" }}>
-          {/* Badge */}
-          <div style={{ display: "flex", background: "rgba(16,185,129,0.2)", border: "1px solid rgba(110,231,183,0.35)", borderRadius: "8px", padding: "8px 18px", width: "fit-content" }}>
-            <div style={{ fontSize: "14px", fontWeight: "700", color: "#6ee7b7", letterSpacing: "2px", display: "flex" }}>
-              A APP DE POUPANÇA PORTUGUESA
-            </div>
+        {/* Main content */}
+        <div style={{ zIndex: 10 }}>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 700,
+              color: "#6ee7b7",
+              letterSpacing: 2,
+              marginBottom: 24,
+              textTransform: "uppercase",
+            }}
+          >
+            A app de poupança portuguesa
           </div>
-
-          {/* Headline */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: "72px", fontWeight: "900", color: "#ffffff", letterSpacing: "-3px", lineHeight: "1.05", display: "flex" }}>
-              Poupa nas compras
-            </div>
-            <div style={{ fontSize: "72px", fontWeight: "900", color: "#6ee7b7", letterSpacing: "-3px", lineHeight: "1.05", display: "flex" }}>
-              do dia a dia
-            </div>
+          <div
+            style={{
+              fontSize: 68,
+              fontWeight: 900,
+              lineHeight: 1.1,
+              marginBottom: 12,
+            }}
+          >
+            Poupa nas compras
           </div>
-
-          {/* Subtitle */}
-          <div style={{ fontSize: "22px", fontWeight: "400", color: "rgba(167,243,208,0.85)", lineHeight: "1.5", maxWidth: "640px", display: "flex" }}>
+          <div
+            style={{
+              fontSize: 68,
+              fontWeight: 900,
+              lineHeight: 1.1,
+              color: "#6ee7b7",
+              marginBottom: 20,
+            }}
+          >
+            do dia a dia 💸
+          </div>
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 400,
+              color: "rgba(167,243,208,0.85)",
+              lineHeight: 1.6,
+              maxWidth: 600,
+            }}
+          >
             Guarda talões, folhetos e desafia-te a poupar mais este mês.
           </div>
         </div>
 
-        {/* Stat cards */}
-        <div style={{ display: "flex", gap: "14px", padding: "36px 72px 0 72px" }}>
-          <div style={{ display: "flex", flex: "1", alignItems: "center", gap: "14px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "16px", padding: "16px 22px" }}>
-            <div style={{ fontSize: "24px", display: "flex" }}>🏪</div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: "20px", fontWeight: "800", color: "#ffffff", lineHeight: "1", display: "flex" }}>50+</div>
-              <div style={{ fontSize: "12px", color: "rgba(167,243,208,0.75)", marginTop: "3px", display: "flex" }}>Lojas & Folhetos</div>
+        {/* Stats */}
+        <div style={{ display: "flex", gap: 16, zIndex: 10 }}>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 14,
+              padding: 16,
+              fontSize: 13,
+            }}
+          >
+            <div style={{ fontSize: 22 }}>🏪</div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>50+</div>
+              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
+                Lojas
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", flex: "1", alignItems: "center", gap: "14px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "16px", padding: "16px 22px" }}>
-            <div style={{ fontSize: "24px", display: "flex" }}>🎯</div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: "20px", fontWeight: "800", color: "#ffffff", lineHeight: "1", display: "flex" }}>Desafio</div>
-              <div style={{ fontSize: "12px", color: "rgba(167,243,208,0.75)", marginTop: "3px", display: "flex" }}>Mensal com prémios</div>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 14,
+              padding: 16,
+            }}
+          >
+            <div style={{ fontSize: 22 }}>🎯</div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>Desafios</div>
+              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
+                Mensais
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", flex: "1", alignItems: "center", gap: "14px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "16px", padding: "16px 22px" }}>
-            <div style={{ fontSize: "24px", display: "flex" }}>52</div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: "20px", fontWeight: "800", color: "#ffffff", lineHeight: "1", display: "flex" }}>Semanas</div>
-              <div style={{ fontSize: "12px", color: "rgba(167,243,208,0.75)", marginTop: "3px", display: "flex" }}>Desafio anual de poupança</div>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 14,
+              padding: 16,
+            }}
+          >
+            <div style={{ fontSize: 22 }}>52</div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>Semanas</div>
+              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
+                de poupança
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", flex: "1", alignItems: "center", gap: "14px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "16px", padding: "16px 22px" }}>
-            <div style={{ fontSize: "24px", display: "flex" }}>⚡</div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: "20px", fontWeight: "800", color: "#ffffff", lineHeight: "1", display: "flex" }}>Grátis</div>
-              <div style={{ fontSize: "12px", color: "rgba(167,243,208,0.75)", marginTop: "3px", display: "flex" }}>Sem publicidade</div>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 14,
+              padding: 16,
+            }}
+          >
+            <div style={{ fontSize: 22 }}>⚡</div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>Sem</div>
+              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
+                Publicidade
+              </div>
             </div>
           </div>
         </div>
