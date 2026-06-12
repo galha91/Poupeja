@@ -508,12 +508,14 @@ function SecaoPoupanca({ setTab }) {
               rel="noopener noreferrer"
               className="press card p-4 flex items-center gap-4 text-left no-underline"
             >
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-xl"
-                style={{ background: lead.bg }}
-              >
-                {lead.emoji}
-              </div>
+              {lead.emoji && (
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-xl"
+                  style={{ background: lead.bg }}
+                >
+                  {lead.emoji}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <p className="text-[13px] font-black text-slate-800">{lead.nome}</p>
@@ -529,7 +531,6 @@ function SecaoPoupanca({ setTab }) {
                   {lead.cta} →
                 </p>
               </div>
-              <ExternalLink size={14} className="text-slate-300 flex-shrink-0" />
             </a>
           ))}
         </div>
@@ -572,7 +573,7 @@ const LEADS_FINANCEIROS = [
   {
     id: "seguros",
     nome: "Seguros.pt",
-    emoji: "🛡️",
+    emoji: null,
     bg: "#f0fdf4",
     cor: "#16a34a",
     badge: "Seguros",
