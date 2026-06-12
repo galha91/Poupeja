@@ -570,17 +570,6 @@ const LEADS_FINANCEIROS = [
     cta: "Simular grátis",
     url: "https://www.doutorfinancas.pt/?ref=poupeja",
   },
-  {
-    id: "seguros",
-    nome: "Seguros.pt",
-    emoji: null,
-    bg: "#f0fdf4",
-    cor: "#16a34a",
-    badge: "Seguros",
-    desc: "Compara seguros auto, habitação e saúde. Simulação gratuita com as principais seguradoras portuguesas.",
-    cta: "Simular seguro",
-    url: "https://www.seguros.pt/?ref=poupeja",
-  },
 ];
 
 /* ─── Wrapper Mercados ─── */
