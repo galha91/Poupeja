@@ -56,7 +56,7 @@
       "loja": "Auchan",
       "titulo": "Folheto desta semana",
       "validade": "11–17 jun",
-      "url": "https://www.auchan.pt/folhetos",
+      "url": "https://www.auchan.pt/pt/folhetos/",
       "capa": "",
       "categorias": ["Promoções"],
       "destaque": false
@@ -76,7 +76,7 @@
       "loja": "El Corte Inglés",
       "titulo": "Folheto desta semana",
       "validade": "5–25 jun",
-      "url": "https://www.elcorteingles.pt/folhetos/",
+      "url": "https://www.elcorteingles.pt/catalogos/",
       "capa": "",
       "categorias": ["Promoções"],
       "destaque": false
