@@ -508,14 +508,20 @@ function SecaoPoupanca({ setTab }) {
               rel="noopener noreferrer"
               className="press card p-4 flex items-center gap-4 text-left no-underline"
             >
-              {lead.emoji && (
-                <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-xl"
-                  style={{ background: lead.bg }}
-                >
-                  {lead.emoji}
-                </div>
-              )}
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden"
+                style={{ background: lead.bg }}
+              >
+                <img
+                  src={`https://logo.clearbit.com/${lead.dominio}`}
+                  alt={lead.nome}
+                  width={36}
+                  height={36}
+                  style={{ borderRadius: 6, objectFit: "contain" }}
+                  onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+                />
+                <span style={{ display: "none", fontSize: 22 }}>{lead.emoji}</span>
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <p className="text-[13px] font-black text-slate-800">{lead.nome}</p>
@@ -551,6 +557,7 @@ const LEADS_FINANCEIROS = [
   {
     id: "comparaja",
     nome: "ComparaJá",
+    dominio: "comparaja.pt",
     emoji: "⚡",
     bg: "#fef3c7",
     cor: "#d97706",
@@ -562,6 +569,7 @@ const LEADS_FINANCEIROS = [
   {
     id: "doutorfinancas",
     nome: "Doutor Finanças",
+    dominio: "doutorfinancas.pt",
     emoji: "🏦",
     bg: "#eff6ff",
     cor: "#2563eb",
