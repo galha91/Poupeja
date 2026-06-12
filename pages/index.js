@@ -288,7 +288,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
           <div className="flex-1">
             <p className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Dica do dia</p>
             <p className="text-sm font-black text-slate-800 mt-0.5">Vê os folhetos antes de ir às compras</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Compara 5 supermercados num segundo e poupa mais.</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Vê as promoções de todos os supermercados e poupa mais.</p>
             <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-amber-600">
               Ver folhetos <ChevronRight size={11} />
             </span>
