@@ -50,6 +50,46 @@
       "capa": "",
       "categorias": ["Promoções"],
       "destaque": false
+    },
+    {
+      "id": 6,
+      "loja": "Auchan",
+      "titulo": "Folheto desta semana",
+      "validade": "Ver datas no folheto",
+      "url": "https://www.auchan.pt/folhetos",
+      "capa": "",
+      "categorias": ["Promoções"],
+      "destaque": false
+    },
+    {
+      "id": 7,
+      "loja": "E.Leclerc",
+      "titulo": "Folheto desta semana",
+      "validade": "Ver datas no folheto",
+      "url": "https://www.e-leclerc.pt/folhetos",
+      "capa": "",
+      "categorias": ["Promoções"],
+      "destaque": false
+    },
+    {
+      "id": 8,
+      "loja": "El Corte Inglés",
+      "titulo": "Folheto desta semana",
+      "validade": "Ver datas no folheto",
+      "url": "https://www.elcorteingles.pt/folhetos/",
+      "capa": "",
+      "categorias": ["Promoções"],
+      "destaque": false
+    },
+    {
+      "id": 9,
+      "loja": "Froiz",
+      "titulo": "Folheto desta semana",
+      "validade": "Ver datas no folheto",
+      "url": "https://www.froiz.pt/folhetos/",
+      "capa": "",
+      "categorias": ["Promoções"],
+      "destaque": false
     }
   ]
 }

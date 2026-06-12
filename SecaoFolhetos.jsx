@@ -4,10 +4,14 @@ import { ExternalLink, RefreshCw, AlertCircle, Tag, ShoppingCart, Clock } from "
 const LOJA_CORES = {
   Continente: "#e63329", "Pingo Doce": "#009a3e",
   Lidl: "#0050aa", Aldi: "#1a3b6f", "Intermarché": "#e2001a",
+  Auchan: "#d6180b", "E.Leclerc": "#0066b2",
+  "El Corte Inglés": "#006400", Froiz: "#c8102e",
 };
 const LOJA_DOMINIOS = {
   Continente: "continente.pt", "Pingo Doce": "pingodoce.pt",
   Lidl: "lidl.pt", Aldi: "aldi.pt", "Intermarché": "intermarche.pt",
+  Auchan: "auchan.pt", "E.Leclerc": "e-leclerc.pt",
+  "El Corte Inglés": "elcorteingles.pt", Froiz: "froiz.pt",
 };
 const LOJA_TAGLINE = {
   Continente: "Folheto semanal",
@@ -15,6 +19,10 @@ const LOJA_TAGLINE = {
   Lidl: "Ofertas semanais",
   Aldi: "Super preços",
   "Intermarché": "Folheto em vigor",
+  Auchan: "Folheto semanal",
+  "E.Leclerc": "Promoções da semana",
+  "El Corte Inglés": "Ofertas do supermercado",
+  Froiz: "Folheto em vigor",
 };
 
 function LogoLoja({ loja, size }) {
