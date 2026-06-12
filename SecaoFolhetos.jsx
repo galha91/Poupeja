@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ExternalLink, RefreshCw, AlertCircle, Tag, ShoppingCart, Clock } from "lucide-react";
+import { RefreshCw, AlertCircle, Tag, ShoppingCart, Clock } from "lucide-react";
 
 const LOJA_CORES = {
   Continente: "#e63329", "Pingo Doce": "#009a3e",
@@ -148,7 +148,6 @@ export default function SecaoFolhetos() {
                   <div className="text-center">
                     <p className="text-sm font-black text-slate-800">{f.loja}</p>
                     <div className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 rounded-full" style={{ background: cor + "18" }}>
-                      <ExternalLink size={9} style={{ color: cor }} />
                       <span className="text-[10px] font-black" style={{ color: cor }}>{tagline}</span>
                     </div>
                   </div>
