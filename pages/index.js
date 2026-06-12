@@ -570,15 +570,15 @@ const LEADS_FINANCEIROS = [
     url: "https://www.doutorfinancas.pt/?ref=poupeja",
   },
   {
-    id: "goldmantelecom",
-    nome: "Mudar de operadora",
-    emoji: "📱",
+    id: "seguros",
+    nome: "Seguros.pt",
+    emoji: "🛡️",
     bg: "#f0fdf4",
     cor: "#16a34a",
-    badge: "Telecomunicações",
-    desc: "Compara pacotes NOS, MEO, Vodafone e NOWO. A melhor oferta para o teu perfil em 2 minutos.",
-    cta: "Ver ofertas",
-    url: "https://www.comparaja.pt/telecomunicacoes/?ref=poupeja",
+    badge: "Seguros",
+    desc: "Compara seguros auto, habitação e saúde. Simulação gratuita com as principais seguradoras portuguesas.",
+    cta: "Simular seguro",
+    url: "https://www.seguros.pt/?ref=poupeja",
   },
 ];
 
