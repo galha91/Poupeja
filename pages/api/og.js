@@ -7,230 +7,25 @@ export default function handler() {
     (
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          width: "1200px",
+          height: "630px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
           background: "linear-gradient(135deg, #064e3b 0%, #047857 100%)",
-          padding: "60px 80px",
+          justifyContent: "center",
+          alignItems: "center",
           color: "#fff",
-          position: "relative",
-          overflow: "hidden",
-          fontFamily: "system-ui",
+          fontFamily: "sans-serif",
         }}
       >
-        {/* Bg circles */}
-        <div
-          style={{
-            position: "absolute",
-            top: -150,
-            right: -100,
-            width: 500,
-            height: 500,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.05)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: -80,
-            left: -80,
-            width: 380,
-            height: 380,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.04)",
-          }}
-        />
-
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            zIndex: 10,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            <div
-              style={{
-                width: 70,
-                height: 70,
-                borderRadius: 18,
-                background: "rgba(255,255,255,0.15)",
-                border: "2px solid rgba(255,255,255,0.25)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 36,
-              }}
-            >
-              🐷
-            </div>
-            <div>
-              <div
-                style={{
-                  fontSize: 40,
-                  fontWeight: 900,
-                  lineHeight: 1,
-                  marginBottom: 4,
-                }}
-              >
-                PoupeJá
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(167,243,208,0.9)" }}>
-                poupejá.com
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 800,
-              background: "rgba(251,191,36,0.2)",
-              border: "1.5px solid rgba(251,191,36,0.5)",
-              borderRadius: 40,
-              padding: "10px 22px",
-              color: "#fcd34d",
-            }}
-          >
-            ★ 100% Grátis
-          </div>
+        <div style={{ fontSize: "80px", fontWeight: "bold", marginBottom: "20px" }}>
+          PoupeJá
         </div>
-
-        {/* Main content */}
-        <div style={{ zIndex: 10 }}>
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              color: "#6ee7b7",
-              letterSpacing: 2,
-              marginBottom: 24,
-              textTransform: "uppercase",
-            }}
-          >
-            A app de poupança portuguesa
-          </div>
-          <div
-            style={{
-              fontSize: 68,
-              fontWeight: 900,
-              lineHeight: 1.1,
-              marginBottom: 12,
-            }}
-          >
-            Poupa nas compras
-          </div>
-          <div
-            style={{
-              fontSize: 68,
-              fontWeight: 900,
-              lineHeight: 1.1,
-              color: "#6ee7b7",
-              marginBottom: 20,
-            }}
-          >
-            do dia a dia 💸
-          </div>
-          <div
-            style={{
-              fontSize: 20,
-              fontWeight: 400,
-              color: "rgba(167,243,208,0.85)",
-              lineHeight: 1.6,
-              maxWidth: 600,
-            }}
-          >
-            Guarda talões, folhetos e desafia-te a poupar mais este mês.
-          </div>
+        <div style={{ fontSize: "48px", marginBottom: "30px", textAlign: "center" }}>
+          Poupa nas compras do dia a dia
         </div>
-
-        {/* Stats */}
-        <div style={{ display: "flex", gap: 16, zIndex: 10 }}>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-              fontSize: 13,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>🏪</div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 18 }}>50+</div>
-              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
-                Lojas
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>🎯</div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 18 }}>Desafios</div>
-              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
-                Mensais
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>52</div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 18 }}>Semanas</div>
-              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
-                de poupança
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>⚡</div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 18 }}>Sem</div>
-              <div style={{ color: "rgba(167,243,208,0.75)", fontSize: 12, marginTop: 2 }}>
-                Publicidade
-              </div>
-            </div>
-          </div>
+        <div style={{ fontSize: "24px", color: "#a3f3d0" }}>
+          poupejá.com
         </div>
       </div>
     ),
