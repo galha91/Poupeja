@@ -17,6 +17,7 @@ import {
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
+import { calcularEstado } from "../lib/desafios";
 
 /* ─── nav config ─── */
 const NAV = [
@@ -97,6 +98,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
   const [totalSempre, setTotalSempre] = useState(0);
   const [nTaloes, setNTaloes]         = useState(0);
   const [feedbackPartilha, setFeedbackPartilha] = useState("");
+  const [estadoDesafio, setEstadoDesafio] = useState(null);
   useEffect(() => {
     try {
       const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
@@ -107,6 +109,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
       setTotalSempre(compras.reduce((s, t) => s + (t.valorPoupado || 0), 0));
       setNTaloes(compras.length);
     } catch {}
+    setEstadoDesafio(calcularEstado());
   }, []);
 
   async function partilhar() {
@@ -227,6 +230,49 @@ function EcraInicio({ user, setTab, goGarantias }) {
           <ChevronRight size={18} className="text-white/50 flex-shrink-0" />
         </button>
       </div>
+
+      {/* Desafio do mês — destaque */}
+      {estadoDesafio && (() => {
+        const d = estadoDesafio.desafio;
+        const pct = Math.round(estadoDesafio.progresso * 100);
+        const completo = estadoDesafio.completo;
+        return (
+          <div className="px-4 mt-3 anim-up anim-up-2">
+            <button
+              onClick={() => setTab("poupanca")}
+              className="press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left relative overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg,${d.cor}f0,${d.cor})`,
+                boxShadow: `0 12px 28px -10px ${d.cor}66`,
+              }}
+            >
+              <div className="absolute right-3 bottom-2 text-5xl opacity-10 pointer-events-none select-none">{d.emoji}</div>
+              <div
+                className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl"
+              >{d.emoji}</div>
+              <div className="flex-1 min-w-0 relative z-10">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Desafio do mês</p>
+                  {completo && <span className="text-[9px] font-black text-white bg-white/20 px-1.5 py-0.5 rounded-full">Completo 🏆</span>}
+                </div>
+                <p className="text-[14px] font-black text-white leading-tight truncate">{d.nome}</p>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${Math.max(pct, pct > 0 ? 4 : 0)}%`, background: completo ? "#fbbf24" : "rgba(255,255,255,0.9)" }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-white/80 flex-shrink-0">
+                    €{estadoDesafio.totalMes.toFixed(0)}/€{d.meta}
+                  </span>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-white/50 flex-shrink-0 relative z-10" />
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Features grid */}
       <div className="px-4 mt-3 anim-up anim-up-1">
