@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Shirt, Smartphone, Dumbbell, ExternalLink, Tag, Store, Sparkles, Heart, BadgePercent } from "lucide-react";
+import { Shirt, Smartphone, Dumbbell, Tag, Store, Sparkles, Heart, BadgePercent } from "lucide-react";
 import { getUrlLoja, temAfiliado } from "./afiliados";
 
 const FAV_KEY = "poupeja_favoritos_lojas";
@@ -136,9 +136,7 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
                     <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
                       <Tag size={8} /> Saldos
                     </span>
-                  ) : (
-                    <ExternalLink size={9} className="text-slate-300" />
-                  )}
+                  ) : null}
                 </div>
               </div>
             </button>
