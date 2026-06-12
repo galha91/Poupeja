@@ -93,17 +93,17 @@ export default async function handler(req, res) {
 
   // 4. Validar todas as URLs de promoções + folhetos
   try {
-    const { partidas } = await validarTodasUrls(folhetos);
-    if (partidas.length > 0) {
+    const { partidas, avisos } = await validarTodasUrls(folhetos);
+    if (partidas.length > 0 || avisos.length > 0) {
       const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
-      const { subject, html } = construirEmailAlerta({ partidas, base });
+      const { subject, html } = construirEmailAlerta({ partidas, avisos, base });
       await resend.emails.send({
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: adminEmail,
         subject,
         html,
       });
-      console.log(`cron-email: alerta enviado — ${partidas.length} URLs partidas:`, partidas.map(p => p.url));
+      console.log(`cron-email: alerta — partidas=${partidas.length} avisos=${avisos.length}`);
     } else {
       console.log("cron-email: todas as URLs OK");
     }

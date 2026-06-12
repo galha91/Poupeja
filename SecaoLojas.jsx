@@ -74,7 +74,7 @@ const PROMOCOES = [
   { nome: "Tommy Hilfiger", dominio: "pt.tommy.com",   cor: "#002d72", url: "https://pt.tommy.com/" },
   { nome: "Calvin Klein",   dominio: "calvinklein.pt", cor: "#000000", url: "https://www.calvinklein.pt/sale" },
   { nome: "Levi's",         dominio: "levi.com",       cor: "#d6001c", url: "https://www.levi.com/PT/pt_PT/clothing/c/levi_clothing_sale" },
-  { nome: "JD Sports",      dominio: "jdsports.pt",    cor: "#000000", url: "https://www.jdsports.pt/promocoes/" },
+  { nome: "JD Sports",      dominio: "jdsports.pt",    cor: "#000000", url: "https://www.jdsports.pt/saldos/" },
 ];
 
 const CAT_CONFIG = {
