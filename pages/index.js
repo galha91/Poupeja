@@ -5,6 +5,7 @@ import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import SecaoListaCompras from "../SecaoListaCompras";
+import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
@@ -449,21 +450,7 @@ function SecaoPoupanca({ setTab }) {
       </div>
 
       {/* Desafios */}
-      <div className="px-4 anim-up anim-up-3">
-        <div
-          className="rounded-2xl p-4"
-          style={{ background: "linear-gradient(135deg,#fffbeb,#fef3c7)", border: "1.5px solid #fde68a" }}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <Trophy size={16} className="text-amber-500" />
-            <p className="text-sm font-black text-amber-800">Desafios mensais</p>
-            <Chip color="amber">Em breve</Chip>
-          </div>
-          <p className="text-[12px] text-amber-700">
-            Guarda talões e desbloqueia desafios de poupança com metas mensais.
-          </p>
-        </div>
-      </div>
+      <DesafiosMensais setTab={setTab} />
 
     </div>
   );
