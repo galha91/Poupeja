@@ -513,12 +513,12 @@ function SecaoPoupanca({ setTab }) {
                 style={{ background: lead.bg }}
               >
                 <img
-                  src={`https://logo.clearbit.com/${lead.dominio}`}
+                  src={`https://www.google.com/s2/favicons?domain=${lead.dominio}&sz=64`}
                   alt={lead.nome}
-                  width={36}
-                  height={36}
-                  style={{ borderRadius: 6, objectFit: "contain" }}
-                  onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+                  width={32}
+                  height={32}
+                  style={{ objectFit: "contain" }}
+                  onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "block"; }}
                 />
                 <span style={{ display: "none", fontSize: 22 }}>{lead.emoji}</span>
               </div>
@@ -561,7 +561,7 @@ const LEADS_FINANCEIROS = [
     emoji: "⚡",
     bg: "#fef3c7",
     cor: "#d97706",
-    badge: "Energia & Telecom",
+    badge: "Energia & Internet",
     desc: "Compara tarifas de eletricidade, gás, internet e seguros. Poupas centenas por ano sem sair de casa.",
     cta: "Comparar agora",
     url: "https://www.comparaja.pt/?ref=poupeja",
