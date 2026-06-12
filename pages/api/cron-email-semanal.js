@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
+import { validarTodasUrls, construirEmailAlerta } from "../../lib/validarUrls";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
@@ -89,5 +90,26 @@ export default async function handler(req, res) {
   }
 
   console.log(`cron-email: enviados=${enviados} ignorados=${ignorados} falhas=${falhas}`);
+
+  // 4. Validar todas as URLs de promoções + folhetos
+  try {
+    const { partidas } = await validarTodasUrls(folhetos);
+    if (partidas.length > 0) {
+      const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
+      const { subject, html } = construirEmailAlerta({ partidas, base });
+      await resend.emails.send({
+        from: "PoupeJá <noreply@xn--poupej-uta.com>",
+        to: adminEmail,
+        subject,
+        html,
+      });
+      console.log(`cron-email: alerta enviado — ${partidas.length} URLs partidas:`, partidas.map(p => p.url));
+    } else {
+      console.log("cron-email: todas as URLs OK");
+    }
+  } catch (e) {
+    console.error("cron-email: erro na validação de URLs:", e?.message);
+  }
+
   return res.status(200).json({ ok: true, enviados, ignorados, falhas });
 }
