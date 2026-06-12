@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
-import { validarTodasUrls, construirEmailAlerta } from "../../lib/validarUrls";
+import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
@@ -94,16 +94,18 @@ export default async function handler(req, res) {
   // 4. Validar todas as URLs de promoções + folhetos
   try {
     const { partidas, avisos } = await validarTodasUrls(folhetos);
+    // Tenta auto-corrigir 404s via GitHub API (requer GITHUB_TOKEN)
+    const corrigidas = partidas.length > 0 ? await autoCorrigirUrls(partidas) : [];
     if (partidas.length > 0 || avisos.length > 0) {
       const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
-      const { subject, html } = construirEmailAlerta({ partidas, avisos, base });
+      const { subject, html } = construirEmailAlerta({ partidas, avisos, corrigidas, base });
       await resend.emails.send({
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: adminEmail,
         subject,
         html,
       });
-      console.log(`cron-email: alerta — partidas=${partidas.length} avisos=${avisos.length}`);
+      console.log(`cron-email: alerta — partidas=${partidas.length} avisos=${avisos.length} auto-corrigidas=${corrigidas.length}`);
     } else {
       console.log("cron-email: todas as URLs OK");
     }

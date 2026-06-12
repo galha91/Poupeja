@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Shirt, Smartphone, Dumbbell, Tag, Store, Sparkles, Heart, BadgePercent } from "lucide-react";
 import { getUrlLoja, temAfiliado } from "./afiliados";
+import { PROMOCOES } from "./lib/lojas-data";
 
 const FAV_KEY = "poupeja_favoritos_lojas";
 function lerFavs() { try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch { return new Set(); } }
@@ -62,20 +63,6 @@ const LOJAS = {
   ],
 };
 
-const PROMOCOES = [
-  { nome: "Worten",         dominio: "worten.pt",      cor: "#e30613", url: "https://www.worten.pt/promocoes" },
-  { nome: "Parfois",        dominio: "parfois.com",    cor: "#d4a05a", url: "https://www.parfois.com/pt/sale/" },
-  { nome: "Mango",          dominio: "mango.com",      cor: "#000000", url: "https://shop.mango.com/pt/pt/l/mulher/promocoes" },
-  { nome: "Nike",           dominio: "nike.com",       cor: "#000000", url: "https://www.nike.com/pt/en/w/sale-3yaep" },
-  { nome: "Adidas",         dominio: "adidas.pt",      cor: "#000000", url: "https://www.adidas.pt/outlet" },
-  { nome: "Decathlon",      dominio: "decathlon.pt",   cor: "#0082c3", url: "https://www.decathlon.pt/C-3274473-promocoes" },
-  { nome: "Darty",          dominio: "darty.pt",        cor: "#e2001a", url: "https://darty.pt/collections/campanhas-promocoes" },
-  { nome: "Puma",           dominio: "pt.puma.com",    cor: "#000000", url: "https://pt.puma.com/pt/pt/sale" },
-  { nome: "Tommy Hilfiger", dominio: "pt.tommy.com",   cor: "#002d72", url: "https://pt.tommy.com/" },
-  { nome: "Calvin Klein",   dominio: "calvinklein.pt", cor: "#000000", url: "https://www.calvinklein.pt/sale" },
-  { nome: "Levi's",         dominio: "levi.com",       cor: "#d6001c", url: "https://www.levi.com/PT/pt_PT/clothing/c/levi_clothing_sale" },
-  { nome: "JD Sports",      dominio: "jdsports.pt",    cor: "#000000", url: "https://www.jdsports.pt/saldos/" },
-];
 
 const CAT_CONFIG = {
   moda:      { label: "Moda",      icon: Shirt,      grad: "from-violet-600 to-purple-500",   css: "linear-gradient(135deg,#7c3aed,#a855f7)", shadow: "rgba(124,58,237,0.35)",  count: LOJAS.moda.length },
