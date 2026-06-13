@@ -42,7 +42,7 @@ gtag('config', 'G-Q3JQG95879');`,
         <meta property="og:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://xn--poupej-uta.com" />
-        <meta property="og:image" content="https://xn--poupej-uta.com/api/og" />
+        <meta property="og:image" content="https://xn--poupej-uta.com/og.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="PoupeJá — Poupa nas compras do dia a dia" />
@@ -53,7 +53,7 @@ gtag('config', 'G-Q3JQG95879');`,
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" />
         <meta name="twitter:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." />
-        <meta name="twitter:image" content="https://xn--poupej-uta.com/api/og" />
+        <meta name="twitter:image" content="https://xn--poupej-uta.com/og.png" />
       </Head>
       <body>
         <Main />
