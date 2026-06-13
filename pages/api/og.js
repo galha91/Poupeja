@@ -20,7 +20,7 @@ export default function handler() {
           fontFamily: "system-ui",
         }}
       >
-        {/* Decorative circles */}
+        {/* Círculos decorativos */}
         <div
           style={{
             position: "absolute",
@@ -30,6 +30,7 @@ export default function handler() {
             height: 500,
             borderRadius: "50%",
             background: "rgba(255,255,255,0.05)",
+            display: "flex",
           }}
         />
         <div
@@ -41,10 +42,11 @@ export default function handler() {
             height: 380,
             borderRadius: "50%",
             background: "rgba(255,255,255,0.04)",
+            display: "flex",
           }}
         />
 
-        {/* Header with logo and free badge */}
+        {/* Cabeçalho */}
         <div
           style={{
             display: "flex",
@@ -65,30 +67,34 @@ export default function handler() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 36,
+                fontSize: 28,
+                fontWeight: "900",
+                color: "#ffffff",
               }}
             >
-              🐷
+              PJ
             </div>
-            <div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <div
                 style={{
                   fontSize: 40,
                   fontWeight: "900",
-                  lineHeight: 1,
+                  lineHeight: "1",
                   marginBottom: 4,
+                  display: "flex",
                 }}
               >
-                PoupeJá
+                PoupeJa
               </div>
               <div
                 style={{
                   fontSize: 14,
                   fontWeight: "600",
                   color: "rgba(167,243,208,0.9)",
+                  display: "flex",
                 }}
               >
-                poupejá.com
+                poupeja.com
               </div>
             </div>
           </div>
@@ -101,14 +107,15 @@ export default function handler() {
               borderRadius: 40,
               padding: "10px 22px",
               color: "#fcd34d",
+              display: "flex",
             }}
           >
-            100% Grátis
+            100% Gratis
           </div>
         </div>
 
-        {/* Main content */}
-        <div style={{ position: "relative", zIndex: 10 }}>
+        {/* Conteúdo principal */}
+        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column" }}>
           <div
             style={{
               fontSize: 14,
@@ -117,9 +124,10 @@ export default function handler() {
               letterSpacing: "2px",
               marginBottom: 24,
               textTransform: "uppercase",
+              display: "flex",
             }}
           >
-            A app de poupança portuguesa
+            A app de poupanca portuguesa
           </div>
           <div
             style={{
@@ -127,6 +135,7 @@ export default function handler() {
               fontWeight: "900",
               lineHeight: "1.05",
               marginBottom: 12,
+              display: "flex",
             }}
           >
             Poupa nas compras
@@ -138,6 +147,7 @@ export default function handler() {
               lineHeight: "1.05",
               color: "#6ee7b7",
               marginBottom: 20,
+              display: "flex",
             }}
           >
             do dia a dia
@@ -149,13 +159,14 @@ export default function handler() {
               color: "rgba(167,243,208,0.85)",
               lineHeight: "1.6",
               maxWidth: 600,
+              display: "flex",
             }}
           >
-            Guarda talões, folhetos e desafia-te a poupar mais este mês.
+            Folhetos, combustiveis e mais de 50 lojas. Gratis.
           </div>
         </div>
 
-        {/* Stats grid */}
+        {/* Cards de estatísticas */}
         <div
           style={{
             display: "flex",
@@ -164,141 +175,49 @@ export default function handler() {
             zIndex: 10,
           }}
         >
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>🏪</div>
-            <div>
-              <div
-                style={{
-                  fontWeight: "800",
-                  fontSize: 18,
-                }}
-              >
-                50+
-              </div>
-              <div
-                style={{
-                  color: "rgba(167,243,208,0.75)",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                Lojas
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>🎯</div>
-            <div>
-              <div
-                style={{
-                  fontWeight: "800",
-                  fontSize: 18,
-                }}
-              >
-                Desafios
-              </div>
-              <div
-                style={{
-                  color: "rgba(167,243,208,0.75)",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                Mensais
+          {[
+            { valor: "50+",    label: "Lojas" },
+            { valor: "9",      label: "Supermercados" },
+            { valor: "52",     label: "Semanas poupanca" },
+            { valor: "0 ads",  label: "Sem publicidade" },
+          ].map((item) => (
+            <div
+              key={item.label}
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 14,
+                padding: 16,
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div
+                  style={{
+                    fontWeight: "800",
+                    fontSize: 18,
+                    display: "flex",
+                    color: "#ffffff",
+                  }}
+                >
+                  {item.valor}
+                </div>
+                <div
+                  style={{
+                    color: "rgba(167,243,208,0.75)",
+                    fontSize: 11,
+                    marginTop: 2,
+                    display: "flex",
+                  }}
+                >
+                  {item.label}
+                </div>
               </div>
             </div>
-          </div>
-
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>52</div>
-            <div>
-              <div
-                style={{
-                  fontWeight: "800",
-                  fontSize: 18,
-                }}
-              >
-                Semanas
-              </div>
-              <div
-                style={{
-                  color: "rgba(167,243,208,0.75)",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                de poupança
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 14,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontSize: 22 }}>⚡</div>
-            <div>
-              <div
-                style={{
-                  fontWeight: "800",
-                  fontSize: 18,
-                }}
-              >
-                Sem
-              </div>
-              <div
-                style={{
-                  color: "rgba(167,243,208,0.75)",
-                  fontSize: 12,
-                  marginTop: 2,
-                }}
-              >
-                Publicidade
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     ),
