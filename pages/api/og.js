@@ -84,7 +84,7 @@ export default function handler() {
                   display: "flex",
                 }}
               >
-                PoupeJa
+                PoupeJá
               </div>
               <div
                 style={{
@@ -94,7 +94,7 @@ export default function handler() {
                   display: "flex",
                 }}
               >
-                poupeja.com
+                poupejá.com
               </div>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            100% Gratis
+            100% Grátis
           </div>
         </div>
 
@@ -127,7 +127,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            A app de poupanca portuguesa
+            A app de poupança portuguesa
           </div>
           <div
             style={{
@@ -162,7 +162,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            Folhetos, combustiveis e mais de 50 lojas. Gratis.
+            Folhetos, combustíveis e mais de 50 lojas. Grátis.
           </div>
         </div>
 
@@ -178,7 +178,7 @@ export default function handler() {
           {[
             { valor: "50+",    label: "Lojas" },
             { valor: "9",      label: "Supermercados" },
-            { valor: "52",     label: "Semanas poupanca" },
+            { valor: "52",     label: "Semanas poupança" },
             { valor: "0 ads",  label: "Sem publicidade" },
           ].map((item) => (
             <div
