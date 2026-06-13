@@ -45,6 +45,7 @@ const AFILIADOS = {
   "Lanidor":         null,  // Contacto directo
   "Sacoor":          null,  // Contacto directo
   "C&A":             null,  // Awin — candidatar em: awin.com → C&A PT
+  "Benetton":        null,  // Awin — candidatar em: awin.com → Benetton PT
   "Quebramar":       null,  // Contacto directo
   "Calzedonia":      null,  // Awin — candidatar em: awin.com → Calzedonia PT
   "Women'secret":    null,  // Tradedoubler
@@ -62,6 +63,7 @@ const AFILIADOS = {
   "Puma":            null,  // Awin
   "Foot Locker":     null,  // Awin
   "New Balance":     null,  // Awin
+  "Reebok":          null,  // Awin — candidatar em: awin.com → Reebok PT
   "Sportsdirect":    null,  // Awin
 
 };
