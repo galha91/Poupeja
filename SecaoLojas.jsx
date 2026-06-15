@@ -36,6 +36,7 @@ const LOJAS = {
     { nome: "Zippy",         dominio: "zippyonline.com",    cor: "#ffb200", url: "https://www.zippyonline.com/pt/" },
   ],
   eletronica: [
+    { nome: "Amazon",         dominio: "amazon.es",         cor: "#ff9900", url: "https://www.amazon.es/" },
     { nome: "Worten",         dominio: "worten.pt",         cor: "#e30613", url: "https://www.worten.pt/" },
     { nome: "Fnac",           dominio: "fnac.pt",           cor: "#e1a300", url: "https://www.fnac.pt/" },
     { nome: "Darty",           dominio: "darty.pt",          cor: "#e2001a", url: "https://www.darty.pt/" },

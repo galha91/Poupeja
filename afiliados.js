@@ -18,6 +18,7 @@
 const AFILIADOS = {
 
   // ── ELETRÓNICA (prioridade máxima — cabazes grandes, comissão 2–5%) ──
+  "Amazon":          null,  // Amazon Associates — candidatar em: afiliados.amazon.es → quando aprovado: "https://www.amazon.es/?tag=SEU_TAG-21"
   "Worten":          null,  // Awin PT — candidatar em: awin.com → Worten Portugal
   "Fnac":            null,  // Awin PT — candidatar em: awin.com → Fnac Portugal
   "Darty":           null,  // Awin PT — mesmo grupo que Fnac
