@@ -639,6 +639,47 @@ export default function PoupeJa() {
     if (user?.id) iniciarSync(user.id);
   }, [user?.id]);
 
+  /* Pede permissão de push automaticamente ao fazer login (se ainda não foi pedida) */
+  useEffect(() => {
+    if (!user?.id) return;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    if (Notification.permission !== "default") return;
+    const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!VAPID_PUBLIC) return;
+
+    const jaAtivou = localStorage.getItem("poupeja_push_pedido");
+    if (jaAtivou) return;
+    localStorage.setItem("poupeja_push_pedido", "1");
+
+    setTimeout(async () => {
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== "granted") return;
+        const reg = await navigator.serviceWorker.ready;
+        const jaSubscrito = await reg.pushManager.getSubscription();
+        if (jaSubscrito) return;
+        function urlBase64ToUint8Array(b) {
+          const pad = "=".repeat((4 - (b.length % 4)) % 4);
+          const base64 = (b + pad).replace(/-/g, "+").replace(/_/g, "/");
+          const raw = atob(base64);
+          return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+        }
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
+        });
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          await fetch("/api/push-subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({ subscription: sub }),
+          });
+        }
+      } catch {}
+    }, 3000); // pequeno delay para não assustar logo ao abrir a app
+  }, [user?.id]);
+
   /* Dados chegaram de outro dispositivo → re-renderiza o ecrã atual */
   useEffect(() => {
     function onSync() {
