@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Shirt, Smartphone, Dumbbell, Tag, Store, Sparkles, Heart, BadgePercent } from "lucide-react";
-import { getUrlLoja, temAfiliado } from "./afiliados";
+import { Shirt, Smartphone, Dumbbell, Tag, Store, Sparkles, Heart } from "lucide-react";
+import { getUrlLoja } from "./afiliados";
 import { PROMOCOES } from "./lib/lojas-data";
 
 const FAV_KEY = "poupeja_favoritos_lojas";
@@ -106,7 +106,6 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
       {lista.map(loja => {
         const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
         const isFav = favs?.has(loja.nome);
-        const afiliado = temAfiliado(loja.nome);
         return (
           <div key={loja.nome} className="relative">
             <button
@@ -118,11 +117,7 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
               <div className="text-center w-full">
                 <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
                 <div className="mt-1 flex items-center justify-center gap-0.5">
-                  {afiliado ? (
-                    <span className="text-[9px] font-black text-emerald-600 flex items-center gap-0.5">
-                      <BadgePercent size={8} /> Cashback
-                    </span>
-                  ) : promo ? (
+                  {promo ? (
                     <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
                       <Tag size={8} /> Saldos
                     </span>
