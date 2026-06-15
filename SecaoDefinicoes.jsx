@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import {
   User, Fuel, MapPin, Store, Bell, ShieldCheck, Info,
   ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
-  PiggyBank, LogOut,
+  PiggyBank, LogOut, BellRing, BellOff,
 } from "lucide-react";
+import { supabase } from "./lib/supabase";
 
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan","Minipreço"];
 const COMBUSTIVEIS  = ["Gasolina 95","Gasóleo","GPL"];
@@ -58,6 +59,83 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
   const [enviado, setEnviado]   = useState(false);
   const [modalTermos, setModalTermos] = useState(false);
   const [modalSobre, setModalSobre]   = useState(false);
+
+  // Push notifications
+  const [pushEstado, setPushEstado] = useState("a-verificar"); // a-verificar | inativo | ativo | sem-suporte
+  const [pushLoading, setPushLoading] = useState(false);
+
+  const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !VAPID_PUBLIC) {
+      setPushEstado("sem-suporte");
+      return;
+    }
+    if (Notification.permission === "denied") { setPushEstado("bloqueado"); return; }
+    navigator.serviceWorker.ready.then(reg =>
+      reg.pushManager.getSubscription().then(sub => {
+        setPushEstado(sub ? "ativo" : "inativo");
+      })
+    ).catch(() => setPushEstado("inativo"));
+  }, [VAPID_PUBLIC]);
+
+  async function ativarPush() {
+    if (!VAPID_PUBLIC) return;
+    setPushLoading(true);
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") { setPushEstado("bloqueado"); setPushLoading(false); return; }
+
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
+      });
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        await fetch("/api/push-subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ subscription: sub }),
+        });
+      }
+      setPushEstado("ativo");
+    } catch (e) {
+      console.error("Push subscribe error:", e);
+    }
+    setPushLoading(false);
+  }
+
+  async function desativarPush() {
+    setPushLoading(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          await fetch("/api/push-subscribe", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({ endpoint: sub.endpoint }),
+          });
+        }
+        await sub.unsubscribe();
+      }
+      setPushEstado("inativo");
+    } catch (e) {
+      console.error("Push unsubscribe error:", e);
+    }
+    setPushLoading(false);
+  }
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const raw = atob(base64);
+    return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+  }
 
   async function enviarEmailSemanal() {
     if (!user?.email) return;
@@ -241,6 +319,50 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
             className="w-full"
             style={{ accentColor: "#f59e0b" }}
           />
+        </Row>
+      </Section>
+
+      {/* Notificações Push */}
+      <Section label="Notificações push">
+        <Row border={false}>
+          <div className="flex items-start gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${pushEstado === "ativo" ? "bg-emerald-50" : "bg-slate-100"}`}>
+              {pushEstado === "ativo"
+                ? <BellRing size={18} className="text-emerald-600" />
+                : <BellOff size={18} className="text-slate-400" />
+              }
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-black text-slate-800">Folhetos no ecrã bloqueado</p>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                {pushEstado === "ativo"
+                  ? "Notificações ativas. Avisamos quando saem folhetos novos."
+                  : pushEstado === "bloqueado"
+                  ? "Notificações bloqueadas no browser. Permite nas definições do browser."
+                  : pushEstado === "sem-suporte"
+                  ? "O teu browser não suporta notificações push. No iOS, instala o site no ecrã inicial."
+                  : "Recebe uma notificação quando saem os folhetos da semana."
+                }
+              </p>
+              {pushEstado !== "sem-suporte" && pushEstado !== "bloqueado" && (
+                <button
+                  onClick={pushEstado === "ativo" ? desativarPush : ativarPush}
+                  disabled={pushLoading || pushEstado === "a-verificar"}
+                  className={`press mt-3 w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
+                    pushEstado === "ativo"
+                      ? "bg-slate-100 text-slate-600"
+                      : "text-white bg-emerald-500"
+                  }`}
+                >
+                  {pushLoading ? "A processar…"
+                    : pushEstado === "ativo"
+                    ? <><BellOff size={13} /> Desativar notificações</>
+                    : <><BellRing size={13} /> Ativar notificações</>
+                  }
+                </button>
+              )}
+            </div>
+          </div>
         </Row>
       </Section>
 
