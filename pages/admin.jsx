@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { supabase } from "../lib/supabase";
 import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock } from "lucide-react";
 
@@ -53,6 +54,9 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
+      <Head>
+        <title>PoupeJá · Administração</title>
+      </Head>
       <div className="max-w-2xl mx-auto px-4 py-6">
 
         <button
@@ -67,7 +71,7 @@ export default function Admin() {
             <ShieldCheck size={20} className="text-emerald-600" />
           </div>
           <div>
-            <h1 className="text-lg font-black leading-tight">Administração</h1>
+            <h1 className="text-lg font-black leading-tight">PoupeJá · Administração</h1>
             <p className="text-xs text-slate-400 font-medium">Painel privado · só tu vês isto</p>
           </div>
         </div>
