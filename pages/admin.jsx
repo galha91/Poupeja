@@ -9,11 +9,13 @@ export default function Admin() {
   const [estado, setEstado] = useState("a-carregar"); // a-carregar | negado | ok | erro
   const [stats, setStats] = useState(null);
   const [erro, setErro] = useState("");
+  const [sessaoEmail, setSessaoEmail] = useState(null); // email da sessão atual (para diagnóstico)
 
   async function carregar() {
     setEstado("a-carregar");
     setErro("");
     const { data: { session } } = await supabase.auth.getSession();
+    setSessaoEmail(session?.user?.email || null);
     if (!session?.access_token) {
       setEstado("negado");
       return;
@@ -91,11 +93,29 @@ export default function Admin() {
             <p className="text-sm text-slate-400 mt-1 font-medium">
               Esta página é só para o administrador. Inicia sessão com a conta de administração.
             </p>
+
+            {/* Diagnóstico: mostra a sessão atual neste domínio */}
+            <div className="mt-4 mx-auto max-w-xs rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 text-left">
+              {sessaoEmail ? (
+                <>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Sessão atual</p>
+                  <p className="text-sm font-bold text-slate-700 break-all">{sessaoEmail}</p>
+                  <p className="text-[11px] text-slate-400 font-medium mt-1">
+                    O acesso é só para <span className="font-bold">poupeja.portugal@gmail.com</span>.
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm font-medium text-slate-500">
+                  Não tens sessão iniciada <span className="font-bold">neste domínio</span>. Inicia sessão aqui primeiro.
+                </p>
+              )}
+            </div>
+
             <button
               onClick={() => router.push("/")}
               className="mt-5 px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm"
             >
-              Ir para a app
+              Iniciar sessão
             </button>
           </div>
         )}
