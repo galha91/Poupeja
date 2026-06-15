@@ -150,6 +150,12 @@ export default function SecaoFolhetos() {
                     <div className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 rounded-full" style={{ background: cor + "18" }}>
                       <span className="text-[10px] font-black" style={{ color: cor }}>{tagline}</span>
                     </div>
+                    {f.validade && (
+                      <p className="mt-1 text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                        <Clock size={9} />
+                        {f.validade}
+                      </p>
+                    )}
                   </div>
                 </button>
               );
