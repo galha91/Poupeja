@@ -36,12 +36,12 @@
     {
       "id": "casa-eficiente-2026",
       "titulo": "Casa Eficiente 2026",
-      "descricao": "Novo programa de subsídios para obras de eficiência energética em casa: isolamento, janelas, bombas de calor, painéis solares e ventilação. O maior apoio à renovação energética da história de Portugal — €150 milhões de orçamento.",
+      "descricao": "Programa nacional de subsídios para obras de eficiência energética em casa: isolamento, janelas, bombas de calor, painéis solares e ventilação. €150 milhões de orçamento — o maior apoio à renovação energética de Portugal. Candidaturas abertas até esgotar o orçamento.",
       "valor": "Até 7.500€ por habitação",
       "categoria": "energia",
       "quemPode": ["Proprietários de habitação com mais de 15 anos", "As obras devem melhorar pelo menos 2 classes no certificado energético"],
-      "comoRequerer": "Candidatura online no portal do IAPMEI (iapmei.pt). Necessário: declaração de IRS, caderneta predial, pré-certificado energético e orçamentos de instaladores certificados.",
-      "link": "https://www.ihm.pt/pt/casa-eficiente",
+      "comoRequerer": "Candidatura no portal do Fundo Ambiental (fundoambiental.pt). Necessário: declaração de IRS, caderneta predial, pré-certificado energético e orçamentos de instaladores certificados.",
+      "link": "https://www.fundoambiental.pt/",
       "novo": true
     },
     {
@@ -195,7 +195,7 @@
       "categoria": "emprego",
       "quemPode": ["Desempregados involuntários (despedimento, fim de contrato)", "Mínimo de 180 dias de descontos nos últimos 12 meses", "Inscritos no IEFP como candidatos a emprego"],
       "comoRequerer": "Candidatura na Segurança Social Direta ou balcão do IEFP nos 90 dias após a cessação do contrato.",
-      "link": "https://www.seg-social.pt/subsidio-de-desemprego",
+      "link": "https://www2.gov.pt/servicos/requerer-o-subsidio-de-desemprego",
       "novo": false
     },
     {
