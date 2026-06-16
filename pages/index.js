@@ -352,6 +352,8 @@ function EcraInicio({ user, setTab, goGarantias }) {
 function SecaoPoupanca({ setTab }) {
   const [dados, setDados] = useState(null);
   const [feedbackPartilha, setFeedbackPartilha] = useState("");
+  const [barSelecionada, setBarSelecionada] = useState(null);
+  const [mostrar12, setMostrar12] = useState(false);
 
   async function partilhar() {
     if (!dados) return;
@@ -370,10 +372,14 @@ function SecaoPoupanca({ setTab }) {
       const compras = taloes.filter(t => t.tipo === "compra" && t.valorPoupado != null);
       const agora = new Date();
       const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+      const mesAnterior = (() => {
+        const d = new Date(agora.getFullYear(), agora.getMonth() - 1, 1);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      })();
 
-      // Agrupar por mês (últimos 6 meses)
+      // Agrupar por mês (últimos 12 meses)
       const porMes = {};
-      for (let i = 5; i >= 0; i--) {
+      for (let i = 11; i >= 0; i--) {
         const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
         const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
         porMes[k] = 0;
@@ -384,18 +390,29 @@ function SecaoPoupanca({ setTab }) {
         if (k in porMes) porMes[k] += t.valorPoupado;
       });
 
-      const meses = Object.entries(porMes).map(([k, v]) => ({
-        k, v, label: new Date(k + "-01").toLocaleDateString("pt-PT", { month: "short" })
+      const meses12 = Object.entries(porMes).map(([k, v]) => ({
+        k, v,
+        label: new Date(k + "-01").toLocaleDateString("pt-PT", { month: "short" }),
+        labelLong: new Date(k + "-01").toLocaleDateString("pt-PT", { month: "long", year: "numeric" }),
       }));
-      const totalMes = porMes[mesAtual] || 0;
-      const totalGeral = compras.reduce((acc, t) => acc + (t.valorPoupado || 0), 0);
-      const maxBar = Math.max(...meses.map(m => m.v), 0.01);
 
-      setDados({ meses, totalMes, totalGeral, count: compras.length, maxBar });
+      const totalMes    = porMes[mesAtual] || 0;
+      const totalAnterior = porMes[mesAnterior] || 0;
+      const totalGeral  = compras.reduce((acc, t) => acc + (t.valorPoupado || 0), 0);
+      const mesesComValor = meses12.filter(m => m.v > 0);
+      const melhorMes   = mesesComValor.length ? mesesComValor.reduce((a, b) => b.v > a.v ? b : a) : null;
+      const mediaMensal = mesesComValor.length ? totalGeral / mesesComValor.length : 0;
+      const tendencia   = totalAnterior > 0
+        ? Math.round(((totalMes - totalAnterior) / totalAnterior) * 100)
+        : totalMes > 0 ? 100 : 0;
+      const maxBar = Math.max(...meses12.map(m => m.v), 0.01);
+
+      setDados({ meses12, totalMes, totalGeral, count: compras.length, maxBar, melhorMes, mediaMensal, tendencia, totalAnterior });
     } catch {}
   }, []);
 
   const semDados = !dados || dados.totalGeral === 0;
+  const mesesVisiveis = dados ? (mostrar12 ? dados.meses12 : dados.meses12.slice(6)) : [];
 
   return (
     <div className="pb-28 pt-4">
@@ -411,12 +428,19 @@ function SecaoPoupanca({ setTab }) {
             <PiggyBank size={12} /> Total poupado este mês
           </p>
           <p className="text-5xl font-black text-white">
-            {dados ? `€${dados.totalMes.toFixed(2)}` : "€0"}
+            {dados ? `€${dados.totalMes.toFixed(2)}` : "€0.00"}
           </p>
           {dados && dados.totalGeral > 0 ? (
-            <p className="text-[12px] text-white/70 mt-2">
-              Total guardado: <strong className="text-white">€{dados.totalGeral.toFixed(2)}</strong> em {dados.count} talões
-            </p>
+            <div className="mt-2 flex items-center gap-2 flex-wrap">
+              <p className="text-[12px] text-white/70">
+                Total: <strong className="text-white">€{dados.totalGeral.toFixed(2)}</strong> em {dados.count} talões
+              </p>
+              {dados.tendencia !== 0 && dados.totalAnterior > 0 && (
+                <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${dados.tendencia > 0 ? "bg-emerald-400/30 text-emerald-200" : "bg-red-400/30 text-red-200"}`}>
+                  {dados.tendencia > 0 ? "▲" : "▼"} {Math.abs(dados.tendencia)}% vs mês anterior
+                </span>
+              )}
+            </div>
           ) : (
             <p className="text-[12px] text-white/70 mt-2">Guarda talões com o valor poupado para ver aqui.</p>
           )}
@@ -439,31 +463,130 @@ function SecaoPoupanca({ setTab }) {
         </div>
       </div>
 
-      {/* Gráfico de barras mensais */}
-      {dados && dados.totalGeral > 0 ? (
+      {dados && dados.totalGeral > 0 ? (<>
+
+        {/* Cartões de resumo */}
         <div className="px-4 mb-5 anim-up anim-up-1">
-          <SectionLabel icon={BarChart}>Últimos 6 meses</SectionLabel>
-          <div className="card p-4">
-            <div className="flex items-end gap-2 h-24">
-              {dados.meses.map(m => {
-                const pct = dados.maxBar > 0 ? (m.v / dados.maxBar) * 100 : 0;
-                const isAtual = m.k === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-                return (
-                  <div key={m.k} className="flex-1 flex flex-col items-center gap-1">
-                    <p className="text-[8px] font-black text-blue-600">{m.v > 0 ? `€${m.v.toFixed(0)}` : ""}</p>
-                    <div className="w-full rounded-t-lg transition-all" style={{
-                      height: `${Math.max(pct, m.v > 0 ? 8 : 4)}%`,
-                      background: isAtual ? "linear-gradient(180deg,#3b82f6,#1d4ed8)" : "#e2e8f0",
-                      minHeight: 4,
-                    }} />
-                    <p className="text-[9px] text-slate-400 font-bold">{m.label}</p>
-                  </div>
-                );
-              })}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="card p-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Melhor mês</p>
+              <p className="text-xl font-black text-slate-800 mt-1">
+                €{dados.melhorMes ? dados.melhorMes.v.toFixed(2) : "0.00"}
+              </p>
+              <p className="text-[11px] text-slate-400 capitalize mt-0.5">
+                {dados.melhorMes ? dados.melhorMes.labelLong : "—"}
+              </p>
+            </div>
+            <div className="card p-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Média mensal</p>
+              <p className="text-xl font-black text-slate-800 mt-1">€{dados.mediaMensal.toFixed(2)}</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">nos meses com dados</p>
             </div>
           </div>
         </div>
-      ) : (
+
+        {/* Gráfico de barras */}
+        <div className="px-4 mb-2 anim-up anim-up-1">
+          <div className="flex items-center justify-between mb-3">
+            <SectionLabel icon={BarChart}>{mostrar12 ? "Últimos 12 meses" : "Últimos 6 meses"}</SectionLabel>
+            <button
+              onClick={() => { setMostrar12(v => !v); setBarSelecionada(null); }}
+              className="text-[11px] font-black text-blue-500"
+            >
+              {mostrar12 ? "Ver 6 meses" : "Ver 12 meses"}
+            </button>
+          </div>
+
+          {/* Tooltip da barra selecionada */}
+          {barSelecionada && (
+            <div className="mb-3 mx-auto text-center bg-blue-50 rounded-2xl py-2.5 px-4 border border-blue-100">
+              <p className="text-[11px] font-black text-blue-400 capitalize">{barSelecionada.labelLong}</p>
+              <p className="text-lg font-black text-blue-700">€{barSelecionada.v.toFixed(2)}</p>
+            </div>
+          )}
+
+          <div className="card p-4">
+            <div className="flex items-end gap-1.5 h-32">
+              {mesesVisiveis.map(m => {
+                const pct = dados.maxBar > 0 ? (m.v / dados.maxBar) * 100 : 0;
+                const isAtual = m.k === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+                const isSelecionada = barSelecionada?.k === m.k;
+                return (
+                  <button
+                    key={m.k}
+                    onClick={() => setBarSelecionada(isSelecionada ? null : m)}
+                    className="flex-1 flex flex-col items-center gap-1 group"
+                  >
+                    <p className="text-[8px] font-black text-blue-500 h-3">
+                      {m.v > 0 ? `€${m.v.toFixed(0)}` : ""}
+                    </p>
+                    <div
+                      className="w-full rounded-t-lg transition-all"
+                      style={{
+                        height: `${Math.max(pct, m.v > 0 ? 6 : 3)}%`,
+                        background: isSelecionada
+                          ? "linear-gradient(180deg,#f59e0b,#d97706)"
+                          : isAtual
+                          ? "linear-gradient(180deg,#60a5fa,#1d4ed8)"
+                          : m.v > 0 ? "#bfdbfe" : "#f1f5f9",
+                        minHeight: 4,
+                      }}
+                    />
+                    <p className={`text-[9px] font-bold ${isAtual ? "text-blue-600" : "text-slate-400"}`}>
+                      {m.label}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-blue-600" />
+                <span className="text-[10px] text-slate-400 font-medium">Mês atual</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-blue-200" />
+                <span className="text-[10px] text-slate-400 font-medium">Meses anteriores</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Lista mensal */}
+        <div className="px-4 mb-5 anim-up anim-up-2">
+          <SectionLabel icon={TrendingUp}>Detalhe por mês</SectionLabel>
+          <div className="card divide-y divide-slate-100 overflow-hidden">
+            {[...mesesVisiveis].reverse().filter(m => m.v > 0).map(m => {
+              const isAtual = m.k === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+              const pct = dados.totalGeral > 0 ? (m.v / dados.totalGeral) * 100 : 0;
+              return (
+                <div key={m.k} className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[10px] font-black text-blue-600 capitalize">{m.label}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-black text-slate-800 capitalize">
+                        {m.labelLong} {isAtual && <span className="text-[10px] text-blue-500 font-bold ml-1">• atual</span>}
+                      </p>
+                      <p className="text-sm font-black text-emerald-600">€{m.v.toFixed(2)}</p>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {mesesVisiveis.every(m => m.v === 0) && (
+              <div className="px-4 py-8 text-center text-sm text-slate-400 font-medium">
+                Sem dados neste período.
+              </div>
+            )}
+          </div>
+        </div>
+
+      </>) : (
         <div className="px-4 mb-5 anim-up anim-up-1">
           <SectionLabel icon={Zap}>Histórico</SectionLabel>
           <EmptyState
