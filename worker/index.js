@@ -1,4 +1,11 @@
 // Handler de push notifications — merged pelo next-pwa no sw.js gerado
+
+// Assume o controlo de todas as páginas abertas assim que ativa,
+// para que a versão nova entre em vigor sem precisar de fechar a app.
+self.addEventListener("activate", event => {
+  event.waitUntil(self.clients.claim());
+});
+
 self.addEventListener("push", event => {
   const data = event.data?.json() ?? {};
   event.waitUntil(
