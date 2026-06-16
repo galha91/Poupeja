@@ -6,6 +6,7 @@ import SecaoTaloes from "../SecaoTaloes";
 import SecaoListaCompras from "../SecaoListaCompras";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import SecaoApoios from "../SecaoApoios";
+import SecaoContas from "../SecaoContas";
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
@@ -16,7 +17,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
-  ExternalLink, TrendingDown, Lightbulb, Landmark,
+  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -29,6 +30,7 @@ const NAV = [
   { id: "mobilidade", label: "Mobilidade", icon: Fuel },
   { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
   { id: "apoios",     label: "Apoios",     icon: Landmark },
+  { id: "contas",     label: "Contas",     icon: CalendarClock },
 ];
 const NAV_IDS = NAV.map(n => n.id);
 
@@ -39,6 +41,7 @@ const TITULOS = {
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
+  contas:     { t: "Contas fixas",                      s: "As tuas despesas mensais num só sítio" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
 };
@@ -229,6 +232,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
     { icon: Fuel,       label: "Combustíveis e EV",  desc: "Preços reais e postos perto de ti",     bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)", tab: "mobilidade" },
     { icon: Store,      label: "Lojas e promoções",  desc: "Moda, eletrónica e desporto",           bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",  tab: "lojas" },
     { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e subsídios a que tens direito", bg: "from-blue-700 to-blue-500", shadow: "rgba(29,78,216,0.3)",  tab: "apoios" },
+    { icon: CalendarClock, label: "Contas fixas",   desc: "Renda, luz, água, net — tudo controlado",  bg: "from-violet-700 to-purple-600", shadow: "rgba(109,40,217,0.3)", tab: "contas" },
   ];
 
   const SHORTCUTS = [
@@ -239,6 +243,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
     { icon: Fuel,        label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",   tab: "mobilidade" },
     { icon: Battery,     label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50",  tab: "mobilidade" },
     { icon: Landmark,    label: "Apoios",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "apoios" },
+    { icon: CalendarClock, label: "Contas",   color: "text-violet-600",  bg: "bg-violet-50",   tab: "contas" },
   ];
 
   return (
@@ -1094,6 +1099,7 @@ export default function PoupeJa() {
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
                 {tab === "apoios"     && <SecaoApoios />}
+                {tab === "contas"     && <SecaoContas />}
                 {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
