@@ -53,17 +53,6 @@ export default async function handler(req, res) {
     const ultimos30 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 30 * DIA).length;
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
 
-    // Lista dos mais recentes (sem dados sensíveis além do email)
-    const recentes = [...todos]
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, 20)
-      .map(u => ({
-        email: u.email,
-        criado: u.created_at,
-        confirmado: !!(u.email_confirmed_at || u.confirmed_at),
-        ultimoAcesso: u.last_sign_in_at || null,
-      }));
-
     // Subscritores push — cruzar user_id com emails
     const { data: pushSubs } = await admin
       .from("push_subscriptions")
@@ -72,8 +61,36 @@ export default async function handler(req, res) {
     const userMap = Object.fromEntries(todos.map(u => [u.id, u.email]));
     const pushSubscritores = (pushSubs || [])
       .map(s => ({ email: userMap[s.user_id] || "—", desde: s.criado_em }))
-      .filter((v, i, arr) => arr.findIndex(x => x.email === v.email) === i) // dedup por email
+      .filter((v, i, arr) => arr.findIndex(x => x.email === v.email) === i)
       .sort((a, b) => new Date(b.desde) - new Date(a.desde));
+
+    // Dispositivos — plataforma e PWA instalada
+    const { data: dispositivos } = await admin
+      .from("dados_utilizador")
+      .select("user_id, valor")
+      .eq("chave", "poupeja_dispositivo");
+
+    const dispositivoMap = Object.fromEntries(
+      (dispositivos || []).map(d => [d.user_id, d.valor])
+    );
+    const totalPwa = Object.values(dispositivoMap).filter(d => d?.pwa).length;
+    const porPlataforma = {
+      ios:     Object.values(dispositivoMap).filter(d => d?.platform === "ios").length,
+      android: Object.values(dispositivoMap).filter(d => d?.platform === "android").length,
+      desktop: Object.values(dispositivoMap).filter(d => d?.platform === "desktop").length,
+    };
+
+    // Recentes com última visita e dispositivo
+    const recentes = [...todos]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 20)
+      .map(u => ({
+        email: u.email,
+        criado: u.created_at,
+        confirmado: !!(u.email_confirmed_at || u.confirmed_at),
+        ultimoAcesso: u.last_sign_in_at || null,
+        dispositivo: dispositivoMap[u.id] || null,
+      }));
 
     return res.status(200).json({
       total,
@@ -81,6 +98,8 @@ export default async function handler(req, res) {
       ultimos7,
       ultimos30,
       confirmados,
+      totalPwa,
+      porPlataforma,
       recentes,
       pushSubscritores,
       atualizadoEm: new Date().toISOString(),

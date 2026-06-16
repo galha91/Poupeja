@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
-import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock, Bell, Send } from "lucide-react";
+import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock, Bell, Send, Smartphone, Monitor } from "lucide-react";
 
 export default function Admin() {
   const router = useRouter();
@@ -82,6 +82,19 @@ export default function Admin() {
         hour: "2-digit", minute: "2-digit",
       });
     } catch { return iso; }
+  };
+
+  const fmtRelativo = (iso) => {
+    if (!iso) return null;
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1)   return "agora";
+    if (mins < 60)  return `${mins}min atrás`;
+    const h = Math.floor(diff / 3600000);
+    if (h < 24)     return `${h}h atrás`;
+    const d = Math.floor(diff / 86400000);
+    if (d < 7)      return `${d}d atrás`;
+    return fmtData(iso);
   };
 
   return (
@@ -176,10 +189,40 @@ export default function Admin() {
             </div>
 
             {/* Cartões de períodos */}
-            <div className="grid grid-cols-3 gap-3 mb-5">
+            <div className="grid grid-cols-3 gap-3 mb-3">
               <Cartao rotulo="Hoje" valor={stats.hoje} />
               <Cartao rotulo="7 dias" valor={stats.ultimos7} />
               <Cartao rotulo="30 dias" valor={stats.ultimos30} />
+            </div>
+
+            {/* Plataformas e PWA */}
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-2">Plataforma</p>
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm flex items-center gap-1.5">🍎 <span className="text-slate-600 font-bold">iOS</span></span>
+                    <span className="text-sm font-black text-slate-800">{stats.porPlataforma?.ios ?? "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm flex items-center gap-1.5">🤖 <span className="text-slate-600 font-bold">Android</span></span>
+                    <span className="text-sm font-black text-slate-800">{stats.porPlataforma?.android ?? "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm flex items-center gap-1.5">💻 <span className="text-slate-600 font-bold">Desktop</span></span>
+                    <span className="text-sm font-black text-slate-800">{stats.porPlataforma?.desktop ?? "—"}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">App instalada</p>
+                <div>
+                  <p className="text-4xl font-black text-violet-600 mt-2">{stats.totalPwa ?? 0}</p>
+                  <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                    {stats.total > 0 ? `${Math.round(((stats.totalPwa ?? 0) / stats.total) * 100)}% dos utilizadores` : "—"}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Push subscritores */}
@@ -218,24 +261,53 @@ export default function Admin() {
 
             {/* Lista de recentes */}
             <div className="bg-white rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden">
-              {stats.recentes.map((u, i) => (
-                <div key={i} className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-black text-slate-500">
-                      {(u.email || "?")[0].toUpperCase()}
-                    </span>
+              {stats.recentes.map((u, i) => {
+                const plataforma = u.dispositivo?.platform;
+                const temPwa    = u.dispositivo?.pwa;
+                const relativo  = fmtRelativo(u.ultimoAcesso);
+                return (
+                  <div key={i} className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      {/* Avatar */}
+                      <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-black text-slate-500">
+                          {(u.email || "?")[0].toUpperCase()}
+                        </span>
+                      </div>
+
+                      {/* Info principal */}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="text-sm font-bold text-slate-800 truncate">{u.email}</p>
+                          {u.confirmado && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                            <Clock size={9} /> {fmtData(u.criado)}
+                          </span>
+                          {relativo && (
+                            <span className="text-[10px] font-black text-emerald-600 flex items-center gap-1">
+                              👁 {relativo}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Badges plataforma + PWA */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {plataforma === "ios"     && <span className="text-base" title="iOS">🍎</span>}
+                        {plataforma === "android" && <span className="text-base" title="Android">🤖</span>}
+                        {plataforma === "desktop" && <span className="text-base" title="Desktop">💻</span>}
+                        {temPwa && (
+                          <span className="text-[9px] font-black bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded-full">
+                            APP
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-slate-800 truncate">{u.email}</p>
-                    <p className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-                      <Clock size={10} /> {fmtData(u.criado)}
-                    </p>
-                  </div>
-                  {u.confirmado && (
-                    <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
-                  )}
-                </div>
-              ))}
+                );
+              })}
               {stats.recentes.length === 0 && (
                 <div className="px-4 py-8 text-center text-sm text-slate-400 font-medium">
                   Ainda não há registos.

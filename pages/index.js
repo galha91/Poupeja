@@ -1032,6 +1032,25 @@ export default function PoupeJa() {
     if (user?.id) iniciarSync(user.id);
   }, [user?.id]);
 
+  /* Regista plataforma e estado de instalação PWA no Supabase */
+  useEffect(() => {
+    if (!user?.id) return;
+    try {
+      const isPwa = window.matchMedia("(display-mode: standalone)").matches ||
+                    window.navigator.standalone === true;
+      const ua = navigator.userAgent;
+      const platform = /iphone|ipad|ipod/i.test(ua) ? "ios"
+                     : /android/i.test(ua)           ? "android"
+                     : "desktop";
+      supabase.from("dados_utilizador").upsert({
+        user_id: user.id,
+        chave: "poupeja_dispositivo",
+        valor: { pwa: isPwa, platform, atualizado: new Date().toISOString() },
+        atualizado_em: new Date().toISOString(),
+      }, { onConflict: "user_id,chave" }).then(() => {});
+    } catch {}
+  }, [user?.id]);
+
   /* Pede permissão de push automaticamente ao fazer login (se ainda não foi pedida) */
   useEffect(() => {
     if (!user?.id) return;
