@@ -64,6 +64,17 @@ export default async function handler(req, res) {
         ultimoAcesso: u.last_sign_in_at || null,
       }));
 
+    // Subscritores push — cruzar user_id com emails
+    const { data: pushSubs } = await admin
+      .from("push_subscriptions")
+      .select("user_id, criado_em");
+
+    const userMap = Object.fromEntries(todos.map(u => [u.id, u.email]));
+    const pushSubscritores = (pushSubs || [])
+      .map(s => ({ email: userMap[s.user_id] || "—", desde: s.criado_em }))
+      .filter((v, i, arr) => arr.findIndex(x => x.email === v.email) === i) // dedup por email
+      .sort((a, b) => new Date(b.desde) - new Date(a.desde));
+
     return res.status(200).json({
       total,
       hoje,
@@ -71,6 +82,7 @@ export default async function handler(req, res) {
       ultimos30,
       confirmados,
       recentes,
+      pushSubscritores,
       atualizadoEm: new Date().toISOString(),
     });
   } catch (e) {

@@ -182,6 +182,29 @@ export default function Admin() {
               <Cartao rotulo="30 dias" valor={stats.ultimos30} />
             </div>
 
+            {/* Push subscritores */}
+            {stats.pushSubscritores?.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-5">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+                  <Bell size={14} className="text-blue-500" />
+                  <h2 className="text-sm font-black text-slate-700">Notificações push ativas</h2>
+                  <span className="ml-auto text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                    {stats.pushSubscritores.length}
+                  </span>
+                </div>
+                {stats.pushSubscritores.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-0">
+                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-black text-blue-500">
+                        {(s.email || "?")[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold text-slate-700 truncate flex-1">{s.email}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Botão atualizar */}
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-black text-slate-700">Registos recentes</h2>
