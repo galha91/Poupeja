@@ -94,6 +94,101 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
   );
 }
 
+/* ─── Banner instalar app ─── */
+function BannerInstalar() {
+  const [modo, setModo]       = useState(null); // null | "android" | "ios" | "oculto"
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [iosAberto, setIosAberto] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Já instalada (standalone) ou utilizador já dispensou
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (localStorage.getItem("poupeja_instalar_dispensado")) return;
+
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone;
+
+    if (isIos) {
+      setModo("ios");
+      return;
+    }
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setModo("android");
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  function dispensar() {
+    localStorage.setItem("poupeja_instalar_dispensado", "1");
+    setModo("oculto");
+  }
+
+  async function instalarAndroid() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") localStorage.setItem("poupeja_instalar_dispensado", "1");
+    setModo("oculto");
+  }
+
+  if (!modo || modo === "oculto") return null;
+
+  return (
+    <div className="mx-4 mt-4 rounded-2xl overflow-hidden anim-up anim-up-1" style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 24px -8px rgba(37,99,235,0.5)" }}>
+      <div className="px-4 py-4 flex items-start gap-3">
+        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+          <Smartphone size={20} className="text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-black text-white leading-snug">Instala o PoupeJá no teu telemóvel</p>
+          <p className="text-[11px] text-white/70 mt-0.5 leading-relaxed">
+            {modo === "ios"
+              ? "Toca em Partilhar e depois \"Adicionar ao ecrã inicial\" para teres a app."
+              : "Acesso rápido, notificações e funciona sem internet."}
+          </p>
+          <div className="flex gap-2 mt-3">
+            {modo === "android" && (
+              <button
+                onClick={instalarAndroid}
+                className="press px-3.5 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
+              >
+                Instalar app
+              </button>
+            )}
+            {modo === "ios" && (
+              <button
+                onClick={() => setIosAberto(true)}
+                className="press px-3.5 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
+              >
+                Ver instruções
+              </button>
+            )}
+            <button onClick={dispensar} className="press px-3.5 py-1.5 rounded-xl bg-white/20 text-white text-[11px] font-black">
+              Agora não
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Instruções iOS */}
+      {iosAberto && (
+        <div className="border-t border-white/20 px-4 py-3 flex flex-col gap-1.5">
+          {[
+            "1. Toca no ícone Partilhar  ↑  (barra inferior do Safari)",
+            "2. Faz scroll e toca em \"Adicionar ao ecrã inicial\"",
+            "3. Confirma com \"Adicionar\" no canto superior direito",
+          ].map((s, i) => (
+            <p key={i} className="text-[11px] text-white/80 leading-relaxed">{s}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Ecrã Início ─── */
 function EcraInicio({ user, setTab, goGarantias }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
@@ -217,6 +312,9 @@ function EcraInicio({ user, setTab, goGarantias }) {
           </div>
         </div>
       </div>
+
+      {/* Banner instalar app */}
+      <BannerInstalar />
 
       {/* Garantias highlight */}
       <div className="px-4 mt-4 anim-up anim-up-1">
