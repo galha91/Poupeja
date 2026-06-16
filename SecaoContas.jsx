@@ -18,21 +18,21 @@ const CATS = [
 ];
 
 const PRESETS = [
-  { nome: "Renda",            valor: 650,  dia: 1,  cat: "habitacao" },
-  { nome: "Prestação Casa",   valor: 550,  dia: 1,  cat: "habitacao" },
-  { nome: "Eletricidade",     valor: 55,   dia: 15, cat: "energia" },
-  { nome: "Gás",              valor: 30,   dia: 15, cat: "energia" },
-  { nome: "Água",             valor: 25,   dia: 10, cat: "energia" },
-  { nome: "Internet",         valor: 35,   dia: 5,  cat: "internet" },
-  { nome: "Telemóvel",        valor: 15,   dia: 5,  cat: "internet" },
-  { nome: "Netflix",          valor: 7,    dia: 8,  cat: "lazer" },
-  { nome: "Spotify",          valor: 5,    dia: 8,  cat: "lazer" },
-  { nome: "Ginásio",          valor: 30,   dia: 1,  cat: "lazer" },
-  { nome: "Seguro Auto",      valor: 60,   dia: 20, cat: "seguro" },
-  { nome: "Seguro Saúde",     valor: 45,   dia: 1,  cat: "saude" },
-  { nome: "Crédito Auto",     valor: 200,  dia: 1,  cat: "transporte" },
-  { nome: "Passe Transportes",valor: 40,   dia: 1,  cat: "transporte" },
-  { nome: "Condomínio",       valor: 80,   dia: 1,  cat: "habitacao" },
+  { nome: "Renda",            emoji: "🔑", valor: 650,  dia: 1,  cat: "habitacao" },
+  { nome: "Prestação Casa",   emoji: "🏦", valor: 550,  dia: 1,  cat: "habitacao" },
+  { nome: "Eletricidade",     emoji: "💡", valor: 55,   dia: 15, cat: "energia" },
+  { nome: "Gás",              emoji: "🔥", valor: 30,   dia: 15, cat: "energia" },
+  { nome: "Água",             emoji: "💧", valor: 25,   dia: 10, cat: "energia" },
+  { nome: "Internet",         emoji: "🌐", valor: 35,   dia: 5,  cat: "internet" },
+  { nome: "Telemóvel",        emoji: "📱", valor: 15,   dia: 5,  cat: "internet" },
+  { nome: "Netflix",          emoji: "🎬", valor: 7,    dia: 8,  cat: "lazer" },
+  { nome: "Spotify",          emoji: "🎵", valor: 5,    dia: 8,  cat: "lazer" },
+  { nome: "Ginásio",          emoji: "🏋️", valor: 30,   dia: 1,  cat: "lazer" },
+  { nome: "Seguro Auto",      emoji: "🚗", valor: 60,   dia: 20, cat: "seguro" },
+  { nome: "Seguro Saúde",     emoji: "🏥", valor: 45,   dia: 1,  cat: "saude" },
+  { nome: "Crédito Auto",     emoji: "🚙", valor: 200,  dia: 1,  cat: "transporte" },
+  { nome: "Passe Transportes",emoji: "🚌", valor: 40,   dia: 1,  cat: "transporte" },
+  { nome: "Condomínio",       emoji: "🏢", valor: 80,   dia: 1,  cat: "habitacao" },
 ];
 
 const catById = Object.fromEntries(CATS.map(c => [c.id, c]));
@@ -159,7 +159,7 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
                 onClick={() => usarPreset(p)}
                 className="press px-2.5 py-1.5 rounded-xl text-[11px] font-black border border-slate-200 bg-slate-50 text-slate-600"
               >
-                {catById[p.cat]?.emoji} {p.nome}
+                {p.emoji} {p.nome}
               </button>
             ))}
           </div>
