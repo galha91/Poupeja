@@ -274,6 +274,135 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
   );
 }
 
+/* ─── Oportunidades de poupança por categoria ─── */
+const OPORTUNIDADES = [
+  {
+    cats: ["energia"],
+    label: "Energia (luz, gás, água)",
+    emoji: "⚡",
+    pct: 0.22,
+    minAnual: 80,
+    provider: "ComparaJá",
+    url: "https://www.comparaja.pt/?ref=poupeja",
+    cor: "#d97706",
+    bg: "#fffbeb",
+  },
+  {
+    cats: ["internet"],
+    label: "Internet e telemóvel",
+    emoji: "🌐",
+    pct: 0.25,
+    minAnual: 60,
+    provider: "ComparaJá",
+    url: "https://www.comparaja.pt/?ref=poupeja",
+    cor: "#2563eb",
+    bg: "#eff6ff",
+  },
+  {
+    cats: ["seguro"],
+    label: "Seguros",
+    emoji: "🛡️",
+    pct: 0.20,
+    minAnual: 80,
+    provider: "ComparaJá",
+    url: "https://www.comparaja.pt/?ref=poupeja",
+    cor: "#7c3aed",
+    bg: "#f5f3ff",
+  },
+  {
+    cats: ["habitacao"],
+    label: "Crédito habitação",
+    emoji: "🏦",
+    pct: 0.05,
+    minAnual: 400,
+    minMensal: 200,
+    provider: "Doutor Finanças",
+    url: "https://www.doutorfinancas.pt/?ref=poupeja",
+    cor: "#059669",
+    bg: "#ecfdf5",
+  },
+];
+
+function calcOportunidades(contas) {
+  return OPORTUNIDADES
+    .map(op => {
+      const filtradas = contas.filter(c =>
+        op.cats.includes(c.categoria) && (!op.minMensal || c.valor >= op.minMensal)
+      );
+      if (filtradas.length === 0) return null;
+      const anual = filtradas.reduce((s, c) => s + c.valor, 0) * 12;
+      const economia = Math.max(op.minAnual, Math.round(anual * op.pct));
+      return { ...op, economia };
+    })
+    .filter(Boolean);
+}
+
+function PoupancaPotencial({ contas }) {
+  const ativas = calcOportunidades(contas);
+  if (ativas.length === 0) return null;
+
+  const totalEconomia = ativas.reduce((s, op) => s + op.economia, 0);
+
+  return (
+    <div className="px-4 mb-4 anim-up anim-up-1">
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{ background: "linear-gradient(135deg,#fffbeb,#fefce8)", border: "1.5px solid #fde68a" }}
+      >
+        {/* Cabeçalho */}
+        <div className="px-4 pt-4 pb-3 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0 text-2xl">
+            💡
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Poupança potencial</p>
+            <p className="text-xl font-black text-slate-800 leading-tight mt-0.5">
+              Podes poupar até{" "}
+              <span className="text-amber-600">€{totalEconomia.toLocaleString("pt-PT")}/ano</span>
+            </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Com base nas categorias que tens registadas</p>
+          </div>
+        </div>
+
+        {/* Oportunidades por categoria */}
+        <div className="px-3 pb-3 flex flex-col gap-1.5">
+          {ativas.map((op, i) => (
+            <a
+              key={i}
+              href={op.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press flex items-center justify-between bg-white rounded-xl px-3.5 py-2.5 no-underline"
+              style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base"
+                  style={{ background: op.bg }}
+                >
+                  {op.emoji}
+                </div>
+                <div>
+                  <p className="text-[12px] font-black text-slate-700">{op.label}</p>
+                  <p className="text-[10px] text-slate-400">via {op.provider} — grátis</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span className="text-[12px] font-black" style={{ color: op.cor }}>
+                  até €{op.economia}/ano
+                </span>
+                <ExternalLink size={11} className="text-slate-300" />
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <p className="text-[10px] text-slate-400 text-center pb-3">Comparação gratuita e sem compromisso</p>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Componente principal ─── */
 export default function SecaoContas() {
   const [contas, setContas]           = useState([]);
@@ -309,10 +438,6 @@ export default function SecaoContas() {
   const pendentes     = contas.filter(c => !pagosMes[c.id]);
   const aVencerHoje   = esMesAtual ? pendentes.filter(c => c.diaVencimento === hoje) : [];
   const aVencerBreve  = esMesAtual ? pendentes.filter(c => c.diaVencimento > hoje && c.diaVencimento <= hoje + 5) : [];
-
-  // categorias com potencial de poupança por comparação de tarifas
-  const temComparavelOnline = contas.some(c => ["energia", "internet", "seguro"].includes(c.categoria));
-  const temCreditoHabitacao = contas.some(c => c.categoria === "habitacao" && c.valor > 200);
 
   function sortContas(lista) {
     const base = [...lista];
@@ -502,6 +627,9 @@ export default function SecaoContas() {
           </div>
         </div>
       )}
+
+      {/* ── Poupança potencial (personalized, after stats) ── */}
+      {contas.length > 0 && <PoupancaPotencial contas={contas} />}
 
       {/* ── Alertas ── */}
       {(aVencerHoje.length > 0 || aVencerBreve.length > 0) && (
@@ -798,6 +926,19 @@ export default function SecaoContas() {
                       {nCat} conta{nCat !== 1 ? "s" : ""} · {Math.round(pctCat)}% do total
                       {pagosCat > 0 && ` · €${fmt(pagosCat)} pago${pagosCat !== totalCat ? "s" : ""}`}
                     </p>
+                    {(() => {
+                      const op = OPORTUNIDADES.find(o => o.cats.includes(cat.id) && (!o.minMensal || contas.filter(c => c.categoria === cat.id).some(c => c.valor >= o.minMensal)));
+                      if (!op) return null;
+                      return (
+                        <a href={op.url} target="_blank" rel="noopener noreferrer"
+                          className="mt-1 inline-flex items-center gap-1 text-[10px] font-black no-underline"
+                          style={{ color: op.cor }}
+                        >
+                          💡 Comparar tarifas — poupar até €{Math.max(op.minAnual, Math.round(totalCat * 12 * op.pct))}/ano
+                          <ExternalLink size={9} />
+                        </a>
+                      );
+                    })()}
                   </div>
                 </div>
               );
@@ -806,65 +947,6 @@ export default function SecaoContas() {
         </div>
       )}
 
-      {/* ── Poupa nas contas fixas ── */}
-      {(temComparavelOnline || temCreditoHabitacao) && (
-        <div className="px-4 mb-4 anim-up anim-up-3">
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">
-            💡 Poupa nas tuas contas
-          </p>
-          <div className="flex flex-col gap-3">
-            {temComparavelOnline && (
-              <a
-                href="https://www.comparaja.pt/?ref=poupeja"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 no-underline border border-amber-100"
-              >
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl bg-amber-50">
-                  ⚡
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-[13px] font-black text-slate-800">ComparaJá</p>
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">Grátis</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Compara tarifas de eletricidade, gás e internet. A maioria das famílias poupa <strong className="text-slate-700">+€300/ano</strong>.
-                  </p>
-                  <p className="text-[10px] font-black text-amber-600 mt-1 flex items-center gap-1">
-                    Comparar grátis <ExternalLink size={9} />
-                  </p>
-                </div>
-              </a>
-            )}
-            {temCreditoHabitacao && (
-              <a
-                href="https://www.doutorfinancas.pt/?ref=poupeja"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 no-underline border border-blue-100"
-              >
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl bg-blue-50">
-                  🏦
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-[13px] font-black text-slate-800">Doutor Finanças</p>
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">Negociação grátis</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Renegoceia o teu crédito habitação ou pessoal. Sem custos, sem compromissos.
-                  </p>
-                  <p className="text-[10px] font-black text-blue-600 mt-1 flex items-center gap-1">
-                    Simular grátis <ExternalLink size={9} />
-                  </p>
-                </div>
-              </a>
-            )}
-          </div>
-          <p className="text-[10px] text-slate-400 text-center mt-2">Serviços gratuitos e sem compromisso</p>
-        </div>
-      )}
 
     </div>
   );
