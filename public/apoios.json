@@ -19,7 +19,7 @@
       "categoria": "energia",
       "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%", "Pensionistas com rendimentos baixos"],
       "comoRequerer": "O desconto é aplicado automaticamente se já receberes uma prestação social. Caso contrário, pede ao teu comercializador de energia.",
-      "link": "https://www.erse.pt/consumidores/tarifas-e-precos/tarifa-social/",
+      "link": "https://tarifasocial.dgeg.gov.pt/",
       "novo": false
     },
     {
@@ -30,7 +30,7 @@
       "categoria": "energia",
       "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%"],
       "comoRequerer": "Contacta o teu comercializador de gás ou verifica no Portal ePortugal.gov.pt.",
-      "link": "https://www.erse.pt/consumidores/tarifas-e-precos/tarifa-social/tarifa-social-gas-natural/",
+      "link": "https://tarifasocial.dgeg.gov.pt/",
       "novo": false
     },
     {
@@ -52,7 +52,7 @@
       "categoria": "transportes",
       "quemPode": ["Jovens com idade até 23 anos (inclusive)"],
       "comoRequerer": "Solicita a gratuidade nos balcões das operadoras de transporte (Metro, CP, Carris) apresentando o Cartão do Cidadão. Podes depois carregar o passe mensalmente nas apps CARRISway/Andante ou nas máquinas nas estações.",
-      "link": "https://informacao.lisboa.pt/dossies-tematicos/transportes-publicos-gratuitos",
+      "link": "https://www.navegante.pt/viajar/descontos",
       "novo": false
     },
     {
@@ -63,7 +63,7 @@
       "categoria": "transportes",
       "quemPode": ["Pessoas com 65 ou mais anos de idade"],
       "comoRequerer": "Apresenta o Cartão do Cidadão ou o Cartão Sénior na bilheteira das operadoras de transporte. Em Lisboa, a gratuidade está garantida até 2029 para residentes.",
-      "link": "https://informacao.lisboa.pt/dossies-tematicos/transportes-publicos-gratuitos",
+      "link": "https://www.navegante.pt/viajar/descontos",
       "novo": false
     },
     {
@@ -74,7 +74,7 @@
       "categoria": "transportes",
       "quemPode": ["Qualquer residente nas áreas metropolitanas de Lisboa e Porto"],
       "comoRequerer": "Carrega o passe no Cartão do Cidadão ou num cartão Navegante/Andante nos balcões das operadoras.",
-      "link": "https://www.navegante.pt/",
+      "link": "https://www.navegante.pt/viajar/tarifario-navegante",
       "novo": false
     },
     {
@@ -140,7 +140,7 @@
       "categoria": "familia",
       "quemPode": ["Pensionistas com 66 ou mais anos", "Rendimento mensal abaixo do limiar definido", "Residência legal em Portugal"],
       "comoRequerer": "Candidatura na Segurança Social Direta ou num balcão do Centro Distrital.",
-      "link": "https://www.seg-social.pt/complemento-solidario-para-idosos",
+      "link": "https://www2.gov.pt/servicos/pedir-o-complemento-solidario-para-idosos",
       "novo": false
     },
     {
@@ -162,7 +162,7 @@
       "categoria": "jovens",
       "quemPode": ["Estudantes matriculados no ensino superior público ou privado", "Rendimento familiar per capita abaixo do limite"],
       "comoRequerer": "Candidatura anual nos Serviços de Ação Social da instituição de ensino, normalmente em setembro/outubro.",
-      "link": "https://www.dges.gov.pt/pt/pagina/bolsas-e-apoios",
+      "link": "https://www.dges.gov.pt/wwwbeon/",
       "novo": false
     },
     {
@@ -173,7 +173,7 @@
       "categoria": "saude",
       "quemPode": ["Crianças e grávidas", "Pensionistas com baixos rendimentos", "Desempregados", "Beneficiários de RSI ou CSI", "Doenças crónicas e incapacidade ≥ 60%"],
       "comoRequerer": "Apresenta documentação comprovativa no ato de atendimento no SNS. Podes também verificar o teu estado no Portal do Utente (mysns.min-saude.pt).",
-      "link": "https://mysns.min-saude.pt/",
+      "link": "https://www2.gov.pt/servicos/pedir-a-isencao-de-taxas-moderadoras-por-insuficiencia-economica",
       "novo": false
     },
     {
@@ -206,7 +206,7 @@
       "categoria": "emprego",
       "quemPode": ["Jovens de 18 a 30 anos à procura de emprego", "Inscritos no IEFP há mais de 3 meses"],
       "comoRequerer": "O empregador candidata-se ao programa no IEFP. Como candidato a emprego, inscreve-te no Centro de Emprego mais próximo.",
-      "link": "https://www.iefp.pt/jovens",
+      "link": "https://iefponline.iefp.pt/",
       "novo": false
     }
   ]
