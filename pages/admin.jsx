@@ -2,14 +2,21 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
-import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock } from "lucide-react";
+import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock, Bell, Send } from "lucide-react";
 
 export default function Admin() {
   const router = useRouter();
   const [estado, setEstado] = useState("a-carregar"); // a-carregar | negado | ok | erro
   const [stats, setStats] = useState(null);
   const [erro, setErro] = useState("");
-  const [sessaoEmail, setSessaoEmail] = useState(null); // email da sessão atual (para diagnóstico)
+  const [sessaoEmail, setSessaoEmail] = useState(null);
+
+  // Push notification state
+  const [pushTitulo, setPushTitulo] = useState("🏛️ Novidade no PoupeJá");
+  const [pushCorpo, setPushCorpo] = useState("Descobre os Apoios do Estado a que tens direito — subsídios, isenções e muito mais.");
+  const [pushUrl, setPushUrl] = useState("/");
+  const [pushEstado, setPushEstado] = useState(""); // "", "a-enviar", "ok", "erro"
+  const [pushResultado, setPushResultado] = useState(null);
 
   async function carregar() {
     setEstado("a-carregar");
@@ -43,6 +50,29 @@ export default function Admin() {
   }
 
   useEffect(() => { carregar(); }, []);
+
+  async function enviarPush() {
+    setPushEstado("a-enviar");
+    setPushResultado(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const r = await fetch("/api/admin-push", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ title: pushTitulo, body: pushCorpo, url: pushUrl }),
+      });
+      const data = await r.json();
+      if (!r.ok) { setPushEstado("erro"); setPushResultado(data.erro || "Erro."); return; }
+      setPushEstado("ok");
+      setPushResultado(`✅ Enviadas ${data.enviadas} de ${data.total} notificações.`);
+    } catch {
+      setPushEstado("erro");
+      setPushResultado("Falha de ligação.");
+    }
+  }
 
   const fmtData = (iso) => {
     if (!iso) return "—";
@@ -193,6 +223,68 @@ export default function Admin() {
             <p className="text-center text-[11px] text-slate-300 font-medium mt-4">
               Atualizado às {fmtData(stats.atualizadoEm)}
             </p>
+
+            {/* Enviar notificação push */}
+            <div className="bg-white rounded-2xl shadow-sm p-5 mt-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
+                  <Bell size={16} className="text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-black text-slate-800">Enviar notificação push</h2>
+                  <p className="text-[11px] text-slate-400 font-medium">Envia para todos os utilizadores com notificações ativas</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Título</label>
+                  <input
+                    type="text"
+                    value={pushTitulo}
+                    onChange={e => setPushTitulo(e.target.value)}
+                    maxLength={80}
+                    className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Mensagem</label>
+                  <textarea
+                    value={pushCorpo}
+                    onChange={e => setPushCorpo(e.target.value)}
+                    rows={3}
+                    maxLength={200}
+                    className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Link (ex: /apoios ou /)</label>
+                  <input
+                    type="text"
+                    value={pushUrl}
+                    onChange={e => setPushUrl(e.target.value)}
+                    className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+                  />
+                </div>
+
+                <button
+                  onClick={enviarPush}
+                  disabled={pushEstado === "a-enviar" || !pushTitulo.trim() || !pushCorpo.trim()}
+                  className="mt-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 text-white font-black text-sm disabled:opacity-50"
+                >
+                  {pushEstado === "a-enviar"
+                    ? <><RefreshCw size={14} className="animate-spin" /> A enviar…</>
+                    : <><Send size={14} /> Enviar a todos</>
+                  }
+                </button>
+
+                {pushResultado && (
+                  <p className={`text-sm font-bold text-center rounded-xl px-4 py-2.5 ${pushEstado === "ok" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-600"}`}>
+                    {pushResultado}
+                  </p>
+                )}
+              </div>
+            </div>
           </>
         )}
       </div>
