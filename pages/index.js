@@ -17,7 +17,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
-  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock,
+  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -101,22 +101,29 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
 function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
   if (!modo) return null;
 
+  const beneficios = [
+    { emoji: "🔔", texto: "Notificações dos folhetos toda a segunda-feira de manhã" },
+    { emoji: "⚡", texto: "Acesso instantâneo — abre como uma app, sem abrir o browser" },
+    { emoji: "📶", texto: "Funciona sem internet — consulta as listas e contas offline" },
+    { emoji: "🏠", texto: "Ícone no ecrã inicial, como qualquer outra app" },
+  ];
+
   const passos = modo === "ios" ? [
-    { emoji: "1️⃣", titulo: "Abre no Safari", desc: "Certifica-te de que estás a usar o Safari (não Chrome nem Firefox)." },
-    { emoji: "⬆️", titulo: "Toca em Partilhar", desc: "O ícone de partilhar fica na barra de baixo do Safari — parece uma caixa com uma seta a apontar para cima." },
-    { emoji: "📲", titulo: "Adicionar ao ecrã inicial", desc: "Faz scroll na lista e toca em \"Adicionar ao Ecrã Inicial\". Pode estar a meio da lista." },
-    { emoji: "✅", titulo: "Confirma", desc: "Toca em \"Adicionar\" no canto superior direito. O ícone do PoupeJá aparece no teu ecrã!" },
+    { emoji: "1️⃣", titulo: "Abre no Safari", desc: "Tens de estar no Safari do iPhone. Se estás no Chrome, copia o link e abre no Safari." },
+    { emoji: "⬆️", titulo: "Toca no ícone Partilhar", desc: "Na barra de baixo do Safari — parece uma caixa com uma seta a apontar para cima ↑" },
+    { emoji: "📲", titulo: "\"Adicionar ao Ecrã Inicial\"", desc: "Faz scroll na lista que aparece e toca em \"Adicionar ao Ecrã Inicial\". Pode estar a meio da lista." },
+    { emoji: "✅", titulo: "Toca em \"Adicionar\"", desc: "No canto superior direito. O ícone do PoupeJá aparece imediatamente no teu ecrã!" },
   ] : [
-    { emoji: "1️⃣", titulo: "Toca em \"Instalar\"", desc: "Aparece um popup do sistema a perguntar se queres instalar o PoupeJá." },
-    { emoji: "✅", titulo: "Confirma a instalação", desc: "Toca em \"Instalar\" no popup. O ícone fica no teu ecrã imediatamente." },
-    { emoji: "🔔", titulo: "Ativa notificações", desc: "Podes ativar notificações para receberes os folhetos semanais automaticamente." },
+    { emoji: "📲", titulo: "Toca em \"Instalar agora\"", desc: "Aparece um popup do sistema a perguntar se queres instalar o PoupeJá." },
+    { emoji: "✅", titulo: "Confirma a instalação", desc: "Toca em \"Instalar\" no popup. O ícone fica no ecrã imediatamente — é gratuito." },
+    { emoji: "🔔", titulo: "Ativa notificações", desc: "Permite notificações e recebe os folhetos semanais automaticamente." },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.5)" }} onClick={onFechar}>
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.6)" }} onClick={onFechar}>
       <div
         className="w-full rounded-t-3xl bg-white overflow-hidden"
-        style={{ maxHeight: "85vh", overflowY: "auto" }}
+        style={{ maxHeight: "92vh", overflowY: "auto" }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle */}
@@ -129,58 +136,78 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
           className="px-5 py-4 flex items-center gap-3"
           style={{ background: modo === "ios" ? "linear-gradient(135deg,#1e3a8a,#2563eb)" : "linear-gradient(135deg,#065f46,#059669)" }}
         >
-          <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
-            <span className="text-2xl">{modo === "ios" ? "🍎" : "🤖"}</span>
+          <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 text-2xl">
+            {modo === "ios" ? "🍎" : "🤖"}
           </div>
           <div>
             <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
               {modo === "ios" ? "iPhone / iPad" : "Android"}
             </p>
-            <p className="text-[15px] font-black text-white leading-tight">Como instalar o PoupeJá</p>
+            <p className="text-[15px] font-black text-white leading-tight">Instalar o PoupeJá</p>
           </div>
           <button onClick={onFechar} className="ml-auto w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-            <ArrowLeft size={16} className="text-white" />
+            <X size={16} className="text-white" />
           </button>
         </div>
 
-        {/* Passos */}
-        <div className="px-5 pt-5 pb-3 flex flex-col gap-4">
-          {passos.map((p, i) => (
-            <div key={i} className="flex gap-4 items-start">
-              <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-2xl border border-slate-100">
-                {p.emoji}
+        {/* Benefícios */}
+        <div className="px-5 pt-4 pb-3">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Porque vale a pena</p>
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {beneficios.map((b, i) => (
+              <div key={i} className="bg-slate-50 rounded-2xl p-3 flex items-start gap-2">
+                <span className="text-lg leading-none flex-shrink-0">{b.emoji}</span>
+                <p className="text-[11px] font-bold text-slate-700 leading-snug">{b.texto}</p>
               </div>
-              <div className="flex-1 pt-0.5">
-                <p className="text-sm font-black text-slate-800">{p.titulo}</p>
-                <p className="text-[12px] text-slate-500 mt-0.5 leading-relaxed">{p.desc}</p>
+            ))}
+          </div>
+
+          {/* Separador */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-slate-100" />
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Como instalar</p>
+            <div className="flex-1 h-px bg-slate-100" />
+          </div>
+
+          {/* Passos */}
+          <div className="flex flex-col gap-3.5">
+            {passos.map((p, i) => (
+              <div key={i} className="flex gap-4 items-start">
+                <div className="w-11 h-11 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-xl border border-slate-100">
+                  {p.emoji}
+                </div>
+                <div className="flex-1 pt-0.5">
+                  <p className="text-sm font-black text-slate-800">{p.titulo}</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{p.desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Nota iOS sobre Safari */}
         {modo === "ios" && (
-          <div className="mx-5 mb-4 px-4 py-3 rounded-2xl bg-blue-50 border border-blue-100">
-            <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
-              💡 <strong>Atenção:</strong> No iPhone, só consegues instalar sites como app através do <strong>Safari</strong>. Se estás a usar o Chrome ou outro browser, copia o link e abre no Safari.
+          <div className="mx-5 mb-4 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-100">
+            <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+              ⚠️ <strong>Só funciona no Safari.</strong> Se estás a usar o Chrome, o Firefox ou o Edge no iPhone — este passo não vai funcionar. Copia o endereço e abre no Safari primeiro.
             </p>
           </div>
         )}
 
-        {/* Botão de ação */}
-        <div className="px-5 pb-8">
+        {/* Botões de ação */}
+        <div className="px-5 pb-8 flex flex-col gap-2.5">
           {modo === "android" && onInstalarAndroid && (
             <button
               onClick={onInstalarAndroid}
-              className="w-full py-3.5 rounded-2xl text-white font-black text-sm mb-3"
-              style={{ background: "linear-gradient(135deg,#065f46,#059669)" }}
+              className="w-full py-4 rounded-2xl text-white font-black text-base"
+              style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 8px 20px -6px rgba(5,150,105,0.5)" }}
             >
-              📲 Instalar agora
+              📲 Instalar agora — é grátis
             </button>
           )}
           <button
             onClick={onFechar}
-            className="w-full py-3 rounded-2xl bg-slate-100 text-slate-600 font-black text-sm"
+            className="w-full py-3 rounded-2xl bg-slate-100 text-slate-500 font-black text-sm"
           >
             Fechar
           </button>
@@ -190,98 +217,144 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
   );
 }
 
-/* ─── Banner instalar app ─── */
-function BannerInstalar() {
-  const [modo, setModo]             = useState(null); // null | "android" | "ios" | "oculto"
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [modalAberto, setModalAberto]       = useState(false);
+/* ─── Hook de deteção de plataforma de instalação ─── */
+function useInstallDetect() {
+  const [modo, setModo] = useState(null); // null | "ios" | "android" | "instalado"
+  const [prompt, setPrompt] = useState(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
-    const dispensado = localStorage.getItem("poupeja_instalar_dispensado");
-    if (dispensado && Date.now() - Number(dispensado) < 7 * 24 * 60 * 60 * 1000) return;
-
-    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone;
+    if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
+      setModo("instalado");
+      return;
+    }
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
     if (isIos) { setModo("ios"); return; }
 
     const handler = (e) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setPrompt(e);
       setModo("android");
     };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
+  return { modo, prompt };
+}
+
+/* ─── Barra sticky de instalação (abaixo do header, todos os ecrãs) ─── */
+function BarraInstalacao({ modo, onAbrir, onInstalarDireto }) {
+  const [visivel, setVisivel] = useState(false);
+
+  useEffect(() => {
+    if (!modo || modo === "instalado") return;
+    // Mostrar se não foi dispensado nesta sessão
+    if (sessionStorage.getItem("poupeja_barra_dispensada")) return;
+    // Cooldown: depois de 3 dispensas → 2 dias de pausa
+    const ndispensas = parseInt(localStorage.getItem("poupeja_ndispensas") || "0");
+    if (ndispensas >= 3) {
+      const ultimo = parseInt(localStorage.getItem("poupeja_instalar_dispensado") || "0");
+      if (Date.now() - ultimo < 2 * 24 * 3600 * 1000) return;
+    }
+    setVisivel(true);
+  }, [modo]);
+
   function dispensar() {
+    sessionStorage.setItem("poupeja_barra_dispensada", "1");
+    const n = parseInt(localStorage.getItem("poupeja_ndispensas") || "0") + 1;
+    localStorage.setItem("poupeja_ndispensas", String(n));
     localStorage.setItem("poupeja_instalar_dispensado", String(Date.now()));
-    setModo("oculto");
+    setVisivel(false);
   }
 
-  async function instalarAndroid() {
-    if (!deferredPrompt) return;
-    setModalAberto(false);
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") localStorage.setItem("poupeja_instalar_dispensado", String(Date.now()));
-    setModo("oculto");
-  }
-
-  if (!modo || modo === "oculto") return null;
+  if (!visivel) return null;
 
   return (
-    <>
-      <div className="mx-4 mt-4 rounded-2xl overflow-hidden anim-up anim-up-1" style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 24px -8px rgba(37,99,235,0.5)" }}>
-        <div className="px-4 py-4 flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-            <Smartphone size={20} className="text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-black text-white leading-snug">
-              {modo === "ios" ? "📲 Instala o PoupeJá no iPhone" : "📲 Instala o PoupeJá como app"}
-            </p>
-            <p className="text-[11px] text-white/70 mt-0.5 leading-relaxed">
-              {modo === "ios"
-                ? "Adiciona ao ecrã inicial — acesso rápido e notificações semanais."
-                : "Instala em 2 segundos — notificações, acesso rápido e funciona offline."}
-            </p>
-            <div className="flex gap-2 mt-3 flex-wrap">
+    <div
+      className="lg:hidden mx-4 mt-2 rounded-2xl px-4 py-3 flex items-center gap-3"
+      style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 6px 20px -6px rgba(37,99,235,0.5)" }}
+    >
+      <span className="text-xl flex-shrink-0">📲</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-[12px] font-black text-white leading-snug">
+          {modo === "ios" ? "Instala no iPhone — gratuito!" : "Instala a app — gratuito!"}
+        </p>
+        <p className="text-[10px] text-white/65 mt-0.5">Notificações, offline e acesso em 1 toque</p>
+      </div>
+      <button
+        onClick={modo === "android" && onInstalarDireto ? onInstalarDireto : onAbrir}
+        className="press flex-shrink-0 px-3 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
+      >
+        {modo === "android" ? "Instalar" : "Como →"}
+      </button>
+      <button onClick={dispensar} className="press w-6 h-6 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+        <X size={11} className="text-white" />
+      </button>
+    </div>
+  );
+}
+
+/* ─── Banner instalar app (ecrã início) ─── */
+function BannerInstalar({ onAbrirModal, onInstalarAndroid, modo }) {
+  const [visivel, setVisivel] = useState(false);
+
+  useEffect(() => {
+    if (!modo || modo === "instalado") return;
+    // No ecrã inicial mostra sempre se não foi instalada
+    setVisivel(true);
+  }, [modo]);
+
+  function dispensar() {
+    sessionStorage.setItem("poupeja_banner_dispensado", "1");
+    setVisivel(false);
+  }
+
+  if (!visivel || sessionStorage.getItem("poupeja_banner_dispensado")) return null;
+
+  return (
+    <div className="mx-4 mt-4 rounded-2xl overflow-hidden anim-up anim-up-1" style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 12px 32px -10px rgba(5,150,105,0.5)" }}>
+      <div className="px-4 py-5 flex items-start gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 text-2xl">
+          📲
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-1">Grátis · 2 segundos</p>
+          <p className="text-[15px] font-black text-white leading-snug">
+            {modo === "ios"
+              ? "Instala o PoupeJá no teu iPhone"
+              : "Instala o PoupeJá como app"}
+          </p>
+          <p className="text-[11px] text-white/75 mt-1 leading-relaxed">
+            🔔 Folhetos toda a semana · ⚡ Acesso rápido · 📶 Funciona offline
+          </p>
+          <div className="flex gap-2 mt-3 flex-wrap">
+            <button
+              onClick={onAbrirModal}
+              className="press px-4 py-2 rounded-xl bg-white text-emerald-700 text-[12px] font-black"
+            >
+              {modo === "ios" ? "📖 Como instalar" : "📖 Ver instruções"}
+            </button>
+            {modo === "android" && (
               <button
-                onClick={() => setModalAberto(true)}
-                className="press px-3.5 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
+                onClick={onInstalarAndroid}
+                className="press px-4 py-2 rounded-xl text-white text-[12px] font-black border border-white/30 bg-white/15"
               >
-                {modo === "ios" ? "Como instalar →" : "Ver como instalar →"}
+                ⚡ Instalar agora
               </button>
-              {modo === "android" && (
-                <button
-                  onClick={instalarAndroid}
-                  className="press px-3.5 py-1.5 rounded-xl bg-blue-500 text-white text-[11px] font-black border border-white/20"
-                >
-                  Instalar agora
-                </button>
-              )}
-              <button onClick={dispensar} className="press px-3.5 py-1.5 rounded-xl bg-white/15 text-white text-[11px] font-black">
-                Agora não
-              </button>
-            </div>
+            )}
+            <button onClick={dispensar} className="press px-3 py-2 rounded-xl bg-white/10 text-white/70 text-[11px] font-black">
+              Já tenho
+            </button>
           </div>
         </div>
       </div>
-
-      {modalAberto && (
-        <ModalInstalar
-          modo={modo}
-          onFechar={() => setModalAberto(false)}
-          onInstalarAndroid={modo === "android" ? instalarAndroid : null}
-        />
-      )}
-    </>
+    </div>
   );
 }
 
 /* ─── Ecrã Início ─── */
-function EcraInicio({ user, setTab, goGarantias }) {
+function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, onInstalarAndroid }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
   const [totalMes, setTotalMes]       = useState(0);
@@ -407,7 +480,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
       </div>
 
       {/* Banner instalar app */}
-      <BannerInstalar />
+      <BannerInstalar modo={installModo} onAbrirModal={onAbrirInstalar} onInstalarAndroid={onInstalarAndroid} />
 
       {/* Garantias highlight */}
       <div className="px-4 mt-4 anim-up anim-up-1">
@@ -921,6 +994,8 @@ export default function PoupeJa() {
   const [subTabTaloes, setSubTabTaloes] = useState("compras");
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
+  const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
+  const { modo: installModo, prompt: installPrompt } = useInstallDetect();
 
   function calcGarantiasAviso() {
     try {
@@ -999,6 +1074,20 @@ export default function PoupeJa() {
     }, 3000); // pequeno delay para não assustar logo ao abrir a app
   }, [user?.id]);
 
+  /* Abre o modal de instalação automaticamente na 3ª visita (e depois a cada 5) */
+  useEffect(() => {
+    if (!hydrated || !installModo || installModo === "instalado") return;
+    if (sessionStorage.getItem("poupeja_modal_ja_aberto")) return;
+    const ndispensas = parseInt(localStorage.getItem("poupeja_ndispensas") || "0");
+    if (ndispensas >= 3) return; // já dispensou 3+ vezes, não forçar mais
+    const visitas = parseInt(localStorage.getItem("poupeja_visitas") || "0") + 1;
+    localStorage.setItem("poupeja_visitas", String(visitas));
+    if (visitas === 3 || (visitas > 3 && visitas % 5 === 0)) {
+      sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
+      setTimeout(() => setModalInstalarAberto(true), 3500);
+    }
+  }, [hydrated, installModo]);
+
   /* Dados chegaram de outro dispositivo → re-renderiza o ecrã atual */
   useEffect(() => {
     function onSync() {
@@ -1025,6 +1114,16 @@ export default function PoupeJa() {
     setUser(null);
     setTabRaw("inicio");
     setVerDefs(false);
+  }
+
+  async function instalarAndroid() {
+    if (!installPrompt) return;
+    setModalInstalarAberto(false);
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === "accepted") {
+      localStorage.setItem("poupeja_ndispensas", "99"); // evita mostrar de novo
+    }
   }
 
   function go(newTab) {
@@ -1177,10 +1276,19 @@ export default function PoupeJa() {
               </div>
             </header>
 
+            {/* Barra de instalação — todos os ecrãs */}
+            {installModo !== "instalado" && (
+              <BarraInstalacao
+                modo={installModo}
+                onAbrir={() => setModalInstalarAberto(true)}
+                onInstalarDireto={installModo === "android" ? instalarAndroid : null}
+              />
+            )}
+
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} installModo={installModo} onAbrirInstalar={() => setModalInstalarAberto(true)} onInstalarAndroid={instalarAndroid} />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
@@ -1249,6 +1357,15 @@ export default function PoupeJa() {
             avisos={{ garantias: garantiasAviso }}
             onFechar={() => setVerAvisos(false)}
             onAbrirTaloes={() => { setVerAvisos(false); goGarantias(); }}
+          />
+        )}
+
+        {/* Modal de instalação */}
+        {modalInstalarAberto && installModo && installModo !== "instalado" && (
+          <ModalInstalar
+            modo={installModo}
+            onFechar={() => setModalInstalarAberto(false)}
+            onInstalarAndroid={installModo === "android" ? instalarAndroid : null}
           />
         )}
 
