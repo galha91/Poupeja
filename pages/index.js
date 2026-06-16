@@ -109,7 +109,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
   ];
 
   const passos = modo === "ios" ? [
-    { emoji: "1️⃣", titulo: "Abre no Safari", desc: "Tens de estar no Safari do iPhone. Se estás no Chrome, copia o link e abre no Safari." },
+    { emoji: "1️⃣", titulo: "Abre no Safari", desc: "Tens de estar no Safari (não Chrome nem Firefox). Se estás noutro browser, copia o link e abre no Safari." },
     { emoji: "⬆️", titulo: "Toca no ícone Partilhar", desc: "Na barra de baixo do Safari — parece uma caixa com uma seta a apontar para cima ↑" },
     { emoji: "📲", titulo: "\"Adicionar ao Ecrã Inicial\"", desc: "Faz scroll na lista que aparece e toca em \"Adicionar ao Ecrã Inicial\". Pode estar a meio da lista." },
     { emoji: "✅", titulo: "Toca em \"Adicionar\"", desc: "No canto superior direito. O ícone do PoupeJá aparece imediatamente no teu ecrã!" },
@@ -141,7 +141,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
           </div>
           <div>
             <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
-              {modo === "ios" ? "iPhone / iPad" : "Android"}
+              {modo === "ios" ? "iOS (Safari)" : "Android"}
             </p>
             <p className="text-[15px] font-black text-white leading-tight">Instalar o PoupeJá</p>
           </div>
@@ -189,7 +189,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
         {modo === "ios" && (
           <div className="mx-5 mb-4 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-100">
             <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-              ⚠️ <strong>Só funciona no Safari.</strong> Se estás a usar o Chrome, o Firefox ou o Edge no iPhone — este passo não vai funcionar. Copia o endereço e abre no Safari primeiro.
+              ⚠️ <strong>Só funciona no Safari.</strong> Se estás a usar o Chrome, o Firefox ou o Edge — este passo não vai funcionar. Copia o endereço e abre no Safari primeiro.
             </p>
           </div>
         )}
@@ -278,7 +278,7 @@ function BarraInstalacao({ modo, onAbrir, onInstalarDireto }) {
       <span className="text-xl flex-shrink-0">📲</span>
       <div className="flex-1 min-w-0">
         <p className="text-[12px] font-black text-white leading-snug">
-          {modo === "ios" ? "Instala no iPhone — gratuito!" : "Instala a app — gratuito!"}
+          Instala a app — gratuito!
         </p>
         <p className="text-[10px] text-white/65 mt-0.5">Notificações, offline e acesso em 1 toque</p>
       </div>
@@ -480,7 +480,6 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
       </div>
 
       {/* Banner instalar app */}
-      <BannerInstalar modo={installModo} onAbrirModal={onAbrirInstalar} onInstalarAndroid={onInstalarAndroid} />
 
       {/* Garantias highlight */}
       <div className="px-4 mt-4 anim-up anim-up-1">
