@@ -16,8 +16,10 @@ function MyApp({ Component, pageProps }) {
     });
 
     navigator.serviceWorker.register('/sw.js').then((reg) => {
+      const verificar = () => reg.update().catch(() => {});
+
       // Verifica se há atualização logo ao abrir
-      reg.update().catch(() => {});
+      verificar();
 
       // Se já houver um SW à espera, ativa-o imediatamente
       if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -33,10 +35,17 @@ function MyApp({ Component, pageProps }) {
         });
       });
 
-      // Verifica novamente sempre que a app volta a ficar visível
+      // Verifica sempre que a app volta a ficar visível — essencial para a
+      // app instalada no ecrã principal, que muitas vezes é retomada (não
+      // arrancada de novo) e não verificaria atualizações de outra forma.
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') reg.update().catch(() => {});
+        if (document.visibilityState === 'visible') verificar();
       });
+      window.addEventListener('focus', verificar);
+      window.addEventListener('online', verificar);
+
+      // Verificação periódica enquanto a app fica aberta (a cada 30 min)
+      setInterval(verificar, 30 * 60 * 1000);
     }).catch(() => {});
   }, []);
 
