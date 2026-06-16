@@ -97,25 +97,114 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
   );
 }
 
+/* ─── Modal de instruções de instalação ─── */
+function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
+  if (!modo) return null;
+
+  const passos = modo === "ios" ? [
+    { emoji: "1️⃣", titulo: "Abre no Safari", desc: "Certifica-te de que estás a usar o Safari (não Chrome nem Firefox)." },
+    { emoji: "⬆️", titulo: "Toca em Partilhar", desc: "O ícone de partilhar fica na barra de baixo do Safari — parece uma caixa com uma seta a apontar para cima." },
+    { emoji: "📲", titulo: "Adicionar ao ecrã inicial", desc: "Faz scroll na lista e toca em \"Adicionar ao Ecrã Inicial\". Pode estar a meio da lista." },
+    { emoji: "✅", titulo: "Confirma", desc: "Toca em \"Adicionar\" no canto superior direito. O ícone do PoupeJá aparece no teu ecrã!" },
+  ] : [
+    { emoji: "1️⃣", titulo: "Toca em \"Instalar\"", desc: "Aparece um popup do sistema a perguntar se queres instalar o PoupeJá." },
+    { emoji: "✅", titulo: "Confirma a instalação", desc: "Toca em \"Instalar\" no popup. O ícone fica no teu ecrã imediatamente." },
+    { emoji: "🔔", titulo: "Ativa notificações", desc: "Podes ativar notificações para receberes os folhetos semanais automaticamente." },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.5)" }} onClick={onFechar}>
+      <div
+        className="w-full rounded-t-3xl bg-white overflow-hidden"
+        style={{ maxHeight: "85vh", overflowY: "auto" }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full bg-slate-200" />
+        </div>
+
+        {/* Cabeçalho */}
+        <div
+          className="px-5 py-4 flex items-center gap-3"
+          style={{ background: modo === "ios" ? "linear-gradient(135deg,#1e3a8a,#2563eb)" : "linear-gradient(135deg,#065f46,#059669)" }}
+        >
+          <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
+            <span className="text-2xl">{modo === "ios" ? "🍎" : "🤖"}</span>
+          </div>
+          <div>
+            <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
+              {modo === "ios" ? "iPhone / iPad" : "Android"}
+            </p>
+            <p className="text-[15px] font-black text-white leading-tight">Como instalar o PoupeJá</p>
+          </div>
+          <button onClick={onFechar} className="ml-auto w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+            <ArrowLeft size={16} className="text-white" />
+          </button>
+        </div>
+
+        {/* Passos */}
+        <div className="px-5 pt-5 pb-3 flex flex-col gap-4">
+          {passos.map((p, i) => (
+            <div key={i} className="flex gap-4 items-start">
+              <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-2xl border border-slate-100">
+                {p.emoji}
+              </div>
+              <div className="flex-1 pt-0.5">
+                <p className="text-sm font-black text-slate-800">{p.titulo}</p>
+                <p className="text-[12px] text-slate-500 mt-0.5 leading-relaxed">{p.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Nota iOS sobre Safari */}
+        {modo === "ios" && (
+          <div className="mx-5 mb-4 px-4 py-3 rounded-2xl bg-blue-50 border border-blue-100">
+            <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+              💡 <strong>Atenção:</strong> No iPhone, só consegues instalar sites como app através do <strong>Safari</strong>. Se estás a usar o Chrome ou outro browser, copia o link e abre no Safari.
+            </p>
+          </div>
+        )}
+
+        {/* Botão de ação */}
+        <div className="px-5 pb-8">
+          {modo === "android" && onInstalarAndroid && (
+            <button
+              onClick={onInstalarAndroid}
+              className="w-full py-3.5 rounded-2xl text-white font-black text-sm mb-3"
+              style={{ background: "linear-gradient(135deg,#065f46,#059669)" }}
+            >
+              📲 Instalar agora
+            </button>
+          )}
+          <button
+            onClick={onFechar}
+            className="w-full py-3 rounded-2xl bg-slate-100 text-slate-600 font-black text-sm"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Banner instalar app ─── */
 function BannerInstalar() {
-  const [modo, setModo]       = useState(null); // null | "android" | "ios" | "oculto"
+  const [modo, setModo]             = useState(null); // null | "android" | "ios" | "oculto"
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [iosAberto, setIosAberto] = useState(false);
+  const [modalAberto, setModalAberto]       = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Já instalada (standalone) ou utilizador já dispensou
     if (window.matchMedia("(display-mode: standalone)").matches) return;
     const dispensado = localStorage.getItem("poupeja_instalar_dispensado");
     if (dispensado && Date.now() - Number(dispensado) < 7 * 24 * 60 * 60 * 1000) return;
 
     const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone;
+    if (isIos) { setModo("ios"); return; }
 
-    if (isIos) {
-      setModo("ios");
-      return;
-    }
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -132,6 +221,7 @@ function BannerInstalar() {
 
   async function instalarAndroid() {
     if (!deferredPrompt) return;
+    setModalAberto(false);
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") localStorage.setItem("poupeja_instalar_dispensado", String(Date.now()));
@@ -141,55 +231,52 @@ function BannerInstalar() {
   if (!modo || modo === "oculto") return null;
 
   return (
-    <div className="mx-4 mt-4 rounded-2xl overflow-hidden anim-up anim-up-1" style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 24px -8px rgba(37,99,235,0.5)" }}>
-      <div className="px-4 py-4 flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-          <Smartphone size={20} className="text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-black text-white leading-snug">Instala o PoupeJá no teu telemóvel</p>
-          <p className="text-[11px] text-white/70 mt-0.5 leading-relaxed">
-            {modo === "ios"
-              ? "Toca em Partilhar e depois \"Adicionar ao ecrã inicial\" para teres a app."
-              : "Acesso rápido, notificações e funciona sem internet."}
-          </p>
-          <div className="flex gap-2 mt-3">
-            {modo === "android" && (
+    <>
+      <div className="mx-4 mt-4 rounded-2xl overflow-hidden anim-up anim-up-1" style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 24px -8px rgba(37,99,235,0.5)" }}>
+        <div className="px-4 py-4 flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+            <Smartphone size={20} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-black text-white leading-snug">
+              {modo === "ios" ? "📲 Instala o PoupeJá no iPhone" : "📲 Instala o PoupeJá como app"}
+            </p>
+            <p className="text-[11px] text-white/70 mt-0.5 leading-relaxed">
+              {modo === "ios"
+                ? "Adiciona ao ecrã inicial — acesso rápido e notificações semanais."
+                : "Instala em 2 segundos — notificações, acesso rápido e funciona offline."}
+            </p>
+            <div className="flex gap-2 mt-3 flex-wrap">
               <button
-                onClick={instalarAndroid}
+                onClick={() => setModalAberto(true)}
                 className="press px-3.5 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
               >
-                Instalar app
+                {modo === "ios" ? "Como instalar →" : "Ver como instalar →"}
               </button>
-            )}
-            {modo === "ios" && (
-              <button
-                onClick={() => setIosAberto(true)}
-                className="press px-3.5 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
-              >
-                Ver instruções
+              {modo === "android" && (
+                <button
+                  onClick={instalarAndroid}
+                  className="press px-3.5 py-1.5 rounded-xl bg-blue-500 text-white text-[11px] font-black border border-white/20"
+                >
+                  Instalar agora
+                </button>
+              )}
+              <button onClick={dispensar} className="press px-3.5 py-1.5 rounded-xl bg-white/15 text-white text-[11px] font-black">
+                Agora não
               </button>
-            )}
-            <button onClick={dispensar} className="press px-3.5 py-1.5 rounded-xl bg-white/20 text-white text-[11px] font-black">
-              Agora não
-            </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Instruções iOS */}
-      {iosAberto && (
-        <div className="border-t border-white/20 px-4 py-3 flex flex-col gap-1.5">
-          {[
-            "1. Toca no ícone Partilhar  ↑  (barra inferior do Safari)",
-            "2. Faz scroll e toca em \"Adicionar ao ecrã inicial\"",
-            "3. Confirma com \"Adicionar\" no canto superior direito",
-          ].map((s, i) => (
-            <p key={i} className="text-[11px] text-white/80 leading-relaxed">{s}</p>
-          ))}
-        </div>
+      {modalAberto && (
+        <ModalInstalar
+          modo={modo}
+          onFechar={() => setModalAberto(false)}
+          onInstalarAndroid={modo === "android" ? instalarAndroid : null}
+        />
       )}
-    </div>
+    </>
   );
 }
 
