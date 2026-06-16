@@ -51,8 +51,8 @@
       "valor": "Gratuito",
       "categoria": "transportes",
       "quemPode": ["Jovens com idade até 23 anos (inclusive)"],
-      "comoRequerer": "Solicita o passe gratuito nos balcões das operadoras de transporte (ex: CP, Carris, Metro) com documento de identificação.",
-      "link": "https://www.imtt.pt/",
+      "comoRequerer": "Solicita a gratuidade nos balcões das operadoras de transporte (Metro, CP, Carris) apresentando o Cartão do Cidadão. Podes depois carregar o passe mensalmente nas apps CARRISway/Andante ou nas máquinas nas estações.",
+      "link": "https://informacao.lisboa.pt/dossies-tematicos/transportes-publicos-gratuitos",
       "novo": false
     },
     {
@@ -62,8 +62,8 @@
       "valor": "Gratuito",
       "categoria": "transportes",
       "quemPode": ["Pessoas com 65 ou mais anos de idade"],
-      "comoRequerer": "Apresenta o Cartão do Cidadão ou o Cartão Sénior na bilheteira das operadoras de transporte.",
-      "link": "https://www.imtt.pt/",
+      "comoRequerer": "Apresenta o Cartão do Cidadão ou o Cartão Sénior na bilheteira das operadoras de transporte. Em Lisboa, a gratuidade está garantida até 2029 para residentes.",
+      "link": "https://informacao.lisboa.pt/dossies-tematicos/transportes-publicos-gratuitos",
       "novo": false
     },
     {
@@ -85,7 +85,7 @@
       "categoria": "habitacao",
       "quemPode": ["Jovens de 18 a 35 anos (inclusive)", "Rendimento anual bruto dentro do limite definido", "Arrendamento de habitação própria"],
       "comoRequerer": "Candidatura anual no Portal da Habitação (portaldahabitacao.pt) durante o período de candidaturas.",
-      "link": "https://www.portaldahabitacao.pt/porta65jovem",
+      "link": "https://www.portaldahabitacao.pt/porta-65-jovem",
       "novo": false
     },
     {
@@ -95,8 +95,8 @@
       "valor": "Isenção total de IMT + 3 anos sem IMI",
       "categoria": "habitacao",
       "quemPode": ["Jovens até 35 anos (inclusive)", "Compra de 1.ª habitação própria e permanente", "Valor do imóvel ≤ 316.772€"],
-      "comoRequerer": "A isenção de IMT é solicitada no ato de escritura. A isenção de IMI é automática após o registo da habitação permanente.",
-      "link": "https://eportugal.gov.pt/",
+      "comoRequerer": "A isenção de IMT é solicitada no Portal das Finanças antes da escritura (Modelo 1 do IMT) ou via e-balcão. A isenção de IMI é automática após o registo da habitação permanente.",
+      "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/IMT_Jovem/Pages/default.aspx",
       "novo": false
     },
     {
@@ -151,7 +151,7 @@
       "categoria": "jovens",
       "quemPode": ["Trabalhadores com até 35 anos (inclusive)", "Primeiros rendimentos de categoria A ou B", "Não exige habilitações académicas específicas (alteração 2026)"],
       "comoRequerer": "Podes usar o IRS Automático (novo em 2026) ou declarar manualmente no Modelo 3. O benefício pode ser aplicado no desconto mensal pedindo à entidade empregadora.",
-      "link": "https://eportugal.gov.pt/servicos/pedir-o-beneficio-irs-jovem",
+      "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/questoes_frequentes/pages/faqs-00053.aspx",
       "novo": true
     },
     {
