@@ -3,7 +3,7 @@ import {
   Plus, Trash2, ChevronDown, ChevronUp, CheckCircle2,
   Circle, X, AlertCircle, ChevronLeft, ChevronRight,
   TrendingDown, BarChart3, CalendarDays, Pencil, Check,
-  SlidersHorizontal,
+  SlidersHorizontal, ExternalLink, Flame,
 } from "lucide-react";
 
 const CATS = [
@@ -18,21 +18,21 @@ const CATS = [
 ];
 
 const PRESETS = [
-  { nome: "Renda",            valor: 650,  dia: 1,  cat: "habitacao" },
-  { nome: "Prestação Casa",   valor: 550,  dia: 1,  cat: "habitacao" },
-  { nome: "Eletricidade",     valor: 55,   dia: 15, cat: "energia" },
-  { nome: "Gás",              valor: 30,   dia: 15, cat: "energia" },
-  { nome: "Água",             valor: 25,   dia: 10, cat: "energia" },
-  { nome: "Internet",         valor: 35,   dia: 5,  cat: "internet" },
-  { nome: "Telemóvel",        valor: 15,   dia: 5,  cat: "internet" },
-  { nome: "Netflix",          valor: 7,    dia: 8,  cat: "lazer" },
-  { nome: "Spotify",          valor: 5,    dia: 8,  cat: "lazer" },
-  { nome: "Ginásio",          valor: 30,   dia: 1,  cat: "lazer" },
-  { nome: "Seguro Auto",      valor: 60,   dia: 20, cat: "seguro" },
-  { nome: "Seguro Saúde",     valor: 45,   dia: 1,  cat: "saude" },
-  { nome: "Crédito Auto",     valor: 200,  dia: 1,  cat: "transporte" },
-  { nome: "Passe Transportes",valor: 40,   dia: 1,  cat: "transporte" },
-  { nome: "Condomínio",       valor: 80,   dia: 1,  cat: "habitacao" },
+  { nome: "Renda",             emoji: "🔑", valor: 650,  dia: 1,  cat: "habitacao" },
+  { nome: "Prestação Casa",    emoji: "🏦", valor: 550,  dia: 1,  cat: "habitacao" },
+  { nome: "Eletricidade",      emoji: "💡", valor: 55,   dia: 15, cat: "energia" },
+  { nome: "Gás",               emoji: "🔥", valor: 30,   dia: 15, cat: "energia" },
+  { nome: "Água",              emoji: "💧", valor: 25,   dia: 10, cat: "energia" },
+  { nome: "Internet",          emoji: "🌐", valor: 35,   dia: 5,  cat: "internet" },
+  { nome: "Telemóvel",         emoji: "📱", valor: 15,   dia: 5,  cat: "internet" },
+  { nome: "Netflix",           emoji: "🎬", valor: 7,    dia: 8,  cat: "lazer" },
+  { nome: "Spotify",           emoji: "🎵", valor: 5,    dia: 8,  cat: "lazer" },
+  { nome: "Ginásio",           emoji: "🏋️", valor: 30,   dia: 1,  cat: "lazer" },
+  { nome: "Seguro Auto",       emoji: "🚗", valor: 60,   dia: 20, cat: "seguro" },
+  { nome: "Seguro Saúde",      emoji: "🏥", valor: 45,   dia: 1,  cat: "saude" },
+  { nome: "Crédito Auto",      emoji: "🚙", valor: 200,  dia: 1,  cat: "transporte" },
+  { nome: "Passe Transportes", emoji: "🚌", valor: 40,   dia: 1,  cat: "transporte" },
+  { nome: "Condomínio",        emoji: "🏢", valor: 80,   dia: 1,  cat: "habitacao" },
 ];
 
 const catById = Object.fromEntries(CATS.map(c => [c.id, c]));
@@ -74,6 +74,10 @@ function novoId() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
+function fmt(n) {
+  return n.toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 /* ─── SVG anel de progresso ─── */
 function AnelProgresso({ pct, size = 110, stroke = 9 }) {
   const r = (size - stroke) / 2;
@@ -103,25 +107,46 @@ function HistoricoPagamentos({ id, pagamentos }) {
     const m = parseInt(k.split("-")[1], 10) - 1;
     return { k, pago, label: MESES_CURTOS[m] };
   });
+
+  // calcular streak a partir do mês mais recente pago
+  let streak = 0;
+  for (let i = meses.length - 1; i >= 0; i--) {
+    if (meses[i].pago) streak++;
+    else break;
+  }
+
   return (
-    <div className="flex items-center gap-1.5 mt-2.5">
-      <span className="text-[10px] text-slate-400 font-medium mr-0.5">Histórico:</span>
-      {meses.map(m => (
-        <div key={m.k} className="flex flex-col items-center gap-0.5">
-          <div className={`w-4 h-4 rounded-full transition-colors ${m.pago ? "bg-emerald-400" : "bg-slate-200"}`} title={m.pago ? "Pago" : "Pendente"} />
-          <span className="text-[8px] text-slate-400 leading-none">{m.label}</span>
-        </div>
-      ))}
+    <div className="flex items-center gap-2 mt-2.5">
+      <span className="text-[10px] text-slate-400 font-medium">Histórico:</span>
+      <div className="flex items-center gap-1.5">
+        {meses.map(m => (
+          <div key={m.k} className="flex flex-col items-center gap-0.5">
+            <div
+              className={`w-5 h-5 rounded-full transition-colors flex items-center justify-center text-[9px] ${m.pago ? "bg-emerald-400 text-white" : "bg-slate-200"}`}
+              title={m.pago ? "Pago" : "Pendente"}
+            >
+              {m.pago ? "✓" : ""}
+            </div>
+            <span className="text-[8px] text-slate-400 leading-none">{m.label}</span>
+          </div>
+        ))}
+      </div>
+      {streak >= 2 && (
+        <span className="ml-1 flex items-center gap-0.5 text-[10px] font-black text-amber-500">
+          <Flame size={11} /> {streak} meses
+        </span>
+      )}
     </div>
   );
 }
 
 /* ─── Formulário de adicionar/editar ─── */
 function FormConta({ inicial, onGuardar, onCancelar }) {
-  const [nome,  setNome]  = useState(inicial?.nome       || "");
-  const [valor, setValor] = useState(inicial?.valor      ? String(inicial.valor) : "");
+  const [nome,  setNome]  = useState(inicial?.nome          || "");
+  const [valor, setValor] = useState(inicial?.valor         ? String(inicial.valor) : "");
   const [dia,   setDia]   = useState(inicial?.diaVencimento ? String(inicial.diaVencimento) : "1");
-  const [cat,   setCat]   = useState(inicial?.categoria  || "habitacao");
+  const [cat,   setCat]   = useState(inicial?.categoria     || "habitacao");
+  const [emoji, setEmoji] = useState(inicial?.emoji         || "");
   const [erro,  setErro]  = useState("");
   const [mostrarPresets, setMostrarPresets] = useState(!inicial);
 
@@ -130,18 +155,19 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
     setValor(String(p.valor));
     setDia(String(p.dia));
     setCat(p.cat);
+    setEmoji(p.emoji);
     setMostrarPresets(false);
   }
 
   function submeter(e) {
     e.preventDefault();
     const v = parseFloat(valor.replace(",", "."));
-    if (!nome.trim())              { setErro("Escreve o nome da conta."); return; }
-    if (isNaN(v) || v <= 0)       { setErro("Valor inválido."); return; }
+    if (!nome.trim())                   { setErro("Escreve o nome da conta."); return; }
+    if (isNaN(v) || v <= 0)            { setErro("Valor inválido."); return; }
     const d = parseInt(dia, 10);
-    if (isNaN(d) || d < 1 || d > 31) { setErro("Dia inválido (1–31)."); return; }
+    if (isNaN(d) || d < 1 || d > 31)  { setErro("Dia inválido (1–31)."); return; }
     setErro("");
-    onGuardar({ nome: nome.trim(), valor: v, diaVencimento: d, categoria: cat });
+    onGuardar({ nome: nome.trim(), valor: v, diaVencimento: d, categoria: cat, emoji });
   }
 
   return (
@@ -159,7 +185,7 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
                 onClick={() => usarPreset(p)}
                 className="press px-2.5 py-1.5 rounded-xl text-[11px] font-black border border-slate-200 bg-slate-50 text-slate-600"
               >
-                {catById[p.cat]?.emoji} {p.nome}
+                {p.emoji} {p.nome}
               </button>
             ))}
           </div>
@@ -250,19 +276,19 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
 
 /* ─── Componente principal ─── */
 export default function SecaoContas() {
-  const [contas, setContas]         = useState([]);
-  const [pagamentos, setPagamentos] = useState({});
-  const [mesOff, setMesOff]         = useState(0); // 0 = mês atual, -1 = mês passado…
+  const [contas, setContas]           = useState([]);
+  const [pagamentos, setPagamentos]   = useState({});
+  const [mesOff, setMesOff]           = useState(0);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [editando, setEditando]       = useState(null);
   const [expandido, setExpandido]     = useState(null);
-  const [ordenacao, setOrdenacao]     = useState("dia"); // "dia" | "valor" | "nome" | "cat"
+  const [ordenacao, setOrdenacao]     = useState("dia");
   const [mostrarOrdenacao, setMostrarOrdenacao] = useState(false);
 
-  const hoje = diaAtual();
+  const hoje       = diaAtual();
   const esMesAtual = mesOff === 0;
-  const mes = mesChave(mesOff);
-  const mesLabel = mesNomeCompleto(mesOff);
+  const mes        = mesChave(mesOff);
+  const mesLabel   = mesNomeCompleto(mesOff);
 
   const carregar = useCallback(() => {
     setContas(lerContas());
@@ -271,19 +297,22 @@ export default function SecaoContas() {
 
   useEffect(() => { carregar(); }, [carregar]);
 
-  const pagosMes = pagamentos[mes] || {};
-
+  const pagosMes      = pagamentos[mes] || {};
   const totalMensal   = contas.reduce((s, c) => s + c.valor, 0);
   const totalPago     = contas.filter(c => pagosMes[c.id]).reduce((s, c) => s + c.valor, 0);
   const totalPendente = totalMensal - totalPago;
   const pct           = totalMensal > 0 ? Math.round((totalPago / totalMensal) * 100) : 0;
   const nPagas        = contas.filter(c => pagosMes[c.id]).length;
   const totalAnual    = totalMensal * 12;
+  const totalDiario   = totalMensal / 30.44;
 
-  // Próxima conta a vencer (não paga, ainda não venceu)
-  const pendentes = contas.filter(c => !pagosMes[c.id]);
+  const pendentes     = contas.filter(c => !pagosMes[c.id]);
   const aVencerHoje   = esMesAtual ? pendentes.filter(c => c.diaVencimento === hoje) : [];
   const aVencerBreve  = esMesAtual ? pendentes.filter(c => c.diaVencimento > hoje && c.diaVencimento <= hoje + 5) : [];
+
+  // categorias com potencial de poupança por comparação de tarifas
+  const temComparavelOnline = contas.some(c => ["energia", "internet", "seguro"].includes(c.categoria));
+  const temCreditoHabitacao = contas.some(c => c.categoria === "habitacao" && c.valor > 200);
 
   function sortContas(lista) {
     const base = [...lista];
@@ -350,7 +379,10 @@ export default function SecaoContas() {
       <div className="px-4 mb-4 anim-up">
         <div
           className="rounded-3xl px-6 pt-6 pb-5 relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#1e1b4b 0%,#4c1d95 60%,#7c3aed 100%)", boxShadow: "0 20px 50px -15px rgba(124,58,237,0.45)" }}
+          style={{
+            background: "linear-gradient(135deg,#1e1b4b 0%,#4c1d95 60%,#7c3aed 100%)",
+            boxShadow: "0 20px 50px -15px rgba(124,58,237,0.45)",
+          }}
         >
           <div className="absolute -right-6 -top-6 w-40 h-40 bg-white/10 rounded-full pointer-events-none" />
           <div className="absolute right-12 bottom-4 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
@@ -381,19 +413,25 @@ export default function SecaoContas() {
               </div>
             )}
 
-            {/* Números */}
+            {/* Valores */}
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-black text-white/50 uppercase tracking-widest mb-0.5">Total mensal</p>
               <p className="text-4xl font-black text-white leading-none">
-                €{totalMensal.toFixed(2)}
+                €{fmt(totalMensal)}
               </p>
               {contas.length > 0 ? (
                 <>
-                  <p className="text-[12px] text-white/70 mt-1.5">
-                    {nPagas}/{contas.length} conta{contas.length !== 1 ? "s" : ""} pagas
+                  {/* Contexto anual e diário */}
+                  <p className="text-[11px] text-white/50 mt-1.5 flex items-center gap-1.5 flex-wrap">
+                    <span className="text-white/80 font-bold">€{Math.round(totalAnual).toLocaleString("pt-PT")}/ano</span>
+                    <span className="text-white/30">·</span>
+                    <span>€{totalDiario.toFixed(2)}/dia</span>
                   </p>
-                  <p className="text-[11px] text-white/50 mt-0.5">
-                    Pendente: <span className="text-white font-black">€{totalPendente.toFixed(2)}</span>
+                  <p className="text-[11px] text-white/60 mt-1">
+                    {nPagas}/{contas.length} conta{contas.length !== 1 ? "s" : ""} pagas
+                    {totalPendente > 0 && (
+                      <> · Pendente: <span className="text-white font-black">€{fmt(totalPendente)}</span></>
+                    )}
                   </p>
                 </>
               ) : (
@@ -402,7 +440,7 @@ export default function SecaoContas() {
             </div>
           </div>
 
-          {/* Barra fina de progresso */}
+          {/* Barra de progresso */}
           {totalMensal > 0 && (
             <div className="mt-4 relative z-10">
               <div className="w-full h-1.5 bg-white/15 rounded-full overflow-hidden">
@@ -412,30 +450,55 @@ export default function SecaoContas() {
                 />
               </div>
               <div className="flex justify-between mt-1">
-                <span className="text-[10px] text-white/40">€{totalPago.toFixed(2)} pago</span>
-                <span className="text-[10px] text-white/40">€{totalAnual.toFixed(0)}/ano</span>
+                <span className="text-[10px] text-white/40">€{fmt(totalPago)} pago</span>
+                <span className="text-[10px] text-white/40">€{fmt(totalPendente)} pendente</span>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* ── Cartões de estatísticas ── */}
+      {/* ── Cartões de estatísticas (2×2) ── */}
       {contas.length > 0 && (
         <div className="px-4 mb-4 anim-up anim-up-1">
-          <div className="grid grid-cols-3 gap-2.5">
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm text-center">
+          <div className="grid grid-cols-2 gap-2.5">
+
+            {/* Mensal */}
+            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Mensal</p>
+              <p className="text-xl font-black text-slate-800 mt-0.5">€{Math.round(totalMensal).toLocaleString("pt-PT")}</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{contas.length} conta{contas.length !== 1 ? "s" : ""} fixas</p>
+            </div>
+
+            {/* Anual */}
+            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Anual</p>
-              <p className="text-lg font-black text-slate-800 mt-0.5">€{Math.round(totalAnual)}</p>
+              <p className="text-xl font-black text-slate-800 mt-0.5">€{Math.round(totalAnual).toLocaleString("pt-PT")}</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">€{totalDiario.toFixed(2)}/dia</p>
             </div>
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Contas</p>
-              <p className="text-lg font-black text-slate-800 mt-0.5">{contas.length}</p>
-            </div>
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm text-center">
+
+            {/* Pagas este mês */}
+            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Pagas</p>
-              <p className="text-lg font-black mt-0.5" style={{ color: pct === 100 ? "#059669" : "#7c3aed" }}>{nPagas}/{contas.length}</p>
+              <p className="text-xl font-black mt-0.5" style={{ color: pct === 100 ? "#059669" : pct > 0 ? "#7c3aed" : "#94a3b8" }}>
+                {nPagas}/{contas.length}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-0.5">
+                {pct === 100 ? "Tudo pago! 🎉" : `€${fmt(totalPago)} pago`}
+              </p>
             </div>
+
+            {/* Pendente */}
+            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Pendente</p>
+              <p className="text-xl font-black mt-0.5" style={{ color: totalPendente > 0 ? "#e11d48" : "#059669" }}>
+                €{Math.round(totalPendente).toLocaleString("pt-PT")}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-0.5">
+                {totalPendente > 0 ? `${contas.length - nPagas} conta${contas.length - nPagas !== 1 ? "s" : ""} por pagar` : "Em dia!"}
+              </p>
+            </div>
+
           </div>
         </div>
       )}
@@ -449,7 +512,7 @@ export default function SecaoContas() {
               <div>
                 <p className="text-xs font-black text-rose-700">Vence hoje!</p>
                 <p className="text-[11px] text-rose-600 mt-0.5 leading-relaxed">
-                  {aVencerHoje.map(c => `${catById[c.categoria]?.emoji || "📋"} ${c.nome} — €${c.valor.toFixed(2)}`).join(" · ")}
+                  {aVencerHoje.map(c => `${c.emoji || catById[c.categoria]?.emoji || "📋"} ${c.nome} — €${fmt(c.valor)}`).join(" · ")}
                 </p>
               </div>
             </div>
@@ -460,7 +523,7 @@ export default function SecaoContas() {
               <div>
                 <p className="text-xs font-black text-amber-700">A vencer em breve</p>
                 <p className="text-[11px] text-amber-600 mt-0.5 leading-relaxed">
-                  {aVencerBreve.map(c => `${catById[c.categoria]?.emoji || "📋"} ${c.nome} (dia ${c.diaVencimento})`).join(" · ")}
+                  {aVencerBreve.map(c => `${c.emoji || catById[c.categoria]?.emoji || "📋"} ${c.nome} (dia ${c.diaVencimento})`).join(" · ")}
                 </p>
               </div>
             </div>
@@ -539,10 +602,15 @@ export default function SecaoContas() {
             <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center mb-4">
               <TrendingDown size={28} className="text-violet-300" />
             </div>
-            <p className="text-sm font-black text-slate-600">Sem contas registadas</p>
+            <p className="text-sm font-black text-slate-600">Começa a controlar as tuas despesas</p>
             <p className="text-[12px] text-slate-400 mt-1 leading-relaxed max-w-xs">
-              Adiciona as tuas despesas mensais fixas (renda, luz, água, net…) e controla o que já pagaste em cada mês.
+              Adiciona as tuas contas mensais fixas — renda, luz, água, internet — e sabe sempre quanto te falta pagar e quando.
             </p>
+            <div className="flex gap-2 mt-2 flex-wrap justify-center">
+              {["🔑 Renda", "💡 Luz", "💧 Água", "🌐 Net"].map(t => (
+                <span key={t} className="px-2.5 py-1 bg-violet-50 text-violet-600 text-[10px] font-black rounded-lg">{t}</span>
+              ))}
+            </div>
             <button
               onClick={() => setMostrarForm(true)}
               className="press mt-5 px-5 py-2.5 rounded-xl text-white text-xs font-black"
@@ -557,6 +625,7 @@ export default function SecaoContas() {
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-slate-50">
             {contasOrdenadas.map(c => {
               const cat      = catById[c.categoria] || catById.outro;
+              const icon     = c.emoji || cat.emoji;
               const pago     = !!pagosMes[c.id];
               const aberto   = expandido === c.id;
               const emEdicao = editando === c.id;
@@ -583,12 +652,12 @@ export default function SecaoContas() {
                         : <Circle size={22} className="text-slate-300" />}
                     </button>
 
-                    {/* Ícone categoria */}
+                    {/* Ícone */}
                     <div
                       className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base leading-none"
                       style={{ background: cat.bg }}
                     >
-                      {cat.emoji}
+                      {icon}
                     </div>
 
                     {/* Info */}
@@ -606,9 +675,14 @@ export default function SecaoContas() {
                     </div>
 
                     {/* Valor */}
-                    <p className={`text-[13px] font-black flex-shrink-0 ${pago ? "text-slate-400" : "text-slate-800"}`}>
-                      €{c.valor.toFixed(2)}
-                    </p>
+                    <div className="flex-shrink-0 text-right">
+                      <p className={`text-[13px] font-black ${pago ? "text-slate-400" : "text-slate-800"}`}>
+                        €{fmt(c.valor)}
+                      </p>
+                      <p className="text-[9px] text-slate-400 mt-0.5">
+                        €{Math.round(c.valor * 12).toLocaleString("pt-PT")}/ano
+                      </p>
+                    </div>
 
                     {/* Expandir */}
                     <button
@@ -632,6 +706,22 @@ export default function SecaoContas() {
                         />
                       ) : (
                         <>
+                          {/* Breakdown mensal / anual / diário */}
+                          <div className="grid grid-cols-3 gap-2 mb-3">
+                            <div className="bg-white rounded-xl p-2.5 text-center border border-slate-100">
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Mensal</p>
+                              <p className="text-sm font-black text-slate-800 mt-0.5">€{fmt(c.valor)}</p>
+                            </div>
+                            <div className="bg-violet-50 rounded-xl p-2.5 text-center border border-violet-100">
+                              <p className="text-[9px] font-black text-violet-400 uppercase tracking-wide">Anual</p>
+                              <p className="text-sm font-black text-violet-700 mt-0.5">€{Math.round(c.valor * 12).toLocaleString("pt-PT")}</p>
+                            </div>
+                            <div className="bg-white rounded-xl p-2.5 text-center border border-slate-100">
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Por dia</p>
+                              <p className="text-sm font-black text-slate-800 mt-0.5">€{(c.valor / 30.44).toFixed(2)}</p>
+                            </div>
+                          </div>
+
                           {/* Histórico de pagamentos */}
                           <HistoricoPagamentos id={c.id} pagamentos={pagamentos} />
 
@@ -686,6 +776,7 @@ export default function SecaoContas() {
               const pagosCat = contas.filter(c => c.categoria === cat.id && pagosMes[c.id]).reduce((s, c) => s + c.valor, 0);
               const pctCat   = totalMensal > 0 ? (totalCat / totalMensal) * 100 : 0;
               const nCat     = contas.filter(c => c.categoria === cat.id).length;
+              const anualCat = totalCat * 12;
 
               return (
                 <div key={cat.id} className="flex items-center gap-3 px-4 py-3">
@@ -695,20 +786,83 @@ export default function SecaoContas() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <p className="text-sm font-black text-slate-700">{cat.label}</p>
-                      <p className="text-sm font-black text-slate-800">€{totalCat.toFixed(2)}</p>
+                      <div className="text-right">
+                        <p className="text-sm font-black text-slate-800">€{fmt(totalCat)}<span className="text-[10px] text-slate-400 font-medium">/mês</span></p>
+                        <p className="text-[10px] text-slate-400">€{Math.round(anualCat).toLocaleString("pt-PT")}/ano</p>
+                      </div>
                     </div>
                     <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all" style={{ width: `${pctCat}%`, background: cat.cor }} />
                     </div>
                     <p className="text-[10px] text-slate-400 font-medium mt-0.5">
                       {nCat} conta{nCat !== 1 ? "s" : ""} · {Math.round(pctCat)}% do total
-                      {pagosCat > 0 && ` · €${pagosCat.toFixed(2)} pago${pagosCat !== 1 ? "s" : ""}`}
+                      {pagosCat > 0 && ` · €${fmt(pagosCat)} pago${pagosCat !== totalCat ? "s" : ""}`}
                     </p>
                   </div>
                 </div>
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* ── Poupa nas contas fixas ── */}
+      {(temComparavelOnline || temCreditoHabitacao) && (
+        <div className="px-4 mb-4 anim-up anim-up-3">
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">
+            💡 Poupa nas tuas contas
+          </p>
+          <div className="flex flex-col gap-3">
+            {temComparavelOnline && (
+              <a
+                href="https://www.comparaja.pt/?ref=poupeja"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 no-underline border border-amber-100"
+              >
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl bg-amber-50">
+                  ⚡
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-[13px] font-black text-slate-800">ComparaJá</p>
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">Grátis</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Compara tarifas de eletricidade, gás e internet. A maioria das famílias poupa <strong className="text-slate-700">+€300/ano</strong>.
+                  </p>
+                  <p className="text-[10px] font-black text-amber-600 mt-1 flex items-center gap-1">
+                    Comparar grátis <ExternalLink size={9} />
+                  </p>
+                </div>
+              </a>
+            )}
+            {temCreditoHabitacao && (
+              <a
+                href="https://www.doutorfinancas.pt/?ref=poupeja"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 no-underline border border-blue-100"
+              >
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl bg-blue-50">
+                  🏦
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-[13px] font-black text-slate-800">Doutor Finanças</p>
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">Negociação grátis</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Renegoceia o teu crédito habitação ou pessoal. Sem custos, sem compromissos.
+                  </p>
+                  <p className="text-[10px] font-black text-blue-600 mt-1 flex items-center gap-1">
+                    Simular grátis <ExternalLink size={9} />
+                  </p>
+                </div>
+              </a>
+            )}
+          </div>
+          <p className="text-[10px] text-slate-400 text-center mt-2">Serviços gratuitos e sem compromisso</p>
         </div>
       )}
 
