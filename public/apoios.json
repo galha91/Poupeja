@@ -34,6 +34,17 @@
       "novo": false
     },
     {
+      "id": "casa-eficiente-2026",
+      "titulo": "Casa Eficiente 2026",
+      "descricao": "Novo programa de subsídios para obras de eficiência energética em casa: isolamento, janelas, bombas de calor, painéis solares e ventilação. O maior apoio à renovação energética da história de Portugal — €150 milhões de orçamento.",
+      "valor": "Até 7.500€ por habitação",
+      "categoria": "energia",
+      "quemPode": ["Proprietários de habitação com mais de 15 anos", "As obras devem melhorar pelo menos 2 classes no certificado energético"],
+      "comoRequerer": "Candidatura online no portal do IAPMEI (iapmei.pt). Necessário: declaração de IRS, caderneta predial, pré-certificado energético e orçamentos de instaladores certificados.",
+      "link": "https://www.ihm.pt/pt/casa-eficiente",
+      "novo": true
+    },
+    {
       "id": "passe-sub23",
       "titulo": "Passe Sub-23 Gratuito",
       "descricao": "Passes de transporte público intermunicipais e metropolitanos completamente gratuitos para jovens até aos 23 anos.",
@@ -102,8 +113,8 @@
     {
       "id": "rsi",
       "titulo": "Rendimento Social de Inserção (RSI)",
-      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral.",
-      "valor": "Montante variável (base ≈ 230€/mês)",
+      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral. Nota: previsto ser substituído pela Prestação Social Única (PSU) a partir de agosto 2026.",
+      "valor": "Montante variável (base ≈ 537€ IAS 2026)",
       "categoria": "familia",
       "quemPode": ["Residentes em Portugal há mais de 1 ano", "Rendimento mensal abaixo do valor do RSI", "Situação de comprovada necessidade"],
       "comoRequerer": "Apresenta candidatura nos serviços de Segurança Social ou no balcão mais próximo.",
@@ -111,10 +122,21 @@
       "novo": false
     },
     {
+      "id": "prestacao-social-unica",
+      "titulo": "Prestação Social Única (PSU)",
+      "descricao": "Nova prestação aprovada em maio 2026 que vai juntar 13 apoios sociais não contributivos numa só prestação, simplificando o acesso. Substitui o RSI, subsídio social de desemprego e outros. Prevista para entrar em vigor em agosto de 2026.",
+      "valor": "Valor unificado (a definir na regulamentação)",
+      "categoria": "familia",
+      "quemPode": ["Pessoas com 18 ou mais anos residentes em Portugal", "Rendimento do agregado familiar abaixo do limiar definido", "Aguarda aprovação parlamentar final"],
+      "comoRequerer": "Ainda em fase de regulamentação. Acompanha as novidades em seg-social.pt. Quem já recebe RSI ou outros apoios abrangidos será migrado automaticamente.",
+      "link": "https://portugal.gov.pt/gc25/comunicacao/noticias/prestacao-social-unica-o-que-e-e-como-funciona",
+      "novo": true
+    },
+    {
       "id": "csi",
       "titulo": "Complemento Solidário para Idosos (CSI)",
-      "descricao": "Apoio mensal a idosos com 66 ou mais anos com rendimentos muito baixos, para cobrir despesas básicas e de saúde.",
-      "valor": "Até ≈ 265€/mês",
+      "descricao": "Apoio mensal a idosos com 66 ou mais anos com rendimentos muito baixos, para cobrir despesas básicas e de saúde. Valor atualizado com o IAS de 2026.",
+      "valor": "Até ≈ 670€/mês (2026)",
       "categoria": "familia",
       "quemPode": ["Pensionistas com 66 ou mais anos", "Rendimento mensal abaixo do limiar definido", "Residência legal em Portugal"],
       "comoRequerer": "Candidatura na Segurança Social Direta ou num balcão do Centro Distrital.",
@@ -124,13 +146,13 @@
     {
       "id": "irs-jovem",
       "titulo": "IRS Jovem",
-      "descricao": "Isenção parcial de IRS sobre rendimentos do trabalho para jovens nos primeiros anos de carreira. No 1.º ano, isenção de 100% (até limite).",
-      "valor": "100% no 1.º ano, 75% no 2.º, 50% no 3.º e 4.º, 25% do 5.º ao 7.º",
+      "descricao": "Isenção parcial de IRS sobre rendimentos do trabalho para jovens. Em 2026 foi alargado para 10 anos e já não exige conclusão de um ciclo de estudos. Rendimento elegível limitado a 28.737,50€/ano.",
+      "valor": "100% (1.º ano) · 75% (2.º–4.º) · 50% (5.º–7.º) · 25% (8.º–10.º)",
       "categoria": "jovens",
-      "quemPode": ["Trabalhadores com até 35 anos (inclusive)", "Primeiros rendimentos de categoria A ou B", "Com habilitações de nível secundário ou superior"],
-      "comoRequerer": "Indica o benefício na declaração de IRS. O benefício pode ser aplicado já no desconto mensal de IRS, pedindo à entidade empregadora.",
+      "quemPode": ["Trabalhadores com até 35 anos (inclusive)", "Primeiros rendimentos de categoria A ou B", "Não exige habilitações académicas específicas (alteração 2026)"],
+      "comoRequerer": "Podes usar o IRS Automático (novo em 2026) ou declarar manualmente no Modelo 3. O benefício pode ser aplicado no desconto mensal pedindo à entidade empregadora.",
       "link": "https://eportugal.gov.pt/servicos/pedir-o-beneficio-irs-jovem",
-      "novo": false
+      "novo": true
     },
     {
       "id": "bolsa-acao-social",
