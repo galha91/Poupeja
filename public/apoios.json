@@ -1,0 +1,191 @@
+{
+  "atualizado": "2026-06-16",
+  "categorias": [
+    { "id": "todos",       "nome": "Todos" },
+    { "id": "energia",     "nome": "Energia",     "cor": "#059669", "corBg": "#ecfdf5", "corBorda": "#a7f3d0" },
+    { "id": "transportes", "nome": "Transportes", "cor": "#2563eb", "corBg": "#eff6ff", "corBorda": "#bfdbfe" },
+    { "id": "habitacao",   "nome": "Habitação",   "cor": "#d97706", "corBg": "#fffbeb", "corBorda": "#fde68a" },
+    { "id": "familia",     "nome": "Família",     "cor": "#db2777", "corBg": "#fdf2f8", "corBorda": "#fbcfe8" },
+    { "id": "jovens",      "nome": "Jovens",      "cor": "#7c3aed", "corBg": "#f5f3ff", "corBorda": "#ddd6fe" },
+    { "id": "saude",       "nome": "Saúde",       "cor": "#0891b2", "corBg": "#ecfeff", "corBorda": "#a5f3fc" },
+    { "id": "emprego",     "nome": "Emprego",     "cor": "#475569", "corBg": "#f8fafc", "corBorda": "#cbd5e1" }
+  ],
+  "apoios": [
+    {
+      "id": "tarifa-social-eletricidade",
+      "titulo": "Tarifa Social de Eletricidade",
+      "descricao": "Desconto automático na fatura de luz. Dependendo do escalão, pode chegar a 77,5% de desconto no termo fixo e no termo variável.",
+      "valor": "Até 77,5% de desconto",
+      "categoria": "energia",
+      "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%", "Pensionistas com rendimentos baixos"],
+      "comoRequerer": "O desconto é aplicado automaticamente se já receberes uma prestação social. Caso contrário, pede ao teu comercializador de energia.",
+      "link": "https://www.erse.pt/consumidores/tarifas-e-precos/tarifa-social/",
+      "novo": false
+    },
+    {
+      "id": "tarifa-social-gas",
+      "titulo": "Tarifa Social de Gás Natural",
+      "descricao": "Desconto na fatura de gás natural para famílias com baixos rendimentos, com condições semelhantes à tarifa social de eletricidade.",
+      "valor": "Até 30,3% de desconto",
+      "categoria": "energia",
+      "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%"],
+      "comoRequerer": "Contacta o teu comercializador de gás ou verifica no Portal ePortugal.gov.pt.",
+      "link": "https://www.erse.pt/consumidores/tarifas-e-precos/tarifa-social/tarifa-social-gas-natural/",
+      "novo": false
+    },
+    {
+      "id": "passe-sub23",
+      "titulo": "Passe Sub-23 Gratuito",
+      "descricao": "Passes de transporte público intermunicipais e metropolitanos completamente gratuitos para jovens até aos 23 anos.",
+      "valor": "Gratuito",
+      "categoria": "transportes",
+      "quemPode": ["Jovens com idade até 23 anos (inclusive)"],
+      "comoRequerer": "Solicita o passe gratuito nos balcões das operadoras de transporte (ex: CP, Carris, Metro) com documento de identificação.",
+      "link": "https://www.imtt.pt/",
+      "novo": false
+    },
+    {
+      "id": "passe-senior",
+      "titulo": "Passe Sénior Gratuito",
+      "descricao": "Transportes públicos rodoviários, ferroviários e fluviais gratuitos para pessoas a partir dos 65 anos em todo o território nacional.",
+      "valor": "Gratuito",
+      "categoria": "transportes",
+      "quemPode": ["Pessoas com 65 ou mais anos de idade"],
+      "comoRequerer": "Apresenta o Cartão do Cidadão ou o Cartão Sénior na bilheteira das operadoras de transporte.",
+      "link": "https://www.imtt.pt/",
+      "novo": false
+    },
+    {
+      "id": "passe-intermodal",
+      "titulo": "Passe Intermodal 40€ / Navegante",
+      "descricao": "Passe mensal de transporte ilimitado nas áreas metropolitanas de Lisboa e Porto por apenas 40€ (ou menos com descontos).",
+      "valor": "A partir de 40€/mês",
+      "categoria": "transportes",
+      "quemPode": ["Qualquer residente nas áreas metropolitanas de Lisboa e Porto"],
+      "comoRequerer": "Carrega o passe no Cartão do Cidadão ou num cartão Navegante/Andante nos balcões das operadoras.",
+      "link": "https://www.navegante.pt/",
+      "novo": false
+    },
+    {
+      "id": "porta-65-jovem",
+      "titulo": "Porta 65 — Apoio à Renda",
+      "descricao": "Subsídio mensal para jovens arrendatários com rendimentos baixos ou médios. Cobre parte da renda de habitação.",
+      "valor": "Comparticipação parcial da renda",
+      "categoria": "habitacao",
+      "quemPode": ["Jovens de 18 a 35 anos (inclusive)", "Rendimento anual bruto dentro do limite definido", "Arrendamento de habitação própria"],
+      "comoRequerer": "Candidatura anual no Portal da Habitação (portaldahabitacao.pt) durante o período de candidaturas.",
+      "link": "https://www.portaldahabitacao.pt/porta65jovem",
+      "novo": false
+    },
+    {
+      "id": "imt-isenção-jovem",
+      "titulo": "Isenção de IMT e IMI para Jovens",
+      "descricao": "Isenção total do IMT (Imposto Municipal sobre Transmissões) e do IMI por 3 anos na compra da 1.ª habitação para jovens até 35 anos.",
+      "valor": "Isenção total de IMT + 3 anos sem IMI",
+      "categoria": "habitacao",
+      "quemPode": ["Jovens até 35 anos (inclusive)", "Compra de 1.ª habitação própria e permanente", "Valor do imóvel ≤ 316.772€"],
+      "comoRequerer": "A isenção de IMT é solicitada no ato de escritura. A isenção de IMI é automática após o registo da habitação permanente.",
+      "link": "https://eportugal.gov.pt/",
+      "novo": false
+    },
+    {
+      "id": "abono-familia",
+      "titulo": "Abono de Família",
+      "descricao": "Prestação mensal para ajudar as famílias com os encargos de educação e sustento de crianças e jovens a cargo.",
+      "valor": "Variável consoante escalão e idade",
+      "categoria": "familia",
+      "quemPode": ["Crianças e jovens até 24 anos dependentes", "Família com rendimento abaixo do limite do escalão"],
+      "comoRequerer": "Pede na Segurança Social Direta (seg-social.pt) ou num balcão do Centro Distrital de Segurança Social.",
+      "link": "https://www.seg-social.pt/abono-de-familia-para-criancas-e-jovens",
+      "novo": false
+    },
+    {
+      "id": "rsi",
+      "titulo": "Rendimento Social de Inserção (RSI)",
+      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral.",
+      "valor": "Montante variável (base ≈ 230€/mês)",
+      "categoria": "familia",
+      "quemPode": ["Residentes em Portugal há mais de 1 ano", "Rendimento mensal abaixo do valor do RSI", "Situação de comprovada necessidade"],
+      "comoRequerer": "Apresenta candidatura nos serviços de Segurança Social ou no balcão mais próximo.",
+      "link": "https://www.seg-social.pt/rendimento-social-de-insercao",
+      "novo": false
+    },
+    {
+      "id": "csi",
+      "titulo": "Complemento Solidário para Idosos (CSI)",
+      "descricao": "Apoio mensal a idosos com 66 ou mais anos com rendimentos muito baixos, para cobrir despesas básicas e de saúde.",
+      "valor": "Até ≈ 265€/mês",
+      "categoria": "familia",
+      "quemPode": ["Pensionistas com 66 ou mais anos", "Rendimento mensal abaixo do limiar definido", "Residência legal em Portugal"],
+      "comoRequerer": "Candidatura na Segurança Social Direta ou num balcão do Centro Distrital.",
+      "link": "https://www.seg-social.pt/complemento-solidario-para-idosos",
+      "novo": false
+    },
+    {
+      "id": "irs-jovem",
+      "titulo": "IRS Jovem",
+      "descricao": "Isenção parcial de IRS sobre rendimentos do trabalho para jovens nos primeiros anos de carreira. No 1.º ano, isenção de 100% (até limite).",
+      "valor": "100% no 1.º ano, 75% no 2.º, 50% no 3.º e 4.º, 25% do 5.º ao 7.º",
+      "categoria": "jovens",
+      "quemPode": ["Trabalhadores com até 35 anos (inclusive)", "Primeiros rendimentos de categoria A ou B", "Com habilitações de nível secundário ou superior"],
+      "comoRequerer": "Indica o benefício na declaração de IRS. O benefício pode ser aplicado já no desconto mensal de IRS, pedindo à entidade empregadora.",
+      "link": "https://eportugal.gov.pt/servicos/pedir-o-beneficio-irs-jovem",
+      "novo": false
+    },
+    {
+      "id": "bolsa-acao-social",
+      "titulo": "Bolsa de Ação Social Escolar",
+      "descricao": "Apoio financeiro direto a estudantes do ensino superior com dificuldades económicas, cobrindo propinas, alojamento e outras despesas.",
+      "valor": "Até ≈ 8.000€/ano",
+      "categoria": "jovens",
+      "quemPode": ["Estudantes matriculados no ensino superior público ou privado", "Rendimento familiar per capita abaixo do limite"],
+      "comoRequerer": "Candidatura anual nos Serviços de Ação Social da instituição de ensino, normalmente em setembro/outubro.",
+      "link": "https://www.dges.gov.pt/pt/pagina/bolsas-e-apoios",
+      "novo": false
+    },
+    {
+      "id": "isencao-taxas-moderadoras",
+      "titulo": "Isenção de Taxas Moderadoras",
+      "descricao": "Isenção do pagamento de taxas no SNS (urgências, consultas, análises) para grupos específicos.",
+      "valor": "Isenção total das taxas",
+      "categoria": "saude",
+      "quemPode": ["Crianças e grávidas", "Pensionistas com baixos rendimentos", "Desempregados", "Beneficiários de RSI ou CSI", "Doenças crónicas e incapacidade ≥ 60%"],
+      "comoRequerer": "Apresenta documentação comprovativa no ato de atendimento no SNS. Podes também verificar o teu estado no Portal do Utente (mysns.min-saude.pt).",
+      "link": "https://mysns.min-saude.pt/",
+      "novo": false
+    },
+    {
+      "id": "subsidio-doenca",
+      "titulo": "Subsídio de Doença",
+      "descricao": "Compensação financeira por incapacidade temporária para o trabalho devido a doença ou acidente, paga pela Segurança Social.",
+      "valor": "55% a 100% do rendimento de referência",
+      "categoria": "saude",
+      "quemPode": ["Trabalhadores por conta de outrem com baixa médica", "Trabalhadores independentes (com contribuições em dia)"],
+      "comoRequerer": "O médico emite a declaração de incapacidade (MCDTs) e a entidade empregadora trata do processo automaticamente.",
+      "link": "https://www.seg-social.pt/subsidio-de-doenca",
+      "novo": false
+    },
+    {
+      "id": "subsidio-desemprego",
+      "titulo": "Subsídio de Desemprego",
+      "descricao": "Apoio financeiro mensal para trabalhadores que ficaram desempregados involuntariamente, com prazo variável conforme a idade e tempo de desconto.",
+      "valor": "65% do salário de referência (mínimo 1 IAS)",
+      "categoria": "emprego",
+      "quemPode": ["Desempregados involuntários (despedimento, fim de contrato)", "Mínimo de 180 dias de descontos nos últimos 12 meses", "Inscritos no IEFP como candidatos a emprego"],
+      "comoRequerer": "Candidatura na Segurança Social Direta ou balcão do IEFP nos 90 dias após a cessação do contrato.",
+      "link": "https://www.seg-social.pt/subsidio-de-desemprego",
+      "novo": false
+    },
+    {
+      "id": "apoios-emprego-jovem",
+      "titulo": "Estímulo 2025 — Emprego Jovem",
+      "descricao": "Apoios financeiros às empresas que contratem jovens à procura do primeiro emprego ou de nova oportunidade, com isenções de TSU.",
+      "valor": "Isenção parcial ou total da TSU",
+      "categoria": "emprego",
+      "quemPode": ["Jovens de 18 a 30 anos à procura de emprego", "Inscritos no IEFP há mais de 3 meses"],
+      "comoRequerer": "O empregador candidata-se ao programa no IEFP. Como candidato a emprego, inscreve-te no Centro de Emprego mais próximo.",
+      "link": "https://www.iefp.pt/jovens",
+      "novo": false
+    }
+  ]
+}

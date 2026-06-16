@@ -5,6 +5,7 @@ import SecaoMobilidade from "../SecaoMobilidade";
 import SecaoTaloes from "../SecaoTaloes";
 import SecaoListaCompras from "../SecaoListaCompras";
 import SecaoDefinicoes from "../SecaoDefinicoes";
+import SecaoApoios from "../SecaoApoios";
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
@@ -15,7 +16,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
-  ExternalLink, TrendingDown, Lightbulb,
+  ExternalLink, TrendingDown, Lightbulb, Landmark,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -27,6 +28,7 @@ const NAV = [
   { id: "lojas",      label: "Lojas",      icon: Store },
   { id: "mobilidade", label: "Mobilidade", icon: Fuel },
   { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
+  { id: "apoios",     label: "Apoios",     icon: Landmark },
 ];
 const NAV_IDS = NAV.map(n => n.id);
 
@@ -36,6 +38,7 @@ const TITULOS = {
   lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
+  apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
 };
@@ -129,6 +132,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
     { icon: Tag,        label: "Folhetos",           desc: "Todos os supermercados num só sítio",    bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "mercados" },
     { icon: Fuel,       label: "Combustíveis e EV",  desc: "Preços reais e postos perto de ti",     bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)", tab: "mobilidade" },
     { icon: Store,      label: "Lojas e promoções",  desc: "Moda, eletrónica e desporto",           bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",  tab: "lojas" },
+    { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e subsídios a que tens direito", bg: "from-blue-700 to-blue-500", shadow: "rgba(29,78,216,0.3)",  tab: "apoios" },
   ];
 
   const SHORTCUTS = [
@@ -138,6 +142,7 @@ function EcraInicio({ user, setTab, goGarantias }) {
     { icon: ShieldCheck, label: "Garantias",   color: "text-emerald-600", bg: "bg-emerald-50",  action: goGarantias },
     { icon: Fuel,        label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",   tab: "mobilidade" },
     { icon: Battery,     label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50",  tab: "mobilidade" },
+    { icon: Landmark,    label: "Apoios",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "apoios" },
   ];
 
   return (
@@ -989,6 +994,7 @@ export default function PoupeJa() {
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
+                {tab === "apoios"     && <SecaoApoios />}
                 {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
