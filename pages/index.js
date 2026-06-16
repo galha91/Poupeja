@@ -104,7 +104,8 @@ function BannerInstalar() {
     if (typeof window === "undefined") return;
     // Já instalada (standalone) ou utilizador já dispensou
     if (window.matchMedia("(display-mode: standalone)").matches) return;
-    if (localStorage.getItem("poupeja_instalar_dispensado")) return;
+    const dispensado = localStorage.getItem("poupeja_instalar_dispensado");
+    if (dispensado && Date.now() - Number(dispensado) < 7 * 24 * 60 * 60 * 1000) return;
 
     const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone;
 
@@ -122,7 +123,7 @@ function BannerInstalar() {
   }, []);
 
   function dispensar() {
-    localStorage.setItem("poupeja_instalar_dispensado", "1");
+    localStorage.setItem("poupeja_instalar_dispensado", String(Date.now()));
     setModo("oculto");
   }
 
@@ -130,7 +131,7 @@ function BannerInstalar() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") localStorage.setItem("poupeja_instalar_dispensado", "1");
+    if (outcome === "accepted") localStorage.setItem("poupeja_instalar_dispensado", String(Date.now()));
     setModo("oculto");
   }
 
