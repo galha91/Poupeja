@@ -487,7 +487,7 @@ function CartaoDiario({ setTab }) {
 
         {/* Folheto */}
         <button
-          onClick={() => setTab("mercados")}
+          onClick={() => folheto?.url ? window.open(folheto.url, "_blank", "noopener") : setTab("mercados")}
           className="press rounded-2xl p-3 flex flex-col items-start text-left"
           style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)" }}
         >
