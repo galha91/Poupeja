@@ -353,6 +353,176 @@ function BannerInstalar({ onAbrirModal, onInstalarAndroid, modo }) {
   );
 }
 
+/* ─── Dicas diárias (índice = dayOfYear % 30) ─── */
+const DICAS_DIA = [
+  { emoji: "🛒", titulo: "Compara antes de comprar", texto: "Vê os folhetos de todos os supermercados antes de sair de casa — podes poupar até 30% na mesma lista." },
+  { emoji: "⛽", titulo: "Abastece antes de quarta", texto: "Os preços dos combustíveis sobem frequentemente às quartas. Antecipar o abastecimento poupa alguns cêntimos por litro." },
+  { emoji: "💳", titulo: "Usa cartão de fidelização", texto: "Programas de pontos do Continente, Pingo Doce e Lidl Plus acumulam descontos reais — vale a pena ativar." },
+  { emoji: "🥦", titulo: "Compra fruta e legumes da época", texto: "Produtos sazonais são até 50% mais baratos e chegam ao mercado no seu melhor estado." },
+  { emoji: "🏷️", titulo: "Marcas próprias poupam muito", texto: "As marcas do distribuidor têm qualidade similar às de referência a 20–40% menos." },
+  { emoji: "📋", titulo: "Lista de compras", texto: "Ir ao supermercado com lista reduz as compras por impulso em até 40%. Usa a lista aqui no PoupeJá." },
+  { emoji: "🧊", titulo: "Congela o pão", texto: "Congela pão fatiado e descongela só o que precisas. Cortas o desperdício e as idas ao supermercado." },
+  { emoji: "💡", titulo: "Desliga o standby", texto: "Equipamentos em standby podem custar até €50/ano. Um filtro com interruptor resolve o problema." },
+  { emoji: "🚿", titulo: "Duche em vez de banho", texto: "Um duche de 5 min usa ~35L; um banho usa ~150L. A diferença pode valer €120/ano na água." },
+  { emoji: "📱", titulo: "Compara tarifas de telemóvel", texto: "O mercado de telecomunicações mudou muito. Comparar tarifas pode poupar-te €20+ por mês." },
+  { emoji: "🏠", titulo: "Renegocia o crédito habitação", texto: "Com a Euribor a baixar, simula a transferência do crédito. A diferença pode ser centenas de euros por ano." },
+  { emoji: "🔒", titulo: "Seguro auto: compara ao renovar", texto: "Mudar de seguradora ao renovar poupa frequentemente 20–30% na apólice — vale sempre a pena comparar." },
+  { emoji: "🎵", titulo: "Audita as tuas subscrições", texto: "A maioria das pessoas paga subscrições que não usa. Revê tudo uma vez por mês e cancela o que não vale." },
+  { emoji: "☀️", titulo: "Painéis solares: simula já", texto: "Painéis solares amortizam em 7–10 anos e reduzem a fatura de eletricidade em 60–80%." },
+  { emoji: "🛁", titulo: "Repara torneiras a pingar", texto: "Uma torneira a pingar desperdiça 20L/dia — até €15/mês na fatura de água. Vale uma visita ao canalizador." },
+  { emoji: "🚗", titulo: "Calibra os pneus mensalmente", texto: "Pneus murchos aumentam o consumo em 3–4%. Uma visita rápida ao posto poupa combustível." },
+  { emoji: "🍳", titulo: "Usa panela de pressão", texto: "Reduz o tempo de cozimento até 70% — e a conta da eletricidade. Ideal para leguminosas e guisados." },
+  { emoji: "🌡️", titulo: "Termostato a 19 °C", texto: "Por cada grau extra no aquecimento, a conta de gás sobe ~7%. Um simples ajuste faz diferença no final do mês." },
+  { emoji: "📦", titulo: "Compra a granel o que usas muito", texto: "Papel higiénico, detergente, café, arroz — em grandes quantidades poupas até 40% por unidade." },
+  { emoji: "💧", titulo: "Água da torneira é segura", texto: "Em Portugal a água da torneira é tratada e controlada. Usar garrafa filtrante poupa €30+/mês vs. garrafas." },
+  { emoji: "🔄", titulo: "Segunda mão primeiro", texto: "Roupa, livros, eletrodomésticos — OLX e Vinted têm tudo a preços imbatíveis. Experimenta antes de comprar novo." },
+  { emoji: "📉", titulo: "Pede revisão do spread", texto: "Se tens crédito habitação há mais de 3 anos, pede ao banco uma revisão das condições. Pouparás na prestação." },
+  { emoji: "🛍️", titulo: "Cashback em compras online", texto: "Sites de cashback devolvem uma percentagem nas lojas onde já compras — sem mudar os teus hábitos." },
+  { emoji: "🥩", titulo: "Congela carne em promoção", texto: "Quando encontrares carne em promoção, compra em quantidade e congela em porções. Poupa e evitas desperdício." },
+  { emoji: "🔋", titulo: "Carrega dispositivos de noite", texto: "Nas tarifas bihorárias, a eletricidade é mais barata fora do horário de ponta. Programa os carregamentos à noite." },
+  { emoji: "📊", titulo: "Regista o que gastas", texto: "Quem regista as despesas mensais poupa em média 18% mais. Usa as Contas Fixas aqui no PoupeJá." },
+  { emoji: "🎭", titulo: "Entretenimento gratuito", texto: "Portugal tem museus, jardins, trilhos e mercados com entrada livre. Há sempre algo para fazer sem gastar." },
+  { emoji: "🏋️", titulo: "Ginásio: compara preços", texto: "Ginásios low-cost e municipais custam um terço dos ginásios premium — com equipamento equivalente." },
+  { emoji: "🍕", titulo: "Cozinha em lote ao domingo", texto: "Preparar refeições para a semana ao domingo evita take-away durante a semana e poupa tempo e dinheiro." },
+  { emoji: "🔌", titulo: "Muda de comercializador de energia", texto: "No mercado liberalizado podes mudar de fornecedor de eletricidade e gás. Compara tarifas e poupa por ano." },
+];
+
+function calcStreak() {
+  try {
+    const raw = JSON.parse(localStorage.getItem("poupeja_visita_diaria") || "null");
+    const hoje = new Date().toISOString().slice(0, 10);
+    if (!raw) {
+      localStorage.setItem("poupeja_visita_diaria", JSON.stringify({ data: hoje, streak: 1 }));
+      return 1;
+    }
+    if (raw.data === hoje) return raw.streak;
+    const ontem = new Date(); ontem.setDate(ontem.getDate() - 1);
+    const streak = raw.data === ontem.toISOString().slice(0, 10) ? raw.streak + 1 : 1;
+    localStorage.setItem("poupeja_visita_diaria", JSON.stringify({ data: hoje, streak }));
+    return streak;
+  } catch { return 1; }
+}
+
+function dicaHoje() {
+  const d = new Date();
+  const dia = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+  return DICAS_DIA[dia % DICAS_DIA.length];
+}
+
+/* ─── Cartão Diário ─── */
+function CartaoDiario({ setTab }) {
+  const [streak, setStreak]   = useState(1);
+  const [gas95, setGas95]     = useState(null);
+  const [folheto, setFolheto] = useState(null);
+  const [dicaAberta, setDicaAberta] = useState(false);
+
+  useEffect(() => {
+    setStreak(calcStreak());
+
+    fetch("/api/combustiveis")
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success || !data.dados) return;
+        const g = data.dados.find(d => d.tipo === "Gasolina 95");
+        if (g) setGas95(g);
+      })
+      .catch(() => {});
+
+    fetch("/api/folhetos")
+      .then(r => r.json())
+      .then(data => {
+        const lista = data.folhetos || [];
+        if (!lista.length) return;
+        const d = new Date();
+        const dia = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+        const destacados = lista.filter(f => f.destaque);
+        const pool = destacados.length ? destacados : lista;
+        setFolheto(pool[dia % pool.length]);
+      })
+      .catch(() => {});
+  }, []);
+
+  const dica = dicaHoje();
+  const hoje = new Date().toLocaleDateString("pt-PT", { weekday: "short", day: "numeric", month: "long" });
+
+  return (
+    <div
+      className="mx-4 mt-4 rounded-3xl overflow-hidden anim-up anim-up-1"
+      style={{ background: "linear-gradient(135deg,#0c1829,#1a2744)", boxShadow: "0 20px 48px -14px rgba(12,24,41,0.5)" }}
+    >
+      {/* Cabeçalho */}
+      <div className="px-4 pt-4 pb-3 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Resumo do dia</p>
+          <p className="text-[13px] font-black text-white capitalize">{hoje}</p>
+        </div>
+        {streak >= 2 && (
+          <div
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+            style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.25)" }}
+          >
+            <span className="text-sm">🔥</span>
+            <span className="text-[11px] font-black text-amber-400">{streak} dias seguidos</span>
+          </div>
+        )}
+      </div>
+
+      {/* 3 mini-cards */}
+      <div className="p-3 grid grid-cols-3 gap-2">
+        {/* Combustível */}
+        <button
+          onClick={() => setTab("mobilidade")}
+          className="press rounded-2xl p-3 flex flex-col items-start text-left"
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <span className="text-lg mb-1.5">⛽</span>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Gasolina 95</p>
+          {gas95 ? (
+            <p className="text-[16px] font-black text-white mt-0.5 leading-none">{gas95.preco.toFixed(3)}€</p>
+          ) : (
+            <div className="h-5 w-14 rounded-lg mt-0.5 animate-pulse" style={{ background: "rgba(255,255,255,0.1)" }} />
+          )}
+          <p className="text-[9px] text-slate-600 mt-0.5">mín. nacional</p>
+        </button>
+
+        {/* Folheto */}
+        <button
+          onClick={() => setTab("mercados")}
+          className="press rounded-2xl p-3 flex flex-col items-start text-left"
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <span className="text-lg mb-1.5">🛒</span>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Folheto</p>
+          <p className="text-[13px] font-black text-white mt-0.5 leading-tight" style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+            {folheto?.loja || "—"}
+          </p>
+          <p className="text-[9px] text-slate-600 mt-0.5">{folheto?.validade || "em vigor"}</p>
+        </button>
+
+        {/* Dica */}
+        <button
+          onClick={() => setDicaAberta(v => !v)}
+          className="press rounded-2xl p-3 flex flex-col items-start text-left"
+          style={{ background: dicaAberta ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.06)", border: dicaAberta ? "1px solid rgba(251,191,36,0.25)" : "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <span className="text-lg mb-1.5">{dica.emoji}</span>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Dica</p>
+          <p className="text-[11px] font-black text-white mt-0.5 leading-snug" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+            {dica.titulo}
+          </p>
+        </button>
+      </div>
+
+      {/* Expansão da dica */}
+      {dicaAberta && (
+        <div className="mx-3 mb-3 px-3.5 py-3 rounded-2xl" style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)" }}>
+          <p className="text-[12px] text-slate-300 leading-relaxed">{dica.texto}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Ecrã Início ─── */
 function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, onInstalarAndroid }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
@@ -479,7 +649,8 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
         </div>
       </div>
 
-      {/* Banner instalar app */}
+      {/* Cartão diário: combustível, folheto, dica + streak */}
+      <CartaoDiario setTab={setTab} />
 
       {/* Garantias highlight */}
       <div className="px-4 mt-4 anim-up anim-up-1">
@@ -591,26 +762,6 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
         </div>
       </div>
 
-      {/* Dica */}
-      <div className="px-4 mt-5 mb-2 anim-up anim-up-3">
-        <button
-          onClick={() => setTab("mercados")}
-          className="press w-full text-left rounded-2xl p-4 flex gap-3 items-start"
-          style={{ background: "linear-gradient(135deg,#fffbeb,#fef3c7)", border: "1.5px solid #fde68a" }}
-        >
-          <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Star size={17} className="text-amber-500" />
-          </div>
-          <div className="flex-1">
-            <p className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Dica do dia</p>
-            <p className="text-sm font-black text-slate-800 mt-0.5">Vê os folhetos antes de ir às compras</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Vê as promoções de todos os supermercados e poupa mais.</p>
-            <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-amber-600">
-              Ver folhetos <ChevronRight size={11} />
-            </span>
-          </div>
-        </button>
-      </div>
 
     </div>
   );
