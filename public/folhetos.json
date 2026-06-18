@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-06-15",
+  "atualizadoEm": "2026-06-18",
   "folhetos": [
     {
       "id": 4,
@@ -15,7 +15,7 @@
       "id": 6,
       "loja": "Auchan",
       "titulo": "Folheto desta semana",
-      "validade": "11–17 jun",
+      "validade": "18–24 jun",
       "url": "https://www.auchan.pt/pt/folhetos/",
       "capa": "",
       "categorias": ["Promoções"],
@@ -65,7 +65,7 @@
       "id": 5,
       "loja": "Intermarché",
       "titulo": "Folheto desta semana",
-      "validade": "11–17 jun",
+      "validade": "18–24 jun",
       "url": "https://www.intermarche.pt/folhetos/",
       "capa": "",
       "categorias": ["Promoções"],
@@ -75,7 +75,7 @@
       "id": 3,
       "loja": "Lidl",
       "titulo": "Folheto desta semana",
-      "validade": "15–21 jun",
+      "validade": "16–22 jun",
       "url": "https://www.lidl.pt/c/folhetos/s10020672",
       "capa": "",
       "categorias": ["Promoções"],
