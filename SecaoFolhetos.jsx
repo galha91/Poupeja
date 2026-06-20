@@ -12,14 +12,11 @@ const LOJA_DOMINIOS = {
   "Pingo Doce":      "pingodoce.pt",
   Lidl:              "lidl.pt",
   Aldi:              "aldi.pt",
+  "Intermarché":     "intermarche.pt",
   Auchan:            "auchan.pt",
+  "E.Leclerc":       "e-leclerc.pt",
   "El Corte Inglés": "elcorteingles.pt",
   Froiz:             "froiz.pt",
-};
-const LOJA_LOCAL = {
-  "Continente":  "/logos/continente.svg",
-  "Intermarché": "/logos/intermarche.svg",
-  "E.Leclerc":   "/logos/eleclerc.svg",
 };
 const LOJA_TAGLINE = {
   Continente: "Folheto semanal",
@@ -36,10 +33,8 @@ const LOJA_TAGLINE = {
 function LogoLoja({ loja, size }) {
   const s = size || 56;
   const cor = LOJA_CORES[loja] || "#888";
-  const localSvg = LOJA_LOCAL[loja];
   const dominio = LOJA_DOMINIOS[loja];
   const [nivel, setNivel] = useState(0);
-  const [localFalhou, setLocalFalhou] = useState(false);
   const iniciais = loja.slice(0, 2).toUpperCase();
   const fontes = dominio ? [
     `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
@@ -51,14 +46,7 @@ function LogoLoja({ loja, size }) {
       className="rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0"
       style={{ width: s, height: s, background: "white", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
     >
-      {localSvg && !localFalhou ? (
-        <img
-          src={localSvg}
-          alt={loja}
-          onError={() => setLocalFalhou(true)}
-          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }}
-        />
-      ) : nivel < fontes.length ? (
+      {nivel < fontes.length ? (
         <img
           src={fontes[nivel]}
           alt={loja}
