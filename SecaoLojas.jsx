@@ -73,24 +73,78 @@ const CAT_CONFIG = {
   desporto:  { label: "Desporto",  icon: Dumbbell,   grad: "from-emerald-600 to-teal-500",    css: "linear-gradient(135deg,#059669,#14b8a6)", shadow: "rgba(5,150,105,0.35)",   count: LOJAS.desporto.length },
 };
 
+const LOJA_LOGOS = {
+  // Moda
+  "Benetton":       "/logos/benetton.svg",
+  "Bershka":        "/logos/bershka.svg",
+  "C&A":            "/logos/canda.svg",
+  "Calvin Klein":   "/logos/calvinklein.svg",
+  "Calzedonia":     "/logos/calzedonia.svg",
+  "H&M":            "/logos/hm.svg",
+  "Lanidor":        "/logos/lanidor.svg",
+  "Lefties":        "/logos/lefties.svg",
+  "Levi's":         "/logos/levis.svg",
+  "Mango":          "/logos/mango.svg",
+  "Massimo Dutti":  "/logos/massimodutti.svg",
+  "MO":             "/logos/mo.svg",
+  "Parfois":        "/logos/parfois.svg",
+  "Primark":        "/logos/primark.svg",
+  "Pull&Bear":      "/logos/pullbear.svg",
+  "Quebramar":      "/logos/quebramar.svg",
+  "Sacoor":         "/logos/sacoor.svg",
+  "Salsa":          "/logos/salsa.svg",
+  "Springfield":    "/logos/springfield.svg",
+  "Stradivarius":   "/logos/stradivarius.svg",
+  "Tiffosi":        "/logos/tiffosi.svg",
+  "Tommy Hilfiger": "/logos/tommyhilfiger.svg",
+  "Women'secret":   "/logos/womensecret.svg",
+  "Zara":           "/logos/zara.svg",
+  "Zippy":          "/logos/zippy.svg",
+  // Eletrónica
+  "Amazon":         "/logos/amazon.svg",
+  "Apple":          "/logos/apple.svg",
+  "Auchan":         "/logos/auchan.svg",
+  "Darty":          "/logos/darty.svg",
+  "El Corte Inglés":"/logos/elcorteingles.svg",
+  "Fnac":           "/logos/fnac.svg",
+  "Globaldata":     "/logos/globaldata.svg",
+  "PC Diga":        "/logos/pcdiga.svg",
+  "PCComponentes":  "/logos/pccomponentes.svg",
+  "Radio Popular":  "/logos/radiopopular.svg",
+  "Samsung":        "/logos/samsung.svg",
+  "Techinn":        "/logos/techinn.svg",
+  "Worten":         "/logos/worten.svg",
+  "Xiaomi":         "/logos/xiaomi.svg",
+  // Desporto
+  "Adidas":         "/logos/adidas.svg",
+  "Decathlon":      "/logos/decathlon.svg",
+  "Foot Locker":    "/logos/footlocker.svg",
+  "JD Sports":      "/logos/jdsports.svg",
+  "New Balance":    "/logos/newbalance.svg",
+  "Nike":           "/logos/nike.svg",
+  "Puma":           "/logos/puma.svg",
+  "Reebok":         "/logos/reebok.svg",
+  "Sport Zone":     "/logos/sportzone.svg",
+  "Sportsdirect":   "/logos/sportsdirect.svg",
+  "Tradeinn":       "/logos/tradeinn.svg",
+};
+
 function LogoLoja({ loja, size = 44 }) {
   const s = size;
   const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
-  const [nivel, setNivel] = useState(0);
+  const localSvg = LOJA_LOGOS[loja.nome];
+  const [falhou, setFalhou] = useState(false);
   const iniciais = loja.nome.slice(0, 2).toUpperCase();
-  const fontes = [
-    `https://www.google.com/s2/favicons?domain=${loja.dominio}&sz=128`,
-    `https://logo.clearbit.com/${loja.dominio}`,
-  ];
   return (
     <div
       className="rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-white"
       style={{ width: s, height: s, padding: s * 0.14, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}
     >
-      {nivel < fontes.length ? (
+      {localSvg && !falhou ? (
         <img
-          src={fontes[nivel]} alt={loja.nome}
-          onError={() => setNivel(n => n + 1)}
+          src={localSvg}
+          alt={loja.nome}
+          onError={() => setFalhou(true)}
           style={{ width: "100%", height: "100%", objectFit: "contain" }}
         />
       ) : (
