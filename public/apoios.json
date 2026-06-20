@@ -1,5 +1,5 @@
 {
-  "atualizado": "2026-06-16",
+  "atualizado": "2026-06-20",
   "categorias": [
     { "id": "todos",       "nome": "Todos" },
     { "id": "energia",     "nome": "Energia",     "cor": "#059669", "corBg": "#ecfdf5", "corBorda": "#a7f3d0" },
@@ -14,8 +14,8 @@
     {
       "id": "tarifa-social-eletricidade",
       "titulo": "Tarifa Social de Eletricidade",
-      "descricao": "Desconto automático na fatura de luz. Dependendo do escalão, pode chegar a 77,5% de desconto no termo fixo e no termo variável.",
-      "valor": "Até 77,5% de desconto",
+      "descricao": "Desconto automático na fatura de luz, aplicado ao termo de potência e ao termo de energia. Para 2026 o Governo fixou o desconto em 33,8% sobre as tarifas de acesso às redes. Os beneficiários ficam ainda isentos do Imposto Especial de Consumo (IEC).",
+      "valor": "33,8% de desconto (2026)",
       "categoria": "energia",
       "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%", "Pensionistas com rendimentos baixos"],
       "comoRequerer": "O desconto é aplicado automaticamente se já receberes uma prestação social. Caso contrário, pede ao teu comercializador de energia.",
@@ -34,13 +34,13 @@
       "novo": false
     },
     {
-      "id": "casa-eficiente-2026",
-      "titulo": "Casa Eficiente 2026",
-      "descricao": "Programa nacional de subsídios para obras de eficiência energética em casa: isolamento, janelas, bombas de calor, painéis solares e ventilação. €150 milhões de orçamento — o maior apoio à renovação energética de Portugal. Candidaturas abertas até esgotar o orçamento.",
-      "valor": "Até 7.500€ por habitação",
+      "id": "apoios-eficiencia-energetica",
+      "titulo": "Apoios à Eficiência Energética em Casa",
+      "descricao": "Apoios do Fundo Ambiental para obras que melhorem a eficiência energética da habitação: isolamento, janelas, bombas de calor, painéis solares e ventilação. O Governo está a lançar em 2026 um novo modelo de financiamento através do Banco de Fomento, com bónus do Fundo Ambiental e condições mais favoráveis que o crédito bancário.",
+      "valor": "Comparticipação e financiamento bonificado",
       "categoria": "energia",
-      "quemPode": ["Proprietários de habitação com mais de 15 anos", "As obras devem melhorar pelo menos 2 classes no certificado energético"],
-      "comoRequerer": "Candidatura no portal do Fundo Ambiental (fundoambiental.pt). Necessário: declaração de IRS, caderneta predial, pré-certificado energético e orçamentos de instaladores certificados.",
+      "quemPode": ["Proprietários de habitação própria permanente", "Obras que melhorem o desempenho energético do imóvel"],
+      "comoRequerer": "Acompanha a abertura das candidaturas no portal do Fundo Ambiental (fundoambiental.pt). Em geral é necessário: declaração de IRS, caderneta predial, certificado energético e orçamentos de instaladores certificados.",
       "link": "https://www.fundoambiental.pt/",
       "novo": true
     },
@@ -91,10 +91,10 @@
     {
       "id": "imt-isenção-jovem",
       "titulo": "Isenção de IMT e IMI para Jovens",
-      "descricao": "Isenção total do IMT (Imposto Municipal sobre Transmissões) e do IMI por 3 anos na compra da 1.ª habitação para jovens até 35 anos.",
-      "valor": "Isenção total de IMT + 3 anos sem IMI",
+      "descricao": "Isenção total do IMT (Imposto Municipal sobre Transmissões) e do Imposto do Selo na compra da 1.ª habitação para jovens até 35 anos. Em 2026 o limite de isenção total subiu para 330.539€, com isenção parcial até 660.982€.",
+      "valor": "Isenção total de IMT e Imposto do Selo",
       "categoria": "habitacao",
-      "quemPode": ["Jovens até 35 anos (inclusive)", "Compra de 1.ª habitação própria e permanente", "Valor do imóvel ≤ 316.772€"],
+      "quemPode": ["Jovens até 35 anos (inclusive)", "Compra de 1.ª habitação própria e permanente", "Isenção total para imóvel até 330.539€ (2026); isenção parcial até 660.982€", "Não pode ser dependente de IRS nem ter sido proprietário de outro imóvel nos 3 anos anteriores"],
       "comoRequerer": "A isenção de IMT é solicitada no Portal das Finanças antes da escritura (Modelo 1 do IMT) ou via e-balcão. A isenção de IMI é automática após o registo da habitação permanente.",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/IMT_Jovem/Pages/default.aspx",
       "novo": false
@@ -113,8 +113,8 @@
     {
       "id": "rsi",
       "titulo": "Rendimento Social de Inserção (RSI)",
-      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral. Nota: previsto ser substituído pela Prestação Social Única (PSU) a partir de agosto 2026.",
-      "valor": "Montante variável (base ≈ 537€ IAS 2026)",
+      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral. Em 2026 o valor de referência do titular é 247,56€/mês, somando-se 173,29€ por cada adulto adicional e 123,78€ por cada criança. Nota: deverá ser integrado na futura Prestação Social Única (PSU).",
+      "valor": "247,56€/mês (titular, 2026)",
       "categoria": "familia",
       "quemPode": ["Residentes em Portugal há mais de 1 ano", "Rendimento mensal abaixo do valor do RSI", "Situação de comprovada necessidade"],
       "comoRequerer": "Apresenta candidatura nos serviços de Segurança Social ou no balcão mais próximo.",
@@ -124,10 +124,10 @@
     {
       "id": "prestacao-social-unica",
       "titulo": "Prestação Social Única (PSU)",
-      "descricao": "Nova prestação aprovada em maio 2026 que vai juntar 13 apoios sociais não contributivos numa só prestação, simplificando o acesso. Substitui o RSI, subsídio social de desemprego e outros. Prevista para entrar em vigor em agosto de 2026.",
-      "valor": "Valor unificado (a definir na regulamentação)",
+      "descricao": "Nova prestação aprovada pelo Governo em maio de 2026 que vai juntar 13 apoios sociais não contributivos numa só prestação, com uma candidatura, uma avaliação e um pagamento mensal. Integra o RSI, o subsídio social de desemprego e outros. Terá como base o valor do RSI (247,56€ em 2026) e prevê uma componente de incentivo ao trabalho. A entrada em vigor está prevista para 2027.",
+      "valor": "Valor unificado (em regulamentação)",
       "categoria": "familia",
-      "quemPode": ["Pessoas com 18 ou mais anos residentes em Portugal", "Rendimento do agregado familiar abaixo do limiar definido", "Aguarda aprovação parlamentar final"],
+      "quemPode": ["Pessoas com 18 ou mais anos residentes em Portugal", "Rendimento do agregado familiar abaixo do limiar definido", "Pode exigir até 15h/semana de atividades de inserção social", "Ainda em fase de regulamentação"],
       "comoRequerer": "Ainda em fase de regulamentação. Acompanha as novidades em seg-social.pt. Quem já recebe RSI ou outros apoios abrangidos será migrado automaticamente.",
       "link": "https://portugal.gov.pt/gc25/comunicacao/noticias/prestacao-social-unica-o-que-e-e-como-funciona",
       "novo": true
@@ -146,7 +146,7 @@
     {
       "id": "irs-jovem",
       "titulo": "IRS Jovem",
-      "descricao": "Isenção parcial de IRS sobre rendimentos do trabalho para jovens. Em 2026 foi alargado para 10 anos e já não exige conclusão de um ciclo de estudos. Rendimento elegível limitado a 28.737,50€/ano.",
+      "descricao": "Isenção parcial de IRS sobre rendimentos do trabalho para jovens. Em 2026 abrange 10 anos e já não exige conclusão de um ciclo de estudos. A isenção aplica-se até 55× o IAS — ou seja, 29.542,15€/ano em 2026.",
       "valor": "100% (1.º ano) · 75% (2.º–4.º) · 50% (5.º–7.º) · 25% (8.º–10.º)",
       "categoria": "jovens",
       "quemPode": ["Trabalhadores com até 35 anos (inclusive)", "Primeiros rendimentos de categoria A ou B", "Não exige habilitações académicas específicas (alteração 2026)"],
