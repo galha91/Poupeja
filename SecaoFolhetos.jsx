@@ -17,6 +17,7 @@ const LOJA_DOMINIOS = {
   Froiz:             "froiz.pt",
 };
 const LOJA_LOCAL = {
+  "Continente":  "/logos/continente.svg",
   "Intermarché": "/logos/intermarche.svg",
   "E.Leclerc":   "/logos/eleclerc.svg",
 };
