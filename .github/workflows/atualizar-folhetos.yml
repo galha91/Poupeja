@@ -2,9 +2,9 @@ name: Atualizar folhetos semanais
 
 on:
   schedule:
-    # Quarta-feira às 08:00 UTC — deploy fica pronto antes do email de quinta às 09:00
-    - cron: '0 8 * * 3'
-  workflow_dispatch: # permite correr manualmente se necessário
+    - cron: '0 7 * * 1'  # Segunda-feira 07:00 UTC — site atualizado de manhã cedo
+    - cron: '0 8 * * 3'  # Quarta-feira 08:00 UTC — deploy pronto antes do email de quinta
+  workflow_dispatch:       # Execução manual quando necessário
 
 permissions:
   contents: write
@@ -22,7 +22,7 @@ jobs:
           const fs = require('fs');
 
           const hoje = new Date();
-          const diaSemana = hoje.getDay(); // 0=dom ... 6=sab
+          const diaSemana = hoje.getDay();
           const seg = new Date(hoje);
           seg.setDate(hoje.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
           const dom = new Date(seg);
@@ -30,18 +30,82 @@ jobs:
 
           const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
           const fmt = d => d.getDate() + ' ' + meses[d.getMonth()];
-          const validade = fmt(seg) + '–' + fmt(dom); // ex: '23 jun–29 jun'
+          const validade = fmt(seg) + '–' + fmt(dom);
           const atualizadoEm = hoje.toISOString().split('T')[0];
 
           const file = 'public/folhetos.json';
           const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-
           data.atualizadoEm = atualizadoEm;
           data.folhetos = data.folhetos.map(f => ({ ...f, validade }));
-
           fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
-          console.log('Semana atualizada: ' + validade);
+          console.log('Semana: ' + validade);
           "
+
+      - name: Testar links dos folhetos
+        id: teste_links
+        run: |
+          node -e "
+          const fs = require('fs');
+
+          async function testar(loja, url) {
+            try {
+              const r = await fetch(url, {
+                method: 'HEAD',
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                  'Accept': 'text/html,application/xhtml+xml,*/*;q=0.9',
+                  'Accept-Language': 'pt-PT,pt;q=0.9',
+                },
+                redirect: 'follow',
+                signal: AbortSignal.timeout(10000),
+              });
+              const ok = r.status < 400 || r.status === 403 || r.status === 429;
+              const estado = r.status === 404 || r.status === 410 ? 'QUEBRADO' :
+                             r.status === 403 || r.status === 429 ? 'BLOQUEADO (ok para utilizadores)' : 'OK';
+              console.log((ok ? '✅' : '❌') + ' ' + loja + ' [' + r.status + '] ' + estado);
+              return { loja, url, status: r.status, ok };
+            } catch (e) {
+              console.log('❌ ' + loja + ' [TIMEOUT/ERRO] ' + e.message);
+              return { loja, url, status: 0, ok: false };
+            }
+          }
+
+          const data = JSON.parse(fs.readFileSync('public/folhetos.json', 'utf8'));
+          const resultados = await Promise.all(data.folhetos.map(f => testar(f.loja, f.url)));
+          const quebrados = resultados.filter(r => !r.ok);
+
+          if (quebrados.length > 0) {
+            console.log('');
+            console.log('⚠️  Links quebrados: ' + quebrados.map(r => r.loja).join(', '));
+            // Escreve para output do GitHub Actions para uso no próximo passo
+            fs.appendFileSync(process.env.GITHUB_OUTPUT || '/dev/null',
+              'quebrados=' + quebrados.map(r => r.loja + ' (' + r.status + ')').join(', ') + '\n');
+          } else {
+            console.log('');
+            console.log('✅ Todos os links OK');
+          }
+          "
+
+      - name: Alertar sobre links quebrados
+        if: steps.teste_links.outputs.quebrados != ''
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          QUEBRADOS: ${{ steps.teste_links.outputs.quebrados }}
+        run: |
+          if [ -z "$RESEND_API_KEY" ]; then
+            echo "⚠️  RESEND_API_KEY não configurada — alerta por email ignorado."
+            echo "Links quebrados: $QUEBRADOS"
+            exit 0
+          fi
+          curl -s -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"PoupeJá <noreply@xn--poupej-uta.com>\",
+              \"to\": [\"ricardogalha1@hotmail.com\"],
+              \"subject\": \"⚠️ PoupeJá — links quebrados nos folhetos\",
+              \"html\": \"<p>Os seguintes folhetos têm links quebrados:</p><p><strong>$QUEBRADOS</strong></p><p>Acede a <a href='https://xn--poupej-uta.com/admin'>poupeja.com/admin</a> para corrigir.</p>\"
+            }"
 
       - name: Commit e push (só se houver alterações)
         run: |
