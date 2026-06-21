@@ -83,7 +83,7 @@ export default async function handler(req, res) {
     // Recentes com última visita e dispositivo
     const recentes = [...todos]
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, 20)
+      .slice(0, 50)
       .map(u => ({
         email: u.email,
         criado: u.created_at,

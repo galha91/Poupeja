@@ -10,6 +10,7 @@ export default function Admin() {
   const [stats, setStats] = useState(null);
   const [erro, setErro] = useState("");
   const [sessaoEmail, setSessaoEmail] = useState(null);
+  const [ordenarPor, setOrdenarPor] = useState("registo"); // "registo" | "login"
 
   // Push notification state
   const [pushTitulo, setPushTitulo] = useState("🏛️ Novidade no PoupeJá");
@@ -248,9 +249,11 @@ export default function Admin() {
               </div>
             )}
 
-            {/* Botão atualizar */}
+            {/* Cabeçalho da lista + ordenação */}
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-black text-slate-700">Registos recentes</h2>
+              <h2 className="text-sm font-black text-slate-700">
+                {ordenarPor === "login" ? "Por último login" : "Registos recentes"}
+              </h2>
               <button
                 onClick={carregar}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600"
@@ -259,9 +262,35 @@ export default function Admin() {
               </button>
             </div>
 
+            {/* Toggle ordenar por registo / último login */}
+            <div className="flex gap-1.5 mb-2 bg-slate-100 p-1 rounded-xl">
+              <button
+                onClick={() => setOrdenarPor("registo")}
+                className={`flex-1 text-xs font-black py-1.5 rounded-lg transition ${ordenarPor === "registo" ? "bg-white text-slate-800 shadow-sm" : "text-slate-400"}`}
+              >
+                Registo
+              </button>
+              <button
+                onClick={() => setOrdenarPor("login")}
+                className={`flex-1 text-xs font-black py-1.5 rounded-lg transition ${ordenarPor === "login" ? "bg-white text-slate-800 shadow-sm" : "text-slate-400"}`}
+              >
+                Último login
+              </button>
+            </div>
+
             {/* Lista de recentes */}
             <div className="bg-white rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden">
-              {stats.recentes.map((u, i) => {
+              {[...stats.recentes]
+                .sort((a, b) => {
+                  if (ordenarPor === "login") {
+                    // Nunca fez login fica no fundo
+                    const ta = a.ultimoAcesso ? new Date(a.ultimoAcesso).getTime() : 0;
+                    const tb = b.ultimoAcesso ? new Date(b.ultimoAcesso).getTime() : 0;
+                    return tb - ta;
+                  }
+                  return new Date(b.criado) - new Date(a.criado);
+                })
+                .map((u, i) => {
                 const plataforma = u.dispositivo?.platform;
                 const temPwa    = u.dispositivo?.pwa;
                 const relativo  = fmtRelativo(u.ultimoAcesso);
@@ -281,15 +310,13 @@ export default function Admin() {
                           <p className="text-sm font-bold text-slate-800 truncate">{u.email}</p>
                           {u.confirmado && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        <div className="flex flex-col gap-0.5 mt-1">
                           <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-                            <Clock size={9} /> {fmtData(u.criado)}
+                            <Clock size={9} /> Registo: {fmtData(u.criado)}
                           </span>
-                          {relativo && (
-                            <span className="text-[10px] font-black text-emerald-600 flex items-center gap-1">
-                              👁 {relativo}
-                            </span>
-                          )}
+                          <span className={`text-[10px] font-bold flex items-center gap-1 ${u.ultimoAcesso ? "text-emerald-600" : "text-slate-300"}`}>
+                            👁 Último login: {u.ultimoAcesso ? `${fmtData(u.ultimoAcesso)} · ${relativo}` : "nunca"}
+                          </span>
                         </div>
                       </div>
 
