@@ -1,0 +1,53 @@
+name: Atualizar folhetos semanais
+
+on:
+  schedule:
+    # Quarta-feira às 08:00 UTC — deploy fica pronto antes do email de quinta às 09:00
+    - cron: '0 8 * * 3'
+  workflow_dispatch: # permite correr manualmente se necessário
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Calcular semana e atualizar folhetos.json
+        run: |
+          node -e "
+          const fs = require('fs');
+
+          const hoje = new Date();
+          const diaSemana = hoje.getDay(); // 0=dom ... 6=sab
+          const seg = new Date(hoje);
+          seg.setDate(hoje.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
+          const dom = new Date(seg);
+          dom.setDate(seg.getDate() + 6);
+
+          const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+          const fmt = d => d.getDate() + ' ' + meses[d.getMonth()];
+          const validade = fmt(seg) + '–' + fmt(dom); // ex: '23 jun–29 jun'
+          const atualizadoEm = hoje.toISOString().split('T')[0];
+
+          const file = 'public/folhetos.json';
+          const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+          data.atualizadoEm = atualizadoEm;
+          data.folhetos = data.folhetos.map(f => ({ ...f, validade }));
+
+          fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+          console.log('Semana atualizada: ' + validade);
+          "
+
+      - name: Commit e push (só se houver alterações)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/folhetos.json
+          git diff --staged --quiet && echo "Sem alterações." && exit 0
+          git commit -m "chore: folhetos — semana de $(node -e "const d=new Date();const s=new Date(d);s.setDate(d.getDate()-(d.getDay()===0?6:d.getDay()-1));const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];console.log(s.getDate()+' '+m[s.getMonth()])")"
+          git push origin main
