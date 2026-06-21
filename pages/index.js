@@ -7,6 +7,7 @@ import SecaoListaCompras from "../SecaoListaCompras";
 import SecaoDefinicoes from "../SecaoDefinicoes";
 import SecaoApoios from "../SecaoApoios";
 import SecaoContas from "../SecaoContas";
+import SecaoCasa from "../SecaoCasa";
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
@@ -17,7 +18,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
-  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X,
+  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -28,6 +29,7 @@ const NAV = [
   { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
   { id: "mercados",   label: "Mercado",    icon: ShoppingCart },
   { id: "contas",     label: "Contas",     icon: CalendarClock },
+  { id: "casa",       label: "Casa",       icon: Building2 },
   { id: "mobilidade", label: "Mobilidade", icon: Fuel },
   { id: "apoios",     label: "Apoios",     icon: Landmark },
   { id: "lojas",      label: "Lojas",      icon: Store },
@@ -42,6 +44,7 @@ const TITULOS = {
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
   contas:     { t: "Contas fixas",                      s: "As tuas despesas mensais num só sítio" },
+  casa:       { t: "A tua casa",                        s: "Crédito, renda e contas fixas" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
 };
@@ -1464,6 +1467,7 @@ export default function PoupeJa() {
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
+                {tab === "casa"       && <SecaoCasa />}
                 {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
