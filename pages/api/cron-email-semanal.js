@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
+import { urlUnsub } from "../../lib/unsubscribeToken";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
@@ -68,13 +69,22 @@ export default async function handler(req, res) {
       if (desativados.has(u.id)) { ignorados++; continue; }
 
       const nome = u.user_metadata?.nome || u.email.split("@")[0];
-      const { subject, html } = construirEmailFolhetos({ nome, folhetos, base });
+      const unsubscribeUrl = urlUnsub(base, u.id);
+      const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl });
       try {
         await resend.emails.send({
           from: "PoupeJá <noreply@xn--poupej-uta.com>",
           to: u.email,
+          replyTo: "ricardogalha1@hotmail.com",
           subject,
           html,
+          text,
+          headers: {
+            // One-click unsubscribe (RFC 8058) — exigido pelo Gmail/Outlook
+            // para remetentes em massa e reduz fortemente a marcação como spam.
+            "List-Unsubscribe": `<${unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          },
         });
         enviados++;
       } catch (e) {

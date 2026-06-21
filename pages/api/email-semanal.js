@@ -22,14 +22,19 @@ export default async function handler(req, res) {
   if (!folhetos.length) return res.status(500).json({ erro: "Erro ao ler folhetos." });
 
   const base = process.env.NEXT_PUBLIC_URL || "https://xn--poupej-uta.com";
-  const { subject, html } = construirEmailFolhetos({ nome, folhetos, base });
+  const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base });
 
   try {
     await resend.emails.send({
       from: "PoupeJá <noreply@xn--poupej-uta.com>",
       to: email,
+      replyTo: "ricardogalha1@hotmail.com",
       subject,
       html,
+      text,
+      headers: {
+        "List-Unsubscribe": `<${base}/definicoes>`,
+      },
     });
     res.status(200).json({ ok: true });
   } catch (err) {
