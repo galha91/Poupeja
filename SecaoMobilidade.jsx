@@ -277,7 +277,7 @@ function SubCombustiveis() {
   const [loc, setLoc]               = useState(null);
   const [locNome, setLocNome]       = useState(null);
   const [locPedido, setLocPedido]   = useState(false);
-  const [raio, setRaio]             = useState(30);
+  const [raio, setRaio]             = useState(10);
 
   function obterLocalizacao() {
     if (!navigator.geolocation) return;
@@ -356,7 +356,7 @@ function SubCombustiveis() {
             <div className="flex items-center gap-2">
               <Fuel size={16} className="text-white/70" />
               <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">
-                {locNome ? `Raio 30 km · DGEG` : "Melhor preço · DGEG"}
+                {locNome ? `Raio ${raio} km · DGEG` : "Melhor preço · DGEG"}
               </span>
             </div>
             <button onClick={() => carregar()} className="press w-8 h-8 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center">
