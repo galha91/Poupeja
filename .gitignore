@@ -15,3 +15,13 @@ yarn-error.log*
 .idea/
 *.swp
 *.swo
+
+# Capacitor — artefactos de build nativos (gerados localmente)
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+ios/App/build/
+ios/App/Pods/
+ios/App/App/public/
+DerivedData/

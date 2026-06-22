@@ -1,0 +1,25 @@
+{
+  "appId": "com.poupeja.app",
+  "appName": "PoupeJá",
+  "webDir": "public",
+  "server": {
+    "url": "https://xn--poupej-uta.com",
+    "cleartext": false
+  },
+  "backgroundColor": "#064e3b",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#064e3b",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#064e3b"
+    }
+  },
+  "ios": {
+    "contentInset": "always"
+  }
+}
