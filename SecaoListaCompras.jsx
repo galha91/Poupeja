@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ShoppingCart, Plus, X, Check, Search, ChevronLeft, Minus } from "lucide-react";
+import { ShoppingCart, Plus, X, Check, Search, ChevronLeft, Minus, Share2, Link } from "lucide-react";
 
 const LS_KEY = "poupeja_lista_compras";
 
@@ -222,15 +222,99 @@ function guardarItens(itens) {
   try { localStorage.setItem(LS_KEY, JSON.stringify(itens)); } catch {}
 }
 
+const LS_SHARE_KEY = "poupeja_lista_partilhada_id";
+
+function gerarShareId() { return Math.random().toString(36).slice(2, 10); }
+
 export default function SecaoListaCompras() {
   const [itens, setItens]       = useState(lerItens);
   const [modo, setModo]         = useState("lista"); // "lista" | "adicionar"
   const [catAtiva, setCatAtiva] = useState("Frutas");
   const [busca, setBusca]       = useState("");
   const [inputCustom, setInputCustom] = useState("");
-  const inputRef = useRef(null);
+  const [listaId, setListaId]   = useState(() => {
+    try { return localStorage.getItem(LS_SHARE_KEY) || null; } catch { return null; }
+  });
+  const [copiado, setCopiado]   = useState(false);
+  const [criandoLink, setCriandoLink] = useState(false);
+  const inputRef      = useRef(null);
+  const aplicandoPull = useRef(false);
+  const pushTimer     = useRef(null);
 
-  useEffect(() => { guardarItens(itens); }, [itens]);
+  function push(novosItens, id) {
+    if (!id) return;
+    clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`/api/lista-partilhada/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ itens: novosItens }),
+        });
+      } catch {}
+    }, 800);
+  }
+
+  async function pull(id) {
+    if (!id) return;
+    try {
+      const r = await fetch(`/api/lista-partilhada/${id}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      if (Array.isArray(data.itens)) {
+        aplicandoPull.current = true;
+        setItens(data.itens);
+        setTimeout(() => { aplicandoPull.current = false; }, 50);
+      }
+    } catch {}
+  }
+
+  // Pull inicial quando há lista partilhada
+  useEffect(() => { if (listaId) pull(listaId); }, []);
+
+  // Poll a cada 15s para apanhar mudanças de outros membros
+  useEffect(() => {
+    if (!listaId) return;
+    const t = setInterval(() => pull(listaId), 15000);
+    return () => clearInterval(t);
+  }, [listaId]);
+
+  useEffect(() => {
+    guardarItens(itens);
+    if (listaId && !aplicandoPull.current) push(itens, listaId);
+  }, [itens]);
+
+  async function partilhar() {
+    setCriandoLink(true);
+    const id = gerarShareId();
+    try {
+      const r = await fetch(`/api/lista-partilhada/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itens }),
+      });
+      if (!r.ok) throw new Error();
+      localStorage.setItem(LS_SHARE_KEY, id);
+      setListaId(id);
+      const url = `${window.location.origin}/lista/${id}`;
+      try { await navigator.clipboard.writeText(url); } catch {}
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 3000);
+    } catch { alert("Erro ao criar link. Tenta novamente."); }
+    finally { setCriandoLink(false); }
+  }
+
+  function pararPartilha() {
+    localStorage.removeItem(LS_SHARE_KEY);
+    setListaId(null);
+  }
+
+  async function copiarLink() {
+    const url = `${window.location.origin}/lista/${listaId}`;
+    try { await navigator.clipboard.writeText(url); } catch {}
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 3000);
+  }
 
   const pendentes = itens.filter(i => !i.feito);
   const feitos    = itens.filter(i => i.feito);
@@ -458,6 +542,40 @@ export default function SecaoListaCompras() {
             </div>
             <p className="text-[10px] text-white/50 mt-1.5">{feitos.length} de {itens.length} comprados</p>
           </>
+        )}
+
+        {/* Partilha */}
+        <div className="mt-3 flex gap-2 flex-wrap">
+          {!listaId ? (
+            <button
+              onClick={partilhar}
+              disabled={criandoLink}
+              className="press inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] font-black px-3.5 py-2 rounded-xl border border-white/25"
+            >
+              <Share2 size={13} /> {criandoLink ? "A criar…" : "Partilhar lista"}
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={copiarLink}
+                className="press inline-flex items-center gap-1.5 bg-white text-violet-700 text-[11px] font-black px-3.5 py-2 rounded-xl"
+              >
+                <Link size={13} /> {copiado ? "Copiado ✓" : "Copiar link"}
+              </button>
+              <button
+                onClick={pararPartilha}
+                className="press inline-flex items-center gap-1.5 bg-white/15 text-white/70 text-[11px] font-black px-3 py-2 rounded-xl border border-white/20"
+              >
+                <X size={12} /> Parar partilha
+              </button>
+            </>
+          )}
+        </div>
+        {listaId && (
+          <p className="text-[9px] text-white/40 mt-1.5 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+            Lista partilhada — sincroniza automaticamente
+          </p>
         )}
       </div>
 
