@@ -26,16 +26,13 @@ import { calcularEstado } from "../lib/desafios";
 
 /* ─── nav config ─── */
 const NAV = [
-  { id: "inicio",     label: "Início",     icon: Home },
-  { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
-  { id: "mercados",   label: "Mercado",    icon: ShoppingCart },
-  { id: "contas",     label: "Contas",     icon: CalendarClock },
-  { id: "casa",       label: "Casa",       icon: Building2 },
-  { id: "mobilidade", label: "Mobilidade", icon: Fuel },
-  { id: "apoios",     label: "Apoios",     icon: Landmark },
-  { id: "lojas",      label: "Lojas",      icon: Store },
+  { id: "inicio",   label: "Início",   icon: Home },
+  { id: "mercados", label: "Mercado",  icon: ShoppingCart },
+  { id: "poupanca", label: "Poupança", icon: PiggyBank },
+  { id: "contas",   label: "Contas",   icon: CalendarClock },
+  { id: "casa",     label: "Casa",     icon: Building2 },
 ];
-const NAV_IDS = NAV.map(n => n.id);
+const NAV_IDS = ["inicio","poupanca","mercados","contas","casa","mobilidade","apoios","lojas","irs","taloes","lista"];
 
 const TITULOS = {
   inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
