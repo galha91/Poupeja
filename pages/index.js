@@ -31,8 +31,9 @@ const NAV = [
   { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
   { id: "contas",     label: "Contas",     icon: CalendarClock },
   { id: "casa",       label: "Casa",       icon: Building2 },
-  { id: "mobilidade", label: "Mobilidade", icon: Fuel },
+  { id: "mobilidade", label: "Gasolina",   icon: Fuel },
   { id: "apoios",     label: "Apoios",     icon: Landmark },
+  { id: "lojas",      label: "Lojas",      icon: Store },
 ];
 const NAV_IDS = ["inicio","poupanca","mercados","contas","casa","mobilidade","apoios","lojas","irs","taloes","lista"];
 
@@ -1550,21 +1551,21 @@ export default function PoupeJa() {
               className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-100 z-40"
               style={{ boxShadow: "0 -4px 24px rgba(15,23,42,0.07)", paddingBottom: "env(safe-area-inset-bottom)" }}
             >
-              <div className="flex items-center justify-around px-2 py-2">
+              <div className="flex items-center justify-between px-1 py-1.5">
                 {NAV.map(it => {
                   const active = tab === it.id;
                   return (
                     <button
                       key={it.id}
                       onClick={() => navClick(it.id)}
-                      className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors duration-150 ${active ? "bg-emerald-50" : ""}`}
+                      className={`flex flex-col items-center gap-0.5 px-1.5 py-1.5 rounded-xl transition-colors duration-150 ${active ? "bg-emerald-50" : ""}`}
                     >
                       <it.icon
-                        size={20}
+                        size={18}
                         className={`transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
                         strokeWidth={active ? 2.5 : 1.8}
                       />
-                      <span className={`text-[9px] font-black transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"}`}>
+                      <span className={`text-[8px] font-black transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"}`}>
                         {it.label}
                       </span>
                       <span
