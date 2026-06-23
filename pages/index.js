@@ -436,25 +436,24 @@ function calcLembreteCasa() {
   } catch { return null; }
 }
 
+function calcContasMes() {
+  try {
+    const contas = JSON.parse(localStorage.getItem("poupeja_contas") || "[]");
+    return contas.reduce((s, c) => s + (parseFloat(c.valor) || 0), 0);
+  } catch { return 0; }
+}
+
 function CartaoDiario({ setTab }) {
-  const [streak, setStreak]   = useState(1);
-  const [gas95, setGas95]     = useState(null);
-  const [folheto, setFolheto] = useState(null);
+  const [streak, setStreak]       = useState(1);
+  const [contasMes, setContasMes] = useState(null);
+  const [folheto, setFolheto]     = useState(null);
   const [dicaAberta, setDicaAberta] = useState(false);
-  const [lembrete, setLembrete] = useState(null);
+  const [lembrete, setLembrete]   = useState(null);
 
   useEffect(() => {
     setStreak(calcStreak());
     setLembrete(calcLembreteCasa());
-
-    fetch("/api/combustiveis")
-      .then(r => r.json())
-      .then(data => {
-        if (!data.success || !data.dados) return;
-        const g = data.dados.find(d => d.tipo === "Gasolina 95");
-        if (g) setGas95(g);
-      })
-      .catch(() => {});
+    setContasMes(calcContasMes());
 
     fetch("/api/folhetos")
       .then(r => r.json())
@@ -497,20 +496,24 @@ function CartaoDiario({ setTab }) {
 
       {/* 3 mini-cards */}
       <div className="p-3 grid grid-cols-3 gap-2">
-        {/* Combustível */}
+        {/* Contas fixas */}
         <button
-          onClick={() => setTab("mobilidade")}
+          onClick={() => setTab("contas")}
           className="press rounded-2xl p-3 flex flex-col items-start text-left"
           style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)" }}
         >
-          <span className="text-lg mb-1.5">⛽</span>
-          <p className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Gasolina 95</p>
-          {gas95 ? (
-            <p className="text-[16px] font-black text-white mt-0.5 leading-none">{gas95.preco.toFixed(3)}€</p>
+          <span className="text-lg mb-1.5">📋</span>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Contas fixas</p>
+          {contasMes !== null ? (
+            contasMes > 0 ? (
+              <p className="text-[15px] font-black text-white mt-0.5 leading-none">€{contasMes.toFixed(0)}</p>
+            ) : (
+              <p className="text-[11px] font-black text-slate-500 mt-0.5 leading-tight">Sem dados</p>
+            )
           ) : (
             <div className="h-5 w-14 rounded-lg mt-0.5 animate-pulse" style={{ background: "rgba(255,255,255,0.1)" }} />
           )}
-          <p className="text-[9px] text-slate-600 mt-0.5">mín. nacional</p>
+          <p className="text-[9px] text-slate-600 mt-0.5">por mês</p>
         </button>
 
         {/* Folheto */}
