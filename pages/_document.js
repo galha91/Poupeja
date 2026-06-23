@@ -6,6 +6,13 @@ export default function Document() {
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* Tema escuro — aplica a classe antes de pintar para evitar flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=JSON.parse(localStorage.getItem('poupeja_prefs')||'{}');if(p.temaEscuro===true){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
         <meta name="description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." />
 
         {/* PWA */}

@@ -8,6 +8,7 @@ import SecaoDefinicoes from "../SecaoDefinicoes";
 import SecaoApoios from "../SecaoApoios";
 import SecaoContas from "../SecaoContas";
 import SecaoCasa from "../SecaoCasa";
+import SecaoIRS from "../SecaoIRS";
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
@@ -18,7 +19,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
-  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2,
+  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2, Calculator,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -45,6 +46,7 @@ const TITULOS = {
   apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
   contas:     { t: "Contas fixas",                      s: "As tuas despesas mensais num só sítio" },
   casa:       { t: "A tua casa",                        s: "Crédito, renda e contas fixas" },
+  irs:        { t: "Simulador de IRS",                   s: "Estima o teu IRS antes da hora" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
 };
@@ -413,14 +415,37 @@ function dicaHoje() {
 }
 
 /* ─── Cartão Diário ─── */
+function calcLembreteCasa() {
+  try {
+    const d = JSON.parse(localStorage.getItem("poupeja_casa") || "{}");
+    const candidatos = [];
+    if (d.credito?.dataRevisao) {
+      const [a, m] = d.credito.dataRevisao.split("-").map(Number);
+      const dias = Math.round((new Date(a, m - 1, 1) - new Date()) / 86400000);
+      if (dias >= 0 && dias <= 60) candidatos.push({ dias, texto: "Revisão do crédito habitação", tab: "casa", emoji: "🏠" });
+    }
+    if (d.renda?.mesRevisao) {
+      const hoje = new Date();
+      let ano = hoje.getFullYear();
+      if (hoje.getMonth() + 1 >= d.renda.mesRevisao) ano++;
+      const dias = Math.round((new Date(ano, d.renda.mesRevisao - 1, 1) - hoje) / 86400000);
+      if (dias >= 0 && dias <= 60) candidatos.push({ dias, texto: "Revisão da renda", tab: "casa", emoji: "🏢" });
+    }
+    candidatos.sort((x, y) => x.dias - y.dias);
+    return candidatos[0] || null;
+  } catch { return null; }
+}
+
 function CartaoDiario({ setTab }) {
   const [streak, setStreak]   = useState(1);
   const [gas95, setGas95]     = useState(null);
   const [folheto, setFolheto] = useState(null);
   const [dicaAberta, setDicaAberta] = useState(false);
+  const [lembrete, setLembrete] = useState(null);
 
   useEffect(() => {
     setStreak(calcStreak());
+    setLembrete(calcLembreteCasa());
 
     fetch("/api/combustiveis")
       .then(r => r.json())
@@ -522,6 +547,24 @@ function CartaoDiario({ setTab }) {
           <p className="text-[12px] text-slate-300 leading-relaxed">{dica.texto}</p>
         </div>
       )}
+
+      {/* Lembrete proativo — revisão de crédito/renda a chegar */}
+      {lembrete && (
+        <button
+          onClick={() => setTab(lembrete.tab)}
+          className="press w-full mx-3 mb-3 px-3.5 py-3 rounded-2xl flex items-center gap-3 text-left"
+          style={{ width: "calc(100% - 1.5rem)", background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.25)" }}
+        >
+          <span className="text-xl">{lembrete.emoji}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[12px] font-black text-white leading-tight">{lembrete.texto}</p>
+            <p className="text-[10px] text-blue-300 mt-0.5">
+              {lembrete.dias === 0 ? "É hoje!" : `Daqui a ${lembrete.dias} dia${lembrete.dias !== 1 ? "s" : ""}`} · toca para ver
+            </p>
+          </div>
+          <ChevronRight size={15} className="text-blue-300 flex-shrink-0" />
+        </button>
+      )}
     </div>
   );
 }
@@ -566,6 +609,8 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
     { icon: Store,      label: "Lojas e promoções",  desc: "Moda, eletrónica e desporto",           bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",  tab: "lojas" },
     { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e subsídios a que tens direito", bg: "from-blue-700 to-blue-500", shadow: "rgba(29,78,216,0.3)",  tab: "apoios" },
     { icon: CalendarClock, label: "Contas fixas",   desc: "Renda, luz, água, net — tudo controlado",  bg: "from-violet-700 to-purple-600", shadow: "rgba(109,40,217,0.3)", tab: "contas" },
+    { icon: Building2,  label: "A tua casa",         desc: "Crédito, renda e Euribor em tempo real",   bg: "from-blue-800 to-indigo-600", shadow: "rgba(37,56,182,0.3)", tab: "casa" },
+    { icon: Calculator, label: "Simulador de IRS",   desc: "Estima quanto pagas ou recebes de IRS",    bg: "from-fuchsia-700 to-purple-600", shadow: "rgba(162,28,175,0.3)", tab: "irs" },
   ];
 
   const SHORTCUTS = [
@@ -577,6 +622,8 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
     { icon: Battery,     label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50",  tab: "mobilidade" },
     { icon: Landmark,    label: "Apoios",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "apoios" },
     { icon: CalendarClock, label: "Contas",   color: "text-violet-600",  bg: "bg-violet-50",   tab: "contas" },
+    { icon: Building2,   label: "Casa",        color: "text-indigo-600",  bg: "bg-indigo-50",   tab: "casa" },
+    { icon: Calculator,  label: "IRS",         color: "text-fuchsia-600", bg: "bg-fuchsia-50",  tab: "irs" },
   ];
 
   return (
@@ -1468,6 +1515,14 @@ export default function PoupeJa() {
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
                 {tab === "casa"       && <SecaoCasa />}
+                {tab === "irs"        && (
+                  <div className="pt-4">
+                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
+                      <ArrowLeft size={15} /> Voltar
+                    </button>
+                    <SecaoIRS />
+                  </div>
+                )}
                 {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">

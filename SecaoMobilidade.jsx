@@ -3,7 +3,7 @@ import CARROS_EV from "./data/carrosEV";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   AlertCircle, Bell, Plus, Trash2,
-  Check, Info, X, TrendingDown, Car, Clock,
+  Check, Info, X, TrendingDown, TrendingUp, Minus, Calendar, Car, Clock,
 } from "lucide-react";
 
 /* ─── ícones dos conectores EV ─── */
@@ -265,6 +265,119 @@ function ErroCard({ onRetry, mensagem }) {
   );
 }
 
+/* ─── tendência de preços (localStorage) ─── */
+const HISTORICO_KEY = "poupeja_combustivel_historico";
+
+// Semana ISO -> ex. "2026-W25"
+function semanaISO(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;            // Mon=1 ... Sun=7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);    // quinta-feira da semana
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const semana = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(semana).padStart(2, "0")}`;
+}
+
+function lerHistorico() {
+  try {
+    const raw = localStorage.getItem(HISTORICO_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_) { return {}; }
+}
+
+// Regista o preço mais baixo da semana atual para cada tipo (sem duplicar a semana)
+function registarSnapshots(precosPorTipo) {
+  try {
+    const hist = lerHistorico();
+    const hoje = new Date();
+    const semana = semanaISO(hoje);
+    const dataStr = hoje.toISOString().slice(0, 10);
+    let alterado = false;
+    Object.entries(precosPorTipo).forEach(([tipo, preco]) => {
+      if (typeof preco !== "number" || !isFinite(preco)) return;
+      const arr = hist[tipo] || [];
+      if (arr.some(s => s.semana === semana)) return; // já existe snapshot desta semana
+      arr.push({ semana, preco, data: dataStr });
+      hist[tipo] = arr.slice(-8); // máx. 8 snapshots
+      alterado = true;
+    });
+    if (alterado) localStorage.setItem(HISTORICO_KEY, JSON.stringify(hist));
+    return hist;
+  } catch (_) { return lerHistorico(); }
+}
+
+// Compara semana atual vs semana anterior -> { atual, anterior, diffCent, dir }
+function calcularTendencia(snapshots) {
+  if (!snapshots || snapshots.length < 2) return null;
+  const atual    = snapshots[snapshots.length - 1];
+  const anterior = snapshots[snapshots.length - 2];
+  if (atual.semana === anterior.semana) return null;
+  const diffCent = (atual.preco - anterior.preco) * 100;
+  const dir = Math.abs(diffCent) < 0.5 ? "estavel" : diffCent < 0 ? "desceu" : "subiu";
+  return { atual, anterior, diffCent, dir };
+}
+
+/* ─── card de tendência de preços ─── */
+function TendenciaPrecos({ historico }) {
+  const tipos = Object.keys(historico || {}).filter(t => (historico[t] || []).length > 0);
+  if (tipos.length === 0) return null;
+
+  const linhas = tipos.map(tipo => {
+    const snaps = historico[tipo];
+    const atual = snaps[snaps.length - 1];
+    return { tipo, preco: atual?.preco, tendencia: calcularTendencia(snaps) };
+  });
+
+  const temTendencia = linhas.some(l => l.tendencia);
+
+  return (
+    <div className="mx-4 mb-4 bg-white rounded-2xl shadow-sm p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center">
+          <Calendar size={14} className="text-orange-500" />
+        </div>
+        <p className="text-sm font-black text-slate-800">Tendência de preços</p>
+      </div>
+
+      {!temTendencia ? (
+        <p className="text-[11px] text-slate-400 leading-relaxed">
+          Estamos a recolher o histórico de preços. A tendência aparece a partir da próxima semana.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          {linhas.map(({ tipo, preco, tendencia }) => {
+            const cfg = !tendencia
+              ? { cor: "#94a3b8", Icone: Minus, texto: "a recolher histórico…" }
+              : tendencia.dir === "desceu"
+                ? { cor: "#059669", Icone: TrendingDown, texto: `↓ desceu ${Math.abs(tendencia.diffCent).toFixed(1).replace(".", ",")} cênt. esta semana — boa altura para abastecer` }
+                : tendencia.dir === "subiu"
+                  ? { cor: "#e11d48", Icone: TrendingUp, texto: `↑ subiu ${Math.abs(tendencia.diffCent).toFixed(1).replace(".", ",")} cênt. esta semana` }
+                  : { cor: "#64748b", Icone: Minus, texto: "estável esta semana" };
+            const { cor, Icone, texto } = cfg;
+            return (
+              <div key={tipo} className="flex items-start gap-2.5">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                  style={{ backgroundColor: cor + "18" }}>
+                  <Icone size={14} style={{ color: cor }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-[13px] font-black text-slate-800">⛽ {tipo}</p>
+                    {typeof preco === "number" && (
+                      <p className="text-[13px] font-black text-slate-700 flex-shrink-0">{preco.toFixed(3)} €</p>
+                    )}
+                  </div>
+                  <p className="text-[11px] font-bold leading-snug" style={{ color: cor }}>{texto}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ═══ Combustíveis ═══ */
 function SubCombustiveis() {
   const [estacoes, setEstacoes]     = useState([]);
@@ -278,6 +391,9 @@ function SubCombustiveis() {
   const [locNome, setLocNome]       = useState(null);
   const [locPedido, setLocPedido]   = useState(false);
   const [raio, setRaio]             = useState(10);
+  const [historico, setHistorico]   = useState({});
+
+  useEffect(() => { setHistorico(lerHistorico()); }, []);
 
   function obterLocalizacao() {
     if (!navigator.geolocation) return;
@@ -309,6 +425,15 @@ function SubCombustiveis() {
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);
         setLoading(false);
+
+        // Regista snapshot semanal (preço mais baixo por tipo) para a tendência
+        const precosPorTipo = {};
+        items.forEach(e => {
+          const t = e.tipoLabel || e.tipo;
+          if (!t || typeof e.preco !== "number") return;
+          if (precosPorTipo[t] === undefined || e.preco < precosPorTipo[t]) precosPorTipo[t] = e.preco;
+        });
+        if (Object.keys(precosPorTipo).length) setHistorico(registarSnapshots(precosPorTipo));
       })
       .catch(e => { setErro(e.message); setLoading(false); });
   }
@@ -401,6 +526,9 @@ function SubCombustiveis() {
           </div>
         )}
       </div>
+
+      {/* Tendência de preços */}
+      <TendenciaPrecos historico={historico} />
 
       {/* Controlos */}
       {loc && (

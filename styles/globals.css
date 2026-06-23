@@ -162,3 +162,72 @@ input[type="range"]::-moz-range-thumb {
   transition: opacity 0.2s;
 }
 .nav-pill.active::before { opacity: 1; }
+
+/* ─────────────────────────────────────────────
+   MODO ESCURO
+   Estratégia: a classe .dark é colocada em <html>.
+   Reescrevemos as variáveis de superfície e as classes
+   Tailwind mais usadas. Os heróis com gradiente (cor
+   definida em style inline) mantêm-se — ficam bem no escuro.
+   ───────────────────────────────────────────── */
+html.dark {
+  color-scheme: dark;
+}
+html.dark body {
+  --surface:      #0b1120;
+  --card:         #1e293b;
+  --border:       #334155;
+  --text-primary: #f1f5f9;
+  --text-muted:   #94a3b8;
+  --text-faint:   #64748b;
+  --shadow-card:  0 2px 12px rgba(0,0,0,0.4);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+/* Superfícies */
+.dark .bg-white         { background-color: #1e293b !important; }
+.dark .bg-slate-50      { background-color: #172033 !important; }
+.dark .bg-slate-100     { background-color: #334155 !important; }
+.dark .bg-gray-50       { background-color: #172033 !important; }
+.dark .bg-gray-100      { background-color: #334155 !important; }
+
+/* Texto */
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700   { color: #e2e8f0 !important; }
+.dark .text-slate-600,
+.dark .text-slate-500   { color: #94a3b8 !important; }
+.dark .text-slate-400,
+.dark .text-slate-300   { color: #64748b !important; }
+
+/* Bordas e divisores */
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-gray-100,
+.dark .border-gray-200  { border-color: #334155 !important; }
+.dark .divide-slate-100 > * + *,
+.dark .divide-slate-50  > * + * { border-color: #334155 !important; }
+
+/* Inputs */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder { color: #64748b !important; }
+
+/* Range track */
+.dark input[type="range"] { background: #334155; }
+
+/* Skeletons mais discretos no escuro */
+.dark .bg-slate-100.animate-pulse,
+.dark .animate-pulse .bg-slate-100,
+.dark .animate-pulse .bg-slate-50 { background-color: #334155 !important; }
+
+/* App shell de fundo */
+.dark .min-h-screen.bg-slate-50,
+.dark .min-h-screen.bg-gray-50 { background-color: #0b1120 !important; }

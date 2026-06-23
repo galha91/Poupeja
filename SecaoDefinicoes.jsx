@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   User, Fuel, MapPin, Store, Bell, ShieldCheck, Info,
   ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
-  PiggyBank, LogOut, BellRing, BellOff,
+  PiggyBank, LogOut, BellRing, BellOff, Moon,
 } from "lucide-react";
 import { supabase } from "./lib/supabase";
 
@@ -362,6 +362,28 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
                 </button>
               )}
             </div>
+          </div>
+        </Row>
+      </Section>
+
+      {/* Aparência */}
+      <Section label="Aparência">
+        <Row border={false}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Moon size={17} className="text-indigo-500" />
+              <div>
+                <p className="text-sm font-bold text-slate-800">Modo escuro</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Mais confortável à noite e poupa bateria.</p>
+              </div>
+            </div>
+            <Toggle
+              on={prefs.temaEscuro === true}
+              onChange={v => {
+                set("temaEscuro", v);
+                if (typeof document !== "undefined") document.documentElement.classList.toggle("dark", v);
+              }}
+            />
           </div>
         </Row>
       </Section>

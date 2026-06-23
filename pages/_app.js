@@ -49,6 +49,19 @@ function MyApp({ Component, pageProps }) {
     }).catch(() => {});
   }, []);
 
+  // Aplica/atualiza o tema escuro quando a preferência muda noutra parte da app
+  useEffect(() => {
+    function aplicarTema() {
+      try {
+        const p = JSON.parse(localStorage.getItem('poupeja_prefs') || '{}');
+        document.documentElement.classList.toggle('dark', p.temaEscuro === true);
+      } catch (_) {}
+    }
+    aplicarTema();
+    window.addEventListener('poupeja:tema', aplicarTema);
+    return () => window.removeEventListener('poupeja:tema', aplicarTema);
+  }, []);
+
   return <Component {...pageProps} />
 }
 
