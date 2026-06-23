@@ -31,7 +31,7 @@ const NAV = [
   { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
   { id: "contas",     label: "Contas",     icon: CalendarClock },
   { id: "casa",       label: "Casa",       icon: Building2 },
-  { id: "mobilidade", label: "Gasolina",   icon: Fuel },
+  { id: "mobilidade", label: "Mobilidade", icon: Fuel },
   { id: "apoios",     label: "Apoios",     icon: Landmark },
   { id: "lojas",      label: "Lojas",      icon: Store },
 ];
