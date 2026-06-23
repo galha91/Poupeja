@@ -21,3 +21,20 @@ npm run cap:android       # abre Android Studio → Build → .aab
 ## Outras pendências
 - Adicionar RESEND_API_KEY como secret no GitHub (para alertas de links quebrados):
   github.com/galha91/Poupeja/settings/secrets/actions
+
+- Criar tabela no Supabase para a partilha de lista de compras:
+  Ir ao projeto Supabase → SQL Editor → correr:
+
+```sql
+create table listas_partilhadas (
+  id text primary key,
+  itens jsonb not null default '[]'::jsonb,
+  criado_em timestamptz not null default now(),
+  atualizado_em timestamptz not null default now()
+);
+
+alter table listas_partilhadas enable row level security;
+create policy "public_select" on listas_partilhadas for select using (true);
+create policy "public_insert" on listas_partilhadas for insert with check (true);
+create policy "public_update" on listas_partilhadas for update using (true);
+```
