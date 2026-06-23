@@ -26,11 +26,13 @@ import { calcularEstado } from "../lib/desafios";
 
 /* ─── nav config ─── */
 const NAV = [
-  { id: "inicio",   label: "Início",   icon: Home },
-  { id: "mercados", label: "Mercado",  icon: ShoppingCart },
-  { id: "poupanca", label: "Poupança", icon: PiggyBank },
-  { id: "contas",   label: "Contas",   icon: CalendarClock },
-  { id: "casa",     label: "Casa",     icon: Building2 },
+  { id: "inicio",     label: "Início",     icon: Home },
+  { id: "mercados",   label: "Mercado",    icon: ShoppingCart },
+  { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
+  { id: "contas",     label: "Contas",     icon: CalendarClock },
+  { id: "casa",       label: "Casa",       icon: Building2 },
+  { id: "mobilidade", label: "Mobilidade", icon: Fuel },
+  { id: "apoios",     label: "Apoios",     icon: Landmark },
 ];
 const NAV_IDS = ["inicio","poupanca","mercados","contas","casa","mobilidade","apoios","lojas","irs","taloes","lista"];
 
