@@ -25,8 +25,8 @@ npm run cap:android       # abre Android Studio → Build → .aab
   - CRON_SECRET   → valor: poupeja-cron-2026-secret  (para notificações push automáticas)
 
 - Configurar notificações push no Vercel (Settings → Environment Variables):
-  - NEXT_PUBLIC_VAPID_PUBLIC_KEY  → chave pública gerada com: npx web-push generate-vapid-keys
-  - VAPID_PRIVATE_KEY             → chave privada
+  - NEXT_PUBLIC_VAPID_PUBLIC_KEY  → BAftcbRKMAysEbxLXcMnPajkyHziZKHK8g0o-en_l0TlHi8bMvIZZLb05MHxF4OLgBSk9iv7vpRKY2DXOF7zkfk
+  - VAPID_PRIVATE_KEY             → 7zphNchunc6AlZiKz5tfji7V4jMa4moAf1LppPzEXzA
   - VAPID_EMAIL                   → mailto:poupeja.portugal@gmail.com
 
 - Adicionar 2.º cron no cron-job.org para notificação de quinta-feira (lembrete semanal):
