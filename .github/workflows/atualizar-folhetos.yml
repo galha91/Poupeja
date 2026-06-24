@@ -108,10 +108,33 @@ jobs:
             }"
 
       - name: Commit e push (só se houver alterações)
+        id: commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/folhetos.json
-          git diff --staged --quiet && echo "Sem alterações." && exit 0
+          git diff --staged --quiet && echo "alterou=false" >> $GITHUB_OUTPUT && echo "Sem alterações." && exit 0
           git commit -m "chore: folhetos — semana de $(node -e "const d=new Date();const s=new Date(d);s.setDate(d.getDate()-(d.getDay()===0?6:d.getDay()-1));const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];console.log(s.getDate()+' '+m[s.getMonth()])")"
           git push origin main
+          echo "alterou=true" >> $GITHUB_OUTPUT
+
+      - name: Notificação push — folhetos novos
+        if: steps.commit.outputs.alterou == 'true'
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: https://xn--poupej-uta.com
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "⚠️  CRON_SECRET não configurada — notificação ignorada."
+            exit 0
+          fi
+          # Aguarda 3 min para o Vercel terminar o deploy antes de notificar
+          sleep 180
+          curl -s -X POST "$SITE_URL/api/push-enviar" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "title": "🛒 Folhetos novos esta semana",
+              "body": "Já podes ver as promoções de todos os supermercados. Vê onde poupar!",
+              "url": "/"
+            }' && echo "✅ Notificação enviada."

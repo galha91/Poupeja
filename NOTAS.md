@@ -19,8 +19,25 @@ npm run cap:android       # abre Android Studio → Build → .aab
 - Recomendação: começar pelo Android primeiro.
 
 ## Outras pendências
-- Adicionar RESEND_API_KEY como secret no GitHub (para alertas de links quebrados):
+- Adicionar secrets no GitHub (Settings → Secrets → Actions):
   github.com/galha91/Poupeja/settings/secrets/actions
+  - RESEND_API_KEY → para alertas de links quebrados
+  - CRON_SECRET   → valor: poupeja-cron-2026-secret  (para notificações push automáticas)
+
+- Configurar notificações push no Vercel (Settings → Environment Variables):
+  - NEXT_PUBLIC_VAPID_PUBLIC_KEY  → chave pública gerada com: npx web-push generate-vapid-keys
+  - VAPID_PRIVATE_KEY             → chave privada
+  - VAPID_EMAIL                   → mailto:poupeja.portugal@gmail.com
+
+- Adicionar 2.º cron no cron-job.org para notificação de quinta-feira (lembrete semanal):
+  URL: https://xn--poupej-uta.com/api/push-enviar
+  Método: POST
+  Horário: quinta-feira 09:00 UTC
+  Header: Authorization: Bearer poupeja-cron-2026-secret
+  Body (JSON):
+    { "title": "💰 Já aproveitaste as promoções desta semana?",
+      "body": "Os folhetos dos supermercados estão à tua espera. Poupa antes do fim de semana!",
+      "url": "/" }
 
 - Criar tabela no Supabase para a partilha de lista de compras:
   Ir ao projeto Supabase → SQL Editor → correr:
