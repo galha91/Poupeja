@@ -1289,8 +1289,14 @@ export default function PoupeJa() {
     }
 
     if (Notification.permission !== "default") return;
+    // Se já foi pedido mas não há subscrição ativa, pede de novo
     const jaAtivou = localStorage.getItem("poupeja_push_pedido");
-    if (jaAtivou) return;
+    if (jaAtivou) {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription().catch(() => null);
+      if (sub) return;
+      localStorage.removeItem("poupeja_push_pedido");
+    }
     localStorage.setItem("poupeja_push_pedido", "1");
 
     setTimeout(async () => {
