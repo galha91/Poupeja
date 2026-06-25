@@ -1,94 +1,112 @@
 {
-  "atualizadoEm": "2026-06-18",
+  "atualizadoEm": "2026-06-25",
   "folhetos": [
     {
       "id": 4,
       "loja": "Aldi",
       "titulo": "Folheto desta semana",
-      "validade": "15–21 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.aldi.pt/folheto/esta-semana.html",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": false
     },
     {
       "id": 6,
       "loja": "Auchan",
       "titulo": "Folheto desta semana",
-      "validade": "18–24 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.auchan.pt/pt/folhetos/",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": false
     },
     {
       "id": 1,
       "loja": "Continente",
       "titulo": "Folheto desta semana",
-      "validade": "16–22 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.continente.pt/folhetos/",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": true
     },
     {
       "id": 7,
       "loja": "E.Leclerc",
       "titulo": "Folheto desta semana",
-      "validade": "9–28 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.e-leclerc.pt/folhetos",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": false
     },
     {
       "id": 8,
       "loja": "El Corte Inglés",
       "titulo": "Folheto desta semana",
-      "validade": "5–25 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.elcorteingles.pt/catalogos/",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": false
     },
     {
       "id": 9,
       "loja": "Froiz",
       "titulo": "Folheto desta semana",
-      "validade": "15–21 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.froiz.pt/folhetos/",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": false
     },
     {
       "id": 5,
       "loja": "Intermarché",
       "titulo": "Folheto desta semana",
-      "validade": "18–24 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.intermarche.pt/folhetos/",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": false
     },
     {
       "id": 3,
       "loja": "Lidl",
       "titulo": "Folheto desta semana",
-      "validade": "16–22 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.lidl.pt/c/folhetos/s10020672",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": true
     },
     {
       "id": 2,
       "loja": "Pingo Doce",
       "titulo": "Folheto desta semana",
-      "validade": "16–22 jun",
+      "validade": "22 jun–28 jun",
       "url": "https://www.pingodoce.pt/folhetos/",
       "capa": "",
-      "categorias": ["Promoções"],
+      "categorias": [
+        "Promoções"
+      ],
       "destaque": true
     }
   ]
