@@ -1,45 +1,20 @@
-name: Atualizar folhetos semanais
+name: Testar links dos folhetos
 
 on:
   schedule:
-    - cron: '0 7 * * 1'  # Segunda-feira 07:00 UTC — site atualizado de manhã cedo
-    - cron: '0 8 * * 3'  # Quarta-feira 08:00 UTC — deploy pronto antes do email de quinta
-  workflow_dispatch:       # Execução manual quando necessário
+    - cron: '0 7 * * 1'  # Segunda-feira 07:00 UTC
+    - cron: '0 8 * * 3'  # Quarta-feira 08:00 UTC
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  atualizar:
+  testar:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Calcular semana e atualizar folhetos.json
-        run: |
-          node -e "
-          const fs = require('fs');
-
-          const hoje = new Date();
-          const diaSemana = hoje.getDay();
-          const seg = new Date(hoje);
-          seg.setDate(hoje.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
-          const dom = new Date(seg);
-          dom.setDate(seg.getDate() + 6);
-
-          const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-          const fmt = d => d.getDate() + ' ' + meses[d.getMonth()];
-          const validade = fmt(seg) + '–' + fmt(dom);
-          const atualizadoEm = hoje.toISOString().split('T')[0];
-
-          const file = 'public/folhetos.json';
-          const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-          data.atualizadoEm = atualizadoEm;
-          data.folhetos = data.folhetos.map(f => ({ ...f, validade }));
-          fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
-          console.log('Semana: ' + validade);
-          "
 
       - name: Testar links dos folhetos
         id: teste_links
@@ -60,9 +35,7 @@ jobs:
                 signal: AbortSignal.timeout(10000),
               });
               const ok = r.status < 400 || r.status === 403 || r.status === 429;
-              const estado = r.status === 404 || r.status === 410 ? 'QUEBRADO' :
-                             r.status === 403 || r.status === 429 ? 'BLOQUEADO (ok para utilizadores)' : 'OK';
-              console.log((ok ? '✅' : '❌') + ' ' + loja + ' [' + r.status + '] ' + estado);
+              console.log((ok ? '✅' : '❌') + ' ' + loja + ' [' + r.status + ']');
               return { loja, url, status: r.status, ok };
             } catch (e) {
               console.log('❌ ' + loja + ' [TIMEOUT/ERRO] ' + e.message);
@@ -73,15 +46,10 @@ jobs:
           const data = JSON.parse(fs.readFileSync('public/folhetos.json', 'utf8'));
           const resultados = await Promise.all(data.folhetos.map(f => testar(f.loja, f.url)));
           const quebrados = resultados.filter(r => !r.ok);
-
           if (quebrados.length > 0) {
-            console.log('');
-            console.log('⚠️  Links quebrados: ' + quebrados.map(r => r.loja).join(', '));
-            // Escreve para output do GitHub Actions para uso no próximo passo
             fs.appendFileSync(process.env.GITHUB_OUTPUT || '/dev/null',
               'quebrados=' + quebrados.map(r => r.loja + ' (' + r.status + ')').join(', ') + '\n');
           } else {
-            console.log('');
             console.log('✅ Todos os links OK');
           }
           "
@@ -93,8 +61,7 @@ jobs:
           QUEBRADOS: ${{ steps.teste_links.outputs.quebrados }}
         run: |
           if [ -z "$RESEND_API_KEY" ]; then
-            echo "⚠️  RESEND_API_KEY não configurada — alerta por email ignorado."
-            echo "Links quebrados: $QUEBRADOS"
+            echo "⚠️  RESEND_API_KEY não configurada."
             exit 0
           fi
           curl -s -X POST https://api.resend.com/emails \
@@ -104,39 +71,5 @@ jobs:
               \"from\": \"PoupeJá <noreply@xn--poupej-uta.com>\",
               \"to\": [\"ricardogalha1@hotmail.com\"],
               \"subject\": \"⚠️ PoupeJá — links quebrados nos folhetos\",
-              \"html\": \"<p>Os seguintes folhetos têm links quebrados:</p><p><strong>$QUEBRADOS</strong></p><p>Acede a <a href='https://xn--poupej-uta.com/admin'>poupeja.com/admin</a> para corrigir.</p>\"
+              \"html\": \"<p>Links quebrados: <strong>$QUEBRADOS</strong></p><p><a href='https://xn--poupej-uta.com/admin'>Abrir painel admin</a></p>\"
             }"
-
-      - name: Commit e push (só se houver alterações)
-        id: commit
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/folhetos.json
-          if git diff --staged --quiet; then
-            echo "Sem alterações."
-            echo "alterou=false" >> "$GITHUB_OUTPUT"
-          else
-            SEMANA=$(node -e "const d=new Date();const s=new Date(d);s.setDate(d.getDate()-(d.getDay()===0?6:d.getDay()-1));const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];console.log(s.getDate()+' '+m[s.getMonth()])")
-            git commit -m "chore: folhetos — semana de $SEMANA"
-            git push origin main
-            echo "alterou=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Notificação push — folhetos novos
-        if: ${{ steps.commit.outputs.alterou == 'true' }}
-        continue-on-error: true
-        env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          SITE_URL: https://xn--poupej-uta.com
-        run: |
-          if [ -z "$CRON_SECRET" ]; then
-            echo "⚠️  CRON_SECRET não configurada — notificação ignorada."
-            exit 0
-          fi
-          sleep 180
-          curl -sf -X POST "$SITE_URL/api/push-enviar" \
-            -H "Authorization: Bearer $CRON_SECRET" \
-            -H "Content-Type: application/json" \
-            -d '{"title":"🛒 Folhetos novos esta semana","body":"Já podes ver as promoções de todos os supermercados. Vê onde poupar!","url":"/"}' \
-            && echo "✅ Notificação enviada." || echo "⚠️ Falha ao enviar notificação."
