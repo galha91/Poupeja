@@ -74,7 +74,13 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
     if (Notification.permission === "denied") { setPushEstado("bloqueado"); return; }
     navigator.serviceWorker.ready.then(reg =>
       reg.pushManager.getSubscription().then(sub => {
-        setPushEstado(sub ? "ativo" : "inativo");
+        if (sub) { setPushEstado("ativo"); return; }
+        // Permissão já concedida mas sem subscrição — subscreve automaticamente
+        if (Notification.permission === "granted") {
+          ativarPush();
+        } else {
+          setPushEstado("inativo");
+        }
       })
     ).catch(() => setPushEstado("inativo"));
   }, [VAPID_PUBLIC]);
