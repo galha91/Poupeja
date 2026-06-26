@@ -189,11 +189,54 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* Cartões de períodos */}
+            {/* Cartões de períodos — novos registos */}
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1">Novos registos</p>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <Cartao rotulo="Hoje" valor={stats.hoje} />
               <Cartao rotulo="7 dias" valor={stats.ultimos7} />
               <Cartao rotulo="30 dias" valor={stats.ultimos30} />
+            </div>
+
+            {/* Utilizadores ATIVOS — engagement real */}
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1">Ativos (fizeram login)</p>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <Cartao rotulo="Hoje" valor={stats.ativosHoje ?? "—"} cor="text-blue-600" />
+              <Cartao rotulo="7 dias" valor={stats.ativos7 ?? "—"} cor="text-blue-600" />
+              <Cartao rotulo="30 dias" valor={stats.ativos30 ?? "—"} cor="text-blue-600" />
+            </div>
+
+            {/* Mini-gráfico de crescimento (14 dias) */}
+            {Array.isArray(stats.crescimento) && stats.crescimento.length > 0 && (
+              <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-3">Registos · últimos 14 dias</p>
+                <Grafico dados={stats.crescimento} />
+              </div>
+            )}
+
+            {/* Funil de conversão */}
+            {stats.funil && (
+              <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-3">Funil de conversão</p>
+                <Funil funil={stats.funil} />
+              </div>
+            )}
+
+            {/* Listas partilhadas + Email */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Listas partilhadas</p>
+                <p className="text-3xl font-black text-pink-600 mt-1.5">{stats.listasPartilhadas ?? 0}</p>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                  {stats.listasAtivas7 ?? 0} ativas nos últimos 7 dias
+                </p>
+              </div>
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Email semanal</p>
+                <p className="text-3xl font-black text-emerald-600 mt-1.5">{stats.emailAtivos ?? stats.confirmados}</p>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                  recebem · {stats.emailDesativado ?? 0} desativaram
+                </p>
+              </div>
             </div>
 
             {/* Plataformas e PWA */}
@@ -414,11 +457,66 @@ export default function Admin() {
   );
 }
 
-function Cartao({ rotulo, valor }) {
+function Cartao({ rotulo, valor, cor = "text-slate-800" }) {
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-      <div className="text-2xl font-black text-slate-800">{valor}</div>
+      <div className={`text-2xl font-black ${cor}`}>{valor}</div>
       <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wide mt-0.5">{rotulo}</div>
+    </div>
+  );
+}
+
+function Grafico({ dados }) {
+  const max = Math.max(1, ...dados.map(d => d.n));
+  const total = dados.reduce((s, d) => s + d.n, 0);
+  return (
+    <>
+      <div className="flex items-end justify-between gap-1 h-24">
+        {dados.map((d, i) => {
+          const altura = d.n === 0 ? 4 : Math.max(8, (d.n / max) * 96);
+          const dia = new Date(d.dia);
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1 group">
+              <span className="text-[9px] font-black text-slate-400 opacity-0 group-hover:opacity-100 transition">{d.n}</span>
+              <div
+                className="w-full rounded-t-md bg-gradient-to-t from-emerald-400 to-emerald-500"
+                style={{ height: `${altura}px` }}
+                title={`${d.dia}: ${d.n} registos`}
+              />
+              <span className="text-[8px] text-slate-300 font-bold">{dia.getDate()}</span>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-[11px] text-slate-400 font-medium mt-2 text-center">{total} registos em 14 dias</p>
+    </>
+  );
+}
+
+function Funil({ funil }) {
+  const etapas = [
+    { rotulo: "Registou", valor: funil.registou, cor: "bg-slate-400" },
+    { rotulo: "Confirmou email", valor: funil.confirmou, cor: "bg-emerald-500" },
+    { rotulo: "Instalou app", valor: funil.instalou, cor: "bg-violet-500" },
+    { rotulo: "Ativou notificações", valor: funil.ativouPush, cor: "bg-blue-500" },
+  ];
+  const base = Math.max(1, funil.registou);
+  return (
+    <div className="flex flex-col gap-2">
+      {etapas.map((e, i) => {
+        const pct = Math.round((e.valor / base) * 100);
+        return (
+          <div key={i}>
+            <div className="flex items-center justify-between text-[11px] mb-0.5">
+              <span className="font-bold text-slate-600">{e.rotulo}</span>
+              <span className="font-black text-slate-800">{e.valor} <span className="text-slate-400 font-medium">({pct}%)</span></span>
+            </div>
+            <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div className={`h-full rounded-full ${e.cor} transition-all duration-500`} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

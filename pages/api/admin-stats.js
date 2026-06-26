@@ -53,6 +53,24 @@ export default async function handler(req, res) {
     const ultimos30 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 30 * DIA).length;
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
 
+    // Utilizadores ATIVOS (fizeram login no período) — engagement real, não só registo
+    const ativosHoje = todos.filter(u => u.last_sign_in_at && new Date(u.last_sign_in_at) >= inicioHoje).length;
+    const ativos7 = todos.filter(u => u.last_sign_in_at && agora - new Date(u.last_sign_in_at).getTime() < 7 * DIA).length;
+    const ativos30 = todos.filter(u => u.last_sign_in_at && agora - new Date(u.last_sign_in_at).getTime() < 30 * DIA).length;
+    const nuncaVoltaram = todos.filter(u => !u.last_sign_in_at).length;
+
+    // Mini-gráfico: registos por dia nos últimos 14 dias
+    const crescimento = [];
+    for (let i = 13; i >= 0; i--) {
+      const ini = new Date(); ini.setHours(0, 0, 0, 0); ini.setDate(ini.getDate() - i);
+      const fim = new Date(ini); fim.setDate(fim.getDate() + 1);
+      const n = todos.filter(u => {
+        const c = u.created_at ? new Date(u.created_at) : null;
+        return c && c >= ini && c < fim;
+      }).length;
+      crescimento.push({ dia: ini.toISOString().split("T")[0], n });
+    }
+
     // Subscritores push — cruzar user_id com emails
     const { data: pushSubs } = await admin
       .from("push_subscriptions")
@@ -80,6 +98,39 @@ export default async function handler(req, res) {
       desktop: Object.values(dispositivoMap).filter(d => d?.platform === "desktop").length,
     };
 
+    // Listas de compras partilhadas (funcionalidade de recomendação/boca-a-boca)
+    let listasPartilhadas = 0, listasAtivas7 = 0;
+    try {
+      const { data: listas } = await admin
+        .from("listas_partilhadas")
+        .select("atualizado_em");
+      listasPartilhadas = (listas || []).length;
+      listasAtivas7 = (listas || []).filter(l => l.atualizado_em && agora - new Date(l.atualizado_em).getTime() < 7 * DIA).length;
+    } catch {}
+
+    // Quem desativou o email semanal (alcance real das campanhas de quinta)
+    let emailDesativado = 0;
+    try {
+      const { data: prefsRows } = await admin
+        .from("dados_utilizador")
+        .select("valor")
+        .eq("chave", "poupeja_prefs");
+      for (const row of prefsRows || []) {
+        const v = typeof row.valor === "string" ? JSON.parse(row.valor) : row.valor;
+        if (v && v.emailSemanal === false) emailDesativado++;
+      }
+    } catch {}
+    const emailAtivos = confirmados - emailDesativado;
+
+    // Funil de conversão: Registou → Confirmou → Instalou app → Ativou push
+    const totalPush = new Set((pushSubs || []).map(s => s.user_id)).size;
+    const funil = {
+      registou: total,
+      confirmou: confirmados,
+      instalou: totalPwa,
+      ativouPush: totalPush,
+    };
+
     // Recentes com última visita e dispositivo
     const recentes = [...todos]
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -102,6 +153,16 @@ export default async function handler(req, res) {
       porPlataforma,
       recentes,
       pushSubscritores,
+      ativosHoje,
+      ativos7,
+      ativos30,
+      nuncaVoltaram,
+      crescimento,
+      listasPartilhadas,
+      listasAtivas7,
+      emailDesativado,
+      emailAtivos,
+      funil,
       atualizadoEm: new Date().toISOString(),
     });
   } catch (e) {
