@@ -1,5 +1,17 @@
 # Notas — tarefas para fazer no PC
 
+## ⚠️ PENDENTE — Segurança (fazer assim que possível)
+O `CRON_SECRET` antigo esteve exposto no repositório público. Foi gerado um novo
+(valor guardado no chat com o assistente — NÃO escrever aqui). Falta aplicá-lo:
+1. Vercel → Settings → Environment Variables → editar `CRON_SECRET` com o valor novo
+2. cron-job.org → nos 2 crons (email + push) → header `Authorization: Bearer <novo>`
+3. Test Run em ambos → confirmar 200
+
+## ⚠️ PENDENTE — Reescrever a Política de Privacidade
+A página `/privacidade` ainda diz "os dados ficam só no dispositivo, sem servidores".
+Já não é verdade (Supabase, emails, push, listas partilhadas). Tem de ser reescrita
+para refletir a realidade antes de responder a questões de RGPD.
+
 ## Compilar a app para as lojas (Android/iOS)
 Ver guia completo em `GUIA-APPS.md`. Resumo dos comandos (correr no computador
 com Android Studio / Xcode instalados):
