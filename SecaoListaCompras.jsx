@@ -287,7 +287,8 @@ export default function SecaoListaCompras() {
   // Abre o menu de partilha nativo do telemóvel (WhatsApp, Mensagens…).
   // Se não houver partilha nativa (ex: desktop), copia o link.
   async function abrirPartilha(url) {
-    const texto = `🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:\n${url}`;
+    // O url é passado em separado; não o repetir no texto (senão aparece duplicado).
+    const texto = "🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:";
     if (navigator.share) {
       try {
         await navigator.share({ title: "Lista de compras — PoupeJá", text: texto, url });

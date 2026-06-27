@@ -71,7 +71,7 @@ export default function ListaPartilhada({ id }) {
 
   async function copiarLink() {
     const url = window.location.href;
-    const texto = `🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:\n${url}`;
+    const texto = "🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:";
     if (navigator.share) {
       try { await navigator.share({ title: "Lista de compras — PoupeJá", text: texto, url }); return; }
       catch (e) { if (e?.name === "AbortError") return; }
@@ -89,9 +89,21 @@ export default function ListaPartilhada({ id }) {
     <>
       <Head>
         <title>Lista de compras partilhada — PoupeJá</title>
-        <meta name="description" content="Lista de compras partilhada via PoupeJá" />
+        <meta name="description" content="Abre e edita esta lista de compras comigo, em tempo real. Grátis no PoupeJá." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        {/* Pré-visualização (WhatsApp, iMessage, redes sociais) */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="PoupeJá" />
+        <meta property="og:title" content="🛒 A nossa lista de compras — PoupeJá" />
+        <meta property="og:description" content="Abre o link e edita a lista comigo, em tempo real. Grátis." />
+        <meta property="og:image" content="https://www.xn--poupej-uta.com/api/og?v=lista" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="🛒 A nossa lista de compras — PoupeJá" />
+        <meta name="twitter:description" content="Abre o link e edita a lista comigo, em tempo real. Grátis." />
+        <meta name="twitter:image" content="https://www.xn--poupej-uta.com/api/og?v=lista" />
       </Head>
 
       <div className="min-h-screen bg-slate-50 pb-32">

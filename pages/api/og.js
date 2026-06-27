@@ -2,7 +2,18 @@ import { ImageResponse } from "next/og";
 
 export const config = { runtime: "edge" };
 
-export default function handler() {
+export default function handler(req) {
+  let variante = "default";
+  try { variante = new URL(req.url).searchParams.get("v") || "default"; } catch {}
+  const lista = variante === "lista";
+
+  const eyebrow = lista ? "Lista de compras partilhada" : "A app de poupança portuguesa";
+  const titulo1 = lista ? "A nossa lista" : "Poupa nas compras";
+  const titulo2 = lista ? "de compras" : "do dia a dia";
+  const subtitulo = lista
+    ? "Abre o link e edita a lista comigo — em tempo real, grátis."
+    : "Folhetos, combustíveis e mais de 50 lojas. Grátis.";
+
   return new ImageResponse(
     (
       <div
@@ -127,7 +138,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            A app de poupança portuguesa
+            {eyebrow}
           </div>
           <div
             style={{
@@ -138,7 +149,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            Poupa nas compras
+            {titulo1}
           </div>
           <div
             style={{
@@ -150,7 +161,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            do dia a dia
+            {titulo2}
           </div>
           <div
             style={{
@@ -162,7 +173,7 @@ export default function handler() {
               display: "flex",
             }}
           >
-            Folhetos, combustíveis e mais de 50 lojas. Grátis.
+            {subtitulo}
           </div>
         </div>
 
