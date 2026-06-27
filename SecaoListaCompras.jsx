@@ -284,9 +284,26 @@ export default function SecaoListaCompras() {
     if (listaId && !aplicandoPull.current) push(itens, listaId);
   }, [itens]);
 
+  // Abre o menu de partilha nativo do telemóvel (WhatsApp, Mensagens…).
+  // Se não houver partilha nativa (ex: desktop), copia o link.
+  async function abrirPartilha(url) {
+    const texto = `🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:\n${url}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Lista de compras — PoupeJá", text: texto, url });
+        return;
+      } catch (e) {
+        if (e?.name === "AbortError") return; // utilizador fechou o menu
+      }
+    }
+    try { await navigator.clipboard.writeText(url); } catch {}
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 3000);
+  }
+
   async function partilhar() {
     setCriandoLink(true);
-    const id = gerarShareId();
+    const id = listaId || gerarShareId();
     try {
       const r = await fetch(`/api/lista-partilhada/${id}`, {
         method: "PUT",
@@ -296,10 +313,7 @@ export default function SecaoListaCompras() {
       if (!r.ok) throw new Error();
       localStorage.setItem(LS_SHARE_KEY, id);
       setListaId(id);
-      const url = `${window.location.origin}/lista/${id}`;
-      try { await navigator.clipboard.writeText(url); } catch {}
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 3000);
+      await abrirPartilha(`${window.location.origin}/lista/${id}`);
     } catch { alert("Erro ao criar link. Tenta novamente."); }
     finally { setCriandoLink(false); }
   }
@@ -310,10 +324,7 @@ export default function SecaoListaCompras() {
   }
 
   async function copiarLink() {
-    const url = `${window.location.origin}/lista/${listaId}`;
-    try { await navigator.clipboard.writeText(url); } catch {}
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 3000);
+    await abrirPartilha(`${window.location.origin}/lista/${listaId}`);
   }
 
   const pendentes = itens.filter(i => !i.feito);
@@ -552,7 +563,7 @@ export default function SecaoListaCompras() {
               disabled={criandoLink}
               className="press inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] font-black px-3.5 py-2 rounded-xl border border-white/25"
             >
-              <Share2 size={13} /> {criandoLink ? "A criar…" : "Partilhar lista"}
+              <Share2 size={13} /> {criandoLink ? "A criar…" : "Partilhar com a família"}
             </button>
           ) : (
             <>
@@ -560,7 +571,7 @@ export default function SecaoListaCompras() {
                 onClick={copiarLink}
                 className="press inline-flex items-center gap-1.5 bg-white text-violet-700 text-[11px] font-black px-3.5 py-2 rounded-xl"
               >
-                <Link size={13} /> {copiado ? "Copiado ✓" : "Copiar link"}
+                <Share2 size={13} /> {copiado ? "Copiado ✓" : "Partilhar"}
               </button>
               <button
                 onClick={pararPartilha}

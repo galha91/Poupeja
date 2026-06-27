@@ -71,6 +71,11 @@ export default function ListaPartilhada({ id }) {
 
   async function copiarLink() {
     const url = window.location.href;
+    const texto = `🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:\n${url}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: "Lista de compras — PoupeJá", text: texto, url }); return; }
+      catch (e) { if (e?.name === "AbortError") return; }
+    }
     try { await navigator.clipboard.writeText(url); } catch {}
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2500);
@@ -232,7 +237,7 @@ export default function ListaPartilhada({ id }) {
                   onClick={copiarLink}
                   className="px-4 py-2 rounded-xl bg-white/20 text-white text-[12px] font-black border border-white/20"
                 >
-                  {copiado ? "Copiado ✓" : "📋 Copiar link"}
+                  {copiado ? "Copiado ✓" : "📤 Partilhar"}
                 </button>
                 <a
                   href="/"
