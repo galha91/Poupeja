@@ -23,13 +23,16 @@ npm run cap:android       # abre Android Studio → Build → .aab
 ### Vercel — Environment Variables
 Ir a vercel.com → PoupeJá → Settings → Environment Variables
 
-| Nome | Valor |
-|------|-------|
-| `CRON_SECRET` | `poupeja-cron-2026-secret` | ✅ já adicionado |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `BAftcbRKMAysEbxLXcMnPajkyHziZKHK8g0o-en_l0TlHi8bMvIZZLb05MHxF4OLgBSk9iv7vpRKY2DXOF7zkfk` |
-| `VAPID_PRIVATE_KEY` | `7zphNchunc6AlZiKz5tfji7V4jMa4moAf1LppPzEXzA` |
-| `VAPID_EMAIL` | `mailto:poupeja.portugal@gmail.com` |
-| `RESEND_API_KEY` | (a tua chave do resend.com) |
+| Nome | Onde obter o valor |
+|------|--------------------|
+| `CRON_SECRET` | segredo privado — ver no painel do Vercel (NÃO guardar aqui) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | chave pública VAPID — ver no painel do Vercel |
+| `VAPID_PRIVATE_KEY` | segredo privado — ver no painel do Vercel (NÃO guardar aqui) |
+| `VAPID_EMAIL` | mailto:poupeja.portugal@gmail.com |
+| `RESEND_API_KEY` | segredo privado — ver no painel do Vercel / resend.com |
+
+> ⚠️ Nunca colocar segredos (CRON_SECRET, VAPID_PRIVATE_KEY, RESEND_API_KEY) neste
+> ficheiro — o repositório é público. Os valores vivem só no Vercel/cron-job.org.
 
 ### GitHub — Secrets (Actions)
 Ir a github.com/galha91/Poupeja/settings/secrets/actions
@@ -44,7 +47,7 @@ Criar novo cron em console.cron-job.org com:
 - Método: POST
 - Horário: quinta-feira 09:00 UTC (`0 9 * * 4`)
 - Timezone: Europe/Lisbon
-- Header: `Authorization: Bearer poupeja-cron-2026-secret`
+- Header: `Authorization: Bearer <CRON_SECRET>` (valor igual ao do Vercel)
 - Body (JSON):
 ```json
 { "title": "💰 Já aproveitaste as promoções desta semana?",
