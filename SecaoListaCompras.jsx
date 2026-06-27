@@ -13,11 +13,11 @@ const CATS = {
       { nome: "Melão", emoji: "🍈" }, { nome: "Limões", emoji: "🍋" },
       { nome: "Kiwi", emoji: "🥝" }, { nome: "Ananás", emoji: "🍍" },
       { nome: "Manga", emoji: "🥭" }, { nome: "Cerejas", emoji: "🍒" },
-      { nome: "Pêssegos", emoji: "🍑" }, { nome: "Ameixas", emoji: "🍑" },
-      { nome: "Melancia", emoji: "🍉" }, { nome: "Figos", emoji: "🫐" },
-      { nome: "Framboesas", emoji: "🫐" }, { nome: "Mirtilos", emoji: "🫐" },
-      { nome: "Tangerinas", emoji: "🍊" }, { nome: "Amoras", emoji: "🫐" },
-      { nome: "Toranja", emoji: "🍊" }, { nome: "Papaia", emoji: "🍈" },
+      { nome: "Pêssegos", emoji: "🍑" }, { nome: "Ameixas", emoji: "" },
+      { nome: "Melancia", emoji: "🍉" }, { nome: "Figos", emoji: "" },
+      { nome: "Framboesas", emoji: "" }, { nome: "Mirtilos", emoji: "🫐" },
+      { nome: "Tangerinas", emoji: "🍊" }, { nome: "Amoras", emoji: "" },
+      { nome: "Toranja", emoji: "🍊" }, { nome: "Papaia", emoji: "" },
       { nome: "Coco", emoji: "🥥" }, { nome: "Abacate", emoji: "🥑" },
     ],
   },
@@ -31,7 +31,7 @@ const CATS = {
       { nome: "Pimentos", emoji: "🫑" }, { nome: "Couve", emoji: "🥬" },
       { nome: "Espinafres", emoji: "🥬" }, { nome: "Cogumelos", emoji: "🍄" },
       { nome: "Beringela", emoji: "🍆" }, { nome: "Malagueta", emoji: "🌶️" },
-      { nome: "Beterraba", emoji: "🥬" }, { nome: "Nabo", emoji: "🥔" },
+      { nome: "Beterraba", emoji: "" }, { nome: "Nabo", emoji: "" },
       { nome: "Ervilhas", emoji: "🫛" }, { nome: "Feijão verde", emoji: "🫛" },
       { nome: "Milho", emoji: "🌽" }, { nome: "Courgette", emoji: "🥒" },
       { nome: "Salsa", emoji: "🌿" }, { nome: "Coentros", emoji: "🌿" },
@@ -215,6 +215,21 @@ const CATS = {
     ],
   },
 };
+
+// Mostra o emoji quando existe; caso contrário, um círculo com a inicial
+// e a cor da categoria (evita emojis enganadores em produtos sem emoji próprio).
+function IconeArtigo({ emoji, nome, cor = "#7c3aed", size = 30, className = "" }) {
+  if (emoji) return <span className={`leading-none ${className}`} style={{ fontSize: size }}>{emoji}</span>;
+  const inicial = (nome || "?").trim().charAt(0).toUpperCase();
+  return (
+    <span
+      className={`inline-flex items-center justify-center rounded-full font-black ${className}`}
+      style={{ width: size, height: size, background: cor + "1f", color: cor, fontSize: Math.round(size * 0.46) }}
+    >
+      {inicial}
+    </span>
+  );
+}
 
 function lerItens() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; }
@@ -426,7 +441,7 @@ export default function SecaoListaCompras() {
                         borderColor: catC ? catC.cor + "44" : "#e2e8f0",
                       }}
                     >
-                      <span className="text-base leading-none">{it.emoji || "🛒"}</span>
+                      <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catC?.cor} size={16} />
                       <span className="text-[11px] font-black text-slate-700 max-w-[64px] truncate">{it.nome}</span>
                       {it.qty > 1 && (
                         <span className="text-[9px] font-black text-white px-1 py-0.5 rounded-full" style={{ background: catC?.cor || "#7c3aed" }}>
@@ -473,7 +488,7 @@ export default function SecaoListaCompras() {
                     className="press card p-3 flex flex-col items-center gap-1.5 relative"
                     style={{ borderColor: na ? cfg.cor + "66" : undefined, background: na ? cfg.bg : undefined }}
                   >
-                    <span className="text-2xl leading-none">{it.emoji}</span>
+                    <IconeArtigo emoji={it.emoji} nome={it.nome} cor={CATS[it.cat]?.cor} size={24} />
                     <p className="text-[10px] font-black text-slate-700 text-center leading-tight">{it.nome}</p>
                     {na && <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full" style={{ background: cfg.cor }}>{na.qty}×</span>}
                   </button>
@@ -511,7 +526,7 @@ export default function SecaoListaCompras() {
                       background: naLista ? catCfg.bg : undefined,
                     }}
                   >
-                    <span className="text-3xl leading-none">{it.emoji}</span>
+                    <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catCfg.cor} size={30} />
                     <p className="text-[11px] font-black text-slate-700 text-center leading-tight">{it.nome}</p>
                     {naLista && (
                       <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full" style={{ background: catCfg.cor }}>
@@ -628,7 +643,7 @@ export default function SecaoListaCompras() {
                     className="press card w-full p-3.5 flex flex-col items-center gap-1.5"
                     style={catCfg ? { background: catCfg.bg, borderColor: catCfg.cor + "33" } : {}}
                   >
-                    <span className="text-3xl leading-none">{it.emoji || "🛒"}</span>
+                    <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catCfg?.cor} size={30} />
                     <p className="text-[11px] font-black text-slate-800 text-center leading-tight">{it.nome}</p>
                     {it.qty > 1 && (
                       <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full"
@@ -671,7 +686,7 @@ export default function SecaoListaCompras() {
             {feitos.map(it => (
               <button key={it.id} onClick={() => marcar(it.id)}
                 className="press card p-3.5 flex flex-col items-center gap-1.5 relative">
-                <span className="text-3xl leading-none grayscale">{it.emoji || "🛒"}</span>
+                <IconeArtigo emoji={it.emoji} nome={it.nome} cor={CATS[it.categoria]?.cor} size={30} className="grayscale" />
                 <p className="text-[11px] font-black text-slate-500 text-center leading-tight line-through">{it.nome}</p>
                 <div className="w-5 h-5 rounded-full bg-violet-500 flex items-center justify-center">
                   <Check size={11} className="text-white" />
