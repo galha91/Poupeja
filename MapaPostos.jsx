@@ -8,16 +8,43 @@ import "leaflet/dist/leaflet.css";
  * ssr:false (a Leaflet precisa do objeto `window`).
  *
  * props:
- *   postos    — [{ lat, lon, preco, nome|posto, marca, municipio, distancia }]
+ *   postos    — combustível: [{ lat, lon, preco, nome|posto, municipio, distancia }]
+ *               ev:          [{ lat, lon, estado, nome, operador, potencia/potenciaNum, distancia }]
+ *   variante  — "combustivel" (defeito) | "ev"
  *   userLoc   — { lat, lon } | null
- *   min       — preço mais baixo (para destacar o mais barato)
+ *   min       — preço mais baixo (só combustível; destaca o mais barato)
  *   onNavegar — (lat, lon) => void  (abre direções)
  */
 function esc(s) {
   return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
 
-export default function MapaPostos({ postos = [], userLoc, min, onNavegar }) {
+// Devolve a configuração visual de cada pino conforme o tipo
+function configPino(p, variante, min) {
+  if (variante === "ev") {
+    const est = p.estado;
+    const cor = est === "ocupado" ? "#ef4444" : est === "manutenção" ? "#f59e0b" : "#10b981";
+    const kw = p.potenciaNum || parseInt(p.potencia) || 0;
+    const estLabel = est === "ocupado" ? "Ocupado" : est === "manutenção" ? "Manutenção" : "Disponível";
+    return {
+      cor,
+      label: kw ? `${kw}kW` : "EV",
+      titulo: p.nome || "Posto EV",
+      sub: `${esc(p.operador || "")}${p.distancia != null ? ` · ${p.distancia} km` : ""}`,
+      destaque: `${kw ? `${kw} kW · ` : ""}${estLabel}`,
+    };
+  }
+  const barato = min && Math.abs(p.preco - min) < 0.001;
+  return {
+    cor: barato ? "#f97316" : "#1e293b",
+    label: `${p.preco.toFixed(3)}€`,
+    titulo: p.nome || p.posto || "",
+    sub: `${esc(p.municipio || "")}${p.distancia != null ? ` · ${p.distancia} km` : ""}`,
+    destaque: `${p.preco.toFixed(3)} €/litro`,
+  };
+}
+
+export default function MapaPostos({ postos = [], variante = "combustivel", userLoc, min, onNavegar }) {
   const elRef  = useRef(null);
   const mapRef = useRef(null);
   const navRef = useRef(onNavegar);
@@ -59,23 +86,21 @@ export default function MapaPostos({ postos = [], userLoc, min, onNavegar }) {
     const bounds = [];
 
     pts.forEach(p => {
-      const barato = min && Math.abs(p.preco - min) < 0.001;
-      const cor = barato ? "#f97316" : "#1e293b";
+      const cfg = configPino(p, variante, min);
       const icon = L.divIcon({
         className: "",
-        html: `<div style="background:${cor};color:#fff;font-weight:900;font-size:11px;line-height:1;padding:4px 6px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.35);border:1.5px solid #fff;">${p.preco.toFixed(3)}€</div>`,
+        html: `<div style="background:${cfg.cor};color:#fff;font-weight:900;font-size:11px;line-height:1;padding:4px 6px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.35);border:1.5px solid #fff;">${esc(cfg.label)}</div>`,
         iconSize: [50, 22],
         iconAnchor: [25, 24],
         popupAnchor: [0, -22],
       });
       const m = L.marker([p.lat, p.lon], { icon }).addTo(map);
-      const dist = p.distancia != null ? ` · ${p.distancia} km` : "";
       m.bindPopup(
         `<div style="font-family:system-ui;min-width:150px">
-           <div style="font-weight:900;color:#0f172a;font-size:13px">${esc(p.nome || p.posto)}</div>
-           <div style="font-size:11px;color:#64748b">${esc(p.municipio)}${dist}</div>
-           <div style="font-weight:900;color:#f97316;margin-top:4px;font-size:14px">${p.preco.toFixed(3)} €/litro</div>
-           <button class="pj-nav" data-lat="${p.lat}" data-lon="${p.lon}" style="margin-top:8px;width:100%;background:#f97316;color:#fff;border:none;font-weight:800;padding:7px;border-radius:8px;font-size:12px;cursor:pointer">Navegar →</button>
+           <div style="font-weight:900;color:#0f172a;font-size:13px">${esc(cfg.titulo)}</div>
+           <div style="font-size:11px;color:#64748b">${cfg.sub}</div>
+           <div style="font-weight:900;color:${cfg.cor};margin-top:4px;font-size:14px">${esc(cfg.destaque)}</div>
+           <button class="pj-nav" data-lat="${p.lat}" data-lon="${p.lon}" style="margin-top:8px;width:100%;background:${cfg.cor};color:#fff;border:none;font-weight:800;padding:7px;border-radius:8px;font-size:12px;cursor:pointer">Navegar →</button>
          </div>`
       );
       bounds.push([p.lat, p.lon]);

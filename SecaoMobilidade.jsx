@@ -763,6 +763,7 @@ function SubPostosEV() {
   const [batDe, setBatDe]           = useState(20);
   const [batAte, setBatAte]         = useState(80);
   const [simOpen, setSimOpen]       = useState(false);
+  const [vista, setVista]           = useState("lista");   // "lista" | "mapa"
   const carro = CARROS_EV.find(c => c.id === carroId) || null;
   // Alertas
   const [alertas, setAlertas]       = useState([]);
@@ -1027,8 +1028,39 @@ function SubPostosEV() {
         <p className="text-[10px] text-slate-400">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
       </div>
 
+      {/* Seletor Lista / Mapa */}
+      {!loading && !erro && postos.length > 0 && (
+        <div className="px-4 mb-3 flex gap-1 p-1 bg-slate-100 rounded-xl">
+          <button
+            onClick={() => setVista("lista")}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-white shadow-sm text-emerald-600" : "text-slate-400"}`}
+          ><ListIcon size={14} /> Lista</button>
+          <button
+            onClick={() => setVista("mapa")}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-white shadow-sm text-emerald-600" : "text-slate-400"}`}
+          ><MapIcon size={14} /> Mapa</button>
+        </div>
+      )}
+
+      {/* Mapa EV */}
+      {!erro && vista === "mapa" && filtrados.length > 0 && (
+        <div className="px-4 mb-4">
+          <MapaPostos
+            postos={filtrados}
+            variante="ev"
+            userLoc={loc}
+            onNavegar={(lat, lon) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`, "_blank", "noopener")}
+          />
+          <p className="text-[10px] text-slate-400 mt-1.5 text-center">
+            <span className="text-emerald-500 font-bold">verde</span> = disponível ·{" "}
+            <span className="text-red-500 font-bold">vermelho</span> = ocupado ·{" "}
+            <span className="text-amber-500 font-bold">laranja</span> = manutenção
+          </p>
+        </div>
+      )}
+
       {/* Lista postos */}
-      {erro ? <ErroCard onRetry={() => carregar()} /> : loading ? (
+      {vista === "mapa" ? null : erro ? <ErroCard onRetry={() => carregar()} /> : loading ? (
         <div className="px-4 flex flex-col gap-3">
           {[1, 2, 3].map(i => (
             <div key={i} className="card p-4 animate-pulse">
