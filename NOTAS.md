@@ -1,16 +1,33 @@
 # Notas — tarefas para fazer no PC
 
 ## ⚠️ PENDENTE — Segurança (fazer assim que possível)
+
+### 1. Rodar o CRON_SECRET (já estava pendente)
 O `CRON_SECRET` antigo esteve exposto no repositório público. Foi gerado um novo
 (valor guardado no chat com o assistente — NÃO escrever aqui). Falta aplicá-lo:
 1. Vercel → Settings → Environment Variables → editar `CRON_SECRET` com o valor novo
 2. cron-job.org → nos 2 crons (email + push) → header `Authorization: Bearer <novo>`
 3. Test Run em ambos → confirmar 200
 
-## ⚠️ PENDENTE — Reescrever a Política de Privacidade
-A página `/privacidade` ainda diz "os dados ficam só no dispositivo, sem servidores".
-Já não é verdade (Supabase, emails, push, listas partilhadas). Tem de ser reescrita
-para refletir a realidade antes de responder a questões de RGPD.
+### 2. Fechar o acesso anónimo às listas partilhadas (Supabase → SQL Editor)
+A API já passou a usar a service role. Falta remover as políticas públicas para
+que ninguém consiga ler/despejar a tabela diretamente com a chave anónima:
+```sql
+drop policy if exists "public_select" on listas_partilhadas;
+drop policy if exists "public_insert" on listas_partilhadas;
+drop policy if exists "public_update" on listas_partilhadas;
+-- RLS continua ativo; sem políticas, a chave anónima deixa de aceder.
+-- A API (service role) continua a funcionar normalmente.
+```
+
+### 3. (Recomendado) Segredo dedicado para os tokens de cancelamento
+No Vercel, adicionar `UNSUBSCRIBE_SECRET` com um valor aleatório próprio. Assim,
+rodar o `CRON_SECRET` no futuro não invalida os links de cancelamento já enviados.
+Se não for definido, o código usa o `CRON_SECRET` (já não há fallback público).
+
+## ✅ Política de Privacidade — FEITO
+A página `/privacidade` foi reescrita para refletir a realidade (Supabase na UE,
+emails via Resend, notificações push, listas partilhadas) e está conforme o RGPD.
 
 ## Compilar a app para as lojas (Android/iOS)
 Ver guia completo em `GUIA-APPS.md`. Resumo dos comandos (correr no computador

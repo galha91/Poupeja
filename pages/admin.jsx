@@ -483,7 +483,7 @@ function Grafico({ dados }) {
                 style={{ height: `${altura}px` }}
                 title={`${d.dia}: ${d.n} registos`}
               />
-              <span className="text-[8px] text-slate-300 font-bold">{dia.getDate()}</span>
+              <span className="text-[8px] text-slate-300 font-bold">{dia.getDate()}/{dia.getMonth() + 1}</span>
             </div>
           );
         })}
@@ -504,7 +504,7 @@ function Funil({ funil }) {
   return (
     <div className="flex flex-col gap-2">
       {etapas.map((e, i) => {
-        const pct = Math.round((e.valor / base) * 100);
+        const pct = Math.min(100, Math.round((e.valor / base) * 100)); // nunca passa dos 100%
         return (
           <div key={i}>
             <div className="flex items-center justify-between text-[11px] mb-0.5">

@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { lerFolhetos } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
+import { bearerValido } from "../../lib/seguranca";
 
 /*
  * Validação DIÁRIA de todas as URLs (promoções + folhetos).
@@ -11,9 +12,7 @@ import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../
  *   encher a caixa de correio todos os dias com avisos repetidos
  */
 export default async function handler(req, res) {
-  const secret = process.env.CRON_SECRET;
-  const auth = req.headers.authorization || "";
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
   if (!process.env.RESEND_API_KEY) {

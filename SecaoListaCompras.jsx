@@ -253,9 +253,10 @@ export default function SecaoListaCompras() {
   });
   const [copiado, setCopiado]   = useState(false);
   const [criandoLink, setCriandoLink] = useState(false);
-  const inputRef      = useRef(null);
-  const aplicandoPull = useRef(false);
-  const pushTimer     = useRef(null);
+  const inputRef       = useRef(null);
+  const ultimoPull     = useRef(null);   // JSON do último estado vindo do servidor
+  const primeiraRender = useRef(true);
+  const pushTimer      = useRef(null);
 
   function push(novosItens, id) {
     if (!id) return;
@@ -278,9 +279,8 @@ export default function SecaoListaCompras() {
       if (!r.ok) return;
       const data = await r.json();
       if (Array.isArray(data.itens)) {
-        aplicandoPull.current = true;
+        ultimoPull.current = JSON.stringify(data.itens);
         setItens(data.itens);
-        setTimeout(() => { aplicandoPull.current = false; }, 50);
       }
     } catch {}
   }
@@ -297,7 +297,11 @@ export default function SecaoListaCompras() {
 
   useEffect(() => {
     guardarItens(itens);
-    if (listaId && !aplicandoPull.current) push(itens, listaId);
+    // Não enviar no primeiro render (evita sobrepor o servidor com o estado
+    // local antigo antes do pull inicial). Depois, só envia se for uma edição
+    // real — ou seja, se o estado diferir do último recebido do servidor.
+    if (primeiraRender.current) { primeiraRender.current = false; return; }
+    if (listaId && JSON.stringify(itens) !== ultimoPull.current) push(itens, listaId);
   }, [itens]);
 
   // Abre o menu de partilha nativo do telemóvel (WhatsApp, Mensagens…).

@@ -1,5 +1,6 @@
 import webpush from "web-push";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
+import { bearerValido } from "../../lib/seguranca";
 
 /*
  * Envia notificações push a todos os utilizadores com subscrição ativa.
@@ -18,9 +19,7 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
-  const secret = process.env.CRON_SECRET;
-  const auth = req.headers.authorization || "";
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
 

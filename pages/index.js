@@ -1290,7 +1290,7 @@ export default function PoupeJa() {
 
     if (Notification.permission !== "default") return;
 
-    setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
         // Se já foi pedido mas não há subscrição ativa, pede de novo
         const jaAtivou = localStorage.getItem("poupeja_push_pedido");
@@ -1327,6 +1327,7 @@ export default function PoupeJa() {
         }
       } catch {}
     }, 3000); // pequeno delay para não assustar logo ao abrir a app
+    return () => clearTimeout(timer); // evita disparar após desmontar/trocar de utilizador
   }, [user?.id]);
 
   /* Abre o modal de instalação automaticamente na 3ª visita (e depois a cada 5) */

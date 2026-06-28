@@ -3,6 +3,7 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
 import { urlUnsub } from "../../lib/unsubscribeToken";
+import { bearerValido } from "../../lib/seguranca";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
@@ -15,9 +16,7 @@ import { urlUnsub } from "../../lib/unsubscribeToken";
  */
 export default async function handler(req, res) {
   // 1. Autenticação do cron
-  const secret = process.env.CRON_SECRET;
-  const auth = req.headers.authorization || "";
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
 
@@ -89,7 +88,8 @@ export default async function handler(req, res) {
         enviados++;
       } catch (e) {
         falhas++;
-        console.error("cron-email: falha para", u.email, e?.message);
+        // Não registar o email do utilizador nos logs (privacidade).
+        console.error("cron-email: falha de envio:", e?.message);
       }
       // Pausa curta para respeitar o rate limit do Resend
       await new Promise(r => setTimeout(r, 120));

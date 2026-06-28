@@ -128,7 +128,7 @@ export default async function handler(req, res) {
         if (v && v.emailSemanal === false) emailDesativado++;
       }
     } catch {}
-    const emailAtivos = confirmados - emailDesativado;
+    const emailAtivos = Math.max(0, confirmados - emailDesativado);
 
     // Funil de conversão: Registou → Confirmou → Instalou app → Ativou push
     const totalPush = new Set((pushSubs || []).map(s => s.user_id)).size;
