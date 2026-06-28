@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import CARROS_EV from "./data/carrosEV";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   AlertCircle, Bell, Plus, Trash2,
   Check, Info, X, TrendingDown, TrendingUp, Minus, Calendar, Car, Clock, Star,
+  Map as MapIcon, List as ListIcon,
 } from "lucide-react";
+
+// Mapa carregado só no cliente (a Leaflet precisa do `window`).
+const MapaPostos = dynamic(() => import("./MapaPostos"), {
+  ssr: false,
+  loading: () => <div className="mx-4 h-[380px] rounded-2xl bg-slate-100 animate-pulse" />,
+});
 
 /* ─── ícones dos conectores EV ─── */
 const CONECTOR_ICONS = {
@@ -395,6 +403,7 @@ function SubCombustiveis() {
   const [ordenar, setOrdenar]       = useState("preco");   // "preco" | "distancia"
   const [favoritos, setFavoritos]   = useState([]);
   const [soFavoritos, setSoFavoritos] = useState(false);
+  const [vista, setVista]           = useState("lista");   // "lista" | "mapa"
 
   useEffect(() => { setHistorico(lerHistorico()); }, []);
   useEffect(() => {
@@ -603,7 +612,32 @@ function SubCombustiveis() {
       )}
 
       {/* Ordenar + favoritos */}
+      {/* Seletor Lista / Mapa */}
       {!loading && !erro && doTipo.length > 0 && (
+        <div className="px-4 mb-3 flex gap-1 p-1 bg-slate-100 rounded-xl">
+          <button
+            onClick={() => setVista("lista")}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"}`}
+          ><ListIcon size={14} /> Lista</button>
+          <button
+            onClick={() => setVista("mapa")}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"}`}
+          ><MapIcon size={14} /> Mapa</button>
+        </div>
+      )}
+
+      {/* Mapa */}
+      {!erro && vista === "mapa" && doTipo.length > 0 && (
+        <div className="px-4 mb-4">
+          <MapaPostos postos={doTipo} userLoc={loc} min={min} onNavegar={(lat, lon) => navegarPara({ lat, lon })} />
+          <p className="text-[10px] text-slate-400 mt-1.5 text-center">
+            Toca num pino para ver o preço e navegar · <span className="text-orange-500 font-bold">laranja = mais barato</span>
+          </p>
+        </div>
+      )}
+
+      {/* Ordenar + favoritos (só na vista de lista) */}
+      {!loading && !erro && vista === "lista" && doTipo.length > 0 && (
         <div className="px-4 mb-3 flex items-center gap-2">
           <div className="flex gap-1 p-1 bg-slate-100 rounded-xl flex-1">
             <button
@@ -627,7 +661,7 @@ function SubCombustiveis() {
       )}
 
       {/* Lista */}
-      {erro ? <ErroCard onRetry={() => carregar()} mensagem={erro} /> : (
+      {erro ? <ErroCard onRetry={() => carregar()} mensagem={erro} /> : vista === "mapa" ? null : (
         <div className="px-4 flex flex-col gap-2.5">
           {soFavoritos && filtrados.length === 0 && (
             <div className="card p-6 text-center">
