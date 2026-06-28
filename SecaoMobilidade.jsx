@@ -3,7 +3,7 @@ import CARROS_EV from "./data/carrosEV";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   AlertCircle, Bell, Plus, Trash2,
-  Check, Info, X, TrendingDown, TrendingUp, Minus, Calendar, Car, Clock,
+  Check, Info, X, TrendingDown, TrendingUp, Minus, Calendar, Car, Clock, Star,
 } from "lucide-react";
 
 /* ─── ícones dos conectores EV ─── */
@@ -392,8 +392,29 @@ function SubCombustiveis() {
   const [locPedido, setLocPedido]   = useState(false);
   const [raio, setRaio]             = useState(10);
   const [historico, setHistorico]   = useState({});
+  const [ordenar, setOrdenar]       = useState("preco");   // "preco" | "distancia"
+  const [favoritos, setFavoritos]   = useState([]);
+  const [soFavoritos, setSoFavoritos] = useState(false);
 
   useEffect(() => { setHistorico(lerHistorico()); }, []);
+  useEffect(() => {
+    try { const r = localStorage.getItem("poupeja_postos_fav"); if (r) setFavoritos(JSON.parse(r)); } catch {}
+  }, []);
+
+  function favKey(e) { return `${(e.nome || e.posto || "").toLowerCase()}__${e.municipio || ""}`; }
+  function ehFavorito(e) { return favoritos.includes(favKey(e)); }
+  function toggleFavorito(e) {
+    const k = favKey(e);
+    setFavoritos(prev => {
+      const nova = prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k];
+      try { localStorage.setItem("poupeja_postos_fav", JSON.stringify(nova)); } catch {}
+      return nova;
+    });
+  }
+  function navegarPara(e) {
+    const dest = (e.lat && e.lon) ? `${e.lat},${e.lon}` : encodeURIComponent(`${e.nome || e.posto} ${e.municipio || ""}`);
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest}`, "_blank", "noopener");
+  }
 
   function obterLocalizacao() {
     if (!navigator.geolocation) return;
@@ -448,16 +469,27 @@ function SubCombustiveis() {
 
   const tiposDisponiveis = tipos.length ? tipos : [...new Set(estacoes.map(e => e.tipoLabel || e.tipo).filter(Boolean))];
   const tipoAtivo   = tiposDisponiveis.includes(tipo) ? tipo : (tiposDisponiveis[0] || "Gasolina 95");
-  const filtrados   = estacoes
+  const doTipo = estacoes
     .filter(e => (e.tipoLabel || e.tipo) === tipoAtivo)
-    .sort((a, b) => {
-      if (Math.abs(a.preco - b.preco) > 0.001) return a.preco - b.preco;
-      const dA = a.distancia !== null ? parseFloat(a.distancia) : 9999;
-      const dB = b.distancia !== null ? parseFloat(b.distancia) : 9999;
-      return dA - dB;
-    });
-  const maisBarato  = filtrados[0];
-  const maisProximo = filtrados.reduce((best, e) => {
+    .filter(e => !soFavoritos || ehFavorito(e));
+
+  // Lista para mostrar — ordenada por preço ou por distância (escolha do utilizador)
+  const filtrados = [...doTipo].sort((a, b) => {
+    if (ordenar === "distancia") {
+      const dA = a.distancia != null ? parseFloat(a.distancia) : 9999;
+      const dB = b.distancia != null ? parseFloat(b.distancia) : 9999;
+      if (Math.abs(dA - dB) > 0.001) return dA - dB;
+      return a.preco - b.preco;
+    }
+    if (Math.abs(a.preco - b.preco) > 0.001) return a.preco - b.preco;
+    const dA = a.distancia != null ? parseFloat(a.distancia) : 9999;
+    const dB = b.distancia != null ? parseFloat(b.distancia) : 9999;
+    return dA - dB;
+  });
+
+  // "Mais barato" e "mais próximo" calculados independentemente da ordenação
+  const maisBarato  = doTipo.reduce((best, e) => (!best || e.preco < best.preco ? e : best), null);
+  const maisProximo = doTipo.reduce((best, e) => {
     const dE = parseFloat(e.distancia ?? 9999);
     const dB = parseFloat(best?.distancia ?? 9999);
     return dE < dB ? e : best;
@@ -466,7 +498,7 @@ function SubCombustiveis() {
   const keyMaisBarato  = maisBarato  ? `${maisBarato.nome}__${maisBarato.preco}` : null;
   const melhor      = maisProximo;
   const min         = maisBarato?.preco || 0;
-  const max         = filtrados.reduce((m, e) => Math.max(m, e.preco), 0);
+  const max         = doTipo.reduce((m, e) => Math.max(m, e.preco), 0);
 
   return (
     <div>
@@ -570,15 +602,47 @@ function SubCombustiveis() {
         </div>
       )}
 
+      {/* Ordenar + favoritos */}
+      {!loading && !erro && doTipo.length > 0 && (
+        <div className="px-4 mb-3 flex items-center gap-2">
+          <div className="flex gap-1 p-1 bg-slate-100 rounded-xl flex-1">
+            <button
+              onClick={() => setOrdenar("preco")}
+              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-black transition-all ${ordenar === "preco" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"}`}
+            >Mais barato</button>
+            <button
+              onClick={() => setOrdenar("distancia")}
+              disabled={!loc}
+              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-black transition-all ${ordenar === "distancia" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"} ${!loc ? "opacity-40" : ""}`}
+            >Mais perto</button>
+          </div>
+          <button
+            onClick={() => setSoFavoritos(v => !v)}
+            className={`press px-3 py-2 rounded-xl text-[11px] font-black flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-white text-slate-500 border-slate-100"}`}
+          >
+            <Star size={13} className={soFavoritos ? "fill-amber-400 text-amber-400" : ""} />
+            {favoritos.length || ""}
+          </button>
+        </div>
+      )}
+
       {/* Lista */}
       {erro ? <ErroCard onRetry={() => carregar()} mensagem={erro} /> : (
         <div className="px-4 flex flex-col gap-2.5">
+          {soFavoritos && filtrados.length === 0 && (
+            <div className="card p-6 text-center">
+              <Star size={28} className="text-slate-200 mx-auto mb-2" />
+              <p className="text-sm font-black text-slate-400">Sem postos favoritos</p>
+              <p className="text-xs text-slate-300 mt-0.5">Toca na estrela de um posto para o guardar aqui</p>
+            </div>
+          )}
           {filtrados.map((c, i) => {
-            const isBest = i === 0;
+            const isBest = keyMaisBarato && `${c.nome}__${c.preco}` === keyMaisBarato;
             const nome   = c.nome || c.posto || "";
             const marca  = c.marca || c.posto || "";
             const cor    = POSTO_CORES[marca] || "#64748b";
             const pct    = Math.max(12, 100 - ((c.preco - min) / (max - min || 1)) * 82);
+            const fav    = ehFavorito(c);
             return (
               <div key={c.id || `${nome}-${i}`}
                 className={`card p-4 ${isBest ? "border-orange-200 ring-1 ring-orange-100" : ""}`}
@@ -587,11 +651,11 @@ function SubCombustiveis() {
                   <LogoPosto posto={marca} size={44} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="font-black text-slate-800 text-sm truncate max-w-[160px]">{nome}</p>
+                      <p className="font-black text-slate-800 text-sm truncate max-w-[150px]">{nome}</p>
                       {`${c.nome}__${c.distancia}` === keyMaisProximo && (
                         <span className="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
-                      {`${c.nome}__${c.preco}` === keyMaisBarato && (
+                      {isBest && (
                         <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
@@ -613,6 +677,22 @@ function SubCombustiveis() {
                       <p className="text-[10px] text-red-400 font-bold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
                     )}
                   </div>
+                </div>
+
+                {/* Ações: navegar + favorito */}
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={() => navegarPara(c)}
+                    className="press flex-1 py-2 rounded-xl text-[11px] font-black bg-orange-50 text-orange-700 border border-orange-100 flex items-center justify-center gap-1.5"
+                  >
+                    <Navigation size={12} /> Navegar
+                  </button>
+                  <button
+                    onClick={() => toggleFavorito(c)}
+                    className={`press px-3 py-2 rounded-xl text-[11px] font-black border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-white text-slate-500 border-slate-100"}`}
+                  >
+                    <Star size={13} className={fav ? "fill-amber-400 text-amber-400" : ""} /> {fav ? "Guardado" : "Favorito"}
+                  </button>
                 </div>
               </div>
             );
