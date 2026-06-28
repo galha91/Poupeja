@@ -43,6 +43,12 @@ export default async function handler(req, res) {
       if (page > 100) break; // salvaguarda
     }
 
+    // Excluir a(s) conta(s) de administração de todas as estatísticas
+    const adminIds = new Set(
+      todos.filter(u => (u.email || "").toLowerCase() === ADMIN_EMAIL).map(u => u.id)
+    );
+    todos = todos.filter(u => !adminIds.has(u.id));
+
     const agora = Date.now();
     const DIA = 24 * 60 * 60 * 1000;
     const inicioHoje = new Date(); inicioHoje.setHours(0, 0, 0, 0);
@@ -71,10 +77,11 @@ export default async function handler(req, res) {
       crescimento.push({ dia: ini.toISOString().split("T")[0], n });
     }
 
-    // Subscritores push — cruzar user_id com emails
-    const { data: pushSubs } = await admin
+    // Subscritores push — cruzar user_id com emails (sem o admin)
+    const { data: pushSubsRaw } = await admin
       .from("push_subscriptions")
       .select("user_id, criado_em");
+    const pushSubs = (pushSubsRaw || []).filter(s => !adminIds.has(s.user_id));
 
     const userMap = Object.fromEntries(todos.map(u => [u.id, u.email]));
     const pushSubscritores = (pushSubs || [])
@@ -89,7 +96,7 @@ export default async function handler(req, res) {
       .eq("chave", "poupeja_dispositivo");
 
     const dispositivoMap = Object.fromEntries(
-      (dispositivos || []).map(d => [d.user_id, d.valor])
+      (dispositivos || []).filter(d => !adminIds.has(d.user_id)).map(d => [d.user_id, d.valor])
     );
     const totalPwa = Object.values(dispositivoMap).filter(d => d?.pwa).length;
     const porPlataforma = {
@@ -113,9 +120,10 @@ export default async function handler(req, res) {
     try {
       const { data: prefsRows } = await admin
         .from("dados_utilizador")
-        .select("valor")
+        .select("user_id, valor")
         .eq("chave", "poupeja_prefs");
       for (const row of prefsRows || []) {
+        if (adminIds.has(row.user_id)) continue; // ignora o admin
         const v = typeof row.valor === "string" ? JSON.parse(row.valor) : row.valor;
         if (v && v.emailSemanal === false) emailDesativado++;
       }
