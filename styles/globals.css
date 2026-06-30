@@ -8,16 +8,16 @@
   --brand-green:  #059669;
   --brand-blue:   #2563eb;
   --brand-amber:  #d97706;
-  --surface:      #f8fafc;
+  --surface:      #f4f6f9;
   --card:         #ffffff;
-  --border:       #f1f5f9;
+  --border:       #eaecf0;
   --text-primary: #0f172a;
   --text-muted:   #64748b;
   --text-faint:   #94a3b8;
-  --radius-card:  20px;
-  --radius-btn:   14px;
-  --shadow-card:  0 2px 12px rgba(15,23,42,0.06);
-  --shadow-hero:  0 16px 40px -12px rgba(5,150,105,0.35);
+  --radius-card:  16px;
+  --radius-btn:   12px;
+  --shadow-card:  0 1px 3px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.05);
+  --shadow-hero:  0 16px 40px -12px rgba(5,150,105,0.30);
 }
 
 * {
@@ -140,7 +140,7 @@ input[type="range"]::-moz-range-thumb {
 .card {
   background: var(--card);
   border-radius: var(--radius-card);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
 }
 
