@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
-import SecaoFolhetos from "../SecaoFolhetos";
-import SecaoLojas from "../SecaoLojas";
-import SecaoMobilidade from "../SecaoMobilidade";
-import SecaoTaloes from "../SecaoTaloes";
-import SecaoListaCompras from "../SecaoListaCompras";
-import SecaoDefinicoes from "../SecaoDefinicoes";
-import SecaoApoios from "../SecaoApoios";
-import SecaoContas from "../SecaoContas";
-import SecaoCasa from "../SecaoCasa";
-import SecaoIRS from "../SecaoIRS";
+import dynamic from "next/dynamic";
+
+// Cada separador só descarrega o seu código quando é aberto (code-splitting).
+// Reduz fortemente o JavaScript inicial da home.
+const carregandoSeccao = () => (
+  <div className="px-4 py-16 flex flex-col items-center gap-3 text-slate-300">
+    <div className="w-8 h-8 rounded-full border-2 border-slate-200 border-t-emerald-500 animate-spin" />
+    <span className="text-xs font-bold">A carregar…</span>
+  </div>
+);
+const SecaoFolhetos    = dynamic(() => import("../SecaoFolhetos"), { loading: carregandoSeccao });
+const SecaoLojas       = dynamic(() => import("../SecaoLojas"), { loading: carregandoSeccao });
+const SecaoMobilidade  = dynamic(() => import("../SecaoMobilidade"), { loading: carregandoSeccao });
+const SecaoTaloes      = dynamic(() => import("../SecaoTaloes"), { loading: carregandoSeccao });
+const SecaoListaCompras= dynamic(() => import("../SecaoListaCompras"), { loading: carregandoSeccao });
+const SecaoDefinicoes  = dynamic(() => import("../SecaoDefinicoes"), { loading: carregandoSeccao });
+const SecaoApoios      = dynamic(() => import("../SecaoApoios"), { loading: carregandoSeccao });
+const SecaoContas      = dynamic(() => import("../SecaoContas"), { loading: carregandoSeccao });
+const SecaoCasa        = dynamic(() => import("../SecaoCasa"), { loading: carregandoSeccao });
+const SecaoIRS         = dynamic(() => import("../SecaoIRS"), { loading: carregandoSeccao });
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
