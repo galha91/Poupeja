@@ -286,25 +286,24 @@ function BarraInstalacao({ modo, onAbrir, onInstalarDireto }) {
   if (!visivel) return null;
 
   return (
-    <div
-      className="lg:hidden mx-4 mt-2 rounded-2xl px-4 py-3 flex items-center gap-3"
-      style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 6px 20px -6px rgba(37,99,235,0.5)" }}
+    <div className="lg:hidden mx-4 mt-2 rounded-xl px-4 py-3 flex items-center gap-3 bg-white border border-slate-100"
+      style={{ boxShadow: "0 2px 8px rgba(15,23,42,0.06)" }}
     >
-      <span className="text-xl flex-shrink-0">📲</span>
+      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
+        <Smartphone size={15} className="text-emerald-600" />
+      </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[12px] font-black text-white leading-snug">
-          Instala a app — gratuito!
-        </p>
-        <p className="text-[10px] text-white/65 mt-0.5">Notificações, offline e acesso em 1 toque</p>
+        <p className="text-[12px] font-black text-slate-800 leading-snug">Instala a app — gratuito</p>
+        <p className="text-[10px] text-slate-400 mt-0.5">Notificações e acesso rápido</p>
       </div>
       <button
         onClick={modo === "android" && onInstalarDireto ? onInstalarDireto : onAbrir}
-        className="press flex-shrink-0 px-3 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black"
+        className="press flex-shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[11px] font-black"
       >
         {modo === "android" ? "Instalar" : "Como →"}
       </button>
-      <button onClick={dispensar} className="press w-6 h-6 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
-        <X size={11} className="text-white" />
+      <button onClick={dispensar} className="press w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+        <X size={10} className="text-slate-400" />
       </button>
     </div>
   );
@@ -328,37 +327,34 @@ function BannerInstalar({ onAbrirModal, onInstalarAndroid, modo }) {
   if (!visivel || sessionStorage.getItem("poupeja_banner_dispensado")) return null;
 
   return (
-    <div className="mx-4 mt-4 rounded-2xl overflow-hidden anim-up anim-up-1" style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 12px 32px -10px rgba(5,150,105,0.5)" }}>
-      <div className="px-4 py-5 flex items-start gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 text-2xl">
-          📲
+    <div className="mx-4 mt-4 rounded-xl overflow-hidden anim-up anim-up-1 bg-white border border-slate-100" style={{ boxShadow: "0 4px 20px rgba(15,23,42,0.06)" }}>
+      <div className="px-4 py-4 flex items-start gap-3">
+        <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+          <Smartphone size={18} className="text-emerald-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-1">Grátis · 2 segundos</p>
-          <p className="text-[15px] font-black text-white leading-snug">
-            {modo === "ios"
-              ? "Instala o PoupeJá no teu iPhone"
-              : "Instala o PoupeJá como app"}
+          <p className="text-[13px] font-black text-slate-800 leading-snug">
+            {modo === "ios" ? "Instala no iPhone — grátis" : "Instala como app — grátis"}
           </p>
-          <p className="text-[11px] text-white/75 mt-1 leading-relaxed">
-            🔔 Folhetos toda a semana · ⚡ Acesso rápido · 📶 Funciona offline
+          <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+            Notificações semanais · Acesso rápido · Offline
           </p>
           <div className="flex gap-2 mt-3 flex-wrap">
             <button
               onClick={onAbrirModal}
-              className="press px-4 py-2 rounded-xl bg-white text-emerald-700 text-[12px] font-black"
+              className="press px-4 py-2 rounded-lg bg-emerald-600 text-white text-[12px] font-black"
             >
-              {modo === "ios" ? "📖 Como instalar" : "📖 Ver instruções"}
+              {modo === "ios" ? "Como instalar" : "Ver instruções"}
             </button>
             {modo === "android" && (
               <button
                 onClick={onInstalarAndroid}
-                className="press px-4 py-2 rounded-xl text-white text-[12px] font-black border border-white/30 bg-white/15"
+                className="press px-4 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-[12px] font-black border border-emerald-100"
               >
-                ⚡ Instalar agora
+                Instalar agora
               </button>
             )}
-            <button onClick={dispensar} className="press px-3 py-2 rounded-xl bg-white/10 text-white/70 text-[11px] font-black">
+            <button onClick={dispensar} className="press px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-[11px] font-black">
               Já tenho
             </button>
           </div>
@@ -615,15 +611,15 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
   }
 
   const FEATURES = [
-    { icon: ListChecks, label: "Lista de compras",  desc: "Organiza o que levas antes de sair",     bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "lista",      full: true },
-    { icon: Receipt,    label: "Os meus talões",    desc: "Guarda compras e garantias",              bg: "from-blue-600 to-blue-500",     shadow: "rgba(37,99,235,0.3)",  tab: "taloes" },
-    { icon: Tag,        label: "Folhetos",           desc: "Todos os supermercados num só sítio",    bg: "from-violet-600 to-purple-500", shadow: "rgba(124,58,237,0.3)", tab: "mercados" },
-    { icon: Fuel,       label: "Combustíveis e EV",  desc: "Preços reais e postos perto de ti",     bg: "from-orange-500 to-amber-400",  shadow: "rgba(245,158,11,0.3)", tab: "mobilidade" },
-    { icon: Store,      label: "Lojas e promoções",  desc: "Moda, eletrónica e desporto",           bg: "from-slate-700 to-slate-600",   shadow: "rgba(51,65,85,0.3)",  tab: "lojas" },
-    { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e subsídios a que tens direito", bg: "from-blue-700 to-blue-500", shadow: "rgba(29,78,216,0.3)",  tab: "apoios" },
-    { icon: CalendarClock, label: "Contas fixas",   desc: "Renda, luz, água, net — tudo controlado",  bg: "from-violet-700 to-purple-600", shadow: "rgba(109,40,217,0.3)", tab: "contas" },
-    { icon: Building2,  label: "A tua casa",         desc: "Crédito, renda e Euribor em tempo real",   bg: "from-blue-800 to-indigo-600", shadow: "rgba(37,56,182,0.3)", tab: "casa" },
-    { icon: Calculator, label: "Simulador de IRS",   desc: "Estima quanto pagas ou recebes de IRS",    bg: "from-fuchsia-700 to-purple-600", shadow: "rgba(162,28,175,0.3)", tab: "irs" },
+    { icon: ListChecks,    label: "Lista de compras",  desc: "Organiza antes de ir às compras",      iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "lista",     full: true },
+    { icon: Receipt,       label: "Os meus talões",    desc: "Compras e garantias",                   iconBg: "bg-blue-50",     iconColor: "text-blue-600",    tab: "taloes" },
+    { icon: Tag,           label: "Folhetos",           desc: "Supermercados desta semana",            iconBg: "bg-emerald-50",  iconColor: "text-emerald-600", tab: "mercados" },
+    { icon: Fuel,          label: "Combustíveis",        desc: "Preços e postos perto de ti",          iconBg: "bg-orange-50",   iconColor: "text-orange-500",  tab: "mobilidade" },
+    { icon: Store,         label: "Lojas",              desc: "Moda, eletrónica e desporto",           iconBg: "bg-slate-100",   iconColor: "text-slate-500",   tab: "lojas" },
+    { icon: Landmark,      label: "Apoios do Estado",   desc: "Benefícios a que tens direito",         iconBg: "bg-blue-50",     iconColor: "text-blue-600",    tab: "apoios" },
+    { icon: CalendarClock, label: "Contas fixas",       desc: "Renda, luz, água — tudo controlado",   iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "contas" },
+    { icon: Building2,     label: "A tua casa",         desc: "Crédito, renda e Euribor",              iconBg: "bg-indigo-50",   iconColor: "text-indigo-600",  tab: "casa" },
+    { icon: Calculator,    label: "Simulador de IRS",   desc: "Estima o teu reembolso",                iconBg: "bg-fuchsia-50",  iconColor: "text-fuchsia-600", tab: "irs" },
   ];
 
   const SHORTCUTS = [
@@ -645,67 +641,50 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
       {/* Hero boas-vindas */}
       <div className="px-4 pt-4 pb-2 anim-up">
         <div
-          className="rounded-3xl relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#064e3b 0%,#059669 60%,#34d399 100%)", boxShadow: "0 20px 50px -15px rgba(5,150,105,0.45)" }}
+          className="rounded-2xl overflow-hidden"
+          style={{ background: "linear-gradient(150deg,#047857 0%,#059669 100%)", boxShadow: "0 8px 32px -8px rgba(5,150,105,0.35)" }}
         >
-          <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full pointer-events-none" />
-          <div className="absolute right-8 bottom-12 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
-
-          <div className="px-6 pt-6 pb-5 relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
-                <PiggyBank size={15} className="text-white" />
-              </div>
-              <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">O teu assistente de poupança</span>
-            </div>
-
+          <div className="px-6 pt-6 pb-5">
             {totalSempre > 0 ? (
               <>
-                <p className="text-[13px] font-semibold text-white/70">
-                  Olá, {primeiroNome}! {totalMes > 0 ? "Este mês já poupaste" : "Já poupaste no total"}
+                <p className="text-[12px] text-emerald-200 mb-1">
+                  Olá, {primeiroNome} · {totalMes > 0 ? "este mês poupaste" : "total poupado"}
                 </p>
-                <p className="text-5xl font-black text-white mt-1 leading-none" style={{ fontFamily: "'Sora', system-ui" }}>
+                <p className="text-[44px] font-black text-white leading-none tracking-tight" style={{ fontFamily: "'Sora', system-ui" }}>
                   €{(totalMes > 0 ? totalMes : totalSempre).toFixed(2)}
                 </p>
-                <p className="text-[12px] text-white/60 mt-1.5">
+                <p className="text-[12px] text-emerald-200 mt-1.5">
                   {totalMes > 0 && totalSempre > totalMes
                     ? <>€{totalSempre.toFixed(2)} no total · {nTaloes} tal{nTaloes !== 1 ? "ões" : "ão"}</>
-                    : <>em {nTaloes} talão{nTaloes !== 1 ? "s" : ""} guardado{nTaloes !== 1 ? "s" : ""}</>}
+                    : <>em {nTaloes} talão{nTaloes !== 1 ? "s" : ""}</>}
                 </p>
-                <div className="mt-4 flex gap-2 flex-wrap">
+                <div className="mt-4 flex gap-2">
                   <button
                     onClick={() => setTab("poupanca")}
-                    className="press inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
+                    className="press inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
                   >
-                    Ver detalhes <ArrowRight size={13} />
+                    Ver detalhes <ArrowRight size={12} />
                   </button>
                   <button
                     onClick={() => setTab("taloes")}
-                    className="press inline-flex items-center gap-2 bg-white text-emerald-700 text-xs font-black px-4 py-2 rounded-xl"
+                    className="press inline-flex items-center gap-1.5 bg-white text-emerald-700 text-xs font-black px-4 py-2 rounded-xl"
                   >
-                    <Plus size={13} /> Adicionar talão
-                  </button>
-                  <button
-                    onClick={partilhar}
-                    className="press inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-white/20"
-                  >
-                    <Share2 size={13} /> {feedbackPartilha || "Partilhar"}
+                    <Plus size={12} /> Talão
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <p className="text-[13px] font-semibold text-white/80">Olá, {primeiroNome}!</p>
-                <p className="text-2xl font-black text-white mt-0.5 leading-snug" style={{ fontFamily: "'Sora', system-ui" }}>
+                <p className="text-[13px] text-emerald-200">Olá, {primeiroNome}</p>
+                <p className="text-[28px] font-black text-white mt-1 leading-tight" style={{ fontFamily: "'Sora', system-ui" }}>
                   Pronto para poupar<br />nas compras de hoje?
                 </p>
                 <button
                   onClick={() => setTab("taloes")}
-                  className="press mt-4 inline-flex items-center gap-2 bg-white/20 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
+                  className="press mt-4 inline-flex items-center gap-1.5 bg-white text-emerald-700 text-xs font-black px-4 py-2.5 rounded-xl"
                 >
-                  Guardar primeiro talão <ArrowRight size={13} />
+                  Guardar primeiro talão <ArrowRight size={12} />
                 </button>
-                <p className="text-[10px] text-white/40 mt-3">Começa a usar e a tua poupança aparece aqui automaticamente.</p>
               </>
             )}
           </div>
@@ -716,21 +695,19 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
       <CartaoDiario setTab={setTab} />
 
       {/* Garantias highlight */}
-      <div className="px-4 mt-4 anim-up anim-up-1">
+      <div className="px-4 mt-3 anim-up anim-up-1">
         <button
           onClick={goGarantias}
-          className="press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left"
-          style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 12px 28px -10px rgba(5,150,105,0.4)" }}
+          className="press w-full card p-4 flex items-center gap-3.5 text-left"
         >
-          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <ShieldCheck size={24} className="text-white" />
+          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <ShieldCheck size={19} className="text-emerald-600" />
           </div>
           <div className="flex-1">
-            <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Exclusivo PoupeJá</p>
-            <p className="text-[15px] font-black text-white leading-snug">Garantias digitais</p>
-            <p className="text-[11px] text-white/70 mt-0.5">Nunca percas a validade dos teus produtos</p>
+            <p className="text-[13px] font-black text-slate-800 leading-snug">Garantias digitais</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Nunca percas a validade dos teus produtos</p>
           </div>
-          <ChevronRight size={18} className="text-white/50 flex-shrink-0" />
+          <ChevronRight size={15} className="text-slate-300 flex-shrink-0" />
         </button>
       </div>
 
@@ -778,29 +755,29 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
       })()}
 
       {/* Features grid */}
-      <div className="px-4 mt-3 anim-up anim-up-1">
+      <div className="px-4 mt-4 anim-up anim-up-1">
         <SectionLabel icon={Sparkles}>O que podes fazer</SectionLabel>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
           {FEATURES.map((f, i) => (
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-gradient-to-br ${f.bg} rounded-2xl text-left text-white ${f.full ? "col-span-2 lg:col-span-4 flex items-center gap-4 px-5 py-4" : "p-5"}`}
-              style={{ boxShadow: `0 12px 28px -8px ${f.shadow}` }}
+              className={`press bg-white rounded-xl border border-slate-100 text-left ${f.full ? "col-span-2 lg:col-span-4 flex items-center gap-4 px-5 py-4" : "p-4"}`}
+              style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04)" }}
             >
-              <div className={`bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 ${f.full ? "w-14 h-14" : "w-11 h-11 mb-3.5"}`}>
-                <f.icon size={f.full ? 26 : 21} />
+              <div className={`${f.iconBg} rounded-xl flex items-center justify-center flex-shrink-0 ${f.full ? "w-12 h-12" : "w-10 h-10 mb-3"}`}>
+                <f.icon size={f.full ? 21 : 18} className={f.iconColor} />
               </div>
               <div className={f.full ? "flex-1" : ""}>
-                <p className={`font-black leading-snug ${f.full ? "text-[17px]" : "text-[15px]"}`}>{f.label}</p>
-                <p className="text-[11px] text-white/75 mt-1 leading-relaxed">{f.desc}</p>
+                <p className={`font-black text-slate-800 leading-snug ${f.full ? "text-[15px]" : "text-[13px]"}`}>{f.label}</p>
+                <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{f.desc}</p>
                 {!f.full && (
-                  <div className="mt-3 flex items-center gap-1 text-[10px] font-black text-white/60">
-                    Ver mais <ChevronRight size={10} />
+                  <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-slate-400">
+                    Abrir <ChevronRight size={9} />
                   </div>
                 )}
               </div>
-              {f.full && <ChevronRight size={20} className="text-white/50 flex-shrink-0" />}
+              {f.full && <ChevronRight size={17} className="text-slate-300 flex-shrink-0" />}
             </button>
           ))}
         </div>
@@ -825,6 +802,25 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
         </div>
       </div>
 
+      {/* Dica */}
+      <div className="px-4 mt-4 mb-2 anim-up anim-up-3">
+        <button
+          onClick={() => setTab("mercados")}
+          className="press w-full text-left card p-4 flex gap-3 items-start"
+        >
+          <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Star size={16} className="text-amber-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[11px] font-black text-amber-600 mb-0.5">Dica do dia</p>
+            <p className="text-sm font-black text-slate-800">Vê os folhetos antes de ir às compras</p>
+            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Compara as promoções de todos os supermercados e poupa mais.</p>
+            <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-amber-600">
+              Ver folhetos <ChevronRight size={10} />
+            </span>
+          </div>
+        </button>
+      </div>
 
     </div>
   );
@@ -902,29 +898,26 @@ function SecaoPoupanca({ setTab }) {
       {/* Hero */}
       <div className="px-4 mb-5 anim-up">
         <div
-          className="rounded-3xl p-6 relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#60a5fa 100%)", boxShadow: "0 20px 50px -15px rgba(37,99,235,0.4)" }}
+          className="rounded-2xl p-6 overflow-hidden"
+          style={{ background: "linear-gradient(150deg,#1d4ed8 0%,#2563eb 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.35)" }}
         >
-          <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
-          <p className="text-[11px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5 mb-2">
-            <PiggyBank size={12} /> Total poupado este mês
-          </p>
-          <p className="text-5xl font-black text-white">
+          <p className="text-[12px] text-blue-200 mb-1">Total poupado este mês</p>
+          <p className="text-[44px] font-black text-white leading-none tracking-tight" style={{ fontFamily: "'Sora', system-ui" }}>
             {dados ? `€${dados.totalMes.toFixed(2)}` : "€0.00"}
           </p>
           {dados && dados.totalGeral > 0 ? (
             <div className="mt-2 flex items-center gap-2 flex-wrap">
-              <p className="text-[12px] text-white/70">
-                Total: <strong className="text-white">€{dados.totalGeral.toFixed(2)}</strong> em {dados.count} talões
+              <p className="text-[12px] text-blue-200">
+                €{dados.totalGeral.toFixed(2)} no total · {dados.count} talões
               </p>
               {dados.tendencia !== 0 && dados.totalAnterior > 0 && (
-                <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${dados.tendencia > 0 ? "bg-emerald-400/30 text-emerald-200" : "bg-red-400/30 text-red-200"}`}>
-                  {dados.tendencia > 0 ? "▲" : "▼"} {Math.abs(dados.tendencia)}% vs mês anterior
+                <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${dados.tendencia > 0 ? "bg-white/20 text-white" : "bg-red-400/30 text-red-100"}`}>
+                  {dados.tendencia > 0 ? "+" : ""}{dados.tendencia}% vs mês anterior
                 </span>
               )}
             </div>
           ) : (
-            <p className="text-[12px] text-white/70 mt-2">Guarda talões com o valor poupado para ver aqui.</p>
+            <p className="text-[12px] text-blue-200 mt-1">Guarda talões com o valor poupado para ver aqui.</p>
           )}
           <div className="mt-4 flex gap-2 flex-wrap">
             <button
