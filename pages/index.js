@@ -622,18 +622,6 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
     { icon: Calculator,    label: "Simulador de IRS",   desc: "Estima o teu reembolso",                iconBg: "bg-fuchsia-50",  iconColor: "text-fuchsia-600", tab: "irs" },
   ];
 
-  const SHORTCUTS = [
-    { icon: Tag,         label: "Folhetos",    color: "text-violet-600",  bg: "bg-violet-50",   tab: "mercados" },
-    { icon: Receipt,     label: "Talões",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "taloes" },
-    { icon: ListChecks,  label: "Lista",       color: "text-purple-600",  bg: "bg-purple-50",   tab: "lista" },
-    { icon: ShieldCheck, label: "Garantias",   color: "text-emerald-600", bg: "bg-emerald-50",  action: goGarantias },
-    { icon: Fuel,        label: "Combustíveis",color: "text-orange-600",  bg: "bg-orange-50",   tab: "mobilidade" },
-    { icon: Battery,     label: "Postos EV",   color: "text-emerald-600", bg: "bg-emerald-50",  tab: "mobilidade" },
-    { icon: Landmark,    label: "Apoios",      color: "text-blue-600",    bg: "bg-blue-50",     tab: "apoios" },
-    { icon: CalendarClock, label: "Contas",   color: "text-violet-600",  bg: "bg-violet-50",   tab: "contas" },
-    { icon: Building2,   label: "Casa",        color: "text-indigo-600",  bg: "bg-indigo-50",   tab: "casa" },
-    { icon: Calculator,  label: "IRS",         color: "text-fuchsia-600", bg: "bg-fuchsia-50",  tab: "irs" },
-  ];
 
   return (
     <div className="pb-28">
@@ -783,24 +771,6 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
         </div>
       </div>
 
-      {/* Atalhos */}
-      <div className="px-4 mt-5 anim-up anim-up-2">
-        <SectionLabel icon={Zap}>Atalhos rápidos</SectionLabel>
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
-          {SHORTCUTS.map((it, i) => (
-            <button
-              key={i}
-              onClick={it.action || (() => setTab(it.tab))}
-              className="press card flex flex-col items-center gap-2.5 py-4 px-2"
-            >
-              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${it.bg}`}>
-                <it.icon size={21} className={it.color} />
-              </div>
-              <span className="text-[11px] font-black text-slate-700 text-center leading-tight">{it.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Dica */}
       <div className="px-4 mt-4 mb-2 anim-up anim-up-3">
