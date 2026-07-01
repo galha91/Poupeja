@@ -112,7 +112,7 @@ function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
   );
 }
 
-/* ─── Modal de instruções de instalação ─── */
+/* ─── Convite a instalar — leva à página /instalar (ou instala já no Android) ─── */
 function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
   if (!modo) return null;
 
@@ -121,17 +121,6 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
     { emoji: "⚡", texto: "Acesso instantâneo — abre como uma app, sem abrir o browser" },
     { emoji: "📶", texto: "Funciona sem internet — consulta as listas e contas offline" },
     { emoji: "🏠", texto: "Ícone no ecrã inicial, como qualquer outra app" },
-  ];
-
-  const passos = modo === "ios" ? [
-    { emoji: "1️⃣", titulo: "Abre no Safari", desc: "Tens de estar no Safari (não Chrome nem Firefox). Se estás noutro browser, copia o link e abre no Safari." },
-    { emoji: "⬆️", titulo: "Toca no ícone Partilhar", desc: "Na barra de baixo do Safari — parece uma caixa com uma seta a apontar para cima ↑" },
-    { emoji: "📲", titulo: "\"Adicionar ao Ecrã Inicial\"", desc: "Faz scroll na lista que aparece e toca em \"Adicionar ao Ecrã Inicial\". Pode estar a meio da lista." },
-    { emoji: "✅", titulo: "Toca em \"Adicionar\"", desc: "No canto superior direito. O ícone do PoupeJá aparece imediatamente no teu ecrã!" },
-  ] : [
-    { emoji: "📲", titulo: "Toca em \"Instalar agora\"", desc: "Aparece um popup do sistema a perguntar se queres instalar o PoupeJá." },
-    { emoji: "✅", titulo: "Confirma a instalação", desc: "Toca em \"Instalar\" no popup. O ícone fica no ecrã imediatamente — é gratuito." },
-    { emoji: "🔔", titulo: "Ativa notificações", desc: "Permite notificações e recebe os folhetos semanais automaticamente." },
   ];
 
   return (
@@ -177,54 +166,37 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
             ))}
           </div>
 
-          {/* Separador */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-slate-100" />
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Como instalar</p>
-            <div className="flex-1 h-px bg-slate-100" />
-          </div>
-
-          {/* Passos */}
-          <div className="flex flex-col gap-3.5">
-            {passos.map((p, i) => (
-              <div key={i} className="flex gap-4 items-start">
-                <div className="w-11 h-11 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-xl border border-slate-100">
-                  {p.emoji}
-                </div>
-                <div className="flex-1 pt-0.5">
-                  <p className="text-sm font-black text-slate-800">{p.titulo}</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{p.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* Nota iOS sobre Safari */}
-        {modo === "ios" && (
-          <div className="mx-5 mb-4 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-100">
-            <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-              ⚠️ <strong>Só funciona no Safari.</strong> Se estás a usar o Chrome, o Firefox ou o Edge — este passo não vai funcionar. Copia o endereço e abre no Safari primeiro.
-            </p>
-          </div>
-        )}
-
-        {/* Botões de ação */}
+        {/* Ação — instala direto (Android) ou abre o guia completo em /instalar */}
         <div className="px-5 pb-8 flex flex-col gap-2.5">
-          {modo === "android" && onInstalarAndroid && (
-            <button
-              onClick={onInstalarAndroid}
-              className="w-full py-4 rounded-2xl text-white font-black text-base"
+          {modo === "android" && onInstalarAndroid ? (
+            <>
+              <button
+                onClick={onInstalarAndroid}
+                className="w-full py-4 rounded-2xl text-white font-black text-base"
+                style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 8px 20px -6px rgba(5,150,105,0.5)" }}
+              >
+                📲 Instalar agora — é grátis
+              </button>
+              <a href="/instalar" className="w-full py-3 rounded-2xl bg-slate-100 text-slate-600 font-black text-sm text-center">
+                Ver o guia completo
+              </a>
+            </>
+          ) : (
+            <a
+              href="/instalar"
+              className="w-full py-4 rounded-2xl text-white font-black text-base text-center"
               style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 8px 20px -6px rgba(5,150,105,0.5)" }}
             >
-              📲 Instalar agora — é grátis
-            </button>
+              📲 Ver como instalar
+            </a>
           )}
           <button
             onClick={onFechar}
-            className="w-full py-3 rounded-2xl bg-slate-100 text-slate-500 font-black text-sm"
+            className="w-full py-2.5 text-slate-400 font-bold text-sm"
           >
-            Fechar
+            Agora não
           </button>
         </div>
       </div>
@@ -1303,7 +1275,7 @@ export default function PoupeJa() {
     return () => clearTimeout(timer); // evita disparar após desmontar/trocar de utilizador
   }, [user?.id]);
 
-  /* Abre o modal de instalação automaticamente na 3ª visita (e depois a cada 5) */
+  /* Convite a instalar: logo na 1ª visita e depois a relembrar (3ª e a cada 5) */
   useEffect(() => {
     if (!hydrated || !installModo || installModo === "instalado") return;
     if (sessionStorage.getItem("poupeja_modal_ja_aberto")) return;
@@ -1311,9 +1283,9 @@ export default function PoupeJa() {
     if (ndispensas >= 3) return; // já dispensou 3+ vezes, não forçar mais
     const visitas = parseInt(localStorage.getItem("poupeja_visitas") || "0") + 1;
     localStorage.setItem("poupeja_visitas", String(visitas));
-    if (visitas === 3 || (visitas > 3 && visitas % 5 === 0)) {
+    if (visitas === 1 || visitas === 3 || (visitas > 3 && visitas % 5 === 0)) {
       sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
-      setTimeout(() => setModalInstalarAberto(true), 3500);
+      setTimeout(() => setModalInstalarAberto(true), 2500);
     }
   }, [hydrated, installModo]);
 
