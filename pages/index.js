@@ -583,7 +583,7 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
   }
 
   const FEATURES = [
-    { icon: ListChecks,    label: "Lista de compras",  desc: "Organiza antes de ir às compras",      iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "lista",     full: true },
+    { icon: ListChecks,    label: "Lista de compras",  desc: "Organiza antes de ir às compras",      iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "lista" },
     { icon: Receipt,       label: "Os meus talões",    desc: "Compras e garantias",                   iconBg: "bg-blue-50",     iconColor: "text-blue-600",    tab: "taloes" },
     { icon: Tag,           label: "Folhetos",           desc: "Supermercados desta semana",            iconBg: "bg-emerald-50",  iconColor: "text-emerald-600", tab: "mercados" },
     { icon: Fuel,          label: "Combustíveis",        desc: "Preços e postos perto de ti",          iconBg: "bg-orange-50",   iconColor: "text-orange-500",  tab: "mobilidade" },
@@ -722,17 +722,13 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-white rounded-xl border border-slate-100 text-left flex items-center gap-3 ${f.full ? "col-span-2 lg:col-span-4 px-4 py-3.5" : "p-3"}`}
+              className="press bg-white rounded-xl border border-slate-100 text-left flex items-center gap-3 p-3"
               style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04)" }}
             >
-              <div className={`${f.iconBg} rounded-lg flex items-center justify-center flex-shrink-0 ${f.full ? "w-11 h-11" : "w-9 h-9"}`}>
-                <f.icon size={f.full ? 20 : 17} className={f.iconColor} />
+              <div className={`${f.iconBg} rounded-lg flex items-center justify-center flex-shrink-0 w-9 h-9`}>
+                <f.icon size={17} className={f.iconColor} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className={`font-black text-slate-800 leading-tight ${f.full ? "text-[15px]" : "text-[12.5px]"}`}>{f.label}</p>
-                {f.full && <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{f.desc}</p>}
-              </div>
-              {f.full && <ChevronRight size={17} className="text-slate-300 flex-shrink-0" />}
+              <p className="font-black text-slate-800 leading-tight text-[12.5px] flex-1 min-w-0">{f.label}</p>
             </button>
           ))}
         </div>
