@@ -175,6 +175,7 @@ export default async function handler(req, res) {
     });
 
   } catch {
+    res.setHeader("Cache-Control", "no-store"); // não prender a falha na CDN
     return res.status(200).json({
       success: false, postos: [],
       atualizadoEm: new Date().toISOString(),

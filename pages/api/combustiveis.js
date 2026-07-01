@@ -1,8 +1,14 @@
 // Preços DGEG — postos próximos com filtro por localização
 export default async function handler(req, res) {
-  res.setHeader("Cache-Control", "s-maxage=1800, stale-while-revalidate");
+  res.setHeader("Cache-Control", "s-maxage=1800, stale-while-revalidate=3600");
 
   const { lat, lon, raio = 30, tipo } = req.query;
+
+  // Cache do último resultado bom (por instância quente). Serve de rede de
+  // segurança quando a DGEG falha, para não mostrar erro por um soluço transitório.
+  const CACHE     = (globalThis.__combCache ||= new Map());
+  const CACHE_TTL = 6 * 60 * 60 * 1000; // 6h
+  const cacheKey  = `${lat || ""}|${lon || ""}|${raio}|${tipo || ""}`;
   const BASE    = "https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/PesquisarPostos";
   const FUELS   = "3400,3205,3405,3201,2105,2101,1120";
   const HEADERS = {
@@ -118,7 +124,7 @@ export default async function handler(req, res) {
 
       const tipos = [...new Set(estacoes.map(e => e.tipoLabel))].sort();
 
-      return res.status(200).json({
+      const payload = {
         success: true,
         modo: "local",
         estacoes,
@@ -126,7 +132,9 @@ export default async function handler(req, res) {
         total: estacoes.length,
         atualizadoEm: new Date().toISOString(),
         fonte: "DGEG — Direção-Geral de Energia e Geologia",
-      });
+      };
+      CACHE.set(cacheKey, { payload, ts: Date.now() });
+      return res.status(200).json(payload);
 
     } else {
       // ── Modo nacional: mínimo por marca ──
@@ -155,17 +163,28 @@ export default async function handler(req, res) {
 
       if (!dados.length) throw new Error("Sem dados após filtragem");
 
-      return res.status(200).json({
+      const payload = {
         success: true,
         modo: "nacional",
         dados,
         total: dados.length,
         atualizadoEm: new Date().toISOString(),
         fonte: "DGEG — Direção-Geral de Energia e Geologia",
-      });
+      };
+      CACHE.set(cacheKey, { payload, ts: Date.now() });
+      return res.status(200).json(payload);
     }
 
   } catch (error) {
+    // Falha da DGEG: NUNCA cachear a falha (senão fica preso 30 min na CDN).
+    res.setHeader("Cache-Control", "no-store");
+
+    // Rede de segurança: servir o último resultado bom, se recente.
+    const cached = CACHE.get(cacheKey);
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return res.status(200).json({ ...cached.payload, stale: true });
+    }
+
     return res.status(200).json({
       success: false,
       dados: [], estacoes: [],

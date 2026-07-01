@@ -3,8 +3,8 @@ import dynamic from "next/dynamic";
 import CARROS_EV from "./data/carrosEV";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
-  AlertCircle, Bell, Plus, Trash2,
-  Check, Info, X, TrendingDown, TrendingUp, Minus, Calendar, Car, Clock, Star,
+  Bell, Plus, Trash2,
+  Check, Info, X, TrendingDown, TrendingUp, Calendar, Car, Clock, Star,
   Map as MapIcon, List as ListIcon,
 } from "lucide-react";
 
@@ -249,24 +249,15 @@ function LogoPosto({ posto, size = 44 }) {
   );
 }
 
-function LoadingDots() {
+function ErroCard({ onRetry, titulo = "Sem dados de momento", sub = "A fonte não respondeu agora mesmo. Tenta novamente daqui a pouco." }) {
   return (
-    <div className="flex items-center gap-1.5 mt-3">
-      {[0, 150, 300].map(d => (
-        <div key={d} className="w-2 h-2 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
-      ))}
-      <span className="text-xs text-white/60 ml-1">A carregar...</span>
-    </div>
-  );
-}
-
-function ErroCard({ onRetry, mensagem }) {
-  return (
-    <div className="mx-4 card p-5 text-center">
-      <AlertCircle size={28} className="text-slate-300 mx-auto mb-2" />
-      <p className="text-sm font-black text-slate-500 mb-1">API temporariamente indisponível</p>
-      {mensagem && <p className="text-[10px] text-slate-400 mb-3 font-mono">{mensagem}</p>}
-      <button onClick={onRetry} className="press text-xs font-black text-white bg-slate-700 px-5 py-2.5 rounded-xl">
+    <div className="mx-4 card p-6 text-center">
+      <div className="w-11 h-11 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
+        <RefreshCw size={18} className="text-slate-300" />
+      </div>
+      <p className="text-sm font-black text-slate-600">{titulo}</p>
+      <p className="text-[12px] text-slate-400 mt-1 mb-4 leading-relaxed max-w-[240px] mx-auto">{sub}</p>
+      <button onClick={onRetry} className="press text-[13px] font-black text-white bg-slate-800 px-5 py-2.5 rounded-xl">
         Tentar de novo
       </button>
     </div>
@@ -352,34 +343,32 @@ function TendenciaPrecos({ historico }) {
           Estamos a recolher o histórico de preços. A tendência aparece a partir da próxima semana.
         </p>
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col divide-y divide-slate-50">
           {linhas.map(({ tipo, preco, tendencia }) => {
-            const cfg = !tendencia
-              ? { cor: "#94a3b8", Icone: Minus, texto: "a recolher histórico…" }
-              : tendencia.dir === "desceu"
-                ? { cor: "#059669", Icone: TrendingDown, texto: `↓ desceu ${Math.abs(tendencia.diffCent).toFixed(1).replace(".", ",")} cênt. esta semana — boa altura para abastecer` }
-                : tendencia.dir === "subiu"
-                  ? { cor: "#e11d48", Icone: TrendingUp, texto: `↑ subiu ${Math.abs(tendencia.diffCent).toFixed(1).replace(".", ",")} cênt. esta semana` }
-                  : { cor: "#64748b", Icone: Minus, texto: "estável esta semana" };
-            const { cor, Icone, texto } = cfg;
+            const mexeu = tendencia && (tendencia.dir === "subiu" || tendencia.dir === "desceu");
+            const desceu = tendencia?.dir === "desceu";
+            const cent = tendencia ? Math.abs(tendencia.diffCent).toFixed(1).replace(".", ",") : null;
             return (
-              <div key={tipo} className="flex items-start gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ backgroundColor: cor + "18" }}>
-                  <Icone size={14} style={{ color: cor }} />
+              <div key={tipo} className="flex items-center justify-between gap-2 py-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[13px] font-bold text-slate-700 truncate">{tipo}</span>
+                  {mexeu && (
+                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-black px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500"}`}>
+                      {desceu ? <TrendingDown size={11} /> : <TrendingUp size={11} />}{cent}
+                    </span>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="text-[13px] font-black text-slate-800">⛽ {tipo}</p>
-                    {typeof preco === "number" && (
-                      <p className="text-[13px] font-black text-slate-700 flex-shrink-0">{preco.toFixed(3)} €</p>
-                    )}
-                  </div>
-                  <p className="text-[11px] font-bold leading-snug" style={{ color: cor }}>{texto}</p>
-                </div>
+                {typeof preco === "number" && (
+                  <span className="text-[14px] font-black text-slate-800 flex-shrink-0">{preco.toFixed(3)} €</span>
+                )}
               </div>
             );
           })}
+          {linhas.some(l => l.tendencia?.dir === "desceu") && (
+            <p className="text-[11px] font-bold text-emerald-600 pt-2.5 flex items-center gap-1">
+              <TrendingDown size={12} /> Preços em queda — boa altura para abastecer
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -511,46 +500,41 @@ function SubCombustiveis() {
 
   return (
     <div>
-      {/* Hero */}
-      <div
-        className="mx-4 mb-4 rounded-3xl relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#c2410c,#f97316)", boxShadow: "0 20px 50px -15px rgba(234,88,12,0.45)" }}
-      >
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
-        <div className="px-5 pt-5 pb-4 relative z-10">
-          <div className="flex items-center justify-between mb-2">
+      {/* Hero — card branco minimalista */}
+      <div className="mx-4 mb-4 card overflow-hidden">
+        <div className="px-5 pt-4 pb-4">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Fuel size={16} className="text-white/70" />
-              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">
-                {locNome ? `Raio ${raio} km · DGEG` : "Melhor preço · DGEG"}
+              <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center">
+                <Fuel size={15} className="text-orange-500" />
+              </div>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                {locNome ? `Melhor preço · ${raio} km` : "Melhor preço · DGEG"}
               </span>
             </div>
-            <button onClick={() => carregar()} className="press w-8 h-8 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center">
-              <RefreshCw size={14} className={`text-white ${loading ? "animate-spin" : ""}`} />
+            <button onClick={() => carregar()} className="press w-8 h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center">
+              <RefreshCw size={14} className={`text-slate-400 ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
 
-          {loading ? <LoadingDots /> : melhor ? (
+          {loading ? (
+            <div className="flex items-center gap-2 py-1">
+              <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-orange-400 animate-spin" />
+              <span className="text-xs font-bold text-slate-300">A obter preços…</span>
+            </div>
+          ) : melhor ? (
             <>
-              <p className="text-[13px] font-semibold text-white/80">{tipoAtivo}</p>
-              <p className="text-4xl font-black text-white mt-0.5">
-                {melhor.preco.toFixed(3)} €
-                <span className="text-base font-semibold text-white/60 ml-1">/litro</span>
+              <p className="text-[12px] font-bold text-slate-400">{tipoAtivo}</p>
+              <p className="text-3xl font-black text-slate-900 mt-0.5">
+                {melhor.preco.toFixed(3)} <span className="text-sm font-bold text-slate-400">€/litro</span>
               </p>
-              <p className="text-[12px] text-white/60 mt-0.5 flex items-center gap-1">
-                <TrendingDown size={12} />
-                {melhor.nome || melhor.posto}
-                {melhor.distancia && <span className="ml-1">· {melhor.distancia} km</span>}
+              <p className="text-[12px] text-slate-500 mt-1 flex items-center gap-1">
+                <MapPin size={11} className="text-slate-300" /> {melhor.nome || melhor.posto}
+                {melhor.distancia && <span className="text-slate-400">· {melhor.distancia} km</span>}
               </p>
             </>
-          ) : (
-            <p className="text-sm text-white/60 py-3">Sem dados disponíveis</p>
-          )}
-
-          {locNome && (
-            <p className="text-[11px] text-white/50 mt-1 flex items-center gap-1">
-              <MapPin size={11} /> {locNome}
-            </p>
+          ) : erro ? null : (
+            <p className="text-[13px] text-slate-400 py-2">Sem preços para mostrar de momento.</p>
           )}
         </div>
 
@@ -560,7 +544,7 @@ function SubCombustiveis() {
             {tiposDisponiveis.map(t => (
               <button key={t} onClick={() => setTipo(t)}
                 className={`press flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  tipoAtivo === t ? "bg-white text-orange-600" : "bg-white/15 text-white/80 border border-white/20"
+                  tipoAtivo === t ? "bg-orange-500 text-white" : "bg-slate-50 text-slate-500 border border-slate-100"
                 }`}
               >{t}</button>
             ))}
@@ -661,7 +645,7 @@ function SubCombustiveis() {
       )}
 
       {/* Lista */}
-      {erro ? <ErroCard onRetry={() => carregar()} mensagem={erro} /> : vista === "mapa" ? null : (
+      {erro ? <ErroCard onRetry={() => carregar()} titulo="Preços indisponíveis de momento" sub="A DGEG não respondeu agora mesmo. A tendência acima continua disponível." /> : vista === "mapa" ? null : (
         <div className="px-4 flex flex-col gap-2.5">
           {soFavoritos && filtrados.length === 0 && (
             <div className="card p-6 text-center">
@@ -828,37 +812,39 @@ function SubPostosEV() {
 
   return (
     <div>
-      {/* Hero */}
-      <div
-        className="mx-4 mb-4 rounded-3xl relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 20px 50px -15px rgba(5,150,105,0.45)" }}
-      >
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
-        <div className="px-5 pt-5 pb-5 relative z-10">
-          <div className="flex items-center justify-between mb-2">
+      {/* Hero — card branco minimalista */}
+      <div className="mx-4 mb-4 card overflow-hidden">
+        <div className="px-5 pt-4 pb-4">
+          <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <Zap size={16} className="text-white/70" />
-              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Postos EV</span>
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <Zap size={15} className="text-emerald-600" />
+              </div>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Postos de carregamento</span>
             </div>
-            <button onClick={carregar} className="press w-8 h-8 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center">
-              <RefreshCw size={14} className={`text-white ${loading ? "animate-spin" : ""}`} />
+            <button onClick={carregar} className="press w-8 h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center">
+              <RefreshCw size={14} className={`text-slate-400 ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
-          <p className="text-xl font-black text-white">Postos de Carregamento EV</p>
-          <p className="text-[12px] text-white/60 mt-0.5 flex items-center gap-1">
-            <MapPin size={11} /> {locNome || "A obter localização..."}
+          <p className="text-[12px] text-slate-400 flex items-center gap-1 mb-3 ml-0.5">
+            <MapPin size={11} className="text-slate-300" /> {locNome || "A obter localização…"}
           </p>
 
-          {loading ? <LoadingDots /> : (
-            <div className="flex gap-5 mt-4">
+          {loading ? (
+            <div className="flex items-center gap-2 py-1">
+              <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-emerald-400 animate-spin" />
+              <span className="text-xs font-bold text-slate-300">A carregar postos…</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
               {[
-                { label: "Disponíveis", value: counts.disponível, color: "text-emerald-300" },
-                { label: "Ocupados",    value: counts.ocupado,    color: "text-red-300" },
-                { label: "Manutenção",  value: counts.manutenção, color: "text-orange-300" },
+                { label: "Disponíveis", value: counts.disponível, color: "text-emerald-600", bg: "bg-emerald-50" },
+                { label: "Ocupados",    value: counts.ocupado,    color: "text-red-500",     bg: "bg-red-50" },
+                { label: "Manutenção",  value: counts.manutenção, color: "text-orange-500",  bg: "bg-orange-50" },
               ].map(s => (
-                <div key={s.label} className="text-center">
-                  <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-[9px] text-white/50 mt-0.5">{s.label}</p>
+                <div key={s.label} className={`${s.bg} rounded-xl py-2.5 text-center`}>
+                  <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
+                  <p className="text-[9px] font-bold text-slate-400 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -1339,9 +1325,8 @@ function SubAvisos() {
       {/* Hero */}
       <div
         className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 20px 50px -15px rgba(37,99,235,0.4)" }}
+        style={{ background: "linear-gradient(150deg,#1e40af 0%,#2563eb 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.30)" }}
       >
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
         <div className="flex items-center gap-3 relative z-10">
           <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
             <Bell size={22} className="text-white" />
