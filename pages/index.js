@@ -722,20 +722,15 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
             <button
               key={i}
               onClick={() => f.tab && setTab(f.tab)}
-              className={`press bg-white rounded-xl border border-slate-100 text-left ${f.full ? "col-span-2 lg:col-span-4 flex items-center gap-4 px-5 py-4" : "p-4"}`}
+              className={`press bg-white rounded-xl border border-slate-100 text-left flex items-center gap-3 ${f.full ? "col-span-2 lg:col-span-4 px-4 py-3.5" : "p-3"}`}
               style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04)" }}
             >
-              <div className={`${f.iconBg} rounded-xl flex items-center justify-center flex-shrink-0 ${f.full ? "w-12 h-12" : "w-10 h-10 mb-3"}`}>
-                <f.icon size={f.full ? 21 : 18} className={f.iconColor} />
+              <div className={`${f.iconBg} rounded-lg flex items-center justify-center flex-shrink-0 ${f.full ? "w-11 h-11" : "w-9 h-9"}`}>
+                <f.icon size={f.full ? 20 : 17} className={f.iconColor} />
               </div>
-              <div className={f.full ? "flex-1" : ""}>
-                <p className={`font-black text-slate-800 leading-snug ${f.full ? "text-[15px]" : "text-[13px]"}`}>{f.label}</p>
-                <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{f.desc}</p>
-                {!f.full && (
-                  <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-slate-400">
-                    Abrir <ChevronRight size={9} />
-                  </div>
-                )}
+              <div className="flex-1 min-w-0">
+                <p className={`font-black text-slate-800 leading-tight ${f.full ? "text-[15px]" : "text-[12.5px]"}`}>{f.label}</p>
+                {f.full && <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{f.desc}</p>}
               </div>
               {f.full && <ChevronRight size={17} className="text-slate-300 flex-shrink-0" />}
             </button>
