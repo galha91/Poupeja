@@ -74,7 +74,6 @@ export default function SecaoTalao() {
           {/* Hero */}
           <div className="rounded-3xl overflow-hidden relative mb-5"
             style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7,#6366f1)", boxShadow:"0 20px 50px -15px rgba(124,58,237,0.5)" }}>
-            <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10"/>
             <div className="p-6 text-white relative z-10">
               <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center mb-3 backdrop-blur">
                 <Receipt size={28}/>

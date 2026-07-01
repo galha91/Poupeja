@@ -399,8 +399,7 @@ export default function SecaoCasa() {
   return (
     <div className="pb-28">
       <div className="mx-4 mt-4 mb-5 rounded-3xl p-5 relative overflow-hidden anim-up"
-        style={{ background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%)", boxShadow: "0 20px 50px -15px rgba(37,99,235,0.45)" }}>
-        <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
+        style={{ background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.30)" }}>
         <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1.5">Habitação</p>
         <p className="text-2xl font-black text-white leading-tight">A tua casa</p>
         <p className="text-xs text-white/70 mt-1">Crédito, renda e contas fixas num só sítio</p>

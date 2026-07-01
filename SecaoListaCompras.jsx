@@ -558,8 +558,7 @@ export default function SecaoListaCompras() {
 
       {/* Hero */}
       <div className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden anim-up"
-        style={{ background: "linear-gradient(135deg,#5b21b6,#7c3aed,#a855f7)", boxShadow: "0 20px 50px -15px rgba(124,58,237,0.45)" }}>
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
+        style={{ background: "linear-gradient(135deg,#5b21b6,#7c3aed,#a855f7)", boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)" }}>
         <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5 mb-2">
           <ShoppingCart size={11} /> Lista de compras
         </p>

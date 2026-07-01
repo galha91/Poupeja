@@ -120,10 +120,9 @@ export default function SecaoIRS() {
         className="anim-up mx-4 mt-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg,#7c3aed 0%,#a855f7 100%)",
-          boxShadow: "0 20px 50px -15px rgba(124,58,237,0.45)",
+          boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)",
         }}
       >
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
         <div className="flex items-center gap-3 relative z-10">
           <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
             <Calculator size={22} className="text-white" />
@@ -261,10 +260,9 @@ export default function SecaoIRS() {
             className="anim-up mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
             style={{
               background: "linear-gradient(135deg,#4c1d95 0%,#7c3aed 100%)",
-              boxShadow: "0 20px 50px -15px rgba(124,58,237,0.4)",
+              boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)",
             }}
           >
-            <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
             <p className="text-[10px] font-black text-white/60 uppercase tracking-widest relative z-10">
               IRS anual estimado
             </p>

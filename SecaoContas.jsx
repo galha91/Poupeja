@@ -506,11 +506,9 @@ export default function SecaoContas() {
           className="rounded-3xl px-6 pt-6 pb-5 relative overflow-hidden"
           style={{
             background: "linear-gradient(135deg,#1e1b4b 0%,#4c1d95 60%,#7c3aed 100%)",
-            boxShadow: "0 20px 50px -15px rgba(124,58,237,0.45)",
+            boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)",
           }}
         >
-          <div className="absolute -right-6 -top-6 w-40 h-40 bg-white/10 rounded-full pointer-events-none" />
-          <div className="absolute right-12 bottom-4 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
 
           {/* Navegação de mês */}
           <div className="flex items-center justify-between mb-4 relative z-10">

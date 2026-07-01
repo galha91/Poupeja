@@ -46,10 +46,8 @@ export default function SecaoApoios() {
       <div className="px-4 pt-4 pb-2 anim-up">
         <div
           className="rounded-3xl relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#1e3a5f 0%,#1d4ed8 60%,#60a5fa 100%)", boxShadow: "0 20px 50px -15px rgba(29,78,216,0.45)" }}
+          style={{ background: "linear-gradient(135deg,#1e3a5f 0%,#1d4ed8 60%,#60a5fa 100%)", boxShadow: "0 8px 32px -8px rgba(29,78,216,0.30)" }}
         >
-          <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full pointer-events-none" />
-          <div className="absolute right-8 bottom-4 w-16 h-16 bg-white/5 rounded-full pointer-events-none" />
           <div className="px-6 pt-6 pb-5 relative z-10">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">

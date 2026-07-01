@@ -100,9 +100,8 @@ export default function SecaoFolhetos() {
       {/* Hero */}
       <div
         className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden anim-up"
-        style={{ background: "linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#60a5fa 100%)", boxShadow: "0 20px 50px -15px rgba(37,99,235,0.45)" }}
+        style={{ background: "linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#60a5fa 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.30)" }}
       >
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
         <div className="absolute right-10 bottom-4 opacity-10 pointer-events-none">
           <ShoppingCart size={64} />
         </div>

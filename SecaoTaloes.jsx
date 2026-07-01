@@ -387,7 +387,6 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
         <div className="anim-up">
           <div className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
             style={{ background: "linear-gradient(135deg,#1d4ed8,#3b82f6)", boxShadow: "0 16px 40px -12px rgba(37,99,235,0.45)" }}>
-            <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
             <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
               <TrendingUp size={11} /> Talões guardados
             </p>
@@ -429,7 +428,6 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
         <div className="anim-up">
           <div className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
             style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 16px 40px -12px rgba(5,150,105,0.45)" }}>
-            <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
             <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
               <ShieldCheck size={11} /> Garantias ativas
             </p>

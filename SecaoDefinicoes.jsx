@@ -185,7 +185,6 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
         className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden"
         style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 16px 40px -12px rgba(5,150,105,0.4)" }}
       >
-        <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/10 pointer-events-none" />
         <div className="flex items-center gap-3 relative z-10">
           <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
             <User size={26} className="text-white" />
@@ -481,7 +480,6 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
 
             {/* Hero */}
             <div className="relative p-6 pb-5" style={{ background: "linear-gradient(135deg,#064e3b,#059669,#34d399)" }}>
-              <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
               <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">✕</span>
               </button>

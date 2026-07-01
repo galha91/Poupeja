@@ -209,7 +209,6 @@ export default function SecaoLojas() {
             className={`mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden bg-gradient-to-br ${cfg.grad}`}
             style={{ boxShadow: `0 20px 50px -15px ${cfg.shadow}` }}
           >
-            <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
             <div className="flex items-center gap-3 relative z-10">
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
                 <cfg.icon size={24} className="text-white" />
@@ -247,9 +246,8 @@ export default function SecaoLojas() {
           {/* Hero */}
           <div
             className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg,#c2410c,#f97316)", boxShadow: "0 20px 50px -15px rgba(234,88,12,0.45)" }}
+            style={{ background: "linear-gradient(135deg,#c2410c,#f97316)", boxShadow: "0 8px 32px -8px rgba(234,88,12,0.30)" }}
           >
-            <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
             <div className="flex items-center gap-3 relative z-10">
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
                 <Sparkles size={22} className="text-white" />
