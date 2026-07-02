@@ -43,15 +43,19 @@ jobs:
             }
           }
 
-          const data = JSON.parse(fs.readFileSync('public/folhetos.json', 'utf8'));
-          const resultados = await Promise.all(data.folhetos.map(f => testar(f.loja, f.url)));
-          const quebrados = resultados.filter(r => !r.ok);
-          if (quebrados.length > 0) {
-            fs.appendFileSync(process.env.GITHUB_OUTPUT || '/dev/null',
-              'quebrados=' + quebrados.map(r => r.loja + ' (' + r.status + ')').join(', ') + '\n');
-          } else {
-            console.log('✅ Todos os links OK');
-          }
+          // Node 22+ recusa require() + await no topo (ERR_AMBIGUOUS_MODULE_SYNTAX).
+          // Envolver a execução numa função async resolve — sem top-level await.
+          (async () => {
+            const data = JSON.parse(fs.readFileSync('public/folhetos.json', 'utf8'));
+            const resultados = await Promise.all(data.folhetos.map(f => testar(f.loja, f.url)));
+            const quebrados = resultados.filter(r => !r.ok);
+            if (quebrados.length > 0) {
+              fs.appendFileSync(process.env.GITHUB_OUTPUT || '/dev/null',
+                'quebrados=' + quebrados.map(r => r.loja + ' (' + r.status + ')').join(', ') + '\n');
+            } else {
+              console.log('✅ Todos os links OK');
+            }
+          })();
           "
 
       - name: Alertar sobre links quebrados
