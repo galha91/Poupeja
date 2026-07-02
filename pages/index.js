@@ -1461,21 +1461,16 @@ export default function PoupeJa() {
               </div>
             </main>
 
-            {/* FAB — digitalizar talão (canto inferior direito, não tapa o conteúdo) */}
+            {/* FAB — digitalizar talão (fixo no canto inferior direito) */}
             {tab !== "taloes" && (
-              <div
-                className="lg:hidden fixed left-1/2 -translate-x-1/2 w-full max-w-md z-50 pointer-events-none"
-                style={{ bottom: "calc(78px + env(safe-area-inset-bottom))" }}
+              <button
+                onClick={() => go("taloes")}
+                aria-label="Digitalizar talão"
+                className="press lg:hidden fixed right-4 z-50 flex items-center justify-center text-white"
+                style={{ bottom: "calc(80px + env(safe-area-inset-bottom))", width: 54, height: 54, borderRadius: 18, background: "linear-gradient(150deg,#10b981,#047857)", boxShadow: "0 10px 22px -6px rgba(5,150,105,0.55)" }}
               >
-                <button
-                  onClick={() => go("taloes")}
-                  aria-label="Digitalizar talão"
-                  className="press pointer-events-auto absolute right-4 flex items-center justify-center text-white"
-                  style={{ width: 54, height: 54, borderRadius: 18, background: "linear-gradient(150deg,#10b981,#047857)", boxShadow: "0 10px 22px -6px rgba(5,150,105,0.55)" }}
-                >
-                  <Camera size={24} strokeWidth={1.9} />
-                </button>
-              </div>
+                <Camera size={24} strokeWidth={1.9} />
+              </button>
             )}
 
             {/* Bottom Nav */}
