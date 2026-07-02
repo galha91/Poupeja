@@ -32,7 +32,7 @@ import {
   ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2, Calculator,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
-import { calcularEstado } from "../lib/desafios";
+import { calcularEstado, nivelAtual } from "../lib/desafios";
 
 /* ─── nav config ─── */
 const NAV = [
@@ -550,8 +550,47 @@ function CartaoDiario({ setTab }) {
   );
 }
 
+/* ─── Home redesign: helpers ─── */
+function saudacaoHora() {
+  const h = new Date().getHours();
+  return h < 12 ? "Bom dia" : h < 20 ? "Boa tarde" : "Boa noite";
+}
+
+// Contagem crescente do valor poupado (respeita prefers-reduced-motion)
+function useCountUp(target, ms = 1100) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (typeof window === "undefined") { setVal(target); return; }
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) { setVal(target); return; }
+    let raf, start;
+    const step = (t) => {
+      if (start === undefined) start = t;
+      const p = Math.min((t - start) / ms, 1);
+      setVal(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return val;
+}
+
+// Gradientes por marca para os cartões de folhetos
+const FOLHETO_CORES = {
+  "Continente":      ["#e11d48", "#be123c"],
+  "Pingo Doce":      ["#16a34a", "#15803d"],
+  "Lidl":            ["#0ea5e9", "#0369a1"],
+  "Aldi":            ["#0284c7", "#075985"],
+  "Auchan":          ["#e11d48", "#b91c1c"],
+  "E.Leclerc":       ["#2563eb", "#1d4ed8"],
+  "El Corte Inglés": ["#047857", "#065f46"],
+  "Froiz":           ["#dc2626", "#991b1b"],
+  "Intermarché":     ["#dc2626", "#b91c1c"],
+};
+const corFolheto = (loja) => FOLHETO_CORES[loja] || ["#059669", "#047857"];
+
 /* ─── Ecrã Início ─── */
-function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, onInstalarAndroid }) {
+function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoes, avisosCount = 0 }) {
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
   const [totalMes, setTotalMes]       = useState(0);
@@ -559,6 +598,8 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
   const [nTaloes, setNTaloes]         = useState(0);
   const [feedbackPartilha, setFeedbackPartilha] = useState("");
   const [estadoDesafio, setEstadoDesafio] = useState(null);
+  const [folhetos, setFolhetos]   = useState([]);
+  const [streak, setStreak]       = useState(0);
   useEffect(() => {
     try {
       const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
@@ -570,7 +611,16 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
       setNTaloes(compras.length);
     } catch {}
     setEstadoDesafio(calcularEstado());
+    setStreak(calcStreak());
+    fetch("/api/folhetos").then(r => r.json()).then(d => setFolhetos(d.folhetos || [])).catch(() => {});
   }, []);
+
+  // Dados derivados para o novo ecrã
+  const nivel     = nivelAtual(totalSempre);
+  const mesNome   = new Date().toLocaleDateString("pt-PT", { month: "long" });
+  const inteiroMes = Math.floor(totalMes);
+  const animMes   = useCountUp(inteiroMes, 1100);
+  const decMes    = String(Math.round((totalMes - inteiroMes) * 100)).padStart(2, "0");
 
   async function partilhar() {
     const valor = totalMes > 0 ? totalMes : totalSempre;
@@ -599,125 +649,178 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
   return (
     <div className="pb-28">
 
-      {/* Hero boas-vindas */}
-      <div className="px-4 pt-4 pb-2 anim-up">
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: "linear-gradient(150deg,#047857 0%,#059669 100%)", boxShadow: "0 8px 32px -8px rgba(5,150,105,0.35)" }}
-        >
-          <div className="px-6 pt-6 pb-5">
-            {totalSempre > 0 ? (
-              <>
-                <p className="text-[12px] text-emerald-200 mb-1">
-                  Olá, {primeiroNome} · {totalMes > 0 ? "este mês poupaste" : "total poupado"}
-                </p>
-                <p className="text-[44px] font-black text-white leading-none tracking-tight" style={{ fontFamily: "'Sora', system-ui" }}>
-                  €{(totalMes > 0 ? totalMes : totalSempre).toFixed(2)}
-                </p>
-                <p className="text-[12px] text-emerald-200 mt-1.5">
-                  {totalMes > 0 && totalSempre > totalMes
-                    ? <>€{totalSempre.toFixed(2)} no total · {nTaloes} tal{nTaloes !== 1 ? "ões" : "ão"}</>
-                    : <>em {nTaloes} talão{nTaloes !== 1 ? "s" : ""}</>}
-                </p>
-                <div className="mt-4 flex gap-2">
-                  <button
-                    onClick={() => setTab("poupanca")}
-                    className="press inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-black px-4 py-2 rounded-xl border border-white/20"
-                  >
-                    Ver detalhes <ArrowRight size={12} />
-                  </button>
-                  <button
-                    onClick={() => setTab("taloes")}
-                    className="press inline-flex items-center gap-1.5 bg-white text-emerald-700 text-xs font-black px-4 py-2 rounded-xl"
-                  >
-                    <Plus size={12} /> Talão
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-[13px] text-emerald-200">Olá, {primeiroNome}</p>
-                <p className="text-[28px] font-black text-white mt-1 leading-tight" style={{ fontFamily: "'Sora', system-ui" }}>
-                  Pronto para poupar<br />nas compras de hoje?
-                </p>
-                <button
-                  onClick={() => setTab("taloes")}
-                  className="press mt-4 inline-flex items-center gap-1.5 bg-white text-emerald-700 text-xs font-black px-4 py-2.5 rounded-xl"
-                >
-                  Guardar primeiro talão <ArrowRight size={12} />
-                </button>
-              </>
-            )}
+      {/* Cabeçalho — saudação + nível + notificações + perfil */}
+      <div className="px-4 pt-11 pb-1 flex items-center justify-between anim-up">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] font-semibold text-slate-500">{saudacaoHora()},</span>
+            <span className="inline-flex items-center gap-1 text-[10.5px] font-black px-2 py-0.5 rounded-full"
+              style={{ background: "linear-gradient(135deg,#fef3c7,#fde68a)", color: "#a16207" }}>
+              <Star size={10} className="fill-current" /> Nível {nivel.idx + 1}
+            </span>
           </div>
+          <p className="font-display text-[22px] font-extrabold text-slate-900 leading-tight tracking-tight capitalize">{primeiroNome}</p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <button onClick={onAbrirAvisos}
+            className="press relative w-[42px] h-[42px] rounded-[14px] bg-white flex items-center justify-center"
+            style={{ boxShadow: "0 2px 8px rgba(15,42,32,0.06)" }}>
+            <Bell size={20} className="text-slate-700" />
+            {avisosCount > 0 && <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />}
+          </button>
+          <button onClick={onAbrirDefinicoes}
+            className="press w-[42px] h-[42px] rounded-[14px] flex items-center justify-center text-white font-display font-extrabold text-[17px]"
+            style={{ background: "linear-gradient(140deg,#34d399,#059669)", boxShadow: "0 4px 10px rgba(5,150,105,0.32)" }}>
+            {(primeiroNome[0] || "P").toUpperCase()}
+          </button>
         </div>
       </div>
 
-      {/* Cartão diário: combustível, folheto, dica + streak */}
-      <CartaoDiario setTab={setTab} />
-
-      {/* Garantias highlight */}
-      <div className="px-4 mt-3 anim-up anim-up-1">
-        <button
-          onClick={goGarantias}
-          className="press w-full card p-4 flex items-center gap-3.5 text-left"
-        >
-          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
-            <ShieldCheck size={19} className="text-emerald-600" />
+      {/* HERO — poupança do mês (count-up) + meta + streak */}
+      <div className="px-4 pt-2">
+        <button onClick={() => setTab("poupanca")}
+          className="pj-tap relative overflow-hidden rounded-[26px] p-[22px] text-white w-full text-left block anim-up anim-up-1"
+          style={{ background: "linear-gradient(155deg,#10b981 0%,#059669 52%,#047857 100%)", boxShadow: "0 20px 40px -16px rgba(5,150,105,0.55)" }}>
+          <div className="pj-sheen absolute top-0 bottom-0 left-0 w-[70px] pointer-events-none"
+            style={{ background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent)" }} />
+          <div className="absolute -right-8 -top-8 w-[150px] h-[150px] rounded-full" style={{ background: "rgba(255,255,255,0.09)" }} />
+          <div className="absolute right-8 -bottom-12 w-[110px] h-[110px] rounded-full" style={{ background: "rgba(255,255,255,0.07)" }} />
+          <div className="relative flex justify-between items-start">
+            <div>
+              <p className="text-[12.5px] font-semibold opacity-90 capitalize">Poupaste em {mesNome}</p>
+              <p className="font-display text-[42px] font-extrabold leading-none tracking-tight mt-0.5">
+                €{Math.floor(animMes)}<span className="text-[24px] opacity-80">,{decMes}</span>
+              </p>
+            </div>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold"
+              style={{ background: "rgba(255,255,255,0.16)", backdropFilter: "blur(4px)" }}>
+              🔥 {Math.max(streak, 1)} dia{Math.max(streak, 1) !== 1 ? "s" : ""}
+            </span>
           </div>
-          <div className="flex-1">
-            <p className="text-[13px] font-black text-slate-800 leading-snug">Garantias digitais</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Nunca percas a validade dos teus produtos</p>
-          </div>
-          <ChevronRight size={15} className="text-slate-300 flex-shrink-0" />
+          {estadoDesafio && (() => {
+            const pctMeta = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
+            return (
+              <div className="relative mt-[18px]">
+                <div className="flex justify-between text-[11.5px] font-semibold opacity-90 mb-[7px]">
+                  <span>Meta do mês · €{estadoDesafio.desafio.meta}</span><span>{pctMeta}%</span>
+                </div>
+                <div className="h-[9px] rounded-full" style={{ background: "rgba(255,255,255,0.22)" }}>
+                  <div className="h-full rounded-full pj-bar"
+                    style={{ width: `${pctMeta}%`, "--pj-final-width": `${pctMeta}%`, background: "linear-gradient(90deg,#fde68a,#fbbf24)" }} />
+                </div>
+              </div>
+            );
+          })()}
         </button>
       </div>
 
-      {/* Desafio do mês — destaque */}
+      {/* Ações rápidas */}
+      <div className="px-4 mt-4 grid grid-cols-4 gap-2.5 anim-up anim-up-2">
+        {[
+          { Icon: Receipt,     label: "Talões",      bg: "#ecfdf5", color: "#059669", on: () => setTab("taloes") },
+          { Icon: Fuel,        label: "Combustível", bg: "#fff7ed", color: "#ea580c", on: () => setTab("mobilidade") },
+          { Icon: ShieldCheck, label: "Garantias",   bg: "#eff6ff", color: "#2563eb", on: goGarantias },
+          { Icon: Landmark,    label: "Apoios",      bg: "#f5f3ff", color: "#7c3aed", on: () => setTab("apoios") },
+        ].map((a, i) => (
+          <button key={i} onClick={a.on}
+            className="pj-tap bg-white rounded-[18px] py-3.5 px-1.5 flex flex-col items-center gap-1.5"
+            style={{ boxShadow: "0 2px 10px rgba(15,42,32,0.05)" }}>
+            <div className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: a.bg, color: a.color }}>
+              <a.Icon size={22} strokeWidth={1.8} />
+            </div>
+            <span className="text-[11px] font-bold" style={{ color: "#3a4a43" }}>{a.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Desafio do mês */}
       {estadoDesafio && (() => {
         const d = estadoDesafio.desafio;
-        const pct = Math.round(estadoDesafio.progresso * 100);
+        const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
         const completo = estadoDesafio.completo;
+        const falta = Math.max(0, d.meta - estadoDesafio.totalMes);
         return (
-          <div className="px-4 mt-3 anim-up anim-up-2">
-            <button
-              onClick={() => setTab("poupanca")}
-              className="press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left relative overflow-hidden"
-              style={{
-                background: `linear-gradient(135deg,${d.cor}f0,${d.cor})`,
-                boxShadow: `0 12px 28px -10px ${d.cor}66`,
-              }}
-            >
-              <div className="absolute right-3 bottom-2 text-5xl opacity-10 pointer-events-none select-none">{d.emoji}</div>
-              <div
-                className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl"
-              >{d.emoji}</div>
-              <div className="flex-1 min-w-0 relative z-10">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Desafio do mês</p>
-                  {completo && <span className="text-[9px] font-black text-white bg-white/20 px-1.5 py-0.5 rounded-full">Completo 🏆</span>}
-                </div>
-                <p className="text-[14px] font-black text-white leading-tight truncate">{d.nome}</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${Math.max(pct, pct > 0 ? 4 : 0)}%`, background: completo ? "#fbbf24" : "rgba(255,255,255,0.9)" }}
-                    />
+          <div className="px-4 mt-4 anim-up anim-up-3">
+            <button onClick={() => setTab("poupanca")}
+              className="pj-tap w-full text-left bg-white rounded-[22px] p-[18px] border border-[#eef2f0]"
+              style={{ boxShadow: "0 2px 12px rgba(15,42,32,0.06)" }}>
+              <div className="flex items-center justify-between mb-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center text-white"
+                    style={{ background: "linear-gradient(140deg,#fb7185,#e11d48)" }}>
+                    <Trophy size={20} strokeWidth={1.9} />
                   </div>
-                  <span className="text-[10px] font-black text-white/80 flex-shrink-0">
-                    €{estadoDesafio.totalMes.toFixed(0)}/€{d.meta}
-                  </span>
+                  <div>
+                    <p className="font-display text-[14px] font-extrabold text-slate-900 leading-tight">{d.nome}</p>
+                    <p className="text-[11.5px] font-semibold" style={{ color: "#8a968f" }}>Meta de €{d.meta} este mês</p>
+                  </div>
                 </div>
+                <span className="text-[12px] font-extrabold" style={{ color: "#e11d48" }}>{pct}%</span>
               </div>
-              <ChevronRight size={16} className="text-white/50 flex-shrink-0 relative z-10" />
+              <div className="h-2 rounded-full" style={{ background: "#f1eaec" }}>
+                <div className="h-full rounded-full pj-bar"
+                  style={{ width: `${pct}%`, "--pj-final-width": `${pct}%`, background: "linear-gradient(90deg,#fb7185,#e11d48)" }} />
+              </div>
+              <p className="mt-3 text-[11.5px] font-semibold" style={{ color: "#8a968f" }}>
+                {completo
+                  ? <>Desafio <b style={{ color: "#e11d48" }}>completo</b> 🏆 — parabéns!</>
+                  : <>Faltam <b style={{ color: "#e11d48" }}>€{falta.toFixed(0)}</b> para <b className="text-slate-900">completares</b></>}
+              </p>
             </button>
           </div>
         );
       })()}
 
-      {/* Features grid */}
-      <div className="px-4 mt-4 anim-up anim-up-1">
-        <SectionLabel icon={Sparkles}>O que podes fazer</SectionLabel>
+      {/* Folhetos desta semana — carrossel */}
+      {folhetos.length > 0 && (
+        <div className="mt-4 anim-up anim-up-4">
+          <div className="flex items-center justify-between px-4 mb-3">
+            <span className="font-display text-[16px] font-extrabold text-slate-900">Folhetos desta semana</span>
+            <button onClick={() => setTab("mercados")} className="press text-[12px] font-bold text-emerald-600">Ver todos</button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 pb-1">
+            {folhetos.slice(0, 8).map((f, i) => {
+              const [c1, c2] = corFolheto(f.loja);
+              return (
+                <button key={f.id || i}
+                  onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")}
+                  className="pj-tap flex-shrink-0 w-[138px] bg-white rounded-[18px] overflow-hidden text-left"
+                  style={{ boxShadow: "0 3px 12px rgba(15,42,32,0.07)" }}>
+                  <div className="h-[88px] flex items-center justify-center text-white font-extrabold text-[15px] px-2 text-center leading-tight"
+                    style={{ background: `linear-gradient(135deg,${c1},${c2})` }}>{f.loja}</div>
+                  <div className="p-3">
+                    <p className="text-[12.5px] font-bold text-slate-900 leading-tight"
+                      style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      {f.titulo || "Folheto desta semana"}
+                    </p>
+                    <p className="text-[11px] font-bold mt-1" style={{ color: "#8a968f" }}>{f.validade || "em vigor"}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Combustível perto de ti */}
+      <div className="px-4 mt-4 anim-up anim-up-4">
+        <button onClick={() => setTab("mobilidade")}
+          className="pj-tap w-full text-left rounded-[22px] px-[18px] py-4 text-white flex items-center justify-between"
+          style={{ background: "linear-gradient(150deg,#0f2a20,#143a2c)", boxShadow: "0 10px 24px -12px rgba(15,42,32,0.6)" }}>
+          <div>
+            <div className="text-[11.5px] font-semibold opacity-75 flex items-center gap-1.5">
+              <Fuel size={13} strokeWidth={1.9} /> Combustível mais barato
+            </div>
+            <div className="text-[15px] font-extrabold mt-1">Postos e preços perto de ti</div>
+            <div className="text-[11.5px] opacity-70 mt-0.5">Gasóleo, gasolina e GPL · dados da DGEG</div>
+          </div>
+          <ChevronRight size={20} className="opacity-80 flex-shrink-0" />
+        </button>
+      </div>
+
+      {/* Explorar tudo — acesso a todas as secções */}
+      <div className="px-4 mt-5 anim-up anim-up-4">
+        <SectionLabel icon={Sparkles}>Explorar tudo</SectionLabel>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
           {FEATURES.map((f, i) => (
             <button
@@ -733,27 +836,6 @@ function EcraInicio({ user, setTab, goGarantias, installModo, onAbrirInstalar, o
             </button>
           ))}
         </div>
-      </div>
-
-
-      {/* Dica */}
-      <div className="px-4 mt-4 mb-2 anim-up anim-up-3">
-        <button
-          onClick={() => setTab("mercados")}
-          className="press w-full text-left card p-4 flex gap-3 items-start"
-        >
-          <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Star size={16} className="text-amber-500" />
-          </div>
-          <div className="flex-1">
-            <p className="text-[11px] font-black text-amber-600 mb-0.5">Dica do dia</p>
-            <p className="text-sm font-black text-slate-800">Vê os folhetos antes de ir às compras</p>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Compara as promoções de todos os supermercados e poupa mais.</p>
-            <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-amber-600">
-              Ver folhetos <ChevronRight size={10} />
-            </span>
-          </div>
-        </button>
       </div>
 
     </div>
@@ -1428,8 +1510,8 @@ export default function PoupeJa() {
           />
         ) : (
           <>
-            {/* Header */}
-            <header
+            {/* Header — escondido no Início (que tem cabeçalho próprio no ecrã) */}
+            {tab !== "inicio" && (<header
               className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 lg:pt-5 lg:px-8"
               style={{ boxShadow: "0 1px 12px rgba(15,23,42,0.06)" }}
             >
@@ -1467,7 +1549,7 @@ export default function PoupeJa() {
                 <h1 className="text-[15px] font-black text-slate-900 leading-tight">{tituloPersonalizado.t}</h1>
                 <p className="text-[11px] text-slate-400 font-medium">{tituloPersonalizado.s}</p>
               </div>
-            </header>
+            </header>)}
 
             {/* Barra de instalação — todos os ecrãs */}
             {installModo !== "instalado" && (
@@ -1481,7 +1563,7 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} installModo={installModo} onAbrirInstalar={() => setModalInstalarAberto(true)} onInstalarAndroid={instalarAndroid} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} avisosCount={garantiasAviso.length} />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}

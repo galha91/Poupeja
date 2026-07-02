@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -127,6 +128,20 @@ input[type="range"]::-moz-range-thumb {
 /* ── Press effect ── */
 .press { transition: transform 0.12s ease; }
 .press:active { transform: scale(0.96); }
+
+/* ── Home redesign (handoff) ── */
+.font-display { font-family: 'Bricolage Grotesque', 'Sora', system-ui, sans-serif; }
+@keyframes pjBar   { from { width: 0; } }
+@keyframes pjSheen { 0% { transform: translateX(-160%) skewX(-18deg); } 55%, 100% { transform: translateX(320%) skewX(-18deg); } }
+.pj-bar   { animation: pjBar 1.1s cubic-bezier(0.22,1,0.36,1) both; }
+.pj-sheen { animation: pjSheen 3.6s ease-in-out 0.9s infinite; }
+.pj-tap   { transition: transform 0.14s cubic-bezier(0.2,0.8,0.3,1), box-shadow 0.14s ease; }
+.pj-tap:active { transform: scale(0.965); }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-up, .pj-bar, .pj-sheen, .header-title, .nav-icon-active { animation: none !important; }
+  .pj-bar { width: var(--pj-final-width, 100%); }
+}
 
 /* ── Hero gradient ── */
 .hero-gradient {
