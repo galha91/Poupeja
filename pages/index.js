@@ -27,7 +27,7 @@ import { iniciarSync, pararSync } from "../lib/sync";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
-  Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft, Camera, MapPin,
+  Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
   ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2, Calculator,
 } from "lucide-react";
@@ -1460,18 +1460,6 @@ export default function PoupeJa() {
                 )}
               </div>
             </main>
-
-            {/* FAB — digitalizar talão (fixo no canto inferior direito) */}
-            {tab !== "taloes" && (
-              <button
-                onClick={() => go("taloes")}
-                aria-label="Digitalizar talão"
-                className="press lg:hidden fixed right-4 z-50 flex items-center justify-center text-white"
-                style={{ bottom: "calc(80px + env(safe-area-inset-bottom))", width: 54, height: 54, borderRadius: 18, background: "linear-gradient(150deg,#10b981,#047857)", boxShadow: "0 10px 22px -6px rgba(5,150,105,0.55)" }}
-              >
-                <Camera size={24} strokeWidth={1.9} />
-              </button>
-            )}
 
             {/* Bottom Nav */}
             <nav
