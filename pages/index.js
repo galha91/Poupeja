@@ -32,7 +32,7 @@ import {
   ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2, Calculator,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
-import { calcularEstado, nivelAtual } from "../lib/desafios";
+import { calcularEstado } from "../lib/desafios";
 
 /* ─── nav config ─── */
 const NAV = [
@@ -377,19 +377,6 @@ function useCountUp(target, ms = 1100) {
   return val;
 }
 
-// Gradientes por marca para os cartões de folhetos
-const FOLHETO_CORES = {
-  "Continente":      ["#e11d48", "#be123c"],
-  "Pingo Doce":      ["#16a34a", "#15803d"],
-  "Lidl":            ["#0ea5e9", "#0369a1"],
-  "Aldi":            ["#0284c7", "#075985"],
-  "Auchan":          ["#e11d48", "#b91c1c"],
-  "E.Leclerc":       ["#2563eb", "#1d4ed8"],
-  "El Corte Inglés": ["#047857", "#065f46"],
-  "Froiz":           ["#dc2626", "#991b1b"],
-  "Intermarché":     ["#dc2626", "#b91c1c"],
-};
-const corFolheto = (loja) => FOLHETO_CORES[loja] || ["#059669", "#047857"];
 
 /* ─── Card de combustível na Home (dados reais DGEG) ─── */
 function CardCombustivelHome({ setTab }) {
@@ -445,33 +432,44 @@ function CardCombustivelHome({ setTab }) {
   }
 
   return (
-    <button onClick={() => setTab("mobilidade")}
-      className="pj-tap w-full text-left rounded-[22px] px-[18px] py-4 text-white flex items-center justify-between gap-3"
-      style={{ background: "linear-gradient(150deg,#0f2a20,#143a2c)", boxShadow: "0 10px 24px -12px rgba(15,42,32,0.6)" }}>
-      <div className="min-w-0">
-        <div className="text-[11.5px] font-semibold opacity-75 flex items-center gap-1.5">
-          <Fuel size={13} strokeWidth={1.9} />
+    <button onClick={() => setTab("mobilidade")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14 }}>
+      <div className="flex items-center justify-center flex-none" style={{ width: 40, height: 40, borderRadius: 12, background: "#eeece4", color: "#2c3b33" }}>
+        <Fuel size={19} strokeWidth={1.8} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500 }}>
           {dados?.perto ? "Gasóleo mais barato perto de ti" : "Gasóleo mais barato"}
         </div>
-        {dados ? (
-          <>
-            <div className="text-[15px] font-extrabold mt-1 truncate">{dados.marca || "—"}</div>
-            <div className="text-[11.5px] opacity-70 mt-0.5">
-              {dados.perto
-                ? <>{dados.distancia ? `a ${dados.distancia} km · ` : ""}toca para ver no mapa</>
-                : <>preço nacional · <span onClick={pedirLocalizacao} className="underline font-bold" style={{ color: "#6ee7b7" }}>{aLocalizar ? "a localizar…" : "ver perto de ti"}</span></>}
-            </div>
-          </>
-        ) : (
-          <div className="text-[15px] font-extrabold mt-1">Postos e preços perto de ti</div>
-        )}
+        <div className="truncate" style={{ fontSize: 15, fontWeight: 600, color: "#14231c", marginTop: 3 }}>
+          {dados ? (dados.marca || "—") : "Ver postos e preços"}
+          {dados?.perto && dados.distancia ? <span style={{ color: "#8a978e", fontWeight: 500 }}> · {dados.distancia} km</span> : null}
+          {dados && !dados.perto ? <span onClick={pedirLocalizacao} style={{ color: "#0b6b4f", fontWeight: 600 }}> · {aLocalizar ? "a localizar…" : "perto de ti"}</span> : null}
+        </div>
       </div>
-      <div className="text-right flex-shrink-0">
-        {dados
-          ? <div className="font-display text-[26px] font-extrabold" style={{ color: "#6ee7b7" }}>{dados.preco.toFixed(3).replace(".", ",")}<span className="text-[14px]">€</span></div>
-          : <ChevronRight size={20} className="opacity-80" />}
-      </div>
+      {dados
+        ? <div className="font-display flex-none" style={{ fontSize: 24, fontWeight: 500, color: "#0b6b4f" }}>{dados.preco.toFixed(2).replace(".", ",")}<span style={{ fontSize: 15 }}>€</span></div>
+        : <ChevronRight size={20} className="flex-none" style={{ color: "#8a978e" }} />}
     </button>
+  );
+}
+
+/* ─── Home: divisória fina e logótipo de folheto ─── */
+function Divisoria() {
+  return <div style={{ height: 1, background: "#e4e2d8", margin: "26px 0" }} />;
+}
+const FOLHETO_LOGO = {
+  "Continente": "continente", "Pingo Doce": "pingodoce", "Lidl": "lidl",
+  "Aldi": "aldi", "Auchan": "auchan", "Intermarché": "intermarche",
+  "Froiz": "froiz", "E.Leclerc": "eleclerc", "El Corte Inglés": "elcorteingles",
+};
+function LogoFolheto({ loja }) {
+  const key = FOLHETO_LOGO[loja];
+  return (
+    <div className="flex items-center justify-center flex-none overflow-hidden" style={{ width: 44, height: 44, borderRadius: 12, background: "#eeece4" }}>
+      {key
+        ? <img src={`/logos/${key}.svg`} alt={loja} style={{ width: 26, height: 26, objectFit: "contain" }} />
+        : <span style={{ fontSize: 15, fontWeight: 700, color: "#2c3b33" }}>{(loja || "?")[0]}</span>}
+    </div>
   );
 }
 
@@ -499,7 +497,6 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
   }, []);
 
   // Dados derivados para o novo ecrã
-  const nivel     = nivelAtual(totalSempre);
   const mesNome   = new Date().toLocaleDateString("pt-PT", { month: "long" });
   const inteiroMes = Math.floor(totalMes);
   const animMes   = useCountUp(inteiroMes, 1100);
@@ -520,186 +517,153 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
 
 
   return (
-    <div className="pb-28">
+    <div className="pb-28" style={{ minHeight: "100vh", background: "#f6f5f0", color: "#14231c" }}>
+      <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 24px 32px" }}>
 
-      {/* Cabeçalho — saudação + nível + notificações + perfil */}
-      <div className="px-4 pt-11 pb-1 flex items-center justify-between anim-up">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[13px] font-semibold text-slate-500">{saudacaoHora()},</span>
-            <span className="inline-flex items-center gap-1 text-[10.5px] font-black px-2 py-0.5 rounded-full"
-              style={{ background: "linear-gradient(135deg,#fef3c7,#fde68a)", color: "#a16207" }}>
-              <Star size={10} className="fill-current" /> Nível {nivel.idx + 1}
-            </span>
+        {/* Cabeçalho */}
+        <div className="flex items-center justify-between anim-up">
+          <div style={{ fontSize: 15, color: "#5c6b62", fontWeight: 500 }}>
+            {saudacaoHora()}, <span className="capitalize" style={{ color: "#14231c", fontWeight: 600 }}>{primeiroNome}</span>
           </div>
-          <p className="font-display text-[22px] font-extrabold text-slate-900 leading-tight tracking-tight capitalize">{primeiroNome}</p>
+          <div className="flex items-center" style={{ gap: 16, color: "#14231c" }}>
+            <button onClick={onAbrirAvisos} className="pj-tap relative flex" aria-label="Avisos">
+              <Bell size={21} strokeWidth={1.7} />
+              {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "#cf5a3c", border: "1.5px solid #f6f5f0" }} />}
+            </button>
+            <button onClick={onAbrirDefinicoes} className="pj-tap flex items-center justify-center" aria-label="Perfil"
+              style={{ width: 36, height: 36, borderRadius: "50%", background: "#0b6b4f", color: "#f6f5f0", fontSize: 14, fontWeight: 600 }}>
+              {(primeiroNome[0] || "P").toUpperCase()}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2.5">
-          <button onClick={onAbrirAvisos}
-            className="press relative w-[42px] h-[42px] rounded-[14px] bg-white flex items-center justify-center"
-            style={{ boxShadow: "0 2px 8px rgba(15,42,32,0.06)" }}>
-            <Bell size={20} className="text-slate-700" />
-            {avisosCount > 0 && <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />}
-          </button>
-          <button onClick={onAbrirDefinicoes}
-            className="press w-[42px] h-[42px] rounded-[14px] flex items-center justify-center text-white font-display font-extrabold text-[17px]"
-            style={{ background: "linear-gradient(140deg,#34d399,#059669)", boxShadow: "0 4px 10px rgba(5,150,105,0.32)" }}>
-            {(primeiroNome[0] || "P").toUpperCase()}
-          </button>
-        </div>
-      </div>
 
-      {/* HERO — poupança do mês (count-up) + meta + streak */}
-      <div className="px-4 pt-2">
-        <button onClick={() => setTab("poupanca")}
-          className="pj-tap relative overflow-hidden rounded-[26px] p-[22px] text-white w-full text-left block anim-up anim-up-1"
-          style={{ background: "linear-gradient(155deg,#10b981 0%,#059669 52%,#047857 100%)", boxShadow: "0 20px 40px -16px rgba(5,150,105,0.55)" }}>
-          <div className="pj-sheen absolute top-0 bottom-0 left-0 w-[70px] pointer-events-none"
-            style={{ background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent)" }} />
-          <div className="absolute -right-8 -top-8 w-[150px] h-[150px] rounded-full" style={{ background: "rgba(255,255,255,0.09)" }} />
-          <div className="absolute right-8 -bottom-12 w-[110px] h-[110px] rounded-full" style={{ background: "rgba(255,255,255,0.07)" }} />
-          <div className="relative flex justify-between items-start">
-            <div>
-              <p className="text-[12.5px] font-semibold opacity-90 capitalize">Poupaste em {mesNome}</p>
-              <p className="font-display text-[42px] font-extrabold leading-none tracking-tight mt-0.5">
-                €{Math.floor(animMes)}<span className="text-[24px] opacity-80">,{decMes}</span>
-              </p>
+        {/* Poupança do mês */}
+        <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
+          <div className="flex items-center justify-between">
+            <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>Poupança de {mesNome}</div>
+            <div className="flex items-center" style={{ gap: 5, fontSize: 12, color: "#0b6b4f", fontWeight: 600 }}>
+              🔥 {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "semana" : "semanas"}
             </div>
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold"
-              style={{ background: "rgba(255,255,255,0.16)", backdropFilter: "blur(4px)" }}>
-              🔥 {Math.max(streak, 1)} dia{Math.max(streak, 1) !== 1 ? "s" : ""}
-            </span>
+          </div>
+          <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 16 }}>
+            <span style={{ fontSize: 38, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>{Math.floor(animMes)}<span style={{ fontSize: 38, color: "#b0b8b0", fontWeight: 400 }}>,{decMes}</span>
           </div>
           {estadoDesafio && (() => {
-            const pctMeta = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
+            const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
+            const falta = Math.max(0, estadoDesafio.desafio.meta - estadoDesafio.totalMes);
             return (
-              <div className="relative mt-[18px]">
-                <div className="flex justify-between text-[11.5px] font-semibold opacity-90 mb-[7px]">
-                  <span>Meta do mês · €{estadoDesafio.desafio.meta}</span><span>{pctMeta}%</span>
+              <div style={{ marginTop: 28 }}>
+                <div className="flex justify-between items-baseline" style={{ fontSize: 13, color: "#5c6b62", fontWeight: 500, marginBottom: 10 }}>
+                  <span>Faltam <span style={{ color: "#14231c", fontWeight: 600 }}>€{falta.toFixed(2).replace(".", ",")}</span> para a tua meta</span>
+                  <span style={{ color: "#0b6b4f", fontWeight: 600 }}>{pct}%</span>
                 </div>
-                <div className="h-[9px] rounded-full" style={{ background: "rgba(255,255,255,0.22)" }}>
-                  <div className="h-full rounded-full pj-bar"
-                    style={{ width: `${pctMeta}%`, "--pj-final-width": `${pctMeta}%`, background: "linear-gradient(90deg,#fde68a,#fbbf24)" }} />
+                <div style={{ height: 3, borderRadius: 2, background: "#dcdad1", overflow: "hidden" }}>
+                  <div className="pj-bar" style={{ height: "100%", width: `${pct}%`, "--pj-final-width": `${pct}%`, background: "#0b6b4f" }} />
                 </div>
               </div>
             );
           })()}
-        </button>
-      </div>
-
-      {/* Ações rápidas */}
-      <div className="px-4 mt-4 grid grid-cols-4 gap-2.5 anim-up anim-up-2">
-        {[
-          { Icon: Receipt,     label: "Talões",      bg: "#ecfdf5", color: "#059669", on: () => setTab("taloes") },
-          { Icon: Fuel,        label: "Combustível", bg: "#fff7ed", color: "#ea580c", on: () => setTab("mobilidade") },
-          { Icon: ShieldCheck, label: "Garantias",   bg: "#eff6ff", color: "#2563eb", on: goGarantias },
-          { Icon: Landmark,    label: "Apoios",      bg: "#f5f3ff", color: "#7c3aed", on: () => setTab("apoios") },
-        ].map((a, i) => (
-          <button key={i} onClick={a.on}
-            className="pj-tap bg-white rounded-[18px] py-3.5 px-1.5 flex flex-col items-center gap-1.5"
-            style={{ boxShadow: "0 2px 10px rgba(15,42,32,0.05)" }}>
-            <div className="w-11 h-11 rounded-[14px] flex items-center justify-center" style={{ background: a.bg, color: a.color }}>
-              <a.Icon size={22} strokeWidth={1.8} />
-            </div>
-            <span className="text-[11px] font-bold" style={{ color: "#3a4a43" }}>{a.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Desafio do mês */}
-      {estadoDesafio && (() => {
-        const d = estadoDesafio.desafio;
-        const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
-        const completo = estadoDesafio.completo;
-        const falta = Math.max(0, d.meta - estadoDesafio.totalMes);
-        return (
-          <div className="px-4 mt-4 anim-up anim-up-3">
-            <button onClick={() => setTab("poupanca")}
-              className="pj-tap w-full text-left bg-white rounded-[22px] p-[18px] border border-[#eef2f0]"
-              style={{ boxShadow: "0 2px 12px rgba(15,42,32,0.06)" }}>
-              <div className="flex items-center justify-between mb-3.5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center text-white"
-                    style={{ background: "linear-gradient(140deg,#fb7185,#e11d48)" }}>
-                    <Trophy size={20} strokeWidth={1.9} />
-                  </div>
-                  <div>
-                    <p className="font-display text-[14px] font-extrabold text-slate-900 leading-tight">{d.nome}</p>
-                    <p className="text-[11.5px] font-semibold" style={{ color: "#8a968f" }}>Meta de €{d.meta} este mês</p>
-                  </div>
-                </div>
-                <span className="text-[12px] font-extrabold" style={{ color: "#e11d48" }}>{pct}%</span>
-              </div>
-              <div className="h-2 rounded-full" style={{ background: "#f1eaec" }}>
-                <div className="h-full rounded-full pj-bar"
-                  style={{ width: `${pct}%`, "--pj-final-width": `${pct}%`, background: "linear-gradient(90deg,#fb7185,#e11d48)" }} />
-              </div>
-              <p className="mt-3 text-[11.5px] font-semibold" style={{ color: "#8a968f" }}>
-                {completo
-                  ? <>Desafio <b style={{ color: "#e11d48" }}>completo</b> 🏆 — parabéns!</>
-                  : <>Faltam <b style={{ color: "#e11d48" }}>€{falta.toFixed(0)}</b> para <b className="text-slate-900">completares</b></>}
-              </p>
-            </button>
-          </div>
-        );
-      })()}
-
-      {/* Folhetos desta semana — carrossel */}
-      {folhetos.length > 0 && (
-        <div className="mt-4 anim-up anim-up-4">
-          <div className="flex items-center justify-between px-4 mb-3">
-            <span className="font-display text-[16px] font-extrabold text-slate-900">Folhetos desta semana</span>
-            <button onClick={() => setTab("mercados")} className="press text-[12px] font-bold text-emerald-600">Ver todos</button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 pb-1">
-            {folhetos.slice(0, 8).map((f, i) => {
-              const [c1, c2] = corFolheto(f.loja);
-              return (
-                <button key={f.id || i}
-                  onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")}
-                  className="pj-tap flex-shrink-0 w-[138px] bg-white rounded-[18px] overflow-hidden text-left"
-                  style={{ boxShadow: "0 3px 12px rgba(15,42,32,0.07)" }}>
-                  <div className="h-[88px] flex items-center justify-center text-white font-extrabold text-[15px] px-2 text-center leading-tight"
-                    style={{ background: `linear-gradient(135deg,${c1},${c2})` }}>{f.loja}</div>
-                  <div className="p-3">
-                    <p className="text-[12.5px] font-bold text-slate-900 leading-tight"
-                      style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                      {f.titulo || "Folheto desta semana"}
-                    </p>
-                    <p className="text-[11px] font-bold mt-1" style={{ color: "#8a968f" }}>{f.validade || "em vigor"}</p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
         </div>
-      )}
 
-      {/* Combustível perto de ti — dados reais */}
-      <div className="px-4 mt-4 anim-up anim-up-4">
-        <CardCombustivelHome setTab={setTab} />
-      </div>
+        <Divisoria />
 
-      {/* Explorar tudo — acesso a todas as secções */}
-      <div className="px-4 mt-5 anim-up anim-up-4">
-        <SectionLabel icon={Sparkles}>Explorar tudo</SectionLabel>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-          {FEATURES.map((f, i) => (
-            <button
-              key={i}
-              onClick={() => f.tab && setTab(f.tab)}
-              className="press bg-white rounded-xl border border-slate-100 text-left flex items-center gap-3 p-3"
-              style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04)" }}
-            >
-              <div className={`${f.iconBg} rounded-lg flex items-center justify-center flex-shrink-0 w-9 h-9`}>
-                <f.icon size={17} className={f.iconColor} />
+        {/* Ações rápidas */}
+        <div className="grid grid-cols-4 anim-up anim-up-2" style={{ gap: 4 }}>
+          {[
+            { Icon: Receipt,     label: "Talões",      on: () => setTab("taloes") },
+            { Icon: Fuel,        label: "Combustível", on: () => setTab("mobilidade") },
+            { Icon: ShieldCheck, label: "Garantias",   on: goGarantias },
+            { Icon: Landmark,    label: "Apoios",      on: () => setTab("apoios") },
+          ].map((a, i) => (
+            <button key={i} onClick={a.on} className="pj-tap flex flex-col items-center" style={{ gap: 10, padding: "8px 0" }}>
+              <div className="flex items-center justify-center" style={{ width: 52, height: 52, borderRadius: 16, background: "#eeece4", color: "#2c3b33" }}>
+                <a.Icon size={23} strokeWidth={1.7} />
               </div>
-              <p className="font-black text-slate-800 leading-tight text-[12.5px] flex-1 min-w-0">{f.label}</p>
+              <span style={{ fontSize: 11.5, fontWeight: 500, color: "#5c6b62" }}>{a.label}</span>
             </button>
           ))}
         </div>
-      </div>
 
+        <Divisoria />
+
+        {/* Desafio — talões do mês (anel) */}
+        {estadoDesafio && (() => {
+          const alvo = 8;
+          const n = estadoDesafio.taloesMes || 0;
+          const frac = Math.min(n / alvo, 1);
+          const faltam = Math.max(0, alvo - n);
+          const R = 19, C = 2 * Math.PI * R;
+          return (
+            <button onClick={() => setTab("taloes")} className="pj-tap flex items-center w-full text-left anim-up anim-up-3" style={{ gap: 14 }}>
+              <div style={{ flex: 1 }}>
+                <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "#14231c" }}>
+                  {faltam > 0 ? `Faltam ${faltam} tal${faltam !== 1 ? "ões" : "ão"} este mês` : "Desafio de talões completo 🎉"}
+                </div>
+                <div style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500, marginTop: 3 }}>
+                  {faltam > 0 ? `Guarda ${alvo} talões e sobes de nível` : `Guardaste ${n} talões em ${mesNome}`}
+                </div>
+              </div>
+              <div style={{ position: "relative", width: 44, height: 44, flex: "none" }}>
+                <svg width="44" height="44" viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r={R} fill="none" stroke="#e4e2d8" strokeWidth="3" />
+                  <circle cx="22" cy="22" r={R} fill="none" stroke="#0b6b4f" strokeWidth="3" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - frac)} transform="rotate(-90 22 22)" />
+                </svg>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#14231c" }}>{n}/{alvo}</div>
+              </div>
+            </button>
+          );
+        })()}
+
+        <Divisoria />
+
+        {/* Folhetos a acabar */}
+        {folhetos.length > 0 && (
+          <div className="anim-up anim-up-4">
+            <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
+              <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em" }}>Folhetos a acabar</span>
+              <button onClick={() => setTab("mercados")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f" }}>Ver todos</button>
+            </div>
+            <div className="flex flex-col">
+              {folhetos.slice(0, 5).map((f, i) => (
+                <div key={f.id || i}>
+                  {i > 0 && <div style={{ height: 1, background: "#eeece4" }} />}
+                  <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14, padding: "12px 0" }}>
+                    <LogoFolheto loja={f.loja} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#14231c" }}>{f.loja}</div>
+                      <div className="truncate" style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500, marginTop: 1 }}>{f.titulo || "Folheto desta semana"}</div>
+                    </div>
+                    <div style={{ fontSize: 12.5, color: "#8a978e", fontWeight: 500, flex: "none" }}>{f.validade || ""}</div>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Divisoria />
+
+        {/* Combustível */}
+        <div className="anim-up anim-up-4">
+          <CardCombustivelHome setTab={setTab} />
+        </div>
+
+        <Divisoria />
+
+        {/* Explorar tudo */}
+        <div>
+          <div className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em", marginBottom: 14 }}>Explorar tudo</div>
+          <div className="grid grid-cols-2" style={{ gap: 10 }}>
+            {FEATURES.map((f, i) => (
+              <button key={i} onClick={() => f.tab && setTab(f.tab)} className="pj-tap flex items-center text-left" style={{ gap: 12, padding: "11px 12px", borderRadius: 14, background: "#eeece4" }}>
+                <f.icon size={17} style={{ color: "#2c3b33" }} />
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: "#14231c" }}>{f.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
