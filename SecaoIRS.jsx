@@ -113,40 +113,59 @@ export default function SecaoIRS() {
 
   const reembolso = calc.resultado >= 0;
 
+  const LABEL = {
+    fontSize: 11,
+    fontWeight: 600,
+    letterSpacing: "0.09em",
+    textTransform: "uppercase",
+    color: "#8a978e",
+  };
+  const inputCls =
+    "w-full px-3 py-2.5 rounded-xl border border-[#e4e2d8] bg-white text-sm outline-none pj-tap focus:border-[#0b6b4f] focus:ring-2 focus:ring-[#0b6b4f]/10";
+  const inputStyle = { color: "#14231c", accentColor: "#0b6b4f" };
+
   return (
-    <div className="pb-28">
-      {/* Hero */}
-      <div
-        className="anim-up mx-4 mt-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg,#7c3aed 0%,#a855f7 100%)",
-          boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)",
-        }}
-      >
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <Calculator size={22} className="text-white" />
+    <div className="pb-28" style={{ background: "#f6f5f0" }}>
+      {/* Header (flat) */}
+      <div className="anim-up mx-4 mt-6 mb-5">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+            style={{ background: "#eeece4" }}
+          >
+            <Calculator size={22} style={{ color: "#0b6b4f" }} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">
-              Estimativa fiscal
+            <p style={LABEL}>Estimativa fiscal</p>
+            <p
+              className="font-display"
+              style={{ fontSize: 24, fontWeight: 600, color: "#14231c", lineHeight: 1.15 }}
+            >
+              Simulador de IRS
             </p>
-            <p className="text-xl font-black text-white">Simulador de IRS</p>
-            <p className="text-[11px] text-white/60 mt-0.5">
+            <p style={{ fontSize: 12, color: "#5c6b62", marginTop: 2 }}>
               Estima o teu IRS antes da hora
             </p>
           </div>
         </div>
       </div>
 
+      <div className="mx-4 mb-5" style={{ borderTop: "1px solid #e4e2d8" }} />
+
       {/* Formulário */}
-      <div className="anim-up mx-4 mb-4 card p-5">
-        <p className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2">
-          <Wallet size={15} className="text-purple-500" /> Os teus dados
+      <div
+        className="anim-up mx-4 mb-4 rounded-2xl p-5"
+        style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+      >
+        <p
+          className="font-display mb-4 flex items-center gap-2"
+          style={{ fontSize: 16, fontWeight: 600, color: "#14231c" }}
+        >
+          <Wallet size={16} style={{ color: "#0b6b4f" }} /> Os teus dados
         </p>
 
         <label className="block mb-3">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">
+          <span className="block mb-1.5" style={LABEL}>
             Rendimento bruto anual (€)
           </span>
           <input
@@ -155,18 +174,20 @@ export default function SecaoIRS() {
             value={form.rendimento}
             onChange={set("rendimento")}
             placeholder="Ex: 20000"
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+            className={inputCls}
+            style={inputStyle}
           />
         </label>
 
         <label className="block mb-3">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">
+          <span className="block mb-1.5" style={LABEL}>
             Estado civil
           </span>
           <select
             value={form.estadoCivil}
             onChange={set("estadoCivil")}
-            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+            className={inputCls}
+            style={inputStyle}
           >
             <option value="solteiro">Solteiro/Não casado</option>
             <option value="casado">Casado/Unido de facto</option>
@@ -175,13 +196,14 @@ export default function SecaoIRS() {
 
         {calc.casado && (
           <label className="block mb-3">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">
+            <span className="block mb-1.5" style={LABEL}>
               Tributação
             </span>
             <select
               value={form.tributacao}
               onChange={set("tributacao")}
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+              className={inputCls}
+              style={inputStyle}
             >
               <option value="separada">Separada</option>
               <option value="conjunta">Conjunta</option>
@@ -191,7 +213,7 @@ export default function SecaoIRS() {
 
         <div className="grid grid-cols-2 gap-3 mb-3">
           <label className="block">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">
+            <span className="block mb-1.5" style={LABEL}>
               Dependentes
             </span>
             <input
@@ -201,11 +223,12 @@ export default function SecaoIRS() {
               max="10"
               value={form.dependentes}
               onChange={set("dependentes")}
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+              className={inputCls}
+              style={inputStyle}
             />
           </label>
           <label className="block">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">
+            <span className="block mb-1.5" style={LABEL}>
               IRS retido (€)
             </span>
             <input
@@ -214,14 +237,14 @@ export default function SecaoIRS() {
               value={form.retido}
               onChange={set("retido")}
               placeholder="Opcional"
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+              className={inputCls}
+              style={inputStyle}
             />
           </label>
         </div>
 
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-5 mb-3">
-          Despesas dedutíveis
-        </p>
+        <div className="mt-5 mb-4" style={{ borderTop: "1px solid #eeece4" }} />
+        <p style={{ ...LABEL, marginBottom: 12 }}>Despesas dedutíveis</p>
         <div className="flex flex-col gap-3">
           {[
             { campo: "despGerais", label: "Despesas gerais familiares (€)", icon: ShoppingCart },
@@ -231,11 +254,17 @@ export default function SecaoIRS() {
             { campo: "lares", label: "Lares (€)", icon: Building2 },
           ].map((d) => (
             <label key={d.campo} className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center flex-shrink-0">
-                <d.icon size={16} className="text-purple-500" />
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: "#eeece4" }}
+              >
+                <d.icon size={16} style={{ color: "#0b6b4f" }} />
               </div>
               <div className="flex-1">
-                <span className="text-[11px] font-medium text-slate-500 block mb-1 leading-tight">
+                <span
+                  className="block mb-1 leading-tight"
+                  style={{ fontSize: 12, color: "#5c6b62" }}
+                >
                   {d.label}
                 </span>
                 <input
@@ -244,7 +273,8 @@ export default function SecaoIRS() {
                   value={form[d.campo]}
                   onChange={set(d.campo)}
                   placeholder="0"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
+                  className="w-full px-3 py-2 rounded-xl border border-[#e4e2d8] bg-white text-sm outline-none pj-tap focus:border-[#0b6b4f] focus:ring-2 focus:ring-[#0b6b4f]/10"
+                  style={inputStyle}
                 />
               </div>
             </label>
@@ -257,19 +287,17 @@ export default function SecaoIRS() {
         <>
           {/* IRS estimado */}
           <div
-            className="anim-up mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg,#4c1d95 0%,#7c3aed 100%)",
-              boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)",
-            }}
+            className="anim-up mx-4 mb-4 rounded-2xl p-5"
+            style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
           >
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest relative z-10">
-              IRS anual estimado
-            </p>
-            <p className="text-5xl font-black text-white mt-1 relative z-10">
+            <p style={LABEL}>IRS anual estimado</p>
+            <p
+              className="font-display"
+              style={{ fontSize: 40, fontWeight: 600, color: "#14231c", marginTop: 4, lineHeight: 1.05 }}
+            >
               {fmt(calc.irsFinal)}
             </p>
-            <p className="text-[12px] text-white/60 mt-1 relative z-10">
+            <p style={{ fontSize: 12, color: "#5c6b62", marginTop: 6 }}>
               Taxa efetiva de {calc.taxaEfetiva.toFixed(1)}%
             </p>
           </div>
@@ -277,34 +305,33 @@ export default function SecaoIRS() {
           {/* Reembolso / a pagar */}
           {calc.temRetido && (
             <div
-              className={`anim-up mx-4 mb-4 card p-5 border ${
-                reembolso ? "border-emerald-200" : "border-amber-200"
-              }`}
+              className="anim-up mx-4 mb-4 rounded-2xl p-5"
+              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                    reembolso ? "bg-emerald-50" : "bg-amber-50"
-                  }`}
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: "#eeece4" }}
                 >
                   {reembolso ? (
-                    <TrendingUp size={22} className="text-emerald-500" />
+                    <TrendingUp size={22} style={{ color: "#0b6b4f" }} />
                   ) : (
-                    <TrendingDown size={22} className="text-amber-500" />
+                    <TrendingDown size={22} style={{ color: "#b4531f" }} />
                   )}
                 </div>
                 <div>
-                  <p
-                    className={`text-[10px] font-black uppercase tracking-widest ${
-                      reembolso ? "text-emerald-600" : "text-amber-600"
-                    }`}
-                  >
+                  <p style={{ ...LABEL, color: reembolso ? "#0b6b4f" : "#b4531f" }}>
                     {reembolso ? "Reembolso estimado" : "Valor a pagar"}
                   </p>
                   <p
-                    className={`text-3xl font-black ${
-                      reembolso ? "text-emerald-600" : "text-amber-600"
-                    }`}
+                    className="font-display"
+                    style={{
+                      fontSize: 28,
+                      fontWeight: 600,
+                      color: reembolso ? "#0b6b4f" : "#b4531f",
+                      marginTop: 2,
+                      lineHeight: 1.05,
+                    }}
                   >
                     {fmt(Math.abs(calc.resultado))}
                   </p>
@@ -314,9 +341,15 @@ export default function SecaoIRS() {
           )}
 
           {/* Desdobramento */}
-          <div className="anim-up mx-4 mb-4 card p-5">
-            <p className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2">
-              <Users size={15} className="text-purple-500" /> Desdobramento
+          <div
+            className="anim-up mx-4 mb-4 rounded-2xl p-5"
+            style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+          >
+            <p
+              className="font-display mb-4 flex items-center gap-2"
+              style={{ fontSize: 16, fontWeight: 600, color: "#14231c" }}
+            >
+              <Users size={16} style={{ color: "#0b6b4f" }} /> Desdobramento
             </p>
             <div className="flex flex-col">
               {[
@@ -328,21 +361,28 @@ export default function SecaoIRS() {
               ].map((r, i, arr) => (
                 <div
                   key={r.label}
-                  className={`flex items-center justify-between py-2.5 ${
-                    i < arr.length - 1 ? "border-b border-slate-50" : ""
-                  }`}
+                  className="flex items-center justify-between py-2.5"
+                  style={
+                    i < arr.length - 1 ? { borderBottom: "1px solid #eeece4" } : undefined
+                  }
                 >
                   <span
-                    className={`text-sm ${
-                      r.forte ? "font-black text-slate-800" : "font-medium text-slate-500"
-                    }`}
+                    className={r.forte ? "font-display" : ""}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: r.forte ? 600 : 500,
+                      color: r.forte ? "#14231c" : "#5c6b62",
+                    }}
                   >
                     {r.label}
                   </span>
                   <span
-                    className={`text-sm ${
-                      r.forte ? "font-black text-purple-600" : "font-bold text-slate-700"
-                    }`}
+                    className={r.forte ? "font-display" : ""}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: r.forte ? "#0b6b4f" : "#14231c",
+                    }}
                   >
                     {r.valor}
                   </span>
@@ -354,9 +394,12 @@ export default function SecaoIRS() {
       )}
 
       {/* Disclaimer */}
-      <div className="anim-up mx-4 mb-4 rounded-2xl p-4 bg-amber-50 border border-amber-100 flex gap-2.5">
-        <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
-        <p className="text-[11px] text-amber-700 leading-relaxed">
+      <div
+        className="anim-up mx-4 mb-4 rounded-2xl p-4 flex gap-2.5"
+        style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+      >
+        <Info size={16} style={{ color: "#8a978e" }} className="flex-shrink-0 mt-0.5" />
+        <p style={{ fontSize: 12, color: "#5c6b62", lineHeight: 1.6 }}>
           ⚠️ Esta é uma estimativa simplificada para te orientares. O valor real
           depende de outros fatores. Confirma sempre no Portal das Finanças.
         </p>

@@ -635,8 +635,8 @@ export default function SecaoListaCompras() {
 
       {/* Pendentes — grelha */}
       {pendentes.length > 0 && (
-        <div className="px-4 mb-4 anim-up anim-up-2">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Por comprar ({pendentes.length})</p>
+        <div className="px-4 mb-5 anim-up anim-up-2">
+          <p className="mb-3" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "#8a978e" }}>Por comprar ({pendentes.length})</p>
           <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
             {pendentes.map(it => {
               const catCfg = it.categoria ? CATS[it.categoria] : null;
@@ -644,33 +644,34 @@ export default function SecaoListaCompras() {
                 <div key={it.id} className="relative">
                   <button
                     onClick={() => marcar(it.id)}
-                    className="press card w-full p-3.5 flex flex-col items-center gap-1.5"
-                    style={catCfg ? { background: catCfg.bg, borderColor: catCfg.cor + "33" } : {}}
+                    className="pj-tap press w-full p-3.5 flex flex-col items-center gap-1.5 rounded-2xl"
+                    style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
                   >
                     <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catCfg?.cor} size={30} />
-                    <p className="text-[11px] font-black text-slate-800 text-center leading-tight">{it.nome}</p>
+                    <p className="text-[11px] font-semibold text-center leading-tight" style={{ color: "#14231c" }}>{it.nome}</p>
                     {it.qty > 1 && (
-                      <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full"
-                        style={{ background: catCfg?.cor || "#7c3aed" }}>
+                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                        style={{ background: "#eeece4", color: "#0b6b4f" }}>
                         {it.qty}×
                       </span>
                     )}
                   </button>
                   {/* Controles de quantidade */}
-                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-0.5 bg-white rounded-full shadow-md border border-slate-100 px-1 py-0.5 opacity-0 group-hover:opacity-100">
-                    <button onClick={() => alterarQty(it.id, -1)} className="press w-5 h-5 rounded-full flex items-center justify-center text-slate-500">
+                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-0.5 rounded-full px-1 py-0.5 opacity-0 group-hover:opacity-100" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", boxShadow: "0 2px 8px -4px rgba(20,35,28,0.25)" }}>
+                    <button onClick={() => alterarQty(it.id, -1)} className="pj-tap press w-5 h-5 rounded-full flex items-center justify-center" style={{ color: "#5c6b62" }}>
                       <Minus size={9} />
                     </button>
-                    <span className="text-[10px] font-black text-slate-600 w-4 text-center">{it.qty || 1}</span>
-                    <button onClick={() => alterarQty(it.id, 1)} className="press w-5 h-5 rounded-full flex items-center justify-center text-slate-500">
+                    <span className="text-[10px] font-semibold w-4 text-center" style={{ color: "#14231c" }}>{it.qty || 1}</span>
+                    <button onClick={() => alterarQty(it.id, 1)} className="pj-tap press w-5 h-5 rounded-full flex items-center justify-center" style={{ color: "#5c6b62" }}>
                       <Plus size={9} />
                     </button>
                   </div>
                   <button
                     onClick={() => remover(it.id)}
-                    className="press absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-400 flex items-center justify-center shadow-sm"
+                    className="pj-tap press absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: "#eeece4", border: "1px solid #e4e2d8" }}
                   >
-                    <X size={9} className="text-white" />
+                    <X size={9} style={{ color: "#5c6b62" }} />
                   </button>
                 </div>
               );
@@ -683,16 +684,17 @@ export default function SecaoListaCompras() {
       {feitos.length > 0 && (
         <div className="px-4 anim-up anim-up-3">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comprados ({feitos.length})</p>
-            <button onClick={limparFeitos} className="press text-[11px] font-bold text-red-400">Limpar tudo</button>
+            <p style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "#8a978e" }}>Comprados ({feitos.length})</p>
+            <button onClick={limparFeitos} className="pj-tap press text-[11px] font-semibold" style={{ color: "#5c6b62" }}>Limpar tudo</button>
           </div>
-          <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5 opacity-40">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5" style={{ opacity: 0.55 }}>
             {feitos.map(it => (
               <button key={it.id} onClick={() => marcar(it.id)}
-                className="press card p-3.5 flex flex-col items-center gap-1.5 relative">
+                className="pj-tap press p-3.5 flex flex-col items-center gap-1.5 relative rounded-2xl"
+                style={{ background: "#f6f5f0", border: "1px solid #eeece4" }}>
                 <IconeArtigo emoji={it.emoji} nome={it.nome} cor={CATS[it.categoria]?.cor} size={30} className="grayscale" />
-                <p className="text-[11px] font-black text-slate-500 text-center leading-tight line-through">{it.nome}</p>
-                <div className="w-5 h-5 rounded-full bg-violet-500 flex items-center justify-center">
+                <p className="text-[11px] font-medium text-center leading-tight line-through" style={{ color: "#8a978e" }}>{it.nome}</p>
+                <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "#0b6b4f" }}>
                   <Check size={11} className="text-white" />
                 </div>
               </button>

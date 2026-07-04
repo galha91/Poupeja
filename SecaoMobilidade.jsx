@@ -11,7 +11,7 @@ import {
 // Mapa carregado só no cliente (a Leaflet precisa do `window`).
 const MapaPostos = dynamic(() => import("./MapaPostos"), {
   ssr: false,
-  loading: () => <div className="mx-4 h-[380px] rounded-2xl bg-slate-100 animate-pulse" />,
+  loading: () => <div className="mx-4 h-[380px] rounded-2xl bg-[#eeece4] animate-pulse" />,
 });
 
 /* ─── ícones dos conectores EV ─── */
@@ -185,13 +185,13 @@ const EST = {
 /* ─── micro components ─── */
 function TabBar({ options, value, onChange }) {
   return (
-    <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
+    <div className="flex gap-1 p-1 bg-[#eeece4] rounded-2xl mx-4 mb-4">
       {options.map(o => (
         <button
           key={o.id}
           onClick={() => onChange(o.id)}
-          className={`press flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-            value === o.id ? "bg-white shadow-sm text-slate-900" : "text-slate-400"
+          className={`press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            value === o.id ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"
           }`}
         >
           <o.icon size={13} /> {o.label}
@@ -208,8 +208,8 @@ function FonteBadge({ fonte, atualizadoEm }) {
     : null;
   return (
     <div className="mx-4 mt-4 mb-2 flex items-center gap-1.5">
-      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-      <p className="text-[10px] text-slate-400">{fonte}{hora ? ` · ${hora}` : ""}</p>
+      <span className="w-1.5 h-1.5 rounded-full bg-[#0b6b4f]" />
+      <p className="text-[10px] text-[#8a978e]">{fonte}{hora ? ` · ${hora}` : ""}</p>
     </div>
   );
 }
@@ -252,12 +252,12 @@ function LogoPosto({ posto, size = 44 }) {
 function ErroCard({ onRetry, titulo = "Sem dados de momento", sub = "A fonte não respondeu agora mesmo. Tenta novamente daqui a pouco." }) {
   return (
     <div className="mx-4 card p-6 text-center">
-      <div className="w-11 h-11 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
-        <RefreshCw size={18} className="text-slate-300" />
+      <div className="w-11 h-11 rounded-2xl bg-[#eeece4] flex items-center justify-center mx-auto mb-3">
+        <RefreshCw size={18} className="text-[#8a978e]" />
       </div>
-      <p className="text-sm font-black text-slate-600">{titulo}</p>
-      <p className="text-[12px] text-slate-400 mt-1 mb-4 leading-relaxed max-w-[240px] mx-auto">{sub}</p>
-      <button onClick={onRetry} className="press text-[13px] font-black text-white bg-slate-800 px-5 py-2.5 rounded-xl">
+      <p className="font-display text-[17px] font-semibold text-[#14231c]">{titulo}</p>
+      <p className="text-[12px] text-[#5c6b62] mt-1 mb-4 leading-relaxed max-w-[240px] mx-auto">{sub}</p>
+      <button onClick={onRetry} className="press text-[13px] font-semibold text-white bg-[#0b6b4f] px-5 py-2.5 rounded-xl">
         Tentar de novo
       </button>
     </div>
@@ -330,20 +330,20 @@ function TendenciaPrecos({ historico }) {
   const temTendencia = linhas.some(l => l.tendencia);
 
   return (
-    <div className="mx-4 mb-4 bg-white rounded-2xl shadow-sm p-4">
+    <div className="mx-4 mb-4 card p-4">
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center">
-          <Calendar size={14} className="text-orange-500" />
+        <div className="w-7 h-7 rounded-lg bg-[#eeece4] flex items-center justify-center">
+          <Calendar size={14} className="text-[#b5701f]" />
         </div>
-        <p className="text-sm font-black text-slate-800">Tendência de preços</p>
+        <p className="font-display text-[17px] font-semibold text-[#14231c]">Tendência de preços</p>
       </div>
 
       {!temTendencia ? (
-        <p className="text-[11px] text-slate-400 leading-relaxed">
+        <p className="text-[11px] text-[#8a978e] leading-relaxed">
           Estamos a recolher o histórico de preços. A tendência aparece a partir da próxima semana.
         </p>
       ) : (
-        <div className="flex flex-col divide-y divide-slate-50">
+        <div className="flex flex-col divide-y divide-[#eeece4]">
           {linhas.map(({ tipo, preco, tendencia }) => {
             const mexeu = tendencia && (tendencia.dir === "subiu" || tendencia.dir === "desceu");
             const desceu = tendencia?.dir === "desceu";
@@ -351,21 +351,21 @@ function TendenciaPrecos({ historico }) {
             return (
               <div key={tipo} className="flex items-center justify-between gap-2 py-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[13px] font-bold text-slate-700 truncate">{tipo}</span>
+                  <span className="text-[13px] font-semibold text-[#14231c] truncate">{tipo}</span>
                   {mexeu && (
-                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-black px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500"}`}>
+                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[#eeece4] text-[#0b6b4f]" : "bg-[#f4e3d8] text-[#cf5a3c]"}`}>
                       {desceu ? <TrendingDown size={11} /> : <TrendingUp size={11} />}{cent}
                     </span>
                   )}
                 </div>
                 {typeof preco === "number" && (
-                  <span className="text-[14px] font-black text-slate-800 flex-shrink-0">{preco.toFixed(3)} €</span>
+                  <span className="font-display text-[15px] font-semibold text-[#14231c] flex-shrink-0">{preco.toFixed(3)} €</span>
                 )}
               </div>
             );
           })}
           {linhas.some(l => l.tendencia?.dir === "desceu") && (
-            <p className="text-[11px] font-bold text-emerald-600 pt-2.5 flex items-center gap-1">
+            <p className="text-[11px] font-semibold text-[#0b6b4f] pt-2.5 flex items-center gap-1">
               <TrendingDown size={12} /> Preços em queda — boa altura para abastecer
             </p>
           )}
@@ -500,51 +500,51 @@ function SubCombustiveis() {
 
   return (
     <div>
-      {/* Hero — card branco minimalista */}
+      {/* Hero — card editorial */}
       <div className="mx-4 mb-4 card overflow-hidden">
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center">
-                <Fuel size={15} className="text-orange-500" />
+              <div className="w-8 h-8 rounded-xl bg-[#eeece4] flex items-center justify-center">
+                <Fuel size={15} className="text-[#b5701f]" />
               </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em]">
                 {locNome ? `Melhor preço · ${raio} km` : "Melhor preço · DGEG"}
               </span>
             </div>
-            <button onClick={() => carregar()} className="press w-8 h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center">
-              <RefreshCw size={14} className={`text-slate-400 ${loading ? "animate-spin" : ""}`} />
+            <button onClick={() => carregar()} className="press w-8 h-8 bg-[#eeece4] rounded-xl flex items-center justify-center">
+              <RefreshCw size={14} className={`text-[#5c6b62] ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
 
           {loading ? (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-orange-400 animate-spin" />
-              <span className="text-xs font-bold text-slate-300">A obter preços…</span>
+              <div className="w-5 h-5 rounded-full border-2 border-[#e4e2d8] border-t-[#b5701f] animate-spin" />
+              <span className="text-xs font-semibold text-[#8a978e]">A obter preços…</span>
             </div>
           ) : melhor ? (
             <>
-              <p className="text-[12px] font-bold text-slate-400">{tipoAtivo}</p>
-              <p className="text-3xl font-black text-slate-900 mt-0.5">
-                {melhor.preco.toFixed(3)} <span className="text-sm font-bold text-slate-400">€/litro</span>
+              <p className="text-[12px] font-semibold text-[#5c6b62]">{tipoAtivo}</p>
+              <p className="font-display text-[34px] leading-none font-semibold text-[#14231c] mt-1">
+                {melhor.preco.toFixed(3)} <span className="text-sm font-semibold text-[#8a978e]">€/litro</span>
               </p>
-              <p className="text-[12px] text-slate-500 mt-1 flex items-center gap-1">
-                <MapPin size={11} className="text-slate-300" /> {melhor.nome || melhor.posto}
-                {melhor.distancia && <span className="text-slate-400">· {melhor.distancia} km</span>}
+              <p className="text-[12px] text-[#5c6b62] mt-2 flex items-center gap-1">
+                <MapPin size={11} className="text-[#8a978e]" /> {melhor.nome || melhor.posto}
+                {melhor.distancia && <span className="text-[#8a978e]">· {melhor.distancia} km</span>}
               </p>
             </>
           ) : erro ? null : (
-            <p className="text-[13px] text-slate-400 py-2">Sem preços para mostrar de momento.</p>
+            <p className="text-[13px] text-[#8a978e] py-2">Sem preços para mostrar de momento.</p>
           )}
         </div>
 
         {/* Tipo selector */}
         {!loading && tiposDisponiveis.length > 0 && (
-          <div className="px-4 pb-4 flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="px-4 pb-4 pt-1 flex gap-2 overflow-x-auto no-scrollbar border-t border-[#eeece4]">
             {tiposDisponiveis.map(t => (
               <button key={t} onClick={() => setTipo(t)}
-                className={`press flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  tipoAtivo === t ? "bg-orange-500 text-white" : "bg-slate-50 text-slate-500 border border-slate-100"
+                className={`press flex-shrink-0 mt-3 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  tipoAtivo === t ? "bg-[#0b6b4f] text-white" : "bg-[#eeece4] text-[#5c6b62]"
                 }`}
               >{t}</button>
             ))}
@@ -559,26 +559,26 @@ function SubCombustiveis() {
       {loc && (
         <div className="mx-4 mb-4 card p-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-black text-slate-700 flex items-center gap-1.5">
-              <MapPin size={13} className="text-orange-500" /> Raio de pesquisa
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8a978e] flex items-center gap-1.5">
+              <MapPin size={13} className="text-[#b5701f]" /> Raio de pesquisa
             </p>
-            <span className="text-lg font-black text-orange-500">{raio} km</span>
+            <span className="font-display text-lg font-semibold text-[#14231c]">{raio} km</span>
           </div>
           <input
             type="range" min="5" max="30" step="5" value={raio}
             onChange={e => setRaio(parseInt(e.target.value))}
             onMouseUp={() => carregar(loc.lat, loc.lon, raio)}
             onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
-            className="w-full mb-3" style={{ accentColor: "#f97316" }}
+            className="w-full mb-3" style={{ accentColor: "#b5701f" }}
           />
-          <div className="flex justify-between text-[9px] text-slate-400 mb-3">
+          <div className="flex justify-between text-[9px] text-[#8a978e] mb-3">
             <span>5 km</span><span>15 km</span><span>30 km</span>
           </div>
           <button
             onClick={obterLocalizacao}
-            className="press w-full py-2.5 rounded-xl bg-orange-50 text-orange-700 text-xs font-bold border border-orange-100 flex items-center justify-center gap-1.5"
+            className="press w-full py-2.5 rounded-xl bg-[#eeece4] text-[#14231c] text-xs font-semibold flex items-center justify-center gap-1.5"
           >
-            <MapPin size={13} /> Atualizar localização
+            <MapPin size={13} className="text-[#b5701f]" /> Atualizar localização
           </button>
         </div>
       )}
@@ -588,7 +588,7 @@ function SubCombustiveis() {
         <div className="mx-4 mb-4">
           <button
             onClick={obterLocalizacao}
-            className="press w-full py-3 rounded-2xl bg-orange-50 text-orange-700 text-sm font-black border border-orange-100 flex items-center justify-center gap-2"
+            className="press w-full py-3 rounded-2xl bg-[#0b6b4f] text-white text-sm font-semibold flex items-center justify-center gap-2"
           >
             <MapPin size={15} /> Usar a minha localização
           </button>
@@ -598,14 +598,14 @@ function SubCombustiveis() {
       {/* Ordenar + favoritos */}
       {/* Seletor Lista / Mapa */}
       {!loading && !erro && doTipo.length > 0 && (
-        <div className="px-4 mb-3 flex gap-1 p-1 bg-slate-100 rounded-xl">
+        <div className="px-4 mb-3 flex gap-1 p-1 bg-[#eeece4] rounded-xl">
           <button
             onClick={() => setVista("lista")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
           ><ListIcon size={14} /> Lista</button>
           <button
             onClick={() => setVista("mapa")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
           ><MapIcon size={14} /> Mapa</button>
         </div>
       )}
@@ -614,8 +614,8 @@ function SubCombustiveis() {
       {!erro && vista === "mapa" && doTipo.length > 0 && (
         <div className="px-4 mb-4">
           <MapaPostos postos={doTipo} userLoc={loc} min={min} onNavegar={(lat, lon) => navegarPara({ lat, lon })} />
-          <p className="text-[10px] text-slate-400 mt-1.5 text-center">
-            Toca num pino para ver o preço e navegar · <span className="text-orange-500 font-bold">laranja = mais barato</span>
+          <p className="text-[10px] text-[#8a978e] mt-1.5 text-center">
+            Toca num pino para ver o preço e navegar · <span className="text-[#b5701f] font-semibold">laranja = mais barato</span>
           </p>
         </div>
       )}
@@ -623,22 +623,22 @@ function SubCombustiveis() {
       {/* Ordenar + favoritos (só na vista de lista) */}
       {!loading && !erro && vista === "lista" && doTipo.length > 0 && (
         <div className="px-4 mb-3 flex items-center gap-2">
-          <div className="flex gap-1 p-1 bg-slate-100 rounded-xl flex-1">
+          <div className="flex gap-1 p-1 bg-[#eeece4] rounded-xl flex-1">
             <button
               onClick={() => setOrdenar("preco")}
-              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-black transition-all ${ordenar === "preco" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"}`}
+              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordenar === "preco" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
             >Mais barato</button>
             <button
               onClick={() => setOrdenar("distancia")}
               disabled={!loc}
-              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-black transition-all ${ordenar === "distancia" ? "bg-white shadow-sm text-orange-600" : "text-slate-400"} ${!loc ? "opacity-40" : ""}`}
+              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordenar === "distancia" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"} ${!loc ? "opacity-40" : ""}`}
             >Mais perto</button>
           </div>
           <button
             onClick={() => setSoFavoritos(v => !v)}
-            className={`press px-3 py-2 rounded-xl text-[11px] font-black flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-white text-slate-500 border-slate-100"}`}
+            className={`press px-3 py-2 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-[#eeece4] text-[#b5701f] border-[#e4e2d8]" : "bg-[#fbfaf6] text-[#5c6b62] border-[#e4e2d8]"}`}
           >
-            <Star size={13} className={soFavoritos ? "fill-amber-400 text-amber-400" : ""} />
+            <Star size={13} className={soFavoritos ? "fill-[#b5701f] text-[#b5701f]" : ""} />
             {favoritos.length || ""}
           </button>
         </div>
@@ -649,9 +649,9 @@ function SubCombustiveis() {
         <div className="px-4 flex flex-col gap-2.5">
           {soFavoritos && filtrados.length === 0 && (
             <div className="card p-6 text-center">
-              <Star size={28} className="text-slate-200 mx-auto mb-2" />
-              <p className="text-sm font-black text-slate-400">Sem postos favoritos</p>
-              <p className="text-xs text-slate-300 mt-0.5">Toca na estrela de um posto para o guardar aqui</p>
+              <Star size={28} className="text-[#c9c6ba] mx-auto mb-2" />
+              <p className="font-display text-[17px] font-semibold text-[#14231c]">Sem postos favoritos</p>
+              <p className="text-xs text-[#8a978e] mt-0.5">Toca na estrela de um posto para o guardar aqui</p>
             </div>
           )}
           {filtrados.map((c, i) => {
@@ -663,53 +663,53 @@ function SubCombustiveis() {
             const fav    = ehFavorito(c);
             return (
               <div key={c.id || `${nome}-${i}`}
-                className={`card p-4 ${isBest ? "border-orange-200 ring-1 ring-orange-100" : ""}`}
+                className={`card p-4 ${isBest ? "border-[#b5701f]" : ""}`}
               >
                 <div className="flex items-center gap-3">
                   <LogoPosto posto={marca} size={44} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="font-black text-slate-800 text-sm truncate max-w-[150px]">{nome}</p>
+                      <p className="font-semibold text-[#14231c] text-sm truncate max-w-[150px]">{nome}</p>
                       {`${c.nome}__${c.distancia}` === keyMaisProximo && (
-                        <span className="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
+                        <span className="text-[9px] font-semibold bg-[#eeece4] text-[#0b6b4f] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
                       {isBest && (
-                        <span className="text-[9px] font-black bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
+                        <span className="text-[9px] font-semibold bg-[#f4e3d8] text-[#b5701f] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
-                    {c.municipio && <p className="text-[10px] text-slate-400 mb-1">{c.municipio}</p>}
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    {c.municipio && <p className="text-[10px] text-[#8a978e] mb-1">{c.municipio}</p>}
+                    <div className="h-1.5 bg-[#eeece4] rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: isBest ? "#f97316" : cor + "99" }} />
+                        style={{ width: `${pct}%`, backgroundColor: isBest ? "#b5701f" : cor + "99" }} />
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="text-xl font-black text-slate-800">{c.preco.toFixed(3)}</p>
-                    <p className="text-[9px] text-slate-400">€ / litro</p>
+                    <p className="font-display text-xl font-semibold text-[#14231c]">{c.preco.toFixed(3)}</p>
+                    <p className="text-[9px] text-[#8a978e]">€ / litro</p>
                     {c.distancia && (
-                      <p className="text-[10px] text-slate-400 flex items-center gap-0.5 justify-end mt-0.5">
+                      <p className="text-[10px] text-[#8a978e] flex items-center gap-0.5 justify-end mt-0.5">
                         <MapPin size={9} /> {c.distancia} km
                       </p>
                     )}
                     {!isBest && (
-                      <p className="text-[10px] text-red-400 font-bold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
+                      <p className="text-[10px] text-[#cf5a3c] font-semibold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
                     )}
                   </div>
                 </div>
 
                 {/* Ações: navegar + favorito */}
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-[#eeece4]">
                   <button
                     onClick={() => navegarPara(c)}
-                    className="press flex-1 py-2 rounded-xl text-[11px] font-black bg-orange-50 text-orange-700 border border-orange-100 flex items-center justify-center gap-1.5"
+                    className="press flex-1 py-2 rounded-xl text-[11px] font-semibold bg-[#0b6b4f] text-white flex items-center justify-center gap-1.5"
                   >
                     <Navigation size={12} /> Navegar
                   </button>
                   <button
                     onClick={() => toggleFavorito(c)}
-                    className={`press px-3 py-2 rounded-xl text-[11px] font-black border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-white text-slate-500 border-slate-100"}`}
+                    className={`press px-3 py-2 rounded-xl text-[11px] font-semibold border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-[#eeece4] text-[#b5701f] border-[#e4e2d8]" : "bg-[#fbfaf6] text-[#5c6b62] border-[#e4e2d8]"}`}
                   >
-                    <Star size={13} className={fav ? "fill-amber-400 text-amber-400" : ""} /> {fav ? "Guardado" : "Favorito"}
+                    <Star size={13} className={fav ? "fill-[#b5701f] text-[#b5701f]" : ""} /> {fav ? "Guardado" : "Favorito"}
                   </button>
                 </div>
               </div>
@@ -812,39 +812,39 @@ function SubPostosEV() {
 
   return (
     <div>
-      {/* Hero — card branco minimalista */}
+      {/* Hero — card editorial */}
       <div className="mx-4 mb-4 card overflow-hidden">
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <Zap size={15} className="text-emerald-600" />
+              <div className="w-8 h-8 rounded-xl bg-[#eeece4] flex items-center justify-center">
+                <Zap size={15} className="text-[#0b6b4f]" />
               </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Postos de carregamento</span>
+              <span className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em]">Postos de carregamento</span>
             </div>
-            <button onClick={carregar} className="press w-8 h-8 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center">
-              <RefreshCw size={14} className={`text-slate-400 ${loading ? "animate-spin" : ""}`} />
+            <button onClick={carregar} className="press w-8 h-8 bg-[#eeece4] rounded-xl flex items-center justify-center">
+              <RefreshCw size={14} className={`text-[#5c6b62] ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
-          <p className="text-[12px] text-slate-400 flex items-center gap-1 mb-3 ml-0.5">
-            <MapPin size={11} className="text-slate-300" /> {locNome || "A obter localização…"}
+          <p className="text-[12px] text-[#5c6b62] flex items-center gap-1 mb-3 ml-0.5">
+            <MapPin size={11} className="text-[#8a978e]" /> {locNome || "A obter localização…"}
           </p>
 
           {loading ? (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-emerald-400 animate-spin" />
-              <span className="text-xs font-bold text-slate-300">A carregar postos…</span>
+              <div className="w-5 h-5 rounded-full border-2 border-[#e4e2d8] border-t-[#0b6b4f] animate-spin" />
+              <span className="text-xs font-semibold text-[#8a978e]">A carregar postos…</span>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-0 divide-x divide-[#eeece4]">
               {[
-                { label: "Disponíveis", value: counts.disponível, color: "text-emerald-600", bg: "bg-emerald-50" },
-                { label: "Ocupados",    value: counts.ocupado,    color: "text-red-500",     bg: "bg-red-50" },
-                { label: "Manutenção",  value: counts.manutenção, color: "text-orange-500",  bg: "bg-orange-50" },
+                { label: "Disponíveis", value: counts.disponível, color: "text-[#0b6b4f]" },
+                { label: "Ocupados",    value: counts.ocupado,    color: "text-[#cf5a3c]" },
+                { label: "Manutenção",  value: counts.manutenção, color: "text-[#b5701f]" },
               ].map(s => (
-                <div key={s.label} className={`${s.bg} rounded-xl py-2.5 text-center`}>
-                  <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-[9px] font-bold text-slate-400 mt-0.5">{s.label}</p>
+                <div key={s.label} className="py-1 text-center">
+                  <p className={`font-display text-2xl font-semibold ${s.color}`}>{s.value}</p>
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.06em] text-[#8a978e] mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -854,15 +854,15 @@ function SubPostosEV() {
 
       {/* Localização negada */}
       {locDenied && (
-        <div className="mx-4 mb-4 card p-5 text-center border-orange-100">
-          <MapPin size={28} className="text-orange-300 mx-auto mb-2" />
-          <p className="text-sm font-black text-slate-700 mb-1">Localização não disponível</p>
-          <p className="text-xs text-slate-400 mb-4">Ativa a localização no browser ou usa Lisboa como ponto de partida</p>
+        <div className="mx-4 mb-4 card p-5 text-center">
+          <MapPin size={28} className="text-[#b5701f] mx-auto mb-2" />
+          <p className="font-display text-[17px] font-semibold text-[#14231c] mb-1">Localização não disponível</p>
+          <p className="text-xs text-[#5c6b62] mb-4">Ativa a localização no browser ou usa Lisboa como ponto de partida</p>
           <div className="flex gap-2">
-            <button onClick={obterLocalizacao} className="press flex-1 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white flex items-center justify-center gap-1.5">
+            <button onClick={obterLocalizacao} className="press flex-1 py-2.5 rounded-xl text-xs font-semibold bg-[#0b6b4f] text-white flex items-center justify-center gap-1.5">
               <MapPin size={13} /> Tentar de novo
             </button>
-            <button onClick={usarLisboa} className="press flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 flex items-center justify-center gap-1.5">
+            <button onClick={usarLisboa} className="press flex-1 py-2.5 rounded-xl text-xs font-semibold bg-[#eeece4] text-[#14231c] flex items-center justify-center gap-1.5">
               Usar Lisboa
             </button>
           </div>
@@ -872,59 +872,59 @@ function SubPostosEV() {
       {/* Controlos */}
       {loc && <div className="mx-4 mb-4 card p-4">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-black text-slate-700 flex items-center gap-1.5">
-            <MapPin size={13} className="text-emerald-600" /> Raio de pesquisa
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8a978e] flex items-center gap-1.5">
+            <MapPin size={13} className="text-[#0b6b4f]" /> Raio de pesquisa
           </p>
-          <span className="text-lg font-black text-emerald-600">{raioInput} km</span>
+          <span className="font-display text-lg font-semibold text-[#14231c]">{raioInput} km</span>
         </div>
         <input
           type="range" min="1" max="50" value={raioInput}
           onChange={e => setRaioInput(parseInt(e.target.value))}
           onMouseUp={e => setRaio(parseInt(e.target.value))}
           onTouchEnd={e => setRaio(parseInt(e.target.value))}
-          className="w-full mb-3" style={{ accentColor: "#059669" }}
+          className="w-full mb-3" style={{ accentColor: "#0b6b4f" }}
         />
-        <div className="flex justify-between text-[9px] text-slate-400 mb-3">
+        <div className="flex justify-between text-[9px] text-[#8a978e] mb-3">
           <span>1 km</span><span>25 km</span><span>50 km</span>
         </div>
         <button
           onClick={obterLocalizacao}
-          className="press w-full py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 flex items-center justify-center gap-1.5"
+          className="press w-full py-2.5 rounded-xl bg-[#eeece4] text-[#14231c] text-xs font-semibold flex items-center justify-center gap-1.5"
         >
-          <MapPin size={13} /> Usar a minha localização atual
+          <MapPin size={13} className="text-[#0b6b4f]" /> Usar a minha localização atual
         </button>
       </div>}
 
       {/* Simulador de carregamento */}
-      <div className="mx-4 mb-3 rounded-2xl border border-slate-100 overflow-hidden bg-white">
+      <div className="mx-4 mb-3 card overflow-hidden">
         <button
           onClick={() => setSimOpen(v => !v)}
           className="press w-full px-4 py-3 flex items-center justify-between"
         >
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-              <Car size={14} className="text-emerald-600" />
+            <div className="w-7 h-7 rounded-lg bg-[#eeece4] flex items-center justify-center">
+              <Car size={14} className="text-[#0b6b4f]" />
             </div>
             <div className="text-left">
-              <p className="text-[11px] font-black text-slate-700">
+              <p className="text-[13px] font-semibold text-[#14231c]">
                 {carro ? carro.marca + " " + carro.modelo : "Simular carregamento"}
               </p>
               {carro && (
-                <p className="text-[10px] text-slate-400">{batDe}% → {batAte}% · {carro.bateria} kWh</p>
+                <p className="text-[10px] text-[#8a978e]">{batDe}% → {batAte}% · {carro.bateria} kWh</p>
               )}
             </div>
           </div>
-          <span className="text-slate-400 text-xs">{simOpen ? "▲" : "▼"}</span>
+          <span className="text-[#8a978e] text-xs">{simOpen ? "▲" : "▼"}</span>
         </button>
 
         {simOpen && (
-          <div className="px-4 pb-4 border-t border-slate-50">
+          <div className="px-4 pb-4 border-t border-[#eeece4]">
             {/* Seletor de carro */}
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wide mt-3 mb-1.5">O meu carro</p>
+            <p className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em] mt-3 mb-1.5">O meu carro</p>
             <select
               value={carroId}
               onChange={e => setCarroId(e.target.value)}
-              className="w-full text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-3"
+              className="w-full text-xs font-medium text-[#14231c] bg-[#f6f5f0] border border-[#e4e2d8] rounded-xl px-3 py-2.5 mb-3"
             >
               <option value="">— Selecionar modelo —</option>
               {Object.keys(MARCAS_EV).sort().map(marca => (

@@ -590,37 +590,37 @@ export default function SecaoContas() {
           <div className="grid grid-cols-2 gap-2.5">
 
             {/* Mensal */}
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Mensal</p>
-              <p className="text-xl font-black text-slate-800 mt-0.5">€{Math.round(totalMensal).toLocaleString("pt-PT")}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{contas.length} conta{contas.length !== 1 ? "s" : ""} fixas</p>
+            <div className="rounded-2xl p-3.5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Mensal</p>
+              <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: "#14231c" }}>€{Math.round(totalMensal).toLocaleString("pt-PT")}</p>
+              <p className="text-[10px] mt-0.5" style={{ color: "#8a978e" }}>{contas.length} conta{contas.length !== 1 ? "s" : ""} fixas</p>
             </div>
 
             {/* Anual */}
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Anual</p>
-              <p className="text-xl font-black text-slate-800 mt-0.5">€{Math.round(totalAnual).toLocaleString("pt-PT")}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">€{totalDiario.toFixed(2)}/dia</p>
+            <div className="rounded-2xl p-3.5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Anual</p>
+              <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: "#14231c" }}>€{Math.round(totalAnual).toLocaleString("pt-PT")}</p>
+              <p className="text-[10px] mt-0.5" style={{ color: "#8a978e" }}>€{totalDiario.toFixed(2)}/dia</p>
             </div>
 
             {/* Pagas este mês */}
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Pagas</p>
-              <p className="text-xl font-black mt-0.5" style={{ color: pct === 100 ? "#059669" : pct > 0 ? "#7c3aed" : "#94a3b8" }}>
+            <div className="rounded-2xl p-3.5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Pagas</p>
+              <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: pct === 100 ? "#0b6b4f" : pct > 0 ? "#14231c" : "#8a978e" }}>
                 {nPagas}/{contas.length}
               </p>
-              <p className="text-[10px] text-slate-400 mt-0.5">
+              <p className="text-[10px] mt-0.5" style={{ color: "#8a978e" }}>
                 {pct === 100 ? "Tudo pago! 🎉" : `€${fmt(totalPago)} pago`}
               </p>
             </div>
 
             {/* Pendente */}
-            <div className="bg-white rounded-2xl p-3.5 shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Pendente</p>
-              <p className="text-xl font-black mt-0.5" style={{ color: totalPendente > 0 ? "#e11d48" : "#059669" }}>
+            <div className="rounded-2xl p-3.5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Pendente</p>
+              <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: totalPendente > 0 ? "#b4472e" : "#0b6b4f" }}>
                 €{Math.round(totalPendente).toLocaleString("pt-PT")}
               </p>
-              <p className="text-[10px] text-slate-400 mt-0.5">
+              <p className="text-[10px] mt-0.5" style={{ color: "#8a978e" }}>
                 {totalPendente > 0 ? `${contas.length - nPagas} conta${contas.length - nPagas !== 1 ? "s" : ""} por pagar` : "Em dia!"}
               </p>
             </div>
@@ -636,22 +636,22 @@ export default function SecaoContas() {
       {(aVencerHoje.length > 0 || aVencerBreve.length > 0) && (
         <div className="px-4 mb-3 anim-up anim-up-1">
           {aVencerHoje.length > 0 && (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 flex items-start gap-3 mb-2">
-              <AlertCircle size={15} className="text-rose-500 flex-shrink-0 mt-0.5" />
+            <div className="rounded-2xl px-4 py-3 flex items-start gap-3 mb-2" style={{ border: "1px solid #ecd9d1", background: "#f7ece8" }}>
+              <AlertCircle size={15} style={{ color: "#b4472e" }} className="flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-black text-rose-700">Vence hoje!</p>
-                <p className="text-[11px] text-rose-600 mt-0.5 leading-relaxed">
+                <p className="text-xs" style={{ fontWeight: 600, color: "#8f3320" }}>Vence hoje!</p>
+                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#b4472e" }}>
                   {aVencerHoje.map(c => `${c.emoji || catById[c.categoria]?.emoji || "📋"} ${c.nome} — €${fmt(c.valor)}`).join(" · ")}
                 </p>
               </div>
             </div>
           )}
           {aVencerBreve.length > 0 && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-3">
-              <AlertCircle size={15} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ border: "1px solid #e8dcc2", background: "#f6efe0" }}>
+              <AlertCircle size={15} style={{ color: "#a86a1f" }} className="flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-black text-amber-700">A vencer em breve</p>
-                <p className="text-[11px] text-amber-600 mt-0.5 leading-relaxed">
+                <p className="text-xs" style={{ fontWeight: 600, color: "#8a5616" }}>A vencer em breve</p>
+                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#a86a1f" }}>
                   {aVencerBreve.map(c => `${c.emoji || catById[c.categoria]?.emoji || "📋"} ${c.nome} (dia ${c.diaVencimento})`).join(" · ")}
                 </p>
               </div>
@@ -663,11 +663,11 @@ export default function SecaoContas() {
       {/* ── Formulário de adicionar ── */}
       {mostrarForm && (
         <div className="px-4 mb-4 anim-up">
-          <div className="bg-white rounded-2xl shadow-sm p-5 border border-violet-100">
+          <div className="rounded-2xl p-5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-black text-slate-800">Nova conta fixa</p>
-              <button onClick={() => setMostrarForm(false)} className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center">
-                <X size={14} className="text-slate-500" />
+              <p className="font-display" style={{ fontSize: "19px", fontWeight: 600, color: "#14231c" }}>Nova conta fixa</p>
+              <button onClick={() => setMostrarForm(false)} className="pj-tap w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "#eeece4" }}>
+                <X size={14} style={{ color: "#5c6b62" }} />
               </button>
             </div>
             <FormConta onGuardar={adicionarConta} onCancelar={() => setMostrarForm(false)} />
@@ -677,25 +677,27 @@ export default function SecaoContas() {
 
       {/* ── Cabeçalho da lista ── */}
       <div className="px-4 mb-3 flex items-center justify-between anim-up anim-up-1">
-        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-          <CalendarDays size={11} className="text-slate-300" /> As minhas contas
+        <p className="text-[11px] uppercase flex items-center gap-1.5" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>
+          <CalendarDays size={11} style={{ color: "#8a978e" }} /> As minhas contas
         </p>
         <div className="flex items-center gap-2">
           {/* Ordenação */}
           <div className="relative">
             <button
               onClick={() => setMostrarOrdenacao(v => !v)}
-              className="press w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center"
+              className="press pj-tap w-7 h-7 rounded-xl flex items-center justify-center"
+              style={{ background: "#eeece4" }}
             >
-              <SlidersHorizontal size={13} className="text-slate-500" />
+              <SlidersHorizontal size={13} style={{ color: "#2c3b33" }} />
             </button>
             {mostrarOrdenacao && (
-              <div className="absolute right-0 top-9 z-50 bg-white rounded-2xl shadow-lg border border-slate-100 p-2 min-w-[180px]">
+              <div className="absolute right-0 top-9 z-50 rounded-2xl p-2 min-w-[180px]" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", boxShadow: "0 8px 24px -12px rgba(20,35,28,0.25)" }}>
                 {Object.entries(LABELS_ORD).map(([k, v]) => (
                   <button
                     key={k}
                     onClick={() => { setOrdenacao(k); setMostrarOrdenacao(false); }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-black ${ordenacao === k ? "bg-violet-50 text-violet-700" : "text-slate-600"}`}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs"
+                    style={{ fontWeight: 600, background: ordenacao === k ? "#eeece4" : "transparent", color: ordenacao === k ? "#0b6b4f" : "#5c6b62" }}
                   >
                     {ordenacao === k && <Check size={11} className="inline mr-1.5" />}{v}
                   </button>
@@ -707,7 +709,8 @@ export default function SecaoContas() {
           {contas.length > 0 && esMesAtual && (
             <button
               onClick={marcarTodos}
-              className={`press text-[11px] font-black px-3 py-1.5 rounded-xl ${todasPagas ? "bg-slate-100 text-slate-500" : "bg-emerald-50 text-emerald-600"}`}
+              className="press pj-tap text-[11px] px-3 py-1.5 rounded-xl"
+              style={{ fontWeight: 600, background: todasPagas ? "#eeece4" : "#eaf1ec", color: todasPagas ? "#5c6b62" : "#0b6b4f" }}
             >
               {todasPagas ? "Desmarcar todas" : "✓ Marcar todas"}
             </button>
@@ -716,7 +719,8 @@ export default function SecaoContas() {
           {!mostrarForm && (
             <button
               onClick={() => { setMostrarForm(true); setEditando(null); }}
-              className="press inline-flex items-center gap-1.5 text-xs font-black text-violet-600 bg-violet-50 px-3 py-1.5 rounded-xl"
+              className="press pj-tap inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl"
+              style={{ fontWeight: 600, color: "#0b6b4f", background: "#eaf1ec" }}
             >
               <Plus size={13} /> Adicionar
             </button>
@@ -727,23 +731,23 @@ export default function SecaoContas() {
       {/* ── Lista ── */}
       {contas.length === 0 ? (
         <div className="px-4 mb-4 anim-up anim-up-1">
-          <div className="bg-white rounded-2xl p-8 flex flex-col items-center text-center shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center mb-4">
-              <TrendingDown size={28} className="text-violet-300" />
+          <div className="rounded-2xl p-8 flex flex-col items-center text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "#eeece4" }}>
+              <TrendingDown size={28} style={{ color: "#0b6b4f" }} />
             </div>
-            <p className="text-sm font-black text-slate-600">Começa a controlar as tuas despesas</p>
-            <p className="text-[12px] text-slate-400 mt-1 leading-relaxed max-w-xs">
+            <p className="font-display" style={{ fontSize: "19px", fontWeight: 600, color: "#14231c" }}>Começa a controlar as tuas despesas</p>
+            <p className="text-[12px] mt-1 leading-relaxed max-w-xs" style={{ color: "#5c6b62" }}>
               Adiciona as tuas contas mensais fixas — renda, luz, água, internet — e sabe sempre quanto te falta pagar e quando.
             </p>
             <div className="flex gap-2 mt-2 flex-wrap justify-center">
               {["🔑 Renda", "💡 Luz", "💧 Água", "🌐 Net"].map(t => (
-                <span key={t} className="px-2.5 py-1 bg-violet-50 text-violet-600 text-[10px] font-black rounded-lg">{t}</span>
+                <span key={t} className="px-2.5 py-1 text-[10px] rounded-lg" style={{ fontWeight: 600, background: "#eeece4", color: "#5c6b62" }}>{t}</span>
               ))}
             </div>
             <button
               onClick={() => setMostrarForm(true)}
-              className="press mt-5 px-5 py-2.5 rounded-xl text-white text-xs font-black"
-              style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}
+              className="press pj-tap mt-5 px-5 py-2.5 rounded-xl text-white text-xs"
+              style={{ fontWeight: 600, background: "#0b6b4f" }}
             >
               <Plus size={13} className="inline mr-1" /> Adicionar primeira conta
             </button>
@@ -751,8 +755,8 @@ export default function SecaoContas() {
         </div>
       ) : (
         <div className="px-4 mb-4 anim-up anim-up-1">
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-slate-50">
-            {contasOrdenadas.map(c => {
+          <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            {contasOrdenadas.map((c, ci) => {
               const cat      = catById[c.categoria] || catById.outro;
               const icon     = c.emoji || cat.emoji;
               const pago     = !!pagosMes[c.id];
@@ -762,7 +766,7 @@ export default function SecaoContas() {
               const venceBreve = esMesAtual && !pago && c.diaVencimento > hoje && c.diaVencimento <= hoje + 5;
 
               return (
-                <div key={c.id}>
+                <div key={c.id} style={ci > 0 ? { borderTop: "1px solid #eeece4" } : undefined}>
                   {/* Linha principal */}
                   <div
                     className={`flex items-center gap-3 pr-3 py-3.5 transition-colors ${pago ? "opacity-60" : ""}`}
@@ -771,14 +775,14 @@ export default function SecaoContas() {
                     {/* Barra lateral colorida */}
                     <div
                       className="w-1 self-stretch rounded-r-full flex-shrink-0"
-                      style={{ background: pago ? "#e2e8f0" : cat.cor, minWidth: 4 }}
+                      style={{ background: pago ? "#e4e2d8" : cat.cor, minWidth: 4 }}
                     />
 
                     {/* Toggle pago */}
-                    <button onClick={() => esMesAtual && togglePago(c.id)} className={`flex-shrink-0 ${!esMesAtual ? "pointer-events-none" : ""}`}>
+                    <button onClick={() => esMesAtual && togglePago(c.id)} className={`pj-tap flex-shrink-0 ${!esMesAtual ? "pointer-events-none" : ""}`}>
                       {pago
-                        ? <CheckCircle2 size={22} className="text-emerald-500" />
-                        : <Circle size={22} className="text-slate-300" />}
+                        ? <CheckCircle2 size={22} style={{ color: "#0b6b4f" }} />
+                        : <Circle size={22} style={{ color: "#c4c0b2" }} />}
                     </button>
 
                     {/* Ícone */}
@@ -791,24 +795,24 @@ export default function SecaoContas() {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-black leading-tight ${pago ? "line-through text-slate-400" : "text-slate-800"}`}>
+                      <p className="text-sm leading-tight" style={{ fontWeight: 600, textDecoration: pago ? "line-through" : "none", color: pago ? "#8a978e" : "#14231c" }}>
                         {c.nome}
                       </p>
-                      <p className="text-[10px] font-medium mt-0.5 flex items-center gap-1 flex-wrap">
-                        {venceHoje  && <span className="text-rose-500 font-black">Vence hoje!</span>}
-                        {venceBreve && <span className="text-amber-500 font-black">Dia {c.diaVencimento}</span>}
-                        {!venceHoje && !venceBreve && <span className="text-slate-400">Dia {c.diaVencimento}</span>}
-                        <span className="text-slate-200">·</span>
-                        <span style={{ color: cat.cor }} className="font-bold">{cat.label}</span>
+                      <p className="text-[10px] mt-0.5 flex items-center gap-1 flex-wrap">
+                        {venceHoje  && <span style={{ fontWeight: 600, color: "#b4472e" }}>Vence hoje!</span>}
+                        {venceBreve && <span style={{ fontWeight: 600, color: "#a86a1f" }}>Dia {c.diaVencimento}</span>}
+                        {!venceHoje && !venceBreve && <span style={{ color: "#8a978e" }}>Dia {c.diaVencimento}</span>}
+                        <span style={{ color: "#c4c0b2" }}>·</span>
+                        <span style={{ color: cat.cor, fontWeight: 600 }}>{cat.label}</span>
                       </p>
                     </div>
 
                     {/* Valor */}
                     <div className="flex-shrink-0 text-right">
-                      <p className={`text-[13px] font-black ${pago ? "text-slate-400" : "text-slate-800"}`}>
+                      <p className="text-[13px]" style={{ fontWeight: 600, color: pago ? "#8a978e" : "#14231c" }}>
                         €{fmt(c.valor)}
                       </p>
-                      <p className="text-[9px] text-slate-400 mt-0.5">
+                      <p className="text-[9px] mt-0.5" style={{ color: "#8a978e" }}>
                         €{Math.round(c.valor * 12).toLocaleString("pt-PT")}/ano
                       </p>
                     </div>
@@ -816,17 +820,18 @@ export default function SecaoContas() {
                     {/* Expandir */}
                     <button
                       onClick={() => setExpandido(aberto ? null : c.id)}
-                      className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0"
+                      className="pj-tap w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: "#eeece4" }}
                     >
                       {aberto
-                        ? <ChevronUp size={12} className="text-slate-400" />
-                        : <ChevronDown size={12} className="text-slate-400" />}
+                        ? <ChevronUp size={12} style={{ color: "#5c6b62" }} />
+                        : <ChevronDown size={12} style={{ color: "#5c6b62" }} />}
                     </button>
                   </div>
 
                   {/* Painel expandido */}
                   {aberto && (
-                    <div className="px-4 pb-4 pt-2 bg-slate-50/60 border-t border-slate-100">
+                    <div className="px-4 pb-4 pt-2" style={{ background: "#f6f5f0", borderTop: "1px solid #eeece4" }}>
                       {emEdicao ? (
                         <FormConta
                           inicial={c}
@@ -837,17 +842,17 @@ export default function SecaoContas() {
                         <>
                           {/* Breakdown mensal / anual / diário */}
                           <div className="grid grid-cols-3 gap-2 mb-3">
-                            <div className="bg-white rounded-xl p-2.5 text-center border border-slate-100">
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Mensal</p>
-                              <p className="text-sm font-black text-slate-800 mt-0.5">€{fmt(c.valor)}</p>
+                            <div className="rounded-xl p-2.5 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+                              <p className="text-[9px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Mensal</p>
+                              <p className="text-sm mt-0.5" style={{ fontWeight: 600, color: "#14231c" }}>€{fmt(c.valor)}</p>
                             </div>
-                            <div className="bg-violet-50 rounded-xl p-2.5 text-center border border-violet-100">
-                              <p className="text-[9px] font-black text-violet-400 uppercase tracking-wide">Anual</p>
-                              <p className="text-sm font-black text-violet-700 mt-0.5">€{Math.round(c.valor * 12).toLocaleString("pt-PT")}</p>
+                            <div className="rounded-xl p-2.5 text-center" style={{ background: "#eaf1ec", border: "1px solid #cfe0d5" }}>
+                              <p className="text-[9px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#0b6b4f" }}>Anual</p>
+                              <p className="text-sm mt-0.5" style={{ fontWeight: 600, color: "#0b6b4f" }}>€{Math.round(c.valor * 12).toLocaleString("pt-PT")}</p>
                             </div>
-                            <div className="bg-white rounded-xl p-2.5 text-center border border-slate-100">
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Por dia</p>
-                              <p className="text-sm font-black text-slate-800 mt-0.5">€{(c.valor / 30.44).toFixed(2)}</p>
+                            <div className="rounded-xl p-2.5 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+                              <p className="text-[9px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Por dia</p>
+                              <p className="text-sm mt-0.5" style={{ fontWeight: 600, color: "#14231c" }}>€{(c.valor / 30.44).toFixed(2)}</p>
                             </div>
                           </div>
 
@@ -859,11 +864,12 @@ export default function SecaoContas() {
                             {esMesAtual && (
                               <button
                                 onClick={() => togglePago(c.id)}
-                                className="flex-1 py-2 rounded-xl text-xs font-black border transition-all"
+                                className="pj-tap flex-1 py-2 rounded-xl text-xs border transition-all"
                                 style={{
-                                  borderColor: pago ? "#e2e8f0" : "#6ee7b7",
-                                  background:  pago ? "#fff"    : "#ecfdf5",
-                                  color:       pago ? "#94a3b8" : "#059669",
+                                  fontWeight: 600,
+                                  borderColor: pago ? "#e4e2d8" : "#cfe0d5",
+                                  background:  pago ? "#fbfaf6" : "#eaf1ec",
+                                  color:       pago ? "#8a978e" : "#0b6b4f",
                                 }}
                               >
                                 {pago ? "Marcar como pendente" : "✓ Marcar como pago"}
@@ -871,13 +877,15 @@ export default function SecaoContas() {
                             )}
                             <button
                               onClick={() => setEditando(c.id)}
-                              className="px-4 py-2 rounded-xl text-xs font-black bg-violet-50 text-violet-600 border border-violet-100 flex items-center gap-1"
+                              className="pj-tap px-4 py-2 rounded-xl text-xs flex items-center gap-1"
+                              style={{ fontWeight: 600, background: "#eeece4", color: "#5c6b62", border: "1px solid #e4e2d8" }}
                             >
                               <Pencil size={11} /> Editar
                             </button>
                             <button
                               onClick={() => removerConta(c.id)}
-                              className="px-3 py-2 rounded-xl bg-rose-50 text-rose-500 border border-rose-100"
+                              className="pj-tap px-3 py-2 rounded-xl"
+                              style={{ background: "#f7ece8", color: "#b4472e", border: "1px solid #ecd9d1" }}
                             >
                               <Trash2 size={13} />
                             </button>
@@ -896,11 +904,11 @@ export default function SecaoContas() {
       {/* ── Resumo por categoria ── */}
       {contas.length > 0 && (
         <div className="px-4 mb-4 anim-up anim-up-2">
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-            <BarChart3 size={11} className="text-slate-300" /> Por categoria
+          <p className="text-[11px] uppercase mb-3 flex items-center gap-1.5" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>
+            <BarChart3 size={11} style={{ color: "#8a978e" }} /> Por categoria
           </p>
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-slate-50">
-            {CATS.filter(cat => contas.some(c => c.categoria === cat.id)).map(cat => {
+          <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            {CATS.filter(cat => contas.some(c => c.categoria === cat.id)).map((cat, cati) => {
               const totalCat = contas.filter(c => c.categoria === cat.id).reduce((s, c) => s + c.valor, 0);
               const pagosCat = contas.filter(c => c.categoria === cat.id && pagosMes[c.id]).reduce((s, c) => s + c.valor, 0);
               const pctCat   = totalMensal > 0 ? (totalCat / totalMensal) * 100 : 0;
@@ -908,22 +916,22 @@ export default function SecaoContas() {
               const anualCat = totalCat * 12;
 
               return (
-                <div key={cat.id} className="flex items-center gap-3 px-4 py-3">
+                <div key={cat.id} className="flex items-center gap-3 px-4 py-3" style={cati > 0 ? { borderTop: "1px solid #eeece4" } : undefined}>
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0" style={{ background: cat.bg }}>
                     {cat.emoji}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-black text-slate-700">{cat.label}</p>
+                      <p className="text-sm" style={{ fontWeight: 600, color: "#14231c" }}>{cat.label}</p>
                       <div className="text-right">
-                        <p className="text-sm font-black text-slate-800">€{fmt(totalCat)}<span className="text-[10px] text-slate-400 font-medium">/mês</span></p>
-                        <p className="text-[10px] text-slate-400">€{Math.round(anualCat).toLocaleString("pt-PT")}/ano</p>
+                        <p className="text-sm" style={{ fontWeight: 600, color: "#14231c" }}>€{fmt(totalCat)}<span className="text-[10px]" style={{ color: "#8a978e", fontWeight: 400 }}>/mês</span></p>
+                        <p className="text-[10px]" style={{ color: "#8a978e" }}>€{Math.round(anualCat).toLocaleString("pt-PT")}/ano</p>
                       </div>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "#eeece4" }}>
                       <div className="h-full rounded-full transition-all" style={{ width: `${pctCat}%`, background: cat.cor }} />
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                    <p className="text-[10px] mt-0.5" style={{ color: "#8a978e" }}>
                       {nCat} conta{nCat !== 1 ? "s" : ""} · {Math.round(pctCat)}% do total
                       {pagosCat > 0 && ` · €${fmt(pagosCat)} pago${pagosCat !== totalCat ? "s" : ""}`}
                     </p>

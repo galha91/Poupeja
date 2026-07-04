@@ -370,7 +370,7 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
     <div className="pb-28">
 
       {/* Tab switcher */}
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
+      <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-5" style={{ background: "#eeece4" }}>
         {[
           { id: "compras",   label: "Compras",   icon: ShoppingCart },
           { id: "garantias", label: "Garantias", icon: ShieldCheck },
@@ -378,9 +378,8 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
           <button
             key={t.id}
             onClick={() => setAba(t.id)}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-              aba === t.id ? "bg-white shadow-sm text-slate-900" : "text-slate-400"
-            }`}
+            className="pj-tap flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+            style={aba === t.id ? { background: "#f6f5f0", color: "#14231c" } : { color: "#8a978e" }}
           >
             <t.icon size={13} /> {t.label}
           </button>
@@ -390,35 +389,34 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
       {/* COMPRAS */}
       {aba === "compras" && (
         <div className="anim-up">
-          <div className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg,#1d4ed8,#3b82f6)", boxShadow: "0 16px 40px -12px rgba(37,99,235,0.45)" }}>
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
+          <div className="mx-4 mb-5 pb-5" style={{ borderBottom: "1px solid #e4e2d8" }}>
+            <p className="uppercase flex items-center gap-1.5" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>
               <TrendingUp size={11} /> Talões guardados
             </p>
-            <p className="text-4xl font-black text-white mt-1">{compras.length}</p>
-            <p className="text-xs text-white/60 mt-0.5">{compras.length === 1 ? "talão" : "talões"} no histórico</p>
+            <p className="font-display mt-1" style={{ fontSize: "40px", fontWeight: 600, color: "#14231c", lineHeight: 1.05 }}>{compras.length}</p>
+            <p className="text-xs mt-1" style={{ color: "#5c6b62" }}>{compras.length === 1 ? "talão" : "talões"} no histórico</p>
             {(() => {
               const totalPoupado = compras.reduce((acc, t) => acc + (t.valorPoupado ?? 0), 0);
               return totalPoupado > 0 ? (
-                <div className="mt-3 pt-3 border-t border-white/20">
-                  <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Total poupado</p>
-                  <p className="text-xl font-black text-white mt-0.5">€{totalPoupado.toFixed(2)}</p>
+                <div className="mt-4 pt-4" style={{ borderTop: "1px solid #eeece4" }}>
+                  <p className="uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Total poupado</p>
+                  <p className="font-display mt-1" style={{ fontSize: "22px", fontWeight: 600, color: "#0b6b4f" }}>€{totalPoupado.toFixed(2)}</p>
                 </div>
               ) : null;
             })()}
           </div>
 
           <button onClick={() => setModal(true)}
-            className="press mx-4 mb-5 w-[calc(100%-2rem)] py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg,#1d4ed8,#3b82f6)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}>
+            className="press pj-tap mx-4 mb-5 w-[calc(100%-2rem)] py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
+            style={{ background: "#0b6b4f" }}>
             <Camera size={17} /> Guardar novo talão
           </button>
 
           {compras.length === 0 ? (
-            <div className="mx-4 card">
+            <div className="mx-4 rounded-2xl" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
               <EstadoVazio icon={Receipt} titulo="Ainda não tens talões guardados"
                 descricao="Tira foto ao próximo talão e começa a controlar as tuas compras."
-                corFundo="#eff6ff" corIcone="#3b82f6" />
+                corFundo="#eeece4" corIcone="#0b6b4f" />
             </div>
           ) : (
             <div className="px-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -431,31 +429,30 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
       {/* GARANTIAS */}
       {aba === "garantias" && (
         <div className="anim-up">
-          <div className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 16px 40px -12px rgba(5,150,105,0.45)" }}>
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
+          <div className="mx-4 mb-5 pb-5" style={{ borderBottom: "1px solid #e4e2d8" }}>
+            <p className="uppercase flex items-center gap-1.5" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>
               <ShieldCheck size={11} /> Garantias ativas
             </p>
-            <p className="text-4xl font-black text-white mt-1">{garantias.length}</p>
-            <p className="text-xs text-white/60 mt-0.5">{garantias.length === 1 ? "produto protegido" : "produtos protegidos"}</p>
+            <p className="font-display mt-1" style={{ fontSize: "40px", fontWeight: 600, color: "#14231c", lineHeight: 1.05 }}>{garantias.length}</p>
+            <p className="text-xs mt-1" style={{ color: "#5c6b62" }}>{garantias.length === 1 ? "produto protegido" : "produtos protegidos"}</p>
           </div>
 
           <button onClick={() => setModal(true)}
-            className="press mx-4 mb-5 w-[calc(100%-2rem)] py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 8px 20px -8px rgba(5,150,105,0.4)" }}>
+            className="press pj-tap mx-4 mb-5 w-[calc(100%-2rem)] py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
+            style={{ background: "#0b6b4f" }}>
             <Camera size={17} /> Guardar talão de garantia
           </button>
 
           {garantias.length === 0 ? (
             <>
-              <div className="mx-4 card">
+              <div className="mx-4 rounded-2xl" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
                 <EstadoVazio icon={Package} titulo="Ainda não tens garantias guardadas"
                   descricao="Guarda o talão dos teus produtos para nunca perderes a validade da garantia."
-                  corFundo="#f0fdf4" corIcone="#059669" />
+                  corFundo="#eeece4" corIcone="#0b6b4f" />
               </div>
-              <div className="mx-4 mt-4 rounded-2xl p-3.5 flex gap-2.5" style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0" }}>
-                <ShieldCheck size={16} className="text-emerald-600 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] text-emerald-800 leading-relaxed">
+              <div className="mx-4 mt-4 rounded-2xl p-4 flex gap-2.5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+                <ShieldCheck size={16} className="flex-shrink-0 mt-0.5" style={{ color: "#0b6b4f" }} />
+                <p className="text-[12px] leading-relaxed" style={{ color: "#5c6b62" }}>
                   Regista o nome do produto, data de compra e duração. Avisamos-te quando a garantia estiver a terminar.
                 </p>
               </div>
