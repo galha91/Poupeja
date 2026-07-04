@@ -937,33 +937,33 @@ function SubPostosEV() {
             </select>
 
             {/* Percentagem de bateria */}
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wide mb-2">Bateria</p>
+            <p className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em] mb-2">Bateria</p>
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <p className="text-[9px] text-slate-400 mb-1">De</p>
+                <p className="text-[9px] text-[#8a978e] mb-1">De</p>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="range" min={0} max={99} step={5} value={batDe}
                     onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
-                    className="flex-1 accent-emerald-500"
+                    className="flex-1" style={{ accentColor: "#0b6b4f" }}
                   />
-                  <span className="text-xs font-black text-emerald-600 w-8 text-right">{batDe}%</span>
+                  <span className="text-xs font-semibold text-[#0b6b4f] w-8 text-right">{batDe}%</span>
                 </div>
               </div>
               <div className="flex-1">
-                <p className="text-[9px] text-slate-400 mb-1">Até</p>
+                <p className="text-[9px] text-[#8a978e] mb-1">Até</p>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="range" min={0} max={100} step={5} value={batAte}
                     onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
-                    className="flex-1 accent-emerald-500"
+                    className="flex-1" style={{ accentColor: "#0b6b4f" }}
                   />
-                  <span className="text-xs font-black text-emerald-600 w-8 text-right">{batAte}%</span>
+                  <span className="text-xs font-semibold text-[#0b6b4f] w-8 text-right">{batAte}%</span>
                 </div>
               </div>
             </div>
             {carro && (
-              <p className="text-[10px] text-slate-400 mt-2 text-center">
+              <p className="text-[10px] text-[#8a978e] mt-2 text-center">
                 {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh a carregar
               </p>
             )}
@@ -973,15 +973,15 @@ function SubPostosEV() {
 
       {/* Alertas disparados */}
       {alertasDisparados.map(a => (
-        <div key={a.id} className="mx-4 mb-3 rounded-2xl p-4 border border-emerald-200 bg-emerald-50 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
+        <div key={a.id} className="mx-4 mb-3 rounded-2xl p-4 border border-[#e4e2d8] bg-[#eeece4] flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#0b6b4f] flex items-center justify-center flex-shrink-0">
             <Bell size={16} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Alerta ativo</p>
-            <p className="text-sm font-bold text-emerald-800 truncate">{a.nome} está disponível!</p>
+            <p className="text-[11px] font-semibold text-[#0b6b4f] uppercase tracking-[0.09em]">Alerta ativo</p>
+            <p className="text-sm font-semibold text-[#14231c] truncate">{a.nome} está disponível!</p>
           </div>
-          <button onClick={() => toggleAlerta(a)} className="press text-[10px] font-black text-emerald-600 bg-emerald-100 px-2.5 py-1.5 rounded-lg">
+          <button onClick={() => toggleAlerta(a)} className="press text-[10px] font-semibold text-[#0b6b4f] bg-[#fbfaf6] border border-[#e4e2d8] px-2.5 py-1.5 rounded-lg">
             Dispensar
           </button>
         </div>
@@ -998,10 +998,10 @@ function SubPostosEV() {
           <button
             key={f.id}
             onClick={() => setFiltro(f.id)}
-            className={`press flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+            className={`press flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               filtroEstado === f.id
-                ? "bg-emerald-600 text-white"
-                : "bg-white text-slate-500 border border-slate-100"
+                ? "bg-[#0b6b4f] text-white"
+                : "bg-[#eeece4] text-[#5c6b62]"
             }`}
           >
             {f.label}
@@ -1010,20 +1010,20 @@ function SubPostosEV() {
       </div>
 
       <div className="px-4 mb-3 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        <p className="text-[10px] text-slate-400">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
+        <span className="w-2 h-2 rounded-full bg-[#0b6b4f] animate-pulse" />
+        <p className="text-[10px] text-[#8a978e]">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
       </div>
 
       {/* Seletor Lista / Mapa */}
       {!loading && !erro && postos.length > 0 && (
-        <div className="px-4 mb-3 flex gap-1 p-1 bg-slate-100 rounded-xl">
+        <div className="px-4 mb-3 flex gap-1 p-1 bg-[#eeece4] rounded-xl">
           <button
             onClick={() => setVista("lista")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-white shadow-sm text-emerald-600" : "text-slate-400"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
           ><ListIcon size={14} /> Lista</button>
           <button
             onClick={() => setVista("mapa")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-black flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-white shadow-sm text-emerald-600" : "text-slate-400"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
           ><MapIcon size={14} /> Mapa</button>
         </div>
       )}
@@ -1322,40 +1322,37 @@ function SubAvisos() {
 
   return (
     <div>
-      {/* Hero */}
-      <div
-        className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden"
-        style={{ background: "linear-gradient(150deg,#1e40af 0%,#2563eb 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.30)" }}
-      >
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-            <Bell size={22} className="text-white" />
+      {/* Cabeçalho — flat editorial */}
+      <div className="mx-4 mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+            <Bell size={19} style={{ color: "#2c3b33" }} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Os teus avisos</p>
-            <p className="text-xl font-black text-white">Avisa-me quando valer a pena</p>
-            <p className="text-[11px] text-white/60 mt-0.5">Combustíveis e postos de carregamento</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Os teus avisos</p>
+            <p className="font-display text-lg font-semibold" style={{ color: "#14231c" }}>Avisa-me quando valer a pena</p>
           </div>
         </div>
+        <div className="h-px mt-4" style={{ background: "#e4e2d8" }} />
       </div>
 
       {/* Info */}
-      <div className="mx-4 mb-4 rounded-xl p-3 bg-blue-50 border border-blue-100 flex gap-2">
-        <Info size={14} className="text-blue-400 flex-shrink-0 mt-0.5" />
-        <p className="text-[11px] text-blue-700 leading-relaxed">
+      <div className="mx-4 mb-4 rounded-xl p-3 flex gap-2" style={{ background: "#eeece4" }}>
+        <Info size={14} className="flex-shrink-0 mt-0.5" style={{ color: "#8a978e" }} />
+        <p className="text-[11px] leading-relaxed" style={{ color: "#5c6b62" }}>
           Os avisos são verificados ao abrir a app. Notificações automáticas chegam com a versão instalável (em breve).
         </p>
       </div>
 
       {/* Disparados */}
       {disparados.map(d => (
-        <div key={d.id} className="mx-4 mb-3 rounded-2xl p-4 border border-emerald-200 bg-emerald-50 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
+        <div key={d.id} className="mx-4 mb-3 rounded-2xl p-4 flex items-center gap-3" style={{ background: "#fbfaf6", border: "1px solid #0b6b4f33" }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#0b6b4f" }}>
             <Check size={17} className="text-white" />
           </div>
           <div>
-            <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Aviso ativado</p>
-            <p className="text-sm font-bold text-emerald-800">{d.texto}</p>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#0b6b4f" }}>Aviso ativado</p>
+            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>{d.texto}</p>
           </div>
         </div>
       ))}
@@ -1365,8 +1362,8 @@ function SubAvisos() {
         <div className="mx-4 mb-4">
           <button
             onClick={() => setCriar(true)}
-            className="press w-full py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)", boxShadow: "0 8px 20px -8px rgba(37,99,235,0.4)" }}
+            className="pj-tap press w-full py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
+            style={{ background: "#0b6b4f" }}
           >
             <Plus size={17} /> Criar novo aviso
           </button>
@@ -1375,26 +1372,24 @@ function SubAvisos() {
 
       {/* Form criar */}
       {criar && (
-        <div className="mx-4 mb-4 card p-4">
+        <div className="mx-4 mb-4 rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-black text-slate-800">Novo aviso</p>
-            <button onClick={() => setCriar(false)} className="press w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center">
-              <X size={15} className="text-slate-500" />
+            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Novo aviso</p>
+            <button onClick={() => setCriar(false)} className="pj-tap press w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#eeece4" }}>
+              <X size={15} style={{ color: "#5c6b62" }} />
             </button>
           </div>
 
           <div className="flex gap-2 mb-4">
             {[
-              { id: "combustivel",  icon: Fuel,    label: "Combustível", grad: "linear-gradient(135deg,#c2410c,#f97316)" },
-              { id: "carregamento", icon: Battery, label: "Carregamento", grad: "linear-gradient(135deg,#064e3b,#059669)" },
+              { id: "combustivel",  icon: Fuel,    label: "Combustível" },
+              { id: "carregamento", icon: Battery, label: "Carregamento" },
             ].map(t => (
               <button
                 key={t.id}
                 onClick={() => setTipo(t.id)}
-                className={`press flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                  tipo === t.id ? "text-white" : "bg-slate-50 text-slate-500"
-                }`}
-                style={tipo === t.id ? { background: t.grad } : {}}
+                className="pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                style={tipo === t.id ? { background: "#0b6b4f", color: "#fff" } : { background: "#eeece4", color: "#5c6b62" }}
               >
                 <t.icon size={13} /> {t.label}
               </button>
@@ -1403,35 +1398,36 @@ function SubAvisos() {
 
           {tipo === "combustivel" ? (
             <>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tipo</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-2" style={{ color: "#8a978e" }}>Tipo</p>
               <div className="flex gap-2 mb-4 flex-wrap">
                 {["Gasolina 95", "Gasóleo", "GPL Auto"].map(t => (
                   <button
                     key={t}
                     onClick={() => setCombTipo(t)}
-                    className={`press px-3 py-1.5 rounded-xl text-xs font-bold ${
-                      combTipo === t ? "bg-orange-500 text-white" : "bg-slate-100 text-slate-500"
-                    }`}
+                    className="pj-tap press px-3 py-1.5 rounded-xl text-xs font-semibold"
+                    style={combTipo === t ? { background: "#0b6b4f", color: "#fff" } : { background: "#eeece4", color: "#5c6b62" }}
                   >
                     {t}
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Avisar abaixo de (€/litro)</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "#8a978e" }}>Avisar abaixo de (€/litro)</p>
               <input
                 type="number" step="0.001" value={precoAlvo}
                 onChange={e => setPrecoAlvo(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-lg font-black text-slate-800 focus:outline-none focus:border-orange-400"
+                className="font-display w-full px-4 py-3 rounded-xl text-lg font-medium focus:outline-none"
+                style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }}
                 placeholder="1.650"
               />
             </>
           ) : (
             <>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Avisar com posto livre até (km)</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "#8a978e" }}>Avisar com posto livre até (km)</p>
               <input
                 type="number" step="1" value={distAlvo}
                 onChange={e => setDistAlvo(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-lg font-black text-slate-800 focus:outline-none focus:border-emerald-400"
+                className="font-display w-full px-4 py-3 rounded-xl text-lg font-medium focus:outline-none"
+                style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }}
                 placeholder="5"
               />
             </>
@@ -1439,8 +1435,8 @@ function SubAvisos() {
 
           <button
             onClick={adicionar}
-            className="press w-full mt-4 py-3 rounded-xl text-white font-black"
-            style={{ background: "linear-gradient(135deg,#1e3a8a,#2563eb)" }}
+            className="pj-tap press w-full mt-4 py-3 rounded-xl text-white font-semibold"
+            style={{ background: "#0b6b4f" }}
           >
             Guardar aviso
           </button>
@@ -1450,46 +1446,47 @@ function SubAvisos() {
       {/* Lista avisos */}
       <div className="mx-4 flex flex-col gap-2.5">
         {avisos.length === 0 && !criar ? (
-          <div className="card p-6 text-center">
-            <Bell size={28} className="text-slate-200 mx-auto mb-2" />
-            <p className="text-sm font-black text-slate-400">Ainda não tens avisos</p>
-            <p className="text-xs text-slate-300 mt-0.5">Cria um para saberes quando o preço baixa</p>
+          <div className="rounded-2xl p-6 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            <Bell size={28} className="mx-auto mb-2" style={{ color: "#cfccbf" }} />
+            <p className="text-sm font-semibold" style={{ color: "#8a978e" }}>Ainda não tens avisos</p>
+            <p className="text-xs mt-0.5" style={{ color: "#b0b8b0" }}>Cria um para saberes quando o preço baixa</p>
           </div>
         ) : avisos.map(a => {
           const ativo = disparados.some(d => d.id === a.id);
-          const cor = a.tipo === "combustivel" ? "#ea580c" : "#059669";
           const Icone = a.tipo === "combustivel" ? Fuel : Battery;
           return (
             <div
               key={a.id}
-              className={`card p-4 flex items-center gap-3 ${ativo ? "border-emerald-200" : ""}`}
+              className="rounded-2xl p-4 flex items-center gap-3"
+              style={{ background: "#fbfaf6", border: ativo ? "1px solid #0b6b4f33" : "1px solid #e4e2d8" }}
             >
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: cor + "18" }}>
-                <Icone size={19} style={{ color: cor }} />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+                <Icone size={19} style={{ color: "#0b6b4f" }} />
               </div>
               <div className="flex-1 min-w-0">
                 {a.tipo === "combustivel" ? (
                   <>
-                    <p className="font-black text-slate-800 text-sm">{a.combTipo}</p>
-                    <p className="text-xs text-slate-400">Avisar abaixo de {a.precoAlvo?.toFixed(3)} €/litro</p>
+                    <p className="font-semibold text-sm" style={{ color: "#14231c" }}>{a.combTipo}</p>
+                    <p className="text-xs" style={{ color: "#8a978e" }}>Avisar abaixo de {a.precoAlvo?.toFixed(3)} €/litro</p>
                   </>
                 ) : (
                   <>
-                    <p className="font-black text-slate-800 text-sm">Posto de carregamento</p>
-                    <p className="text-xs text-slate-400">Posto livre até {a.distAlvo} km</p>
+                    <p className="font-semibold text-sm" style={{ color: "#14231c" }}>Posto de carregamento</p>
+                    <p className="text-xs" style={{ color: "#8a978e" }}>Posto livre até {a.distAlvo} km</p>
                   </>
                 )}
                 {ativo && (
-                  <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+                  <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#eef3ef", color: "#0b6b4f" }}>
                     <Check size={8} /> Condição cumprida agora
                   </span>
                 )}
               </div>
               <button
                 onClick={() => guardar(avisos.filter(x => x.id !== a.id))}
-                className="press w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0"
+                className="pj-tap press w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: "#eeece4" }}
               >
-                <Trash2 size={15} className="text-red-400" />
+                <Trash2 size={15} style={{ color: "#a8432f" }} />
               </button>
             </div>
           );

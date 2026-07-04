@@ -940,8 +940,8 @@ export default function SecaoContas() {
                       if (!op) return null;
                       return (
                         <a href={op.url} target="_blank" rel="noopener noreferrer"
-                          className="mt-1 inline-flex items-center gap-1 text-[10px] font-black no-underline"
-                          style={{ color: op.cor }}
+                          className="pj-tap mt-1 inline-flex items-center gap-1 text-[10px] no-underline"
+                          style={{ fontWeight: 600, color: op.cor }}
                         >
                           💡 Comparar tarifas — poupar até €{Math.max(op.minAnual, Math.round(totalCat * 12 * op.pct))}/ano
                           <ExternalLink size={9} />
