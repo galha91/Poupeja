@@ -542,27 +542,12 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
           <div className="flex items-center justify-between">
             <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>Poupança de {mesNome}</div>
             <div className="flex items-center" style={{ gap: 5, fontSize: 12, color: "#0b6b4f", fontWeight: 600 }}>
-              🔥 {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "semana" : "semanas"}
+              🔥 {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "dia" : "dias"}
             </div>
           </div>
           <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 16 }}>
             <span style={{ fontSize: 38, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>{Math.floor(animMes)}<span style={{ fontSize: 38, color: "#b0b8b0", fontWeight: 400 }}>,{decMes}</span>
           </div>
-          {estadoDesafio && (() => {
-            const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
-            const falta = Math.max(0, estadoDesafio.desafio.meta - estadoDesafio.totalMes);
-            return (
-              <div style={{ marginTop: 28 }}>
-                <div className="flex justify-between items-baseline" style={{ fontSize: 13, color: "#5c6b62", fontWeight: 500, marginBottom: 10 }}>
-                  <span>Faltam <span style={{ color: "#14231c", fontWeight: 600 }}>€{falta.toFixed(2).replace(".", ",")}</span> para a tua meta</span>
-                  <span style={{ color: "#0b6b4f", fontWeight: 600 }}>{pct}%</span>
-                </div>
-                <div style={{ height: 3, borderRadius: 2, background: "#dcdad1", overflow: "hidden" }}>
-                  <div className="pj-bar" style={{ height: "100%", width: `${pct}%`, "--pj-final-width": `${pct}%`, background: "#0b6b4f" }} />
-                </div>
-              </div>
-            );
-          })()}
         </div>
 
         <Divisoria />
@@ -586,21 +571,18 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
 
         <Divisoria />
 
-        {/* Desafio — talões do mês (anel) */}
+        {/* Desafio do mês (anel) — dados reais do desafio de € */}
         {estadoDesafio && (() => {
-          const alvo = 8;
-          const n = estadoDesafio.taloesMes || 0;
-          const frac = Math.min(n / alvo, 1);
-          const faltam = Math.max(0, alvo - n);
-          const R = 19, C = 2 * Math.PI * R;
+          const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
+          const falta = Math.max(0, estadoDesafio.desafio.meta - estadoDesafio.totalMes);
+          const completo = estadoDesafio.completo;
+          const R = 19, C = 2 * Math.PI * R, frac = Math.min(estadoDesafio.progresso, 1);
           return (
-            <button onClick={() => setTab("taloes")} className="pj-tap flex items-center w-full text-left anim-up anim-up-3" style={{ gap: 14 }}>
+            <button onClick={() => setTab("poupanca")} className="pj-tap flex items-center w-full text-left anim-up anim-up-3" style={{ gap: 14 }}>
               <div style={{ flex: 1 }}>
-                <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "#14231c" }}>
-                  {faltam > 0 ? `Faltam ${faltam} tal${faltam !== 1 ? "ões" : "ão"} este mês` : "Desafio de talões completo 🎉"}
-                </div>
+                <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "#14231c" }}>{estadoDesafio.desafio.nome}</div>
                 <div style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500, marginTop: 3 }}>
-                  {faltam > 0 ? `Guarda ${alvo} talões e sobes de nível` : `Guardaste ${n} talões em ${mesNome}`}
+                  {completo ? "Desafio do mês completo 🎉" : `Faltam €${falta.toFixed(2).replace(".", ",")} para a meta de €${estadoDesafio.desafio.meta}`}
                 </div>
               </div>
               <div style={{ position: "relative", width: 44, height: 44, flex: "none" }}>
@@ -608,7 +590,7 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
                   <circle cx="22" cy="22" r={R} fill="none" stroke="#e4e2d8" strokeWidth="3" />
                   <circle cx="22" cy="22" r={R} fill="none" stroke="#0b6b4f" strokeWidth="3" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - frac)} transform="rotate(-90 22 22)" />
                 </svg>
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#14231c" }}>{n}/{alvo}</div>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600, color: "#14231c" }}>{pct}%</div>
               </div>
             </button>
           );
@@ -740,7 +722,7 @@ function SecaoPoupanca({ setTab }) {
       {/* Total — editorial */}
       <div className="px-6 anim-up">
         <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-          O teu total em {new Date().getFullYear()}
+          A tua poupança total
         </div>
         <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 14 }}>
           <span style={{ fontSize: 32, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>

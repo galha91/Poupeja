@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  User, Fuel, MapPin, Store, Bell, ShieldCheck, Info,
+  Fuel, MapPin, Bell, ShieldCheck, Info,
   ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
   PiggyBank, LogOut, BellRing, BellOff, Moon,
 } from "lucide-react";
