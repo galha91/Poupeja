@@ -85,25 +85,19 @@ function SectionLabel({ children, icon: Icon, className = "" }) {
   );
 }
 
-function EmptyState({ icon: Icon, titulo, sub, cta, onCta, color = "slate" }) {
-  const paleta = {
-    slate: { wrap: "bg-slate-50 border-slate-100",       icon: "text-slate-300" },
-    blue:  { wrap: "bg-blue-50 border-blue-100",         icon: "text-blue-300" },
-    green: { wrap: "bg-emerald-50 border-emerald-100",   icon: "text-emerald-300" },
-  };
-  const c = paleta[color] || paleta.slate;
+function EmptyState({ icon: Icon, titulo, sub, cta, onCta }) {
   return (
-    <div className="mx-4 card p-8 flex flex-col items-center text-center">
-      <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center mb-4 ${c.wrap}`}>
-        <Icon size={30} className={c.icon} />
+    <div className="mx-4 rounded-2xl p-8 flex flex-col items-center text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "#eeece4" }}>
+        <Icon size={30} style={{ color: "#8a978e" }} />
       </div>
-      <p className="text-sm font-black text-slate-600">{titulo}</p>
-      <p className="text-[12px] text-slate-400 mt-1 leading-relaxed">{sub}</p>
+      <p className="font-display text-sm font-semibold" style={{ color: "#14231c" }}>{titulo}</p>
+      <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "#8a978e" }}>{sub}</p>
       {cta && (
         <button
           onClick={onCta}
-          className="press mt-4 px-5 py-2.5 rounded-xl text-white text-xs font-black"
-          style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}
+          className="pj-tap press mt-4 px-5 py-2.5 rounded-xl text-white text-xs font-semibold"
+          style={{ background: "#0b6b4f" }}
         >
           {cta}
         </button>
@@ -124,48 +118,46 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(0,0,0,0.6)" }} onClick={onFechar}>
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(20,35,28,0.55)" }} onClick={onFechar}>
       <div
-        className="w-full rounded-t-3xl bg-white overflow-hidden"
-        style={{ maxHeight: "92vh", overflowY: "auto" }}
+        className="w-full rounded-t-3xl overflow-hidden"
+        style={{ maxHeight: "92vh", overflowY: "auto", background: "#fbfaf6" }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-slate-200" />
+          <div className="w-10 h-1 rounded-full" style={{ background: "#e4e2d8" }} />
         </div>
 
         {/* Cabeçalho */}
-        <div
-          className="px-5 py-4 flex items-center gap-3"
-          style={{ background: modo === "ios" ? "linear-gradient(135deg,#1e3a8a,#2563eb)" : "linear-gradient(135deg,#065f46,#059669)" }}
-        >
-          <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 text-2xl">
+        <div className="px-5 py-4 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: "#eeece4" }}>
             {modo === "ios" ? "🍎" : "🤖"}
           </div>
           <div>
-            <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>
               {modo === "ios" ? "iOS (Safari)" : "Android"}
             </p>
-            <p className="text-[15px] font-black text-white leading-tight">Instalar o PoupeJá</p>
+            <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "#14231c" }}>Instalar o PoupeJá</p>
           </div>
-          <button onClick={onFechar} className="ml-auto w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-            <X size={16} className="text-white" />
+          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+            <X size={16} style={{ color: "#5c6b62" }} />
           </button>
         </div>
 
+        <div className="mx-5" style={{ height: 1, background: "#e4e2d8" }} />
+
         {/* Benefícios */}
         <div className="px-5 pt-4 pb-3">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Porque vale a pena</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-3" style={{ color: "#8a978e" }}>Porque vale a pena</p>
           <div className="grid grid-cols-2 gap-2 mb-4">
             {beneficios.map((b, i) => (
-              <div key={i} className="bg-slate-50 rounded-2xl p-3 flex items-start gap-2">
+              <div key={i} className="rounded-2xl p-3 flex items-start gap-2" style={{ background: "#eeece4" }}>
                 <span className="text-lg leading-none flex-shrink-0">{b.emoji}</span>
-                <p className="text-[11px] font-bold text-slate-700 leading-snug">{b.texto}</p>
+                <p className="text-[11px] font-semibold leading-snug" style={{ color: "#14231c" }}>{b.texto}</p>
               </div>
             ))}
           </div>
-
         </div>
 
         {/* Ação — instala direto (Android) ou abre o guia completo em /instalar */}
@@ -174,27 +166,28 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
             <>
               <button
                 onClick={onInstalarAndroid}
-                className="w-full py-4 rounded-2xl text-white font-black text-base"
-                style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 8px 20px -6px rgba(5,150,105,0.5)" }}
+                className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base"
+                style={{ background: "#0b6b4f" }}
               >
                 📲 Instalar agora — é grátis
               </button>
-              <a href="/instalar" className="w-full py-3 rounded-2xl bg-slate-100 text-slate-600 font-black text-sm text-center">
+              <a href="/instalar" className="pj-tap w-full py-3 rounded-2xl font-semibold text-sm text-center" style={{ background: "#eeece4", color: "#5c6b62" }}>
                 Ver o guia completo
               </a>
             </>
           ) : (
             <a
               href="/instalar"
-              className="w-full py-4 rounded-2xl text-white font-black text-base text-center"
-              style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 8px 20px -6px rgba(5,150,105,0.5)" }}
+              className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base text-center"
+              style={{ background: "#0b6b4f" }}
             >
               📲 Ver como instalar
             </a>
           )}
           <button
             onClick={onFechar}
-            className="w-full py-2.5 text-slate-400 font-bold text-sm"
+            className="pj-tap w-full py-2.5 font-semibold text-sm"
+            style={{ color: "#8a978e" }}
           >
             Agora não
           </button>
@@ -760,19 +753,19 @@ function SecaoPoupanca({ setTab }) {
         {/* Cartões de resumo */}
         <div className="px-4 mb-5 anim-up anim-up-1">
           <div className="grid grid-cols-2 gap-3">
-            <div className="card p-4">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Melhor mês</p>
-              <p className="text-xl font-black text-slate-800 mt-1">
+            <div className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Melhor mês</p>
+              <p className="font-display text-xl font-semibold mt-1" style={{ color: "#14231c" }}>
                 €{dados.melhorMes ? dados.melhorMes.v.toFixed(2) : "0.00"}
               </p>
-              <p className="text-[11px] text-slate-400 capitalize mt-0.5">
+              <p className="text-[11px] capitalize mt-0.5" style={{ color: "#8a978e" }}>
                 {dados.melhorMes ? dados.melhorMes.labelLong : "—"}
               </p>
             </div>
-            <div className="card p-4">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Média mensal</p>
-              <p className="text-xl font-black text-slate-800 mt-1">€{dados.mediaMensal.toFixed(2)}</p>
-              <p className="text-[11px] text-slate-400 mt-0.5">nos meses com dados</p>
+            <div className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Média mensal</p>
+              <p className="font-display text-xl font-semibold mt-1" style={{ color: "#14231c" }}>€{dados.mediaMensal.toFixed(2)}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>nos meses com dados</p>
             </div>
           </div>
         </div>
@@ -783,7 +776,8 @@ function SecaoPoupanca({ setTab }) {
             <SectionLabel icon={BarChart}>{mostrar12 ? "Últimos 12 meses" : "Últimos 6 meses"}</SectionLabel>
             <button
               onClick={() => { setMostrar12(v => !v); setBarSelecionada(null); }}
-              className="text-[11px] font-black text-blue-500"
+              className="pj-tap text-[11px] font-semibold"
+              style={{ color: "#0b6b4f" }}
             >
               {mostrar12 ? "Ver 6 meses" : "Ver 12 meses"}
             </button>
@@ -791,13 +785,13 @@ function SecaoPoupanca({ setTab }) {
 
           {/* Tooltip da barra selecionada */}
           {barSelecionada && (
-            <div className="mb-3 mx-auto text-center bg-blue-50 rounded-2xl py-2.5 px-4 border border-blue-100">
-              <p className="text-[11px] font-black text-blue-400 capitalize">{barSelecionada.labelLong}</p>
-              <p className="text-lg font-black text-blue-700">€{barSelecionada.v.toFixed(2)}</p>
+            <div className="mb-3 mx-auto text-center rounded-2xl py-2.5 px-4" style={{ background: "#eef3ef" }}>
+              <p className="text-[11px] font-semibold capitalize" style={{ color: "#8a978e" }}>{barSelecionada.labelLong}</p>
+              <p className="font-display text-lg font-semibold" style={{ color: "#0b6b4f" }}>€{barSelecionada.v.toFixed(2)}</p>
             </div>
           )}
 
-          <div className="card p-4">
+          <div className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
             <div className="flex items-end gap-1.5 h-32">
               {mesesVisiveis.map(m => {
                 const pct = dados.maxBar > 0 ? (m.v / dados.maxBar) * 100 : 0;
@@ -809,7 +803,7 @@ function SecaoPoupanca({ setTab }) {
                     onClick={() => setBarSelecionada(isSelecionada ? null : m)}
                     className="flex-1 flex flex-col items-center gap-1 group"
                   >
-                    <p className="text-[8px] font-black text-blue-500 h-3">
+                    <p className="text-[8px] font-semibold h-3" style={{ color: "#0b6b4f" }}>
                       {m.v > 0 ? `€${m.v.toFixed(0)}` : ""}
                     </p>
                     <div
@@ -817,28 +811,28 @@ function SecaoPoupanca({ setTab }) {
                       style={{
                         height: `${Math.max(pct, m.v > 0 ? 6 : 3)}%`,
                         background: isSelecionada
-                          ? "linear-gradient(180deg,#f59e0b,#d97706)"
+                          ? "#0b6b4f"
                           : isAtual
-                          ? "linear-gradient(180deg,#60a5fa,#1d4ed8)"
-                          : m.v > 0 ? "#bfdbfe" : "#f1f5f9",
+                          ? "#3f9070"
+                          : m.v > 0 ? "#cfe3d8" : "#eeece4",
                         minHeight: 4,
                       }}
                     />
-                    <p className={`text-[9px] font-bold ${isAtual ? "text-blue-600" : "text-slate-400"}`}>
+                    <p className="text-[9px] font-semibold" style={{ color: isAtual ? "#0b6b4f" : "#8a978e" }}>
                       {m.label}
                     </p>
                   </button>
                 );
               })}
             </div>
-            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center gap-3 mt-3 pt-3" style={{ borderTop: "1px solid #e4e2d8" }}>
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm bg-blue-600" />
-                <span className="text-[10px] text-slate-400 font-medium">Mês atual</span>
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#3f9070" }} />
+                <span className="text-[10px] font-medium" style={{ color: "#8a978e" }}>Mês atual</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm bg-blue-200" />
-                <span className="text-[10px] text-slate-400 font-medium">Meses anteriores</span>
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#cfe3d8" }} />
+                <span className="text-[10px] font-medium" style={{ color: "#8a978e" }}>Meses anteriores</span>
               </div>
             </div>
           </div>
@@ -847,31 +841,31 @@ function SecaoPoupanca({ setTab }) {
         {/* Lista mensal */}
         <div className="px-4 mb-5 anim-up anim-up-2">
           <SectionLabel icon={TrendingUp}>Detalhe por mês</SectionLabel>
-          <div className="card divide-y divide-slate-100 overflow-hidden">
-            {[...mesesVisiveis].reverse().filter(m => m.v > 0).map(m => {
+          <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            {[...mesesVisiveis].reverse().filter(m => m.v > 0).map((m, i) => {
               const isAtual = m.k === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
               const pct = dados.totalGeral > 0 ? (m.v / dados.totalGeral) * 100 : 0;
               return (
-                <div key={m.k} className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <span className="text-[10px] font-black text-blue-600 capitalize">{m.label}</span>
+                <div key={m.k} className="flex items-center gap-3 px-4 py-3" style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+                    <span className="text-[10px] font-semibold capitalize" style={{ color: "#0b6b4f" }}>{m.label}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-black text-slate-800 capitalize">
-                        {m.labelLong} {isAtual && <span className="text-[10px] text-blue-500 font-bold ml-1">• atual</span>}
+                      <p className="text-sm font-semibold capitalize" style={{ color: "#14231c" }}>
+                        {m.labelLong} {isAtual && <span className="text-[10px] font-semibold ml-1" style={{ color: "#0b6b4f" }}>• atual</span>}
                       </p>
-                      <p className="text-sm font-black text-emerald-600">€{m.v.toFixed(2)}</p>
+                      <p className="font-display text-sm font-semibold" style={{ color: "#0b6b4f" }}>€{m.v.toFixed(2)}</p>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
+                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "#eeece4" }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "#0b6b4f" }} />
                     </div>
                   </div>
                 </div>
               );
             })}
             {mesesVisiveis.every(m => m.v === 0) && (
-              <div className="px-4 py-8 text-center text-sm text-slate-400 font-medium">
+              <div className="px-4 py-8 text-center text-sm font-medium" style={{ color: "#8a978e" }}>
                 Sem dados neste período.
               </div>
             )}
@@ -887,7 +881,6 @@ function SecaoPoupanca({ setTab }) {
             sub="Quando guardares talões com o valor poupado, o teu histórico aparece aqui."
             cta="Guardar talão"
             onCta={() => setTab("taloes")}
-            color="blue"
           />
         </div>
       )}
@@ -896,18 +889,18 @@ function SecaoPoupanca({ setTab }) {
       <div className="px-4 mb-5 anim-up anim-up-2">
         <button
           onClick={() => setTab("lista")}
-          className="press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left"
-          style={{ background: "linear-gradient(135deg,#5b21b6,#7c3aed)", boxShadow: "0 12px 28px -10px rgba(124,58,237,0.4)" }}
+          className="pj-tap press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left"
+          style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
         >
-          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <ListChecks size={24} className="text-white" />
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+            <ListChecks size={24} style={{ color: "#0b6b4f" }} />
           </div>
           <div className="flex-1">
-            <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">Novo</p>
-            <p className="text-[15px] font-black text-white leading-snug">Lista de compras</p>
-            <p className="text-[11px] text-white/70 mt-0.5">Organiza o que precisas antes de ir às compras</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "#8a978e" }}>Novo</p>
+            <p className="font-display text-[15px] font-semibold leading-snug" style={{ color: "#14231c" }}>Lista de compras</p>
+            <p className="text-[11px] mt-0.5" style={{ color: "#5c6b62" }}>Organiza o que precisas antes de ir às compras</p>
           </div>
-          <ChevronRight size={18} className="text-white/50 flex-shrink-0" />
+          <ChevronRight size={18} style={{ color: "#8a978e" }} className="flex-shrink-0" />
         </button>
       </div>
 
