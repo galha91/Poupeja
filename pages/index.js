@@ -737,48 +737,41 @@ function SecaoPoupanca({ setTab }) {
   return (
     <div className="pb-28 pt-4">
 
-      {/* Hero */}
-      <div className="px-4 mb-5 anim-up">
-        <div
-          className="rounded-2xl p-6 overflow-hidden"
-          style={{ background: "linear-gradient(150deg,#1d4ed8 0%,#2563eb 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.35)" }}
-        >
-          <p className="text-[12px] text-blue-200 mb-1">Total poupado este mês</p>
-          <p className="text-[44px] font-black text-white leading-none tracking-tight" style={{ fontFamily: "'Sora', system-ui" }}>
-            {dados ? `€${dados.totalMes.toFixed(2)}` : "€0.00"}
-          </p>
-          {dados && dados.totalGeral > 0 ? (
-            <div className="mt-2 flex items-center gap-2 flex-wrap">
-              <p className="text-[12px] text-blue-200">
-                €{dados.totalGeral.toFixed(2)} no total · {dados.count} talões
-              </p>
-              {dados.tendencia !== 0 && dados.totalAnterior > 0 && (
-                <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${dados.tendencia > 0 ? "bg-white/20 text-white" : "bg-red-400/30 text-red-100"}`}>
-                  {dados.tendencia > 0 ? "+" : ""}{dados.tendencia}% vs mês anterior
-                </span>
-              )}
-            </div>
-          ) : (
-            <p className="text-[12px] text-blue-200 mt-1">Guarda talões com o valor poupado para ver aqui.</p>
-          )}
-          <div className="mt-4 flex gap-2 flex-wrap">
-            <button
-              onClick={() => setTab("taloes")}
-              className="press inline-flex items-center gap-1.5 bg-white text-blue-700 text-xs font-black px-4 py-2 rounded-xl"
-            >
-              <Plus size={12} /> {semDados ? "Guardar primeiro talão" : "Adicionar talão"}
-            </button>
-            {!semDados && (
-              <button
-                onClick={partilhar}
-                className="press inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-white/20"
-              >
-                <Share2 size={12} /> {feedbackPartilha || "Partilhar"}
-              </button>
-            )}
+      {/* Total — editorial */}
+      <div className="px-6 anim-up">
+        <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+          O teu total em {new Date().getFullYear()}
+        </div>
+        <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 14 }}>
+          <span style={{ fontSize: 32, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>
+          {dados ? Math.floor(dados.totalGeral) : 0}
+          <span style={{ fontSize: 32, color: "#b0b8b0", fontWeight: 400 }}>,{dados ? String(Math.round((dados.totalGeral % 1) * 100)).padStart(2, "0") : "00"}</span>
+        </div>
+        <div style={{ fontSize: 13.5, color: "#5c6b62", fontWeight: 500, marginTop: 12, lineHeight: 1.5 }}>
+          {dados && dados.totalGeral > 0
+            ? <>Poupança real somada em <span style={{ color: "#14231c", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.</>
+            : <>Guarda talões com o valor poupado para veres a tua poupança a crescer aqui.</>}
+        </div>
+        {dados && dados.totalGeral > 0 && dados.tendencia !== 0 && dados.totalAnterior > 0 && (
+          <div className="inline-flex items-center" style={{ gap: 9, marginTop: 20, padding: "10px 14px", borderRadius: 12, background: "#eef3ef" }}>
+            {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "#0b6b4f" }} /> : <TrendingDown size={16} style={{ color: "#cf5a3c" }} />}
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: dados.tendencia > 0 ? "#0b6b4f" : "#cf5a3c" }}>
+              {dados.tendencia > 0 ? "+" : ""}{dados.tendencia}% vs. o mês passado
+            </span>
           </div>
+        )}
+        <div className="flex" style={{ gap: 8, marginTop: 22 }}>
+          <button onClick={() => setTab("taloes")} className="press inline-flex items-center" style={{ gap: 6, background: "#0b6b4f", color: "#f6f5f0", fontSize: 12.5, fontWeight: 700, padding: "9px 16px", borderRadius: 12 }}>
+            <Plus size={13} /> {semDados ? "Guardar primeiro talão" : "Adicionar talão"}
+          </button>
+          {!semDados && (
+            <button onClick={partilhar} className="press inline-flex items-center" style={{ gap: 6, background: "#eeece4", color: "#14231c", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
+              <Share2 size={13} /> {feedbackPartilha || "Partilhar"}
+            </button>
+          )}
         </div>
       </div>
+      <div className="px-6"><Divisoria /></div>
 
       {dados && dados.totalGeral > 0 ? (<>
 
