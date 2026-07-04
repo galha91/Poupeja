@@ -46,23 +46,23 @@ export default function BannerInstalar({ inline = false }) {
 
   const card = (
     <div
-      className="bg-white rounded-3xl p-4 flex items-center gap-3"
-      style={{ boxShadow: "0 8px 40px -8px rgba(15,23,42,0.2)", border: "1px solid #e8eaed" }}
+      className="rounded-3xl p-4 flex items-center gap-3"
+      style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", boxShadow: "0 6px 20px -12px rgba(20,35,28,0.18)" }}
     >
       <div
         className="w-11 h-11 rounded-2xl flex-shrink-0 flex items-center justify-center"
-        style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}
+        style={{ background: "#0b6b4f" }}
       >
         <Smartphone size={20} className="text-white" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-black text-slate-800 text-[14px] leading-tight">Instala o PoupeJá</p>
-        <p className="text-[11px] text-slate-400 mt-0.5">Disponível para iOS e Android · Grátis</p>
+        <p className="font-semibold text-[14px] leading-tight" style={{ color: "#14231c" }}>Instala o PoupeJá</p>
+        <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Disponível para iOS e Android · Grátis</p>
       </div>
       <button
         onClick={instalar}
-        className="press flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-white font-black text-[13px]"
-        style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 4px 12px -4px rgba(5,150,105,0.5)" }}
+        className="press pj-tap flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-white font-semibold text-[13px]"
+        style={{ background: "#0b6b4f" }}
       >
         <Download size={14} /> Instalar
       </button>
@@ -80,24 +80,25 @@ export default function BannerInstalar({ inline = false }) {
       {instrucoesIOS && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center"
-          style={{ background: "rgba(15,23,42,0.5)", backdropFilter: "blur(4px)" }}
+          style={{ background: "rgba(20,35,28,0.45)", backdropFilter: "blur(4px)" }}
           onClick={() => setInstrucoesIOS(false)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-t-3xl p-6 pb-10"
+            className="w-full max-w-md rounded-t-3xl p-6 pb-10"
+            style={{ background: "#fbfaf6" }}
             onClick={e => e.stopPropagation()}
           >
-            <div className="w-10 h-1 rounded-full bg-slate-200 mx-auto mb-6" />
+            <div className="w-10 h-1 rounded-full mx-auto mb-6" style={{ background: "#e4e2d8" }} />
             <div className="flex items-center gap-3 mb-5">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}
+                style={{ background: "#0b6b4f" }}
               >
                 <Smartphone size={22} className="text-white" />
               </div>
               <div>
-                <p className="font-black text-slate-800 text-base">Instalar no iPhone / iPad</p>
-                <p className="text-[12px] text-slate-400">3 passos simples</p>
+                <p className="font-semibold text-base" style={{ color: "#14231c" }}>Instalar no iPhone / iPad</p>
+                <p className="text-[12px]" style={{ color: "#8a978e" }}>3 passos simples</p>
               </div>
             </div>
 
@@ -109,14 +110,14 @@ export default function BannerInstalar({ inline = false }) {
               ].map(p => (
                 <div key={p.n} className="flex items-start gap-3">
                   <div
-                    className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center font-black text-white text-sm mt-0.5"
-                    style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}
+                    className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center font-semibold text-white text-sm mt-0.5"
+                    style={{ background: "#0b6b4f" }}
                   >
                     {p.n}
                   </div>
                   <div>
-                    <p className="font-bold text-slate-800 text-[13px]">{p.titulo}</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{p.sub}</p>
+                    <p className="font-semibold text-[13px]" style={{ color: "#14231c" }}>{p.titulo}</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>{p.sub}</p>
                   </div>
                 </div>
               ))}
@@ -124,8 +125,8 @@ export default function BannerInstalar({ inline = false }) {
 
             <button
               onClick={() => setInstrucoesIOS(false)}
-              className="press w-full py-3.5 rounded-2xl text-white font-black text-sm"
-              style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 8px 20px -8px rgba(5,150,105,0.45)" }}
+              className="press pj-tap w-full py-3.5 rounded-2xl text-white font-semibold text-sm"
+              style={{ background: "#0b6b4f" }}
             >
               Percebi, obrigado!
             </button>

@@ -71,37 +71,36 @@ export default function SecaoTalao() {
 
       {estado === "inicio" && (
         <div>
-          {/* Hero */}
-          <div className="rounded-3xl overflow-hidden relative mb-5"
-            style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7,#6366f1)", boxShadow:"0 20px 50px -15px rgba(124,58,237,0.5)" }}>
-            <div className="p-6 text-white relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center mb-3 backdrop-blur">
-                <Receipt size={28}/>
-              </div>
-              <p className="text-2xl font-black font-display">Ler talão de compras</p>
-              <p className="text-sm opacity-80 mt-1 leading-relaxed">Fotografa o teu talão de compras e vê logo o que gastaste e onde ficava mais barato.</p>
+          {/* Cabeçalho editorial */}
+          <div className="mb-6">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: "#eeece4" }}>
+              <Receipt size={26} style={{ color: "#0b6b4f" }} />
             </div>
+            <p className="uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Leitura automática</p>
+            <p className="font-display mt-1" style={{ fontSize: "26px", fontWeight: 600, color: "#14231c" }}>Ler talão de compras</p>
+            <p className="text-sm mt-2 leading-relaxed" style={{ color: "#5c6b62" }}>Fotografa o teu talão de compras e vê logo o que gastaste e onde ficava mais barato.</p>
           </div>
 
           {/* Botões de ação */}
           <div className="flex flex-col gap-3 mb-5">
             <button onClick={() => cameraRef.current?.click()}
-              className="w-full py-4 rounded-2xl text-white font-black flex items-center justify-center gap-2.5 active:scale-95 transition-all"
-              style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow:"0 10px 28px -10px rgba(124,58,237,0.6)" }}>
+              className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-2.5"
+              style={{ background: "#0b6b4f" }}>
               <Camera size={20}/> Fotografar talão
             </button>
             <button onClick={() => inputRef.current?.click()}
-              className="w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2.5 active:scale-95 transition-all bg-white border-2 border-violet-100 text-violet-700">
-              <Upload size={20}/> Carregar imagem
+              className="press pj-tap w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2.5"
+              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", color: "#14231c" }}>
+              <Upload size={20} style={{ color: "#5c6b62" }}/> Carregar imagem
             </button>
             <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} className="hidden"/>
             <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} className="hidden"/>
           </div>
 
           {/* Como funciona */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm mb-5">
-            <p className="text-sm font-black text-slate-800 mb-3 flex items-center gap-1.5">
-              <Sparkles size={15} className="text-violet-500"/> Como funciona
+          <div className="rounded-2xl p-5 mb-5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            <p className="text-sm font-semibold mb-3 flex items-center gap-1.5" style={{ color: "#14231c" }}>
+              <Sparkles size={15} style={{ color: "#0b6b4f" }}/> Como funciona
             </p>
             <div className="flex flex-col gap-3">
               {[
@@ -111,12 +110,12 @@ export default function SecaoTalao() {
               ].map(function(passo){
                 return (
                   <div key={passo.n} className="flex gap-3 items-start">
-                    <div className="w-7 h-7 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-black text-violet-700">{passo.n}</span>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+                      <span className="text-xs font-semibold" style={{ color: "#0b6b4f" }}>{passo.n}</span>
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-800">{passo.t}</p>
-                      <p className="text-xs text-slate-400">{passo.d}</p>
+                      <p className="text-sm font-semibold" style={{ color: "#14231c" }}>{passo.t}</p>
+                      <p className="text-xs" style={{ color: "#8a978e" }}>{passo.d}</p>
                     </div>
                   </div>
                 );
@@ -124,9 +123,9 @@ export default function SecaoTalao() {
             </div>
           </div>
 
-          <div className="bg-violet-50 rounded-xl p-3 border border-violet-100 flex gap-2">
-            <Sparkles size={15} className="text-violet-500 flex-shrink-0 mt-0.5"/>
-            <p className="text-[11px] text-violet-700">Funciona melhor com fotos bem iluminadas e o talão bem esticado.</p>
+          <div className="rounded-xl p-3 flex gap-2" style={{ background: "#eeece4" }}>
+            <Sparkles size={15} className="flex-shrink-0 mt-0.5" style={{ color: "#0b6b4f" }}/>
+            <p className="text-[11px]" style={{ color: "#5c6b62" }}>Funciona melhor com fotos bem iluminadas e o talão bem esticado.</p>
           </div>
         </div>
       )}
@@ -134,41 +133,43 @@ export default function SecaoTalao() {
       {estado === "analisar" && (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="relative mb-6">
-            <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7)" }}>
-              <Receipt size={44} className="text-white"/>
+            <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: "#eeece4" }}>
+              <Receipt size={44} style={{ color: "#0b6b4f" }}/>
             </div>
-            <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center">
-              <Loader size={20} className="text-violet-600 animate-spin"/>
+            <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", boxShadow: "0 6px 16px -8px rgba(20,35,28,0.2)" }}>
+              <Loader size={20} className="animate-spin" style={{ color: "#0b6b4f" }}/>
             </div>
           </div>
-          <p className="text-lg font-black text-slate-800 font-display">A ler o talão...</p>
-          <p className="text-sm text-slate-400 mt-1">Estamos a identificar os produtos</p>
+          <p className="font-display" style={{ fontSize: "18px", fontWeight: 600, color: "#14231c" }}>A ler o talão...</p>
+          <p className="text-sm mt-1" style={{ color: "#8a978e" }}>Estamos a identificar os produtos</p>
           <div className="flex gap-1.5 mt-4">
-            <div className="w-2.5 h-2.5 bg-violet-500 rounded-full animate-bounce" style={{animationDelay:"0ms"}}/>
-            <div className="w-2.5 h-2.5 bg-violet-500 rounded-full animate-bounce" style={{animationDelay:"150ms"}}/>
-            <div className="w-2.5 h-2.5 bg-violet-500 rounded-full animate-bounce" style={{animationDelay:"300ms"}}/>
+            <div className="w-2.5 h-2.5 rounded-full animate-bounce" style={{ background: "#0b6b4f", animationDelay:"0ms"}}/>
+            <div className="w-2.5 h-2.5 rounded-full animate-bounce" style={{ background: "#0b6b4f", animationDelay:"150ms"}}/>
+            <div className="w-2.5 h-2.5 rounded-full animate-bounce" style={{ background: "#0b6b4f", animationDelay:"300ms"}}/>
           </div>
         </div>
       )}
 
       {estado === "erro" && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-red-50 border border-red-100 flex items-center justify-center mb-5">
-            <AlertCircle size={36} className="text-red-400"/>
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-5" style={{ background: "rgba(207,90,60,0.1)", border: "1px solid rgba(207,90,60,0.25)" }}>
+            <AlertCircle size={36} style={{ color: "#cf5a3c" }}/>
           </div>
-          <p className="text-lg font-black text-slate-800 mb-2">Não foi possível ler</p>
-          <p className="text-sm text-slate-400 mb-6 max-w-xs leading-relaxed">{erroMsg}</p>
+          <p className="font-display" style={{ fontSize: "18px", fontWeight: 600, color: "#14231c" }}>Não foi possível ler</p>
+          <p className="text-sm mt-2 mb-6 max-w-xs leading-relaxed" style={{ color: "#8a978e" }}>{erroMsg}</p>
           <div className="flex flex-col gap-2 w-full">
             <button onClick={() => cameraRef.current?.click()}
-              className="w-full py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
-              style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7)" }}>
+              className="press pj-tap w-full py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
+              style={{ background: "#0b6b4f" }}>
               <Camera size={18}/> Tentar de novo com câmara
             </button>
             <button onClick={() => inputRef.current?.click()}
-              className="w-full py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-95 transition-all bg-white border-2 border-violet-100 text-violet-700">
-              <Upload size={18}/> Escolher outra imagem
+              className="press pj-tap w-full py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2"
+              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", color: "#14231c" }}>
+              <Upload size={18} style={{ color: "#5c6b62" }}/> Escolher outra imagem
             </button>
-            <button onClick={reset} className="w-full py-3 text-sm font-bold text-slate-400">Cancelar</button>
+            <button onClick={reset} className="pj-tap w-full py-3 text-sm font-semibold" style={{ color: "#8a978e" }}>Cancelar</button>
           </div>
           <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} className="hidden"/>
           <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} className="hidden"/>
@@ -180,66 +181,67 @@ export default function SecaoTalao() {
           {/* Cabeçalho resultado */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <Check size={20} className="text-emerald-600"/>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#eeece4" }}>
+                <Check size={20} style={{ color: "#0b6b4f" }}/>
               </div>
-              <p className="font-black text-slate-800 font-display">Talão lido!</p>
+              <p className="font-display" style={{ fontWeight: 600, color: "#14231c" }}>Talão lido!</p>
             </div>
-            <button onClick={reset} className="text-xs font-bold text-slate-400 flex items-center gap-1">
+            <button onClick={reset} className="pj-tap text-xs font-semibold flex items-center gap-1" style={{ color: "#8a978e" }}>
               <X size={14}/> Novo
             </button>
           </div>
 
           {/* Card do talão */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-4">
-            <div className="px-4 py-3 flex items-center justify-between" style={{ background: LOJA_CORES[talao.loja] + "0d" }}>
+          <div className="rounded-2xl overflow-hidden mb-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            <div className="px-4 py-3 flex items-center justify-between" style={{ background: LOJA_CORES[talao.loja] + "14" }}>
               <div className="flex items-center gap-2">
-                <Store size={16} style={{ color: LOJA_CORES[talao.loja] }}/>
-                <span className="font-black text-slate-800">{talao.loja}</span>
+                <Store size={16} style={{ color: LOJA_CORES[talao.loja] || "#5c6b62" }}/>
+                <span className="font-semibold" style={{ color: "#14231c" }}>{talao.loja}</span>
               </div>
-              <div className="flex items-center gap-1 text-slate-400">
+              <div className="flex items-center gap-1" style={{ color: "#8a978e" }}>
                 <Calendar size={13}/>
                 <span className="text-xs font-semibold">{talao.data}</span>
               </div>
             </div>
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-[#eeece4]">
               {talao.produtos.map(function(prod, i){
                 return (
                   <div key={i} className="px-4 py-2.5 flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-700 truncate">{prod.nome}</p>
-                      <p className="text-[11px] text-slate-400">{prod.qtd} × {prod.preco != null ? prod.preco.toFixed(2) + "€" : "—"}</p>
+                      <p className="text-sm font-semibold truncate" style={{ color: "#14231c" }}>{prod.nome}</p>
+                      <p className="text-[11px]" style={{ color: "#8a978e" }}>{prod.qtd} × {prod.preco != null ? prod.preco.toFixed(2) + "€" : "—"}</p>
                     </div>
-                    <span className="text-sm font-black text-slate-800 ml-2">{prod.total != null ? prod.total.toFixed(2) + "€" : "—"}</span>
+                    <span className="text-sm font-semibold ml-2" style={{ color: "#14231c" }}>{prod.total != null ? prod.total.toFixed(2) + "€" : "—"}</span>
                   </div>
                 );
               })}
             </div>
-            <div className="px-4 py-3 bg-slate-50 flex items-center justify-between">
-              <span className="text-sm font-black text-slate-600">Total</span>
-              <span className="text-xl font-black text-slate-900">{talao.total != null ? talao.total.toFixed(2) + "€" : "—"}</span>
+            <div className="px-4 py-3 flex items-center justify-between" style={{ background: "#eeece4" }}>
+              <span className="text-sm font-semibold" style={{ color: "#5c6b62" }}>Total</span>
+              <span className="font-display" style={{ fontSize: "20px", fontWeight: 600, color: "#14231c" }}>{talao.total != null ? talao.total.toFixed(2) + "€" : "—"}</span>
             </div>
           </div>
 
           {/* Resumo rápido */}
           <div className="flex gap-3 mb-4">
-            <div className="flex-1 bg-violet-50 rounded-2xl p-4 border border-violet-100 text-center">
-              <p className="text-2xl font-black text-violet-700">{talao.produtos.length}</p>
-              <p className="text-[10px] text-violet-500 font-bold uppercase tracking-wide mt-0.5">Produtos</p>
+            <div className="flex-1 rounded-2xl p-4 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="font-display" style={{ fontSize: "24px", fontWeight: 600, color: "#14231c" }}>{talao.produtos.length}</p>
+              <p className="uppercase mt-0.5" style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Produtos</p>
             </div>
-            <div className="flex-1 bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-center">
-              <p className="text-2xl font-black text-emerald-700">{(talao.total ?? talao.produtos.reduce((s,p) => s + (p.total || 0), 0)).toFixed(2)}€</p>
-              <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wide mt-0.5">Total</p>
+            <div className="flex-1 rounded-2xl p-4 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+              <p className="font-display" style={{ fontSize: "24px", fontWeight: 600, color: "#14231c" }}>{(talao.total ?? talao.produtos.reduce((s,p) => s + (p.total || 0), 0)).toFixed(2)}€</p>
+              <p className="uppercase mt-0.5" style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Total</p>
             </div>
           </div>
 
           {/* Ações */}
           <div className="flex flex-col gap-2.5">
-            <button onClick={criarCesto} className="w-full py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
-              style={{ background:"linear-gradient(135deg,#7c3aed,#a855f7)" }}>
+            <button onClick={criarCesto} className="press pj-tap w-full py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
+              style={{ background: "#0b6b4f" }}>
               <ShoppingCart size={18}/> Criar cesto com estes produtos
             </button>
-            <button onClick={reset} className="w-full py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 bg-white border-2 border-slate-100 text-slate-600 active:scale-95 transition-all">
+            <button onClick={reset} className="press pj-tap w-full py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2"
+              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", color: "#14231c" }}>
               <Plus size={18}/> Ler outro talão
             </button>
           </div>

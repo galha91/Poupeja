@@ -40,30 +40,29 @@ export default function DesafiosMensais({ setTab }) {
     <div className="px-4 anim-up anim-up-3">
 
       {/* ── Desafio do mês ── */}
-      <div
-        className="rounded-3xl p-5 relative overflow-hidden mb-3"
-        style={{
-          background: `linear-gradient(135deg,${desafio.cor}ee,${desafio.cor})`,
-          boxShadow: `0 20px 50px -15px ${desafio.cor}66`,
-        }}
-      >
-        <div className="absolute -right-8 -top-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
-        <div className="absolute right-4 bottom-3 text-6xl opacity-15 pointer-events-none select-none">{desafio.emoji}</div>
+      <div className="card p-5 relative overflow-hidden mb-3">
+        <div
+          className="absolute right-3 bottom-2 text-6xl opacity-[0.07] pointer-events-none select-none"
+        >
+          {desafio.emoji}
+        </div>
 
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5">
+            <p className="text-[11px] uppercase flex items-center gap-1.5" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>
               <Trophy size={11} /> Desafio do mês
             </p>
             {!completo && (
-              <span className="text-[10px] font-black text-white/80 bg-white/15 px-2.5 py-1 rounded-full">
+              <span className="text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 600, background: "#eeece4", color: "#5c6b62" }}>
                 {diasRestantes === 0 ? "Último dia!" : `Faltam ${diasRestantes} dias`}
               </span>
             )}
           </div>
 
-          <p className="text-xl font-black text-white leading-tight">{desafio.emoji} {desafio.nome}</p>
-          <p className="text-[12px] text-white/75 mt-1">
+          <p className="font-display leading-tight" style={{ fontSize: "19px", fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em" }}>
+            {desafio.emoji} {desafio.nome}
+          </p>
+          <p className="text-[12px] mt-1" style={{ color: "#5c6b62" }}>
             {completo
               ? `Conseguiste! Poupaste €${totalMes.toFixed(2)} este mês 🎉`
               : `Poupa €${desafio.meta} nas compras até ao fim do mês`}
@@ -72,16 +71,16 @@ export default function DesafiosMensais({ setTab }) {
           {/* Barra de progresso */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-black text-white">€{totalMes.toFixed(2)}</span>
-              <span className="text-[11px] font-bold text-white/60">€{desafio.meta}</span>
+              <span className="font-display text-[13px]" style={{ fontWeight: 600, color: "#14231c" }}>€{totalMes.toFixed(2)}</span>
+              <span className="text-[11px]" style={{ fontWeight: 600, color: "#8a978e" }}>€{desafio.meta}</span>
             </div>
-            <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "#e4e2d8" }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${Math.max(pct, 3)}%`, background: completo ? "#fbbf24" : "rgba(255,255,255,0.9)" }}
+                style={{ width: `${Math.max(pct, 3)}%`, background: completo ? "#0b6b4f" : desafio.cor }}
               />
             </div>
-            <p className="text-[10px] text-white/60 mt-1.5 font-bold">
+            <p className="text-[10px] mt-1.5" style={{ fontWeight: 600, color: "#8a978e" }}>
               {completo ? "🏆 Desafio completo — partilha a tua vitória!" : `${pct}% — ${semTaloes ? "guarda o primeiro talão para começar" : "continua, estás no bom caminho!"}`}
             </p>
           </div>
@@ -91,30 +90,31 @@ export default function DesafiosMensais({ setTab }) {
             {semTaloes ? (
               <button
                 onClick={() => setTab("taloes")}
-                className="press inline-flex items-center gap-1.5 bg-white text-xs font-black px-4 py-2 rounded-xl"
-                style={{ color: desafio.cor }}
+                className="press pj-tap inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-xl"
+                style={{ fontWeight: 600, background: desafio.cor, color: "#fff" }}
               >
                 <Sparkles size={12} /> Começar agora
               </button>
             ) : (
               <button
                 onClick={() => comFeedback(partilharDesafio, estado)}
-                className="press inline-flex items-center gap-1.5 bg-white text-xs font-black px-4 py-2 rounded-xl"
-                style={{ color: desafio.cor }}
+                className="press pj-tap inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-xl"
+                style={{ fontWeight: 600, background: desafio.cor, color: "#fff" }}
               >
                 <Share2 size={12} /> {feedback || (completo ? "Partilhar vitória" : "Partilhar progresso")}
               </button>
             )}
             <button
               onClick={() => comFeedback(desafiarAmigo, estado)}
-              className="press inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-white/20"
+              className="press pj-tap inline-flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl"
+              style={{ fontWeight: 600, background: "#eeece4", color: "#5c6b62" }}
             >
               <Swords size={12} /> Desafiar um amigo
             </button>
           </div>
 
           {/* Dica */}
-          <p className="text-[10px] text-white/55 mt-3 leading-relaxed">💡 {desafio.dica}</p>
+          <p className="text-[10px] mt-3 leading-relaxed" style={{ color: "#8a978e" }}>💡 {desafio.dica}</p>
         </div>
       </div>
 
@@ -123,24 +123,24 @@ export default function DesafiosMensais({ setTab }) {
         <div className="card p-4 flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{ background: streak > 0 ? "#fff7ed" : "#f8fafc" }}
+            style={{ background: streak > 0 ? "#eaf1ec" : "#eeece4" }}
           >
-            <Flame size={20} className={streak > 0 ? "text-orange-500" : "text-slate-300"} />
+            <Flame size={20} style={{ color: streak > 0 ? "#0b6b4f" : "#8a978e" }} />
           </div>
           <div>
-            <p className="text-lg font-black text-slate-800 leading-none">{streak}</p>
-            <p className="text-[10px] font-bold text-slate-400 mt-0.5">
+            <p className="font-display leading-none" style={{ fontSize: "18px", fontWeight: 600, color: "#14231c" }}>{streak}</p>
+            <p className="text-[10px] mt-0.5" style={{ fontWeight: 600, color: "#8a978e" }}>
               {streak === 1 ? "semana seguida" : "semanas seguidas"}
             </p>
           </div>
         </div>
         <div className="card p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-violet-50 flex items-center justify-center flex-shrink-0 text-lg">
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 text-lg" style={{ background: "#eeece4" }}>
             {nivel.emoji}
           </div>
           <div className="min-w-0">
-            <p className="text-[12px] font-black text-slate-800 leading-tight truncate">{nivel.nome}</p>
-            <p className="text-[10px] font-bold text-slate-400 mt-0.5">
+            <p className="text-[12px] leading-tight truncate" style={{ fontWeight: 700, color: "#14231c" }}>{nivel.nome}</p>
+            <p className="text-[10px] mt-0.5" style={{ fontWeight: 600, color: "#8a978e" }}>
               {nivel.proximo ? `€${(nivel.proximo.min - estado.totalGeral).toFixed(0)} p/ ${nivel.proximo.nome}` : "Nível máximo!"}
             </p>
           </div>
@@ -150,23 +150,23 @@ export default function DesafiosMensais({ setTab }) {
       {/* ── Conquistas ── */}
       <div className="card p-4">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
-            <Trophy size={13} className="text-amber-500" /> Conquistas
+          <p className="text-[12px] flex items-center gap-1.5" style={{ fontWeight: 700, color: "#14231c" }}>
+            <Trophy size={13} style={{ color: "#0b6b4f" }} /> Conquistas
           </p>
-          <span className="text-[10px] font-black text-slate-400">{nFeitas}/{conquistas.length}</span>
+          <span className="text-[10px]" style={{ fontWeight: 700, color: "#8a978e" }}>{nFeitas}/{conquistas.length}</span>
         </div>
         <div className="grid grid-cols-4 gap-2">
           {conquistas.map(c => (
             <button
               key={c.id}
               onClick={() => setConquistaAberta(conquistaAberta === c.id ? null : c.id)}
-              className="press flex flex-col items-center gap-1 py-2 rounded-xl transition-all"
-              style={{ background: c.feito ? "#fffbeb" : "#f8fafc", opacity: c.feito ? 1 : 0.55 }}
+              className="press pj-tap flex flex-col items-center gap-1 py-2 rounded-xl transition-all"
+              style={{ background: "#eeece4", opacity: c.feito ? 1 : 0.55 }}
             >
               <span className="text-xl" style={{ filter: c.feito ? "none" : "grayscale(1)" }}>
-                {c.feito ? c.emoji : <Lock size={16} className="text-slate-300 mx-auto" />}
+                {c.feito ? c.emoji : <Lock size={16} style={{ color: "#8a978e" }} className="mx-auto" />}
               </span>
-              <span className={`text-[8px] font-black text-center leading-tight px-0.5 ${c.feito ? "text-amber-700" : "text-slate-400"}`}>
+              <span className="text-[8px] text-center leading-tight px-0.5" style={{ fontWeight: 700, color: c.feito ? "#0b6b4f" : "#8a978e" }}>
                 {c.nome}
               </span>
             </button>
@@ -178,14 +178,15 @@ export default function DesafiosMensais({ setTab }) {
           const c = conquistas.find(x => x.id === conquistaAberta);
           if (!c) return null;
           return (
-            <div className="mt-3 p-3 rounded-xl flex items-center justify-between gap-2" style={{ background: c.feito ? "#fffbeb" : "#f8fafc" }}>
-              <p className="text-[11px] font-bold text-slate-600">
-                {c.emoji} <strong>{c.nome}</strong> — {c.desc} {c.feito ? "✓" : ""}
+            <div className="mt-3 p-3 rounded-xl flex items-center justify-between gap-2" style={{ background: "#eeece4" }}>
+              <p className="text-[11px]" style={{ fontWeight: 600, color: "#5c6b62" }}>
+                {c.emoji} <strong style={{ color: "#14231c" }}>{c.nome}</strong> — {c.desc} {c.feito ? "✓" : ""}
               </p>
               {c.feito && (
                 <button
                   onClick={() => comFeedback(partilharConquista, c)}
-                  className="press flex-shrink-0 inline-flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100 px-2.5 py-1.5 rounded-lg"
+                  className="press pj-tap flex-shrink-0 inline-flex items-center gap-1 text-[10px] px-2.5 py-1.5 rounded-lg"
+                  style={{ fontWeight: 700, color: "#0b6b4f", background: "#eaf1ec" }}
                 >
                   <Share2 size={10} /> Partilhar
                 </button>
@@ -200,37 +201,37 @@ export default function DesafiosMensais({ setTab }) {
         <div className="card p-4 mt-3 overflow-hidden">
           <button
             onClick={() => setAberto52(a => !a)}
-            className="press w-full flex items-center justify-between gap-2"
+            className="press pj-tap w-full flex items-center justify-between gap-2"
           >
             <div className="flex items-center gap-2.5 text-left">
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 text-base">💶</div>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base" style={{ background: "#eeece4" }}>💶</div>
               <div>
-                <p className="text-[12px] font-black text-slate-800 leading-tight">Desafio das 52 Semanas</p>
-                <p className="text-[10px] font-bold text-slate-400 mt-0.5">
+                <p className="text-[12px] leading-tight" style={{ fontWeight: 700, color: "#14231c" }}>Desafio das 52 Semanas</p>
+                <p className="text-[10px] mt-0.5" style={{ fontWeight: 600, color: "#8a978e" }}>
                   {estado52.ativo
                     ? `€${estado52.total} de €1.378 · ${estado52.semanas.size}/52 semanas`
                     : "O desafio mais famoso de Portugal — €1.378 num ano"}
                 </p>
               </div>
             </div>
-            {aberto52 ? <ChevronUp size={16} className="text-slate-300 flex-shrink-0" /> : <ChevronDown size={16} className="text-slate-300 flex-shrink-0" />}
+            {aberto52 ? <ChevronUp size={16} style={{ color: "#8a978e" }} className="flex-shrink-0" /> : <ChevronDown size={16} style={{ color: "#8a978e" }} className="flex-shrink-0" />}
           </button>
 
           {aberto52 && (
             <div className="mt-4 anim-up">
-              <p className="text-[11px] text-slate-500 leading-relaxed mb-3">
-                Semana 1 guarda <strong>€1</strong>, semana 2 guarda <strong>€2</strong>… semana 52 guarda <strong>€52</strong>.
-                No fim do ano tens <strong>€1.378</strong> de lado. Toca nas semanas que já cumpriste:
+              <p className="text-[11px] leading-relaxed mb-3" style={{ color: "#5c6b62" }}>
+                Semana 1 guarda <strong style={{ color: "#14231c" }}>€1</strong>, semana 2 guarda <strong style={{ color: "#14231c" }}>€2</strong>… semana 52 guarda <strong style={{ color: "#14231c" }}>€52</strong>.
+                No fim do ano tens <strong style={{ color: "#14231c" }}>€1.378</strong> de lado. Toca nas semanas que já cumpriste:
               </p>
 
               {/* Barra */}
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-1.5">
+              <div className="h-2 rounded-full overflow-hidden mb-1.5" style={{ background: "#e4e2d8" }}>
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500"
-                  style={{ width: `${Math.max((estado52.total / 1378) * 100, estado52.total > 0 ? 2 : 0)}%` }}
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.max((estado52.total / 1378) * 100, estado52.total > 0 ? 2 : 0)}%`, background: "#0b6b4f" }}
                 />
               </div>
-              <p className="text-[10px] font-bold text-slate-400 mb-3">
+              <p className="text-[10px] mb-3" style={{ fontWeight: 600, color: "#8a978e" }}>
                 €{estado52.total} guardados · estamos na semana {semanaDoAno()} do ano
               </p>
 
@@ -243,11 +244,12 @@ export default function DesafiosMensais({ setTab }) {
                     <button
                       key={n}
                       onClick={() => setEstado52(alternarSemana52(n))}
-                      className="press aspect-square rounded-lg flex items-center justify-center text-[9px] font-black transition-all"
+                      className="press pj-tap aspect-square rounded-lg flex items-center justify-center text-[9px] transition-all"
                       style={{
-                        background: feita ? "#10b981" : atual ? "#d1fae5" : "#f1f5f9",
-                        color: feita ? "#fff" : atual ? "#059669" : "#94a3b8",
-                        border: atual && !feita ? "1.5px solid #10b981" : "1.5px solid transparent",
+                        fontWeight: 700,
+                        background: feita ? "#0b6b4f" : atual ? "#eaf1ec" : "#eeece4",
+                        color: feita ? "#fff" : atual ? "#0b6b4f" : "#8a978e",
+                        border: atual && !feita ? "1.5px solid #0b6b4f" : "1.5px solid transparent",
                       }}
                     >
                       {feita ? <Check size={11} strokeWidth={3.5} /> : n}
@@ -262,7 +264,8 @@ export default function DesafiosMensais({ setTab }) {
                     const r = await partilharDesafio52(estado52);
                     if (r === "copiado") { setFeedback52("Copiado ✓"); setTimeout(() => setFeedback52(""), 2500); }
                   }}
-                  className="press w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 text-white text-xs font-black px-4 py-2.5 rounded-xl"
+                  className="press pj-tap w-full inline-flex items-center justify-center gap-1.5 text-xs px-4 py-2.5 rounded-xl"
+                  style={{ fontWeight: 700, background: "#0b6b4f", color: "#fff" }}
                 >
                   <Share2 size={12} /> {feedback52 || "Partilhar o meu progresso"}
                 </button>
@@ -272,7 +275,7 @@ export default function DesafiosMensais({ setTab }) {
         </div>
       )}
 
-      <p className="text-[10px] text-slate-400 text-center mt-4">
+      <p className="text-[10px] text-center mt-4" style={{ color: "#8a978e" }}>
         Tudo calculado a partir dos teus talões. Guarda talões para subir de nível 🚀
       </p>
     </div>
