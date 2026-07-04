@@ -26,7 +26,7 @@ import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
-  Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight,
+  Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight, WifiOff, Download, Flame,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
   ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2, Calculator,
@@ -111,10 +111,10 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
   if (!modo) return null;
 
   const beneficios = [
-    { emoji: "🔔", texto: "Notificações dos folhetos toda a segunda-feira de manhã" },
-    { emoji: "⚡", texto: "Acesso instantâneo — abre como uma app, sem abrir o browser" },
-    { emoji: "📶", texto: "Funciona sem internet — consulta as listas e contas offline" },
-    { emoji: "🏠", texto: "Ícone no ecrã inicial, como qualquer outra app" },
+    { Icon: Bell,    texto: "Notificações dos folhetos toda a segunda-feira de manhã" },
+    { Icon: Zap,     texto: "Acesso instantâneo — abre como uma app, sem abrir o browser" },
+    { Icon: WifiOff, texto: "Funciona sem internet — consulta as listas e contas offline" },
+    { Icon: Home,    texto: "Ícone no ecrã inicial, como qualquer outra app" },
   ];
 
   return (
@@ -131,8 +131,8 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
 
         {/* Cabeçalho */}
         <div className="px-5 py-4 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: "#eeece4" }}>
-            {modo === "ios" ? "🍎" : "🤖"}
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+            <Smartphone size={20} style={{ color: "#0b6b4f" }} />
           </div>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>
@@ -153,7 +153,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
           <div className="grid grid-cols-2 gap-2 mb-4">
             {beneficios.map((b, i) => (
               <div key={i} className="rounded-2xl p-3 flex items-start gap-2" style={{ background: "#eeece4" }}>
-                <span className="text-lg leading-none flex-shrink-0">{b.emoji}</span>
+                <b.Icon size={16} className="flex-shrink-0 mt-0.5" style={{ color: "#0b6b4f" }} />
                 <p className="text-[11px] font-semibold leading-snug" style={{ color: "#14231c" }}>{b.texto}</p>
               </div>
             ))}
@@ -166,10 +166,10 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
             <>
               <button
                 onClick={onInstalarAndroid}
-                className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base"
+                className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2"
                 style={{ background: "#0b6b4f" }}
               >
-                📲 Instalar agora — é grátis
+                <Download size={18} /> Instalar agora — é grátis
               </button>
               <a href="/instalar" className="pj-tap w-full py-3 rounded-2xl font-semibold text-sm text-center" style={{ background: "#eeece4", color: "#5c6b62" }}>
                 Ver o guia completo
@@ -178,10 +178,10 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
           ) : (
             <a
               href="/instalar"
-              className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base text-center"
+              className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base text-center flex items-center justify-center gap-2"
               style={{ background: "#0b6b4f" }}
             >
-              📲 Ver como instalar
+              <Download size={18} /> Ver como instalar
             </a>
           )}
           <button
@@ -534,8 +534,8 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
         <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
           <div className="flex items-center justify-between">
             <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>Poupança de {mesNome}</div>
-            <div className="flex items-center" style={{ gap: 5, fontSize: 12, color: "#0b6b4f", fontWeight: 600 }}>
-              🔥 {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "dia" : "dias"}
+            <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "#0b6b4f", fontWeight: 600 }}>
+              <Flame size={13} /> {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "dia" : "dias"}
             </div>
           </div>
           <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 16 }}>
