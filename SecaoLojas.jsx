@@ -68,9 +68,27 @@ const LOJAS = {
 
 
 const CAT_CONFIG = {
-  moda:      { label: "Moda",      icon: Shirt,      grad: "from-violet-600 to-purple-500",   css: "linear-gradient(135deg,#7c3aed,#a855f7)", shadow: "rgba(124,58,237,0.35)",  count: LOJAS.moda.length },
-  eletronica:{ label: "Eletrónica",icon: Smartphone, grad: "from-blue-600 to-blue-500",       css: "linear-gradient(135deg,#1d4ed8,#3b82f6)", shadow: "rgba(37,99,235,0.35)",   count: LOJAS.eletronica.length },
-  desporto:  { label: "Desporto",  icon: Dumbbell,   grad: "from-emerald-600 to-teal-500",    css: "linear-gradient(135deg,#059669,#14b8a6)", shadow: "rgba(5,150,105,0.35)",   count: LOJAS.desporto.length },
+  moda:      { label: "Moda",      icon: Shirt,      count: LOJAS.moda.length },
+  eletronica:{ label: "Eletrónica",icon: Smartphone, count: LOJAS.eletronica.length },
+  desporto:  { label: "Desporto",  icon: Dumbbell,   count: LOJAS.desporto.length },
+};
+
+// ── Tokens do sistema editorial ──
+const TXT = "#14231c";
+const MUTED = "#5c6b62";
+const FAINT = "#8a978e";
+const ACCENT = "#0b6b4f";
+const CHIP = "#eeece4";
+const DIV_ROW = "#eeece4";
+const DIV_SEC = "#e4e2d8";
+const CARD_BG = "#fbfaf6";
+
+const labelStyle = {
+  textTransform: "uppercase",
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: "0.09em",
+  color: FAINT,
 };
 
 function LogoLoja({ loja, size = 44 }) {
@@ -84,8 +102,8 @@ function LogoLoja({ loja, size = 44 }) {
   ];
   return (
     <div
-      className="rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-white"
-      style={{ width: s, height: s, padding: s * 0.14, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}
+      className="flex items-center justify-center overflow-hidden flex-shrink-0"
+      style={{ width: s, height: s, padding: s * 0.16, borderRadius: 12, background: CHIP }}
     >
       {nivel < fontes.length ? (
         <img
@@ -102,23 +120,21 @@ function LogoLoja({ loja, size = 44 }) {
 
 function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
   return (
-    <div className="px-4 grid grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="px-4 grid grid-cols-3 lg:grid-cols-5 gap-x-3 gap-y-5">
       {lista.map(loja => {
-        const cor = loja.cor === "#000000" ? "#334155" : (loja.cor || "#888");
         const isFav = favs?.has(loja.nome);
         return (
           <div key={loja.nome} className="relative">
             <button
               onClick={() => window.open(getUrlLoja(loja), "_blank", "noopener,noreferrer")}
-              className="press card p-3.5 flex flex-col items-center gap-2.5 w-full relative overflow-hidden"
+              className="pj-tap flex flex-col items-center gap-2.5 w-full relative"
             >
-              <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]" style={{ background: cor }} />
               <LogoLoja loja={loja} size={52} />
               <div className="text-center w-full">
-                <p className="text-[11px] font-black text-slate-800 leading-tight truncate">{loja.nome}</p>
+                <p className="text-[11px] leading-tight truncate" style={{ color: TXT, fontWeight: 600 }}>{loja.nome}</p>
                 <div className="mt-1 flex items-center justify-center gap-0.5">
                   {promo ? (
-                    <span className="text-[9px] font-black text-orange-500 flex items-center gap-0.5">
+                    <span className="text-[9px] flex items-center gap-0.5" style={{ color: ACCENT, fontWeight: 600, letterSpacing: "0.04em" }}>
                       <Tag size={8} /> Saldos
                     </span>
                   ) : null}
@@ -128,10 +144,10 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
             {onToggleFav && (
               <button
                 onClick={e => { e.stopPropagation(); onToggleFav(loja.nome); }}
-                className="press absolute top-2 right-2 w-6 h-6 rounded-lg flex items-center justify-center"
-                style={{ background: isFav ? "#fef2f2" : "rgba(255,255,255,0.9)" }}
+                className="pj-tap absolute top-0 right-0 w-6 h-6 rounded-lg flex items-center justify-center"
+                style={{ background: isFav ? "#fbeaea" : CHIP }}
               >
-                <Heart size={11} className={isFav ? "text-red-400 fill-red-400" : "text-slate-300"} />
+                <Heart size={11} className={isFav ? "text-red-400 fill-red-400" : ""} style={isFav ? {} : { color: FAINT }} />
               </button>
             )}
           </div>
@@ -157,46 +173,56 @@ export default function SecaoLojas() {
   const favoritasAtuais = LOJAS[cat]?.filter(l => favs.has(l.nome)) || [];
 
   return (
-    <div className="pb-28 pt-4">
+    <div className="pb-28 pt-4" style={{ background: "#f6f5f0", color: TXT }}>
 
       {/* Tab principal */}
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl mx-4 mb-4">
+      <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-5" style={{ background: CHIP }}>
         {[
           { id: "lojas",    icon: Store, label: "Lojas" },
           { id: "promocoes",icon: Tag,   label: "Promoções" },
-        ].map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTopo(t.id)}
-            className={`press flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-              topo === t.id
-                ? topo === "promocoes" ? "bg-white shadow-sm text-orange-600" : "bg-white shadow-sm text-slate-900"
-                : "text-slate-400"
-            }`}
-          >
-            <t.icon size={13} /> {t.label}
-          </button>
-        ))}
+        ].map(t => {
+          const ativo = topo === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setTopo(t.id)}
+              className="pj-tap flex-1 py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5"
+              style={{
+                background: ativo ? CARD_BG : "transparent",
+                color: ativo ? TXT : FAINT,
+                fontWeight: 600,
+                boxShadow: ativo ? "0 1px 3px rgba(20,35,28,0.06)" : "none",
+              }}
+            >
+              <t.icon size={13} /> {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── ABA LOJAS ── */}
       {topo === "lojas" && (
         <div className="anim-up">
           {/* Tabs categoria */}
-          <div className="flex gap-2 px-4 mb-4 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 px-4 mb-6 overflow-x-auto no-scrollbar">
             {Object.entries(CAT_CONFIG).map(([id, c]) => {
               const ativo = cat === id;
               return (
                 <button
                   key={id}
                   onClick={() => setCat(id)}
-                  className={`press flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all ${
-                    ativo ? "text-white shadow-md" : "bg-white text-slate-500 border border-slate-100"
-                  }`}
-                  style={ativo ? { background: c.css } : {}}
+                  className="pj-tap flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs transition-all"
+                  style={ativo
+                    ? { background: ACCENT, color: "#f6f5f0", fontWeight: 600 }
+                    : { background: CHIP, color: MUTED, fontWeight: 600 }}
                 >
                   <c.icon size={13} /> {c.label}
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${ativo ? "bg-white/25 text-white" : "bg-slate-100 text-slate-400"}`}>
+                  <span
+                    className="text-[9px] px-1.5 py-0.5 rounded-full"
+                    style={ativo
+                      ? { background: "rgba(246,245,240,0.22)", color: "#f6f5f0", fontWeight: 600 }
+                      : { background: "rgba(20,35,28,0.06)", color: FAINT, fontWeight: 600 }}
+                  >
                     {c.count}
                   </span>
                 </button>
@@ -204,37 +230,33 @@ export default function SecaoLojas() {
             })}
           </div>
 
-          {/* Hero */}
-          <div
-            className={`mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden bg-gradient-to-br ${cfg.grad}`}
-            style={{ boxShadow: `0 20px 50px -15px ${cfg.shadow}` }}
-          >
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                <cfg.icon size={24} className="text-white" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{cfg.count} lojas</p>
-                <p className="text-xl font-black text-white">{cfg.label}</p>
-                <p className="text-[11px] text-white/70 mt-0.5">Toca numa loja para abrir o site oficial</p>
-              </div>
-            </div>
+          {/* Cabeçalho editorial */}
+          <div className="mx-4 mb-6">
+            <p className="mb-2 flex items-center gap-1.5" style={labelStyle}>
+              <cfg.icon size={12} style={{ color: FAINT }} /> {cfg.count} lojas
+            </p>
+            <h2 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: TXT, letterSpacing: "-0.01em" }}>
+              {cfg.label}
+            </h2>
+            <p className="mt-1 text-[13px]" style={{ color: MUTED }}>Toca numa loja para abrir o site oficial</p>
           </div>
 
+          <div className="mx-4 mb-6" style={{ borderTop: `1px solid ${DIV_SEC}` }} />
+
           {favoritasAtuais.length > 0 && (
-            <div className="mb-4">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3 flex items-center gap-1.5">
+            <div className="mb-6">
+              <p className="px-4 mb-4 flex items-center gap-1.5" style={labelStyle}>
                 <Heart size={10} className="text-red-400 fill-red-400" /> Favoritas
               </p>
               <GrelhaLojas lista={favoritasAtuais} promo={false} favs={favs} onToggleFav={toggleFav} />
-              <div className="mx-4 mt-4 mb-1 border-t border-slate-100" />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-3 mb-3">Todas</p>
+              <div className="mx-4 mt-6 mb-1" style={{ borderTop: `1px solid ${DIV_ROW}` }} />
+              <p className="px-4 mt-5 mb-4" style={labelStyle}>Todas</p>
             </div>
           )}
 
           <GrelhaLojas lista={LOJAS[cat]} promo={false} favs={favs} onToggleFav={toggleFav} />
 
-          <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
+          <p className="text-[11px] text-center mt-8 px-4" style={{ color: FAINT }}>
             Toca no ❤ para guardar favoritas. As lojas abrem no site oficial.
           </p>
         </div>
@@ -243,44 +265,42 @@ export default function SecaoLojas() {
       {/* ── ABA PROMOÇÕES ── */}
       {topo === "promocoes" && (
         <div className="anim-up">
-          {/* Hero */}
-          <div
-            className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg,#c2410c,#f97316)", boxShadow: "0 8px 32px -8px rgba(234,88,12,0.30)" }}
-          >
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                <Sparkles size={22} className="text-white" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{PROMOCOES.length} marcas</p>
-                <p className="text-xl font-black text-white">Promoções e saldos</p>
-                <p className="text-[11px] text-white/70 mt-0.5">Link direto para outlet e saldos</p>
-              </div>
-            </div>
+          {/* Cabeçalho editorial */}
+          <div className="mx-4 mb-6">
+            <p className="mb-2 flex items-center gap-1.5" style={labelStyle}>
+              <Sparkles size={12} style={{ color: FAINT }} /> {PROMOCOES.length} marcas
+            </p>
+            <h2 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: TXT, letterSpacing: "-0.01em" }}>
+              Promoções e saldos
+            </h2>
+            <p className="mt-1 text-[13px]" style={{ color: MUTED }}>Link direto para outlet e saldos</p>
           </div>
 
+          <div className="mx-4 mb-6" style={{ borderTop: `1px solid ${DIV_SEC}` }} />
+
           {/* Lista horizontal de destaques */}
-          <div className="px-4 mb-4">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Destaques</p>
-            <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+          <div className="px-4 mb-6">
+            <p className="mb-4" style={labelStyle}>Destaques</p>
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
               {PROMOCOES.slice(0, 5).map(loja => (
                 <button
                   key={loja.nome}
                   onClick={() => window.open(getUrlLoja(loja), "_blank", "noopener,noreferrer")}
-                  className="press flex-shrink-0 card p-3.5 flex flex-col items-center gap-2 w-24"
+                  className="pj-tap flex-shrink-0 flex flex-col items-center gap-2 w-24"
                 >
-                  <LogoLoja loja={loja} size={40} />
-                  <p className="text-[10px] font-black text-slate-700 text-center leading-tight">{loja.nome}</p>
+                  <LogoLoja loja={loja} size={44} />
+                  <p className="text-[10px] text-center leading-tight" style={{ color: TXT, fontWeight: 600 }}>{loja.nome}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3">Todas as lojas</p>
+          <div className="mx-4 mb-6" style={{ borderTop: `1px solid ${DIV_ROW}` }} />
+
+          <p className="px-4 mb-4" style={labelStyle}>Todas as lojas</p>
           <GrelhaLojas lista={PROMOCOES} promo={true} favs={favs} onToggleFav={toggleFav} />
 
-          <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
+          <p className="text-[11px] text-center mt-8 px-4" style={{ color: FAINT }}>
             Estas lojas abrem diretamente na página de promoções ou outlet.
           </p>
         </div>

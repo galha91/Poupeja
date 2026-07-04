@@ -43,22 +43,22 @@ function LogoLoja({ loja, size }) {
 
   return (
     <div
-      className="rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0"
-      style={{ width: s, height: s, background: "white", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
+      className="flex items-center justify-center overflow-hidden flex-shrink-0"
+      style={{ width: s, height: s, background: "#fbfaf6", borderRadius: 14, border: "1px solid #e4e2d8" }}
     >
       {nivel < fontes.length ? (
         <img
           src={fontes[nivel]}
           alt={loja}
           onError={() => setNivel(n => n + 1)}
-          style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit" }}
+          style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", padding: 6 }}
         />
       ) : (
         <div
-          className="w-full h-full flex items-center justify-center rounded-2xl"
-          style={{ background: cor }}
+          className="w-full h-full flex items-center justify-center"
+          style={{ background: cor, borderRadius: 14 }}
         >
-          <span style={{ fontSize: s * 0.3, fontWeight: 900, color: "white" }}>{iniciais}</span>
+          <span style={{ fontSize: s * 0.3, fontWeight: 700, color: "white" }}>{iniciais}</span>
         </div>
       )}
     </div>
@@ -67,10 +67,13 @@ function LogoLoja({ loja, size }) {
 
 function CardSkeleton() {
   return (
-    <div className="card p-5 flex flex-col items-center gap-3 animate-pulse">
-      <div className="w-16 h-16 rounded-2xl bg-slate-100" />
-      <div className="h-2.5 w-20 bg-slate-100 rounded-full" />
-      <div className="h-2 w-14 bg-slate-50 rounded-full" />
+    <div
+      className="p-4 flex flex-col items-center gap-3 animate-pulse"
+      style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8" }}
+    >
+      <div style={{ width: 56, height: 56, borderRadius: 14, background: "#eeece4" }} />
+      <div style={{ height: 10, width: 80, borderRadius: 999, background: "#eeece4" }} />
+      <div style={{ height: 8, width: 56, borderRadius: 999, background: "#f0efe8" }} />
     </div>
   );
 }
@@ -95,50 +98,65 @@ export default function SecaoFolhetos() {
   useEffect(() => { carregar(); }, []);
 
   return (
-    <div className="pb-6">
+    <div className="pb-6" style={{ background: "#f6f5f0" }}>
 
-      {/* Hero */}
-      <div
-        className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden anim-up"
-        style={{ background: "linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#60a5fa 100%)", boxShadow: "0 8px 32px -8px rgba(37,99,235,0.30)" }}
-      >
-        <div className="absolute right-10 bottom-4 opacity-10 pointer-events-none">
-          <ShoppingCart size={64} />
-        </div>
-        <div className="flex items-start justify-between relative z-10">
-          <div>
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5 mb-2">
-              <Tag size={11} /> Supermercados
+      {/* Cabeçalho editorial */}
+      <div className="px-4 pt-5 pb-4 anim-up" style={{ borderBottom: "1px solid #e4e2d8" }}>
+        <div className="flex items-start justify-between">
+          <div className="min-w-0">
+            <p
+              className="flex items-center gap-1.5 mb-2"
+              style={{ textTransform: "uppercase", fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}
+            >
+              <Tag size={11} style={{ color: "#0b6b4f" }} /> Supermercados
             </p>
-            <p className="text-2xl font-black text-white leading-tight">Folhetos da semana</p>
-            <p className="text-[12px] text-white/70 mt-1">Toca num supermercado para ver as promoções</p>
+            <h2
+              className="font-display"
+              style={{ fontSize: 19, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em", lineHeight: 1.2 }}
+            >
+              Folhetos da semana
+            </h2>
+            <p style={{ fontSize: 13, color: "#5c6b62", marginTop: 4 }}>
+              Toca num supermercado para ver as promoções
+            </p>
             <div className="mt-3 flex items-center gap-1.5">
-              <Clock size={11} className="text-white/50" />
-              <span className="text-[10px] text-white/50">Atualizado automaticamente</span>
+              <Clock size={11} style={{ color: "#8a978e" }} />
+              <span style={{ fontSize: 11, color: "#8a978e" }}>Atualizado automaticamente</span>
             </div>
           </div>
           <button
             onClick={carregar}
-            className="press w-9 h-9 bg-white/15 border border-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="pj-tap flex items-center justify-center flex-shrink-0"
+            style={{ width: 44, height: 44, borderRadius: 14, background: "#eeece4", color: "#2c3b33" }}
+            aria-label="Atualizar folhetos"
           >
-            <RefreshCw size={15} className={`text-white ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </button>
         </div>
       </div>
 
       {/* Erro */}
       {erro && (
-        <div className="mx-4 mb-4 card p-5 text-center border-red-100 anim-up">
-          <AlertCircle size={28} className="text-red-300 mx-auto mb-2" />
-          <p className="text-sm font-black text-red-600 mb-3">Não conseguimos carregar os folhetos</p>
-          <button onClick={carregar} className="press text-xs font-black text-white bg-red-500 px-5 py-2.5 rounded-xl">
+        <div
+          className="mx-4 mt-4 p-5 text-center anim-up"
+          style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8" }}
+        >
+          <AlertCircle size={28} style={{ color: "#b0574f" }} className="mx-auto mb-2" />
+          <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "#14231c", marginBottom: 12 }}>
+            Não conseguimos carregar os folhetos
+          </p>
+          <button
+            onClick={carregar}
+            className="pj-tap"
+            style={{ fontSize: 13, fontWeight: 600, color: "white", background: "#0b6b4f", padding: "10px 20px", borderRadius: 12 }}
+          >
             Tentar de novo
           </button>
         </div>
       )}
 
       {/* Grid */}
-      <div className="px-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="px-4 pt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
         {loading
           ? [1, 2, 3, 4].map(i => <CardSkeleton key={i} />)
           : folhetos.map(f => {
@@ -148,20 +166,29 @@ export default function SecaoFolhetos() {
                 <button
                   key={f.id}
                   onClick={() => window.open(f.url, "_blank")}
-                  className="press card p-5 flex flex-col items-center gap-3 relative overflow-hidden anim-up"
+                  className="pj-tap p-4 flex flex-col items-center gap-3 relative overflow-hidden anim-up text-left"
+                  style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8", boxShadow: "0 1px 2px rgba(20,35,28,0.04)" }}
                 >
-                  {/* color bar top */}
-                  <div className="absolute top-0 left-0 right-0 h-1 rounded-t-[18px]" style={{ background: cor }} />
-
-                  <LogoLoja loja={f.loja} size={64} />
+                  <LogoLoja loja={f.loja} size={56} />
 
                   <div className="text-center">
-                    <p className="text-sm font-black text-slate-800">{f.loja}</p>
-                    <div className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 rounded-full" style={{ background: cor + "18" }}>
-                      <span className="text-[10px] font-black" style={{ color: cor }}>{tagline}</span>
+                    <p
+                      className="font-display"
+                      style={{ fontSize: 14, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em" }}
+                    >
+                      {f.loja}
+                    </p>
+                    <div
+                      className="mt-1.5 inline-flex items-center gap-1"
+                      style={{ padding: "3px 10px", borderRadius: 999, background: "#eeece4" }}
+                    >
+                      <span style={{ fontSize: 10, fontWeight: 600, color: cor }}>{tagline}</span>
                     </div>
                     {f.validade && (
-                      <p className="mt-1 text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                      <p
+                        className="mt-1 flex items-center justify-center gap-1"
+                        style={{ fontSize: 10, color: "#8a978e" }}
+                      >
                         <Clock size={9} />
                         {f.validade}
                       </p>
@@ -174,7 +201,7 @@ export default function SecaoFolhetos() {
 
       {/* Nota rodapé */}
       {!loading && !erro && (
-        <p className="text-[10px] text-slate-400 text-center mt-5 px-4">
+        <p className="text-center mt-5 px-4" style={{ fontSize: 11, color: "#8a978e" }}>
           Os folhetos abrem no site oficial de cada supermercado, sempre atualizados.
         </p>
       )}
