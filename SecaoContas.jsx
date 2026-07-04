@@ -85,10 +85,10 @@ function AnelProgresso({ pct, size = 110, stroke = 9 }) {
   const dash = Math.max(0, Math.min(1, pct / 100)) * circum;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e4e2d8" strokeWidth={stroke} />
       <circle
         cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke={pct >= 100 ? "#4ade80" : "rgba(255,255,255,0.9)"}
+        stroke={pct >= 100 ? "#0b6b4f" : "#2c3b33"}
         strokeWidth={stroke}
         strokeDasharray={`${dash} ${circum}`}
         strokeLinecap="round"
@@ -117,22 +117,23 @@ function HistoricoPagamentos({ id, pagamentos }) {
 
   return (
     <div className="flex items-center gap-2 mt-2.5">
-      <span className="text-[10px] text-slate-400 font-medium">Histórico:</span>
+      <span className="text-[10px]" style={{ color: "#8a978e", fontWeight: 600 }}>Histórico:</span>
       <div className="flex items-center gap-1.5">
         {meses.map(m => (
           <div key={m.k} className="flex flex-col items-center gap-0.5">
             <div
-              className={`w-5 h-5 rounded-full transition-colors flex items-center justify-center text-[9px] ${m.pago ? "bg-emerald-400 text-white" : "bg-slate-200"}`}
+              className="w-5 h-5 rounded-full transition-colors flex items-center justify-center text-[9px]"
+              style={{ background: m.pago ? "#0b6b4f" : "#eeece4", color: m.pago ? "#fff" : "transparent" }}
               title={m.pago ? "Pago" : "Pendente"}
             >
               {m.pago ? "✓" : ""}
             </div>
-            <span className="text-[8px] text-slate-400 leading-none">{m.label}</span>
+            <span className="text-[8px] leading-none" style={{ color: "#8a978e" }}>{m.label}</span>
           </div>
         ))}
       </div>
       {streak >= 2 && (
-        <span className="ml-1 flex items-center gap-0.5 text-[10px] font-black text-amber-500">
+        <span className="ml-1 flex items-center gap-0.5 text-[10px]" style={{ fontWeight: 700, color: "#0b6b4f" }}>
           <Flame size={11} /> {streak} meses
         </span>
       )}
@@ -176,14 +177,15 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
       {/* Sugestões rápidas */}
       {mostrarPresets && !inicial && (
         <div>
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Sugestões rápidas</label>
+          <label className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Sugestões rápidas</label>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {PRESETS.map(p => (
               <button
                 key={p.nome}
                 type="button"
                 onClick={() => usarPreset(p)}
-                className="press px-2.5 py-1.5 rounded-xl text-[11px] font-black border border-slate-200 bg-slate-50 text-slate-600"
+                className="press pj-tap px-2.5 py-1.5 rounded-xl text-[11px]"
+                style={{ fontWeight: 600, border: "1px solid #e4e2d8", background: "#eeece4", color: "#5c6b62" }}
               >
                 {p.emoji} {p.nome}
               </button>
@@ -195,9 +197,9 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
       {/* Nome */}
       <div>
         <div className="flex items-center justify-between">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Nome da conta</label>
+          <label className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Nome da conta</label>
           {!inicial && (
-            <button type="button" onClick={() => setMostrarPresets(v => !v)} className="text-[10px] font-black text-violet-500">
+            <button type="button" onClick={() => setMostrarPresets(v => !v)} className="text-[10px]" style={{ fontWeight: 600, color: "#0b6b4f" }}>
               {mostrarPresets ? "Ocultar sugestões" : "Ver sugestões"}
             </button>
           )}
@@ -208,43 +210,46 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
           placeholder="ex: Renda, NOS, Fidelidade…"
           maxLength={40}
           autoFocus={!mostrarPresets}
-          className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-50"
+          className="mt-1 w-full px-3 py-2.5 rounded-xl text-sm outline-none"
+          style={{ border: "1px solid #e4e2d8", background: "#fbfaf6", color: "#14231c" }}
         />
       </div>
 
       {/* Valor + Dia */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Valor (€)</label>
+          <label className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Valor (€)</label>
           <input
             type="text" inputMode="decimal" value={valor}
             onChange={e => setValor(e.target.value)}
             placeholder="0.00"
-            className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-50"
+            className="mt-1 w-full px-3 py-2.5 rounded-xl text-sm outline-none"
+            style={{ border: "1px solid #e4e2d8", background: "#fbfaf6", color: "#14231c" }}
           />
         </div>
         <div>
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Dia do mês</label>
+          <label className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Dia do mês</label>
           <input
             type="number" inputMode="numeric" min={1} max={31} value={dia}
             onChange={e => setDia(e.target.value)}
-            className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-50"
+            className="mt-1 w-full px-3 py-2.5 rounded-xl text-sm outline-none"
+            style={{ border: "1px solid #e4e2d8", background: "#fbfaf6", color: "#14231c" }}
           />
         </div>
       </div>
 
       {/* Categoria */}
       <div>
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Categoria</label>
+        <label className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Categoria</label>
         <div className="mt-1.5 grid grid-cols-4 gap-1.5">
           {CATS.map(c => (
             <button
               key={c.id} type="button" onClick={() => setCat(c.id)}
-              className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl border transition-all"
-              style={{ borderColor: cat === c.id ? c.cor : "#e2e8f0", background: cat === c.id ? c.bg : "#fff" }}
+              className="pj-tap flex flex-col items-center gap-1 py-2 px-1 rounded-xl border transition-all"
+              style={{ borderColor: cat === c.id ? c.cor : "#e4e2d8", background: cat === c.id ? c.bg : "#fbfaf6" }}
             >
               <span className="text-lg leading-none">{c.emoji}</span>
-              <span className="text-[9px] font-black leading-tight text-center" style={{ color: cat === c.id ? c.cor : "#94a3b8" }}>
+              <span className="text-[9px] leading-tight text-center" style={{ fontWeight: 600, color: cat === c.id ? c.cor : "#8a978e" }}>
                 {c.label}
               </span>
             </button>
@@ -253,7 +258,7 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
       </div>
 
       {erro && (
-        <p className="text-xs font-bold text-rose-500 flex items-center gap-1.5">
+        <p className="text-xs flex items-center gap-1.5" style={{ fontWeight: 600, color: "#b4472e" }}>
           <AlertCircle size={12} /> {erro}
         </p>
       )}
@@ -261,12 +266,12 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
-          className="flex-1 py-2.5 rounded-xl text-white text-sm font-black"
-          style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}
+          className="pj-tap flex-1 py-2.5 rounded-xl text-white text-sm"
+          style={{ fontWeight: 600, background: "#0b6b4f" }}
         >
           {inicial ? "Guardar alterações" : "Adicionar conta"}
         </button>
-        <button type="button" onClick={onCancelar} className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-black">
+        <button type="button" onClick={onCancelar} className="pj-tap px-4 py-2.5 rounded-xl text-sm" style={{ fontWeight: 600, background: "#eeece4", color: "#5c6b62" }}>
           Cancelar
         </button>
       </div>
@@ -347,20 +352,20 @@ function PoupancaPotencial({ contas }) {
     <div className="px-4 mb-4 anim-up anim-up-1">
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#fffbeb,#fefce8)", border: "1.5px solid #fde68a" }}
+        style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
       >
         {/* Cabeçalho */}
         <div className="px-4 pt-4 pb-3 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0 text-2xl">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: "#eeece4" }}>
             💡
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Poupança potencial</p>
-            <p className="text-xl font-black text-slate-800 leading-tight mt-0.5">
+            <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Poupança potencial</p>
+            <p className="font-display leading-tight mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: "#14231c" }}>
               Podes poupar até{" "}
-              <span className="text-amber-600">€{totalEconomia.toLocaleString("pt-PT")}/ano</span>
+              <span style={{ color: "#0b6b4f" }}>€{totalEconomia.toLocaleString("pt-PT")}/ano</span>
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Com base nas categorias que tens registadas</p>
+            <p className="text-[11px] mt-0.5" style={{ color: "#5c6b62" }}>Com base nas categorias que tens registadas</p>
           </div>
         </div>
 
@@ -372,8 +377,8 @@ function PoupancaPotencial({ contas }) {
               href={op.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="press flex items-center justify-between bg-white rounded-xl px-3.5 py-2.5 no-underline"
-              style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
+              className="press pj-tap flex items-center justify-between rounded-xl px-3.5 py-2.5 no-underline"
+              style={{ background: "#f6f5f0", border: "1px solid #eeece4" }}
             >
               <div className="flex items-center gap-2.5">
                 <div
@@ -383,21 +388,21 @@ function PoupancaPotencial({ contas }) {
                   {op.emoji}
                 </div>
                 <div>
-                  <p className="text-[12px] font-black text-slate-700">{op.label}</p>
-                  <p className="text-[10px] text-slate-400">via {op.provider} — grátis</p>
+                  <p className="text-[12px]" style={{ fontWeight: 600, color: "#14231c" }}>{op.label}</p>
+                  <p className="text-[10px]" style={{ color: "#8a978e" }}>via {op.provider} — grátis</p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
-                <span className="text-[12px] font-black" style={{ color: op.cor }}>
+                <span className="text-[12px]" style={{ fontWeight: 600, color: op.cor }}>
                   até €{op.economia}/ano
                 </span>
-                <ExternalLink size={11} className="text-slate-300" />
+                <ExternalLink size={11} style={{ color: "#8a978e" }} />
               </div>
             </a>
           ))}
         </div>
 
-        <p className="text-[10px] text-slate-400 text-center pb-3">Comparação gratuita e sem compromisso</p>
+        <p className="text-[10px] text-center pb-3" style={{ color: "#8a978e" }}>Comparação gratuita e sem compromisso</p>
       </div>
     </div>
   );
@@ -504,23 +509,21 @@ export default function SecaoContas() {
       <div className="px-4 mb-4 anim-up">
         <div
           className="rounded-3xl px-6 pt-6 pb-5 relative overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg,#1e1b4b 0%,#4c1d95 60%,#7c3aed 100%)",
-            boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)",
-          }}
+          style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
         >
 
           {/* Navegação de mês */}
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <button onClick={() => setMesOff(o => o - 1)} className="press w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-              <ChevronLeft size={16} className="text-white" />
+            <button onClick={() => setMesOff(o => o - 1)} className="press pj-tap w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#eeece4" }}>
+              <ChevronLeft size={16} style={{ color: "#2c3b33" }} />
             </button>
-            <p className="text-[12px] font-black text-white capitalize">{mesLabel}</p>
+            <p className="text-[11px] uppercase capitalize" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>{mesLabel}</p>
             <button
               onClick={() => setMesOff(o => Math.min(0, o + 1))}
-              className={`press w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center ${mesOff === 0 ? "opacity-30 pointer-events-none" : ""}`}
+              className={`press pj-tap w-8 h-8 rounded-xl flex items-center justify-center ${mesOff === 0 ? "opacity-30 pointer-events-none" : ""}`}
+              style={{ background: "#eeece4" }}
             >
-              <ChevronRight size={16} className="text-white" />
+              <ChevronRight size={16} style={{ color: "#2c3b33" }} />
             </button>
           </div>
 
@@ -530,35 +533,35 @@ export default function SecaoContas() {
               <div className="relative flex-shrink-0">
                 <AnelProgresso pct={pct} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black text-white leading-none">{pct}%</span>
-                  <span className="text-[9px] font-black text-white/50 uppercase tracking-wide mt-0.5">pago</span>
+                  <span className="font-display leading-none" style={{ fontSize: "24px", fontWeight: 600, color: "#14231c" }}>{pct}%</span>
+                  <span className="text-[9px] uppercase mt-0.5" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>pago</span>
                 </div>
               </div>
             )}
 
             {/* Valores */}
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-black text-white/50 uppercase tracking-widest mb-0.5">Total mensal</p>
-              <p className="text-4xl font-black text-white leading-none">
+              <p className="text-[11px] uppercase mb-0.5" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}>Total mensal</p>
+              <p className="font-display leading-none" style={{ fontSize: "34px", fontWeight: 600, color: "#14231c" }}>
                 €{fmt(totalMensal)}
               </p>
               {contas.length > 0 ? (
                 <>
                   {/* Contexto anual e diário */}
-                  <p className="text-[11px] text-white/50 mt-1.5 flex items-center gap-1.5 flex-wrap">
-                    <span className="text-white/80 font-bold">€{Math.round(totalAnual).toLocaleString("pt-PT")}/ano</span>
-                    <span className="text-white/30">·</span>
+                  <p className="text-[11px] mt-1.5 flex items-center gap-1.5 flex-wrap" style={{ color: "#8a978e" }}>
+                    <span style={{ fontWeight: 600, color: "#5c6b62" }}>€{Math.round(totalAnual).toLocaleString("pt-PT")}/ano</span>
+                    <span style={{ color: "#c4c0b2" }}>·</span>
                     <span>€{totalDiario.toFixed(2)}/dia</span>
                   </p>
-                  <p className="text-[11px] text-white/60 mt-1">
+                  <p className="text-[11px] mt-1" style={{ color: "#5c6b62" }}>
                     {nPagas}/{contas.length} conta{contas.length !== 1 ? "s" : ""} pagas
                     {totalPendente > 0 && (
-                      <> · Pendente: <span className="text-white font-black">€{fmt(totalPendente)}</span></>
+                      <> · Pendente: <span style={{ fontWeight: 600, color: "#14231c" }}>€{fmt(totalPendente)}</span></>
                     )}
                   </p>
                 </>
               ) : (
-                <p className="text-[12px] text-white/60 mt-1.5">Sem contas adicionadas</p>
+                <p className="text-[12px] mt-1.5" style={{ color: "#5c6b62" }}>Sem contas adicionadas</p>
               )}
             </div>
           </div>
@@ -566,15 +569,15 @@ export default function SecaoContas() {
           {/* Barra de progresso */}
           {totalMensal > 0 && (
             <div className="mt-4 relative z-10">
-              <div className="w-full h-1.5 bg-white/15 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "#eeece4" }}>
                 <div
                   className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${pct}%`, background: pct >= 100 ? "#4ade80" : "rgba(255,255,255,0.8)" }}
+                  style={{ width: `${pct}%`, background: "#0b6b4f" }}
                 />
               </div>
               <div className="flex justify-between mt-1">
-                <span className="text-[10px] text-white/40">€{fmt(totalPago)} pago</span>
-                <span className="text-[10px] text-white/40">€{fmt(totalPendente)} pendente</span>
+                <span className="text-[10px]" style={{ color: "#8a978e" }}>€{fmt(totalPago)} pago</span>
+                <span className="text-[10px]" style={{ color: "#8a978e" }}>€{fmt(totalPendente)} pendente</span>
               </div>
             </div>
           )}

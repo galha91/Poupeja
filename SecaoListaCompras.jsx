@@ -218,13 +218,13 @@ const CATS = {
 
 // Mostra o emoji quando existe; caso contrário, um círculo com a inicial
 // e a cor da categoria (evita emojis enganadores em produtos sem emoji próprio).
-function IconeArtigo({ emoji, nome, cor = "#7c3aed", size = 30, className = "" }) {
+function IconeArtigo({ emoji, nome, cor = "#0b6b4f", size = 30, className = "" }) {
   if (emoji) return <span className={`leading-none ${className}`} style={{ fontSize: size }}>{emoji}</span>;
   const inicial = (nome || "?").trim().charAt(0).toUpperCase();
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-full font-black ${className}`}
-      style={{ width: size, height: size, background: cor + "1f", color: cor, fontSize: Math.round(size * 0.46) }}
+      className={`inline-flex items-center justify-center rounded-full font-display font-semibold ${className}`}
+      style={{ width: size, height: size, background: "#eeece4", color: "#0b6b4f", fontSize: Math.round(size * 0.46) }}
     >
       {inicial}
     </span>
@@ -404,32 +404,33 @@ export default function SecaoListaCompras() {
       <div className="pb-28 no-scrollbar">
 
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 mb-3">
-          <button onClick={() => { setModo("lista"); setBusca(""); }} className="press w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-            <ChevronLeft size={18} className="text-slate-500" />
+        <div className="flex items-center gap-3 px-4 mb-4 pt-1">
+          <button onClick={() => { setModo("lista"); setBusca(""); }} className="pj-tap press w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+            <ChevronLeft size={18} style={{ color: "#5c6b62" }} />
           </button>
           <div className="flex-1 relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#8a978e" }} />
             <input
               autoFocus
               type="text"
               value={busca}
               onChange={e => setBusca(e.target.value)}
               placeholder="Pesquisar artigo…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-2xl border border-slate-200 bg-white text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-violet-400"
+              className="w-full pl-9 pr-4 py-2.5 rounded-2xl text-sm font-medium focus:outline-none"
+              style={{ border: "1px solid #e4e2d8", background: "#fbfaf6", color: "#14231c" }}
             />
           </div>
         </div>
 
         {/* ── Mini-lista: sempre visível enquanto adiciona ── */}
         {pendentes.length > 0 && (
-          <div className="px-4 mb-3">
-            <div className="rounded-2xl border border-violet-100 overflow-hidden" style={{ background: "#f5f3ff" }}>
+          <div className="px-4 mb-4">
+            <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
               <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
-                <p className="text-[10px] font-black text-violet-600 uppercase tracking-widest flex items-center gap-1.5">
-                  <ShoppingCart size={10} /> Na lista ({pendentes.length})
+                <p className="flex items-center gap-1.5" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "#8a978e" }}>
+                  <ShoppingCart size={11} style={{ color: "#0b6b4f" }} /> Na lista ({pendentes.length})
                 </p>
-                <button onClick={() => setModo("lista")} className="press text-[10px] font-black text-violet-500">
+                <button onClick={() => setModo("lista")} className="pj-tap press" style={{ fontSize: "11px", fontWeight: 600, color: "#0b6b4f" }}>
                   Ver tudo →
                 </button>
               </div>
@@ -439,21 +440,18 @@ export default function SecaoListaCompras() {
                   return (
                     <div
                       key={it.id}
-                      className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border"
-                      style={{
-                        background: catC ? catC.bg : "#fff",
-                        borderColor: catC ? catC.cor + "44" : "#e2e8f0",
-                      }}
+                      className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl"
+                      style={{ background: "#f6f5f0", border: "1px solid #e4e2d8" }}
                     >
                       <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catC?.cor} size={16} />
-                      <span className="text-[11px] font-black text-slate-700 max-w-[64px] truncate">{it.nome}</span>
+                      <span className="text-[11px] font-semibold max-w-[64px] truncate" style={{ color: "#14231c" }}>{it.nome}</span>
                       {it.qty > 1 && (
-                        <span className="text-[9px] font-black text-white px-1 py-0.5 rounded-full" style={{ background: catC?.cor || "#7c3aed" }}>
+                        <span className="text-[9px] font-semibold px-1 py-0.5 rounded-full" style={{ background: "#eeece4", color: "#0b6b4f" }}>
                           ×{it.qty}
                         </span>
                       )}
-                      <button onClick={() => remover(it.id)} className="press w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
-                        <X size={8} className="text-slate-500" />
+                      <button onClick={() => remover(it.id)} className="pj-tap press w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+                        <X size={8} style={{ color: "#5c6b62" }} />
                       </button>
                     </div>
                   );
@@ -464,7 +462,7 @@ export default function SecaoListaCompras() {
         )}
 
         {/* Custom input */}
-        <div className="px-4 mb-4 flex gap-2">
+        <div className="px-4 mb-5 flex gap-2">
           <input
             ref={inputRef}
             type="text"
@@ -472,9 +470,10 @@ export default function SecaoListaCompras() {
             onChange={e => setInputCustom(e.target.value)}
             onKeyDown={e => e.key === "Enter" && adicionarCustom()}
             placeholder="Outro artigo (escrever)…"
-            className="flex-1 px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-violet-400"
+            className="flex-1 px-4 py-3 rounded-2xl text-sm font-medium focus:outline-none"
+            style={{ border: "1px solid #e4e2d8", background: "#fbfaf6", color: "#14231c" }}
           />
-          <button onClick={adicionarCustom} className="press w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}>
+          <button onClick={adicionarCustom} className="pj-tap press w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: "#0b6b4f" }}>
             <Plus size={20} className="text-white" />
           </button>
         </div>
@@ -482,19 +481,19 @@ export default function SecaoListaCompras() {
         {/* Resultados de busca */}
         {busca.length > 1 ? (
           <div className="px-4">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{resultadosBusca.length} resultado{resultadosBusca.length !== 1 ? "s" : ""}</p>
+            <p className="mb-3" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "#8a978e" }}>{resultadosBusca.length} resultado{resultadosBusca.length !== 1 ? "s" : ""}</p>
             <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
               {resultadosBusca.map(it => {
                 const na = itens.find(i => i.nome === it.nome && !i.feito);
                 const cfg = CATS[it.cat];
                 return (
                   <button key={it.nome + it.cat} onClick={() => adicionarItem(it.nome, it.emoji, it.cat)}
-                    className="press card p-3 flex flex-col items-center gap-1.5 relative"
-                    style={{ borderColor: na ? cfg.cor + "66" : undefined, background: na ? cfg.bg : undefined }}
+                    className="pj-tap press p-3 flex flex-col items-center gap-1.5 relative rounded-2xl"
+                    style={{ border: "1px solid #e4e2d8", background: na ? "#eeece4" : "#fbfaf6" }}
                   >
                     <IconeArtigo emoji={it.emoji} nome={it.nome} cor={CATS[it.cat]?.cor} size={24} />
-                    <p className="text-[10px] font-black text-slate-700 text-center leading-tight">{it.nome}</p>
-                    {na && <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full" style={{ background: cfg.cor }}>{na.qty}×</span>}
+                    <p className="text-[10px] font-semibold text-center leading-tight" style={{ color: "#14231c" }}>{it.nome}</p>
+                    {na && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: "#0b6b4f", color: "#fff" }}>{na.qty}×</span>}
                   </button>
                 );
               })}
@@ -503,13 +502,15 @@ export default function SecaoListaCompras() {
         ) : (
           <>
             {/* Category pills */}
-            <div className="px-4 mb-3 flex gap-2 overflow-x-auto no-scrollbar">
+            <div className="px-4 mb-4 flex gap-2 overflow-x-auto no-scrollbar">
               {Object.entries(CATS).map(([nome, cfg]) => (
                 <button
                   key={nome}
                   onClick={() => setCatAtiva(nome)}
-                  className={`press flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition-all ${catAtiva === nome ? "text-white" : "bg-white text-slate-500 border border-slate-100"}`}
-                  style={catAtiva === nome ? { background: cfg.cor } : {}}
+                  className="pj-tap press flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={catAtiva === nome
+                    ? { background: "#0b6b4f", color: "#fff" }
+                    : { background: "#fbfaf6", color: "#5c6b62", border: "1px solid #e4e2d8" }}
                 >
                   {cfg.emoji} {nome}
                 </button>
@@ -524,22 +525,19 @@ export default function SecaoListaCompras() {
                   <button
                     key={it.nome}
                     onClick={() => adicionarItem(it.nome, it.emoji, catAtiva)}
-                    className="press card p-3.5 flex flex-col items-center gap-1.5 relative"
-                    style={{
-                      borderColor: naLista ? catCfg.cor + "66" : undefined,
-                      background: naLista ? catCfg.bg : undefined,
-                    }}
+                    className="pj-tap press p-3.5 flex flex-col items-center gap-1.5 relative rounded-2xl"
+                    style={{ border: "1px solid #e4e2d8", background: naLista ? "#eeece4" : "#fbfaf6" }}
                   >
                     <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catCfg.cor} size={30} />
-                    <p className="text-[11px] font-black text-slate-700 text-center leading-tight">{it.nome}</p>
+                    <p className="text-[11px] font-semibold text-center leading-tight" style={{ color: "#14231c" }}>{it.nome}</p>
                     {naLista && (
-                      <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full" style={{ background: catCfg.cor }}>
+                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: "#0b6b4f", color: "#fff" }}>
                         {naLista.qty}×
                       </span>
                     )}
                     {!naLista && (
-                      <div className="w-5 h-5 rounded-full border-2 border-slate-200 flex items-center justify-center">
-                        <Plus size={10} className="text-slate-400" />
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ border: "2px solid #e4e2d8" }}>
+                        <Plus size={10} style={{ color: "#8a978e" }} />
                       </div>
                     )}
                   </button>
@@ -556,32 +554,32 @@ export default function SecaoListaCompras() {
   return (
     <div className="pb-28 no-scrollbar">
 
-      {/* Hero */}
-      <div className="mx-4 mb-4 rounded-3xl p-5 relative overflow-hidden anim-up"
-        style={{ background: "linear-gradient(135deg,#5b21b6,#7c3aed,#a855f7)", boxShadow: "0 8px 32px -8px rgba(124,58,237,0.30)" }}>
-        <p className="text-[10px] font-black text-white/60 uppercase tracking-widest flex items-center gap-1.5 mb-2">
-          <ShoppingCart size={11} /> Lista de compras
+      {/* Header */}
+      <div className="mx-4 mb-5 pt-2 anim-up">
+        <p className="flex items-center gap-1.5 mb-2" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "#8a978e" }}>
+          <ShoppingCart size={11} style={{ color: "#0b6b4f" }} /> Lista de compras
         </p>
-        <div className="flex items-end gap-3 mb-3">
-          <span className="text-5xl font-black text-white leading-none">{pendentes.length}</span>
-          <p className="text-white/70 text-sm font-bold pb-1">{pendentes.length === 1 ? "artigo por comprar" : "artigos por comprar"}</p>
+        <div className="flex items-end gap-3 mb-4">
+          <span className="font-display leading-none" style={{ fontSize: "48px", fontWeight: 600, color: "#14231c" }}>{pendentes.length}</span>
+          <p className="text-sm font-medium pb-1.5" style={{ color: "#5c6b62" }}>{pendentes.length === 1 ? "artigo por comprar" : "artigos por comprar"}</p>
         </div>
         {itens.length > 0 && (
           <>
-            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-              <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progresso}%` }} />
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#eeece4" }}>
+              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progresso}%`, background: "#0b6b4f" }} />
             </div>
-            <p className="text-[10px] text-white/50 mt-1.5">{feitos.length} de {itens.length} comprados</p>
+            <p className="text-[11px] mt-1.5" style={{ color: "#8a978e" }}>{feitos.length} de {itens.length} comprados</p>
           </>
         )}
 
         {/* Partilha */}
-        <div className="mt-3 flex gap-2 flex-wrap">
+        <div className="mt-4 flex gap-2 flex-wrap">
           {!listaId ? (
             <button
               onClick={partilhar}
               disabled={criandoLink}
-              className="press inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] font-black px-3.5 py-2 rounded-xl border border-white/25"
+              className="pj-tap press inline-flex items-center gap-1.5 text-[11px] font-semibold px-3.5 py-2 rounded-xl"
+              style={{ background: "#0b6b4f", color: "#fff" }}
             >
               <Share2 size={13} /> {criandoLink ? "A criar…" : "Partilhar com a família"}
             </button>
@@ -589,13 +587,15 @@ export default function SecaoListaCompras() {
             <>
               <button
                 onClick={copiarLink}
-                className="press inline-flex items-center gap-1.5 bg-white text-violet-700 text-[11px] font-black px-3.5 py-2 rounded-xl"
+                className="pj-tap press inline-flex items-center gap-1.5 text-[11px] font-semibold px-3.5 py-2 rounded-xl"
+                style={{ background: "#0b6b4f", color: "#fff" }}
               >
                 <Share2 size={13} /> {copiado ? "Copiado ✓" : "Partilhar"}
               </button>
               <button
                 onClick={pararPartilha}
-                className="press inline-flex items-center gap-1.5 bg-white/15 text-white/70 text-[11px] font-black px-3 py-2 rounded-xl border border-white/20"
+                className="pj-tap press inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-2 rounded-xl"
+                style={{ background: "#eeece4", color: "#5c6b62", border: "1px solid #e4e2d8" }}
               >
                 <X size={12} /> Parar partilha
               </button>
@@ -603,19 +603,20 @@ export default function SecaoListaCompras() {
           )}
         </div>
         {listaId && (
-          <p className="text-[9px] text-white/40 mt-1.5 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+          <p className="text-[10px] mt-2 flex items-center gap-1.5" style={{ color: "#8a978e" }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style={{ background: "#0b6b4f" }} />
             Lista partilhada — sincroniza automaticamente
           </p>
         )}
       </div>
+      <div className="mx-4 mb-5" style={{ borderTop: "1px solid #e4e2d8" }} />
 
       {/* Botão adicionar */}
-      <div className="px-4 mb-4 anim-up anim-up-1">
+      <div className="px-4 mb-5 anim-up anim-up-1">
         <button
           onClick={() => setModo("adicionar")}
-          className="press w-full py-3.5 rounded-2xl text-white font-black flex items-center justify-center gap-2"
-          style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 8px 20px -8px rgba(124,58,237,0.4)" }}
+          className="pj-tap press w-full py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
+          style={{ background: "#0b6b4f" }}
         >
           <Plus size={18} /> Adicionar artigos
         </button>
@@ -623,12 +624,12 @@ export default function SecaoListaCompras() {
 
       {/* Empty state */}
       {itens.length === 0 && (
-        <div className="mx-4 card p-10 flex flex-col items-center text-center anim-up anim-up-2">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg,#ede9fe,#f3e8ff)" }}>
-            <ShoppingCart size={28} className="text-violet-300" />
+        <div className="mx-4 p-10 flex flex-col items-center text-center anim-up anim-up-2 rounded-2xl" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "#eeece4" }}>
+            <ShoppingCart size={28} style={{ color: "#0b6b4f" }} />
           </div>
-          <p className="text-sm font-black text-slate-600 mb-1">Lista vazia</p>
-          <p className="text-[12px] text-slate-400">Toca em "Adicionar artigos" para começar</p>
+          <p className="font-display text-sm font-semibold mb-1" style={{ color: "#14231c" }}>Lista vazia</p>
+          <p className="text-[12px]" style={{ color: "#8a978e" }}>Toca em "Adicionar artigos" para começar</p>
         </div>
       )}
 
