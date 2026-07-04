@@ -6,19 +6,19 @@
 @tailwind utilities;
 
 :root {
-  --brand-green:  #059669;
+  --brand-green:  #0b6b4f;
   --brand-blue:   #2563eb;
-  --brand-amber:  #d97706;
-  --surface:      #f4f6f9;
-  --card:         #ffffff;
-  --border:       #eaecf0;
-  --text-primary: #0f172a;
-  --text-muted:   #64748b;
-  --text-faint:   #94a3b8;
+  --brand-amber:  #b5701f;
+  --surface:      #f6f5f0;
+  --card:         #fbfaf6;
+  --border:       #e4e2d8;
+  --text-primary: #14231c;
+  --text-muted:   #5c6b62;
+  --text-faint:   #8a978e;
   --radius-card:  16px;
   --radius-btn:   12px;
-  --shadow-card:  0 1px 3px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.05);
-  --shadow-hero:  0 16px 40px -12px rgba(5,150,105,0.30);
+  --shadow-card:  0 1px 2px rgba(20,35,28,0.04), 0 4px 14px rgba(20,35,28,0.05);
+  --shadow-hero:  0 16px 40px -12px rgba(11,107,79,0.28);
 }
 
 * {
