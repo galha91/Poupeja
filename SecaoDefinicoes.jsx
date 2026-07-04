@@ -9,6 +9,14 @@ import { supabase } from "./lib/supabase";
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan","Minipreço"];
 const COMBUSTIVEIS  = ["Gasolina 95","Gasóleo","GPL"];
 
+const LABEL_STYLE = {
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: "0.09em",
+  textTransform: "uppercase",
+  color: "#8a978e",
+};
+
 function lerPrefs() {
   try {
     const raw = localStorage.getItem("poupeja_prefs");
@@ -26,7 +34,8 @@ function Toggle({ on, onChange }) {
   return (
     <button
       onClick={() => onChange(!on)}
-      className={`w-12 h-7 rounded-full relative transition-colors ${on ? "bg-emerald-500" : "bg-slate-200"}`}
+      className="w-12 h-7 rounded-full relative transition-colors flex-shrink-0"
+      style={{ background: on ? "#0b6b4f" : "#e4e2d8" }}
     >
       <span className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-sm transition-all ${on ? "left-6" : "left-1"}`} />
     </button>
@@ -35,9 +44,12 @@ function Toggle({ on, onChange }) {
 
 function Section({ label, children }) {
   return (
-    <div className="mx-4 mb-4">
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">{label}</p>
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="mb-9">
+      <p className="px-5 mb-3" style={LABEL_STYLE}>{label}</p>
+      <div
+        className="mx-4"
+        style={{ borderTop: "1px solid #e4e2d8", borderBottom: "1px solid #e4e2d8" }}
+      >
         {children}
       </div>
     </div>
@@ -46,7 +58,18 @@ function Section({ label, children }) {
 
 function Row({ border = true, children }) {
   return (
-    <div className={`p-4 ${border ? "border-b border-slate-50" : ""}`}>
+    <div className="px-1 py-4" style={border ? { borderBottom: "1px solid #eeece4" } : undefined}>
+      {children}
+    </div>
+  );
+}
+
+function IconChip({ active = false, children }) {
+  return (
+    <div
+      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+      style={{ background: active ? "#0b6b4f" : "#eeece4" }}
+    >
       {children}
     </div>
   );
@@ -173,61 +196,57 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       : [...p.favoritos, s],
   }));
 
-  return (
-    <div className="pb-28 pt-4">
+  const inicial = (user?.nome || user?.email || "?").trim().charAt(0).toUpperCase() || "?";
 
-      <button onClick={onVoltar} className="press mx-4 mb-4 flex items-center gap-1.5 text-sm font-bold text-slate-400">
+  return (
+    <div className="pb-28 pt-4" style={{ background: "#f6f5f0", minHeight: "100vh" }}>
+
+      <button
+        onClick={onVoltar}
+        className="press pj-tap mx-4 mb-6 flex items-center gap-1.5 text-sm font-semibold"
+        style={{ color: "#8a978e" }}
+      >
         <ArrowLeft size={15} /> Voltar
       </button>
 
-      {/* Hero */}
-      <div
-        className="mx-4 mb-5 rounded-3xl p-5 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#064e3b,#059669)", boxShadow: "0 16px 40px -12px rgba(5,150,105,0.4)" }}
-      >
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
-            <User size={26} className="text-white" />
-          </div>
-          <div>
-            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Conta</p>
-            <p className="text-lg font-black text-white leading-tight">{user?.nome || "O teu perfil"}</p>
-            <p className="text-[11px] text-white/60">{user?.email || ""}</p>
-          </div>
+      {/* Cabeçalho editorial do perfil */}
+      <div className="mx-4 mb-8 flex items-center gap-4">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: "#0b6b4f" }}
+        >
+          <span className="font-display text-2xl text-white leading-none">{inicial}</span>
+        </div>
+        <div className="min-w-0">
+          <p style={LABEL_STYLE}>Conta</p>
+          <p className="font-display text-2xl leading-tight truncate" style={{ color: "#14231c" }}>
+            {user?.nome || "O teu perfil"}
+          </p>
+          <p className="text-sm mt-0.5 truncate" style={{ color: "#5c6b62" }}>{user?.email || ""}</p>
         </div>
       </div>
 
       {/* Guardado */}
       {saved && (
-        <div className="mx-4 mb-3 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2 flex items-center gap-2 anim-up">
-          <Check size={13} className="text-emerald-600" />
-          <span className="text-xs font-bold text-emerald-700">Guardado automaticamente</span>
+        <div className="mx-4 mb-6 flex items-center gap-2 anim-up">
+          <Check size={13} style={{ color: "#0b6b4f" }} />
+          <span className="text-xs font-semibold" style={{ color: "#0b6b4f" }}>Guardado automaticamente</span>
         </div>
       )}
 
-      {/* Perfil */}
-      <Section label="Perfil">
-        <Row>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
-              <User size={18} className="text-emerald-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-black text-slate-800 truncate">{user?.nome || "—"}</p>
-              <p className="text-xs text-slate-500 mt-0.5 truncate">{user?.email || "—"}</p>
-            </div>
-          </div>
-        </Row>
+      {/* Conta */}
+      <Section label="Conta">
         <Row border={false}>
           <button
             onClick={onLogout}
-            className="press w-full flex items-center justify-between text-red-500"
+            className="press pj-tap w-full flex items-center justify-between"
+            style={{ color: "#a2432a" }}
           >
             <div className="flex items-center gap-2.5">
-              <LogOut size={17} className="text-red-400" />
-              <p className="text-sm font-bold">Sair da conta</p>
+              <LogOut size={17} />
+              <p className="text-sm font-semibold">Sair da conta</p>
             </div>
-            <ChevronRight size={15} className="text-red-300" />
+            <ChevronRight size={15} style={{ color: "#c8b5ac" }} />
           </button>
         </Row>
       </Section>
@@ -236,43 +255,48 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       <Section label="Preferências">
         <Row>
           <div className="flex items-center gap-2 mb-3">
-            <Fuel size={15} className="text-orange-500" />
-            <p className="text-sm font-black text-slate-800">Combustível habitual</p>
+            <Fuel size={15} style={{ color: "#0b6b4f" }} />
+            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Combustível habitual</p>
           </div>
           <div className="flex gap-2">
-            {COMBUSTIVEIS.map(c => (
-              <button
-                key={c}
-                onClick={() => set("combustivel", c)}
-                className={`press flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
-                  prefs.combustivel === c ? "bg-orange-500 text-white" : "bg-slate-100 text-slate-500"
-                }`}
-              >
-                {c}
-              </button>
-            ))}
+            {COMBUSTIVEIS.map(c => {
+              const ativo = prefs.combustivel === c;
+              return (
+                <button
+                  key={c}
+                  onClick={() => set("combustivel", c)}
+                  className="press pj-tap flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={ativo
+                    ? { background: "#0b6b4f", color: "#fff" }
+                    : { background: "#eeece4", color: "#5c6b62" }}
+                >
+                  {c}
+                </button>
+              );
+            })}
           </div>
         </Row>
 
         <Row>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <MapPin size={15} className="text-emerald-600" />
-              <p className="text-sm font-black text-slate-800">Distância máxima</p>
+              <MapPin size={15} style={{ color: "#0b6b4f" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Distância máxima</p>
             </div>
-            <span className="text-sm font-black text-emerald-600">{prefs.distancia} km</span>
+            <span className="text-sm font-semibold" style={{ color: "#0b6b4f" }}>{prefs.distancia} km</span>
           </div>
           <input
             type="range" min="1" max="50" value={prefs.distancia}
             onChange={e => set("distancia", parseInt(e.target.value))}
             className="w-full"
+            style={{ accentColor: "#0b6b4f" }}
           />
         </Row>
 
         <Row border={false}>
           <div className="flex items-center gap-2 mb-3">
-            <Heart size={15} className="text-emerald-600" />
-            <p className="text-sm font-black text-slate-800">Supermercados favoritos</p>
+            <Heart size={15} style={{ color: "#0b6b4f" }} />
+            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Supermercados favoritos</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {SUPERMERCADOS.map(s => {
@@ -281,9 +305,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
                 <button
                   key={s}
                   onClick={() => toggleFav(s)}
-                  className={`press px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
-                    ativo ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500"
-                  }`}
+                  className="press pj-tap px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1"
+                  style={ativo
+                    ? { background: "#0b6b4f", color: "#fff" }
+                    : { background: "#eeece4", color: "#5c6b62" }}
                 >
                   {ativo && <Check size={10} />} {s}
                 </button>
@@ -298,8 +323,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <ShieldCheck size={17} className="text-amber-500" />
-              <p className="text-sm font-bold text-slate-800">Avisos de garantias</p>
+              <ShieldCheck size={17} style={{ color: "#5c6b62" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Avisos de garantias</p>
             </div>
             <Toggle on={prefs.avisoGarantias} onChange={v => set("avisoGarantias", v)} />
           </div>
@@ -307,22 +332,22 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Bell size={17} className="text-blue-500" />
-              <p className="text-sm font-bold text-slate-800">Avisos de preços</p>
+              <Bell size={17} style={{ color: "#5c6b62" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Avisos de preços</p>
             </div>
             <Toggle on={prefs.avisoPrecos} onChange={v => set("avisoPrecos", v)} />
           </div>
         </Row>
         <Row border={false}>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-bold text-slate-800">Avisar com antecedência</p>
-            <span className="text-sm font-black text-amber-500">{prefs.diasGarantia} dias</span>
+            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Avisar com antecedência</p>
+            <span className="text-sm font-semibold" style={{ color: "#0b6b4f" }}>{prefs.diasGarantia} dias</span>
           </div>
           <input
             type="range" min="15" max="120" step="15" value={prefs.diasGarantia}
             onChange={e => set("diasGarantia", parseInt(e.target.value))}
             className="w-full"
-            style={{ accentColor: "#f59e0b" }}
+            style={{ accentColor: "#0b6b4f" }}
           />
         </Row>
       </Section>
@@ -331,15 +356,15 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       <Section label="Notificações push">
         <Row border={false}>
           <div className="flex items-start gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${pushEstado === "ativo" ? "bg-emerald-50" : "bg-slate-100"}`}>
+            <IconChip active={pushEstado === "ativo"}>
               {pushEstado === "ativo"
-                ? <BellRing size={18} className="text-emerald-600" />
-                : <BellOff size={18} className="text-slate-400" />
+                ? <BellRing size={18} className="text-white" />
+                : <BellOff size={18} style={{ color: "#8a978e" }} />
               }
-            </div>
+            </IconChip>
             <div className="flex-1">
-              <p className="text-sm font-black text-slate-800">Folhetos no ecrã bloqueado</p>
-              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Folhetos no ecrã bloqueado</p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#8a978e" }}>
                 {pushEstado === "ativo"
                   ? "Notificações ativas. Avisamos quando saem folhetos novos."
                   : pushEstado === "bloqueado"
@@ -353,11 +378,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
                 <button
                   onClick={pushEstado === "ativo" ? desativarPush : ativarPush}
                   disabled={pushLoading || pushEstado === "a-verificar"}
-                  className={`press mt-3 w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
-                    pushEstado === "ativo"
-                      ? "bg-slate-100 text-slate-600"
-                      : "text-white bg-emerald-500"
-                  }`}
+                  className="press pj-tap mt-3 w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                  style={pushEstado === "ativo"
+                    ? { background: "#eeece4", color: "#5c6b62" }
+                    : { background: "#0b6b4f", color: "#fff" }}
                 >
                   {pushLoading ? "A processar…"
                     : pushEstado === "ativo"
@@ -376,10 +400,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
         <Row border={false}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Moon size={17} className="text-indigo-500" />
+              <Moon size={17} style={{ color: "#5c6b62" }} />
               <div>
-                <p className="text-sm font-bold text-slate-800">Modo escuro</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">Mais confortável à noite e poupa bateria.</p>
+                <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Modo escuro</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Mais confortável à noite e poupa bateria.</p>
               </div>
             </div>
             <Toggle
@@ -398,10 +422,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Mail size={17} className="text-violet-600" />
+              <Mail size={17} style={{ color: "#5c6b62" }} />
               <div>
-                <p className="text-sm font-bold text-slate-800">Resumo automático semanal</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">Todas as quintas, com os folhetos da semana.</p>
+                <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Resumo automático semanal</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Todas as quintas, com os folhetos da semana.</p>
               </div>
             </div>
             <Toggle on={prefs.emailSemanal !== false} onChange={v => set("emailSemanal", v)} />
@@ -409,20 +433,19 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
         </Row>
         <Row border={false}>
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
-              <Mail size={18} className="text-violet-600" />
-            </div>
+            <IconChip>
+              <Mail size={18} style={{ color: "#0b6b4f" }} />
+            </IconChip>
             <div className="flex-1">
-              <p className="text-sm font-black text-slate-800">Enviar agora</p>
-              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Recebe já um resumo com todos os folhetos ativos.</p>
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Enviar agora</p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#8a978e" }}>Recebe já um resumo com todos os folhetos ativos.</p>
               <button
                 onClick={enviarEmailSemanal}
                 disabled={enviando || enviado}
-                className={`press mt-3 w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
-                  enviado ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  : "text-white"
-                }`}
-                style={!enviado ? { background: "linear-gradient(135deg,#7c3aed,#a855f7)" } : {}}
+                className="press pj-tap mt-3 w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                style={enviado
+                  ? { background: "#eeece4", color: "#0b6b4f" }
+                  : { background: "#0b6b4f", color: "#fff" }}
               >
                 {enviando ? "A enviar…" : enviado ? <><Check size={13} /> Enviado!</> : <><Mail size={13} /> Enviar para {user?.email}</>}
               </button>
@@ -434,74 +457,74 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       {/* Sobre */}
       <Section label="Sobre">
         <Row>
-          <button onClick={() => setModalSobre(true)} className="press w-full flex items-center justify-between">
+          <button onClick={() => setModalSobre(true)} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Heart size={17} className="text-slate-400" />
-              <p className="text-sm font-bold text-slate-800">Sobre nós</p>
+              <Heart size={17} style={{ color: "#8a978e" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Sobre nós</p>
             </div>
-            <ChevronRight size={15} className="text-slate-300" />
+            <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
         </Row>
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Info size={17} className="text-slate-400" />
-              <p className="text-sm font-bold text-slate-800">Versão</p>
+              <Info size={17} style={{ color: "#8a978e" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Versão</p>
             </div>
-            <span className="text-xs font-bold text-slate-400">2.0.2</span>
+            <span className="text-xs font-semibold" style={{ color: "#8a978e" }}>2.0.2</span>
           </div>
         </Row>
         <Row>
-          <button onClick={() => setModalTermos(true)} className="press w-full flex items-center justify-between">
+          <button onClick={() => setModalTermos(true)} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <FileText size={17} className="text-slate-400" />
-              <p className="text-sm font-bold text-slate-800">Termos e privacidade</p>
+              <FileText size={17} style={{ color: "#8a978e" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Termos e privacidade</p>
             </div>
-            <ChevronRight size={15} className="text-slate-300" />
+            <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
         </Row>
         <Row border={false}>
-          <button onClick={() => window.location.href = "mailto:contacto@poupeja.com"} className="press w-full flex items-center justify-between">
+          <button onClick={() => window.location.href = "mailto:contacto@poupeja.com"} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Mail size={17} className="text-slate-400" />
-              <p className="text-sm font-bold text-slate-800">Contacto e ajuda</p>
+              <Mail size={17} style={{ color: "#8a978e" }} />
+              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Contacto e ajuda</p>
             </div>
-            <ChevronRight size={15} className="text-slate-300" />
+            <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
         </Row>
       </Section>
 
-      <p className="text-[10px] text-slate-300 text-center mt-2 pb-4">PoupeJá · feito com orgulho em Portugal 🇵🇹</p>
+      <p className="text-[10px] text-center mt-2 pb-4" style={{ color: "#b7bdb4" }}>PoupeJá · feito com orgulho em Portugal 🇵🇹</p>
 
       {/* Modal Sobre nós */}
       {modalSobre && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setModalSobre(false)}>
-          <div className="w-full max-w-lg bg-white rounded-t-3xl overflow-hidden max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(20,35,28,0.45)" }} onClick={() => setModalSobre(false)}>
+          <div className="w-full max-w-lg rounded-t-3xl overflow-hidden max-h-[90vh] overflow-y-auto" style={{ background: "#f6f5f0" }} onClick={e => e.stopPropagation()}>
 
-            {/* Hero */}
-            <div className="relative p-6 pb-5" style={{ background: "linear-gradient(135deg,#064e3b,#059669,#34d399)" }}>
-              <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">✕</span>
+            {/* Cabeçalho editorial */}
+            <div className="relative p-6 pb-6" style={{ background: "#fbfaf6", borderBottom: "1px solid #e4e2d8" }}>
+              <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#eeece4" }}>
+                <span className="font-semibold text-sm" style={{ color: "#5c6b62" }}>✕</span>
               </button>
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-3">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style={{ background: "#0b6b4f" }}>
                 <PiggyBank size={24} className="text-white" />
               </div>
-              <p className="text-2xl font-black text-white leading-tight">PoupeJá</p>
-              <p className="text-sm text-white/70 mt-1">Feito com orgulho em Portugal 🇵🇹</p>
+              <p className="font-display text-3xl leading-tight" style={{ color: "#14231c" }}>PoupeJá</p>
+              <p className="text-sm mt-1" style={{ color: "#5c6b62" }}>Feito com orgulho em Portugal 🇵🇹</p>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-6">
               {/* Missão */}
               <div>
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">A nossa missão</p>
-                <p className="text-sm text-slate-700 leading-relaxed">
+                <p className="mb-2" style={LABEL_STYLE}>A nossa missão</p>
+                <p className="text-sm leading-relaxed" style={{ color: "#5c6b62" }}>
                   A PoupeJá nasceu com um objetivo simples: ajudar as famílias portuguesas a gastar menos nas compras do dia a dia. Num país onde o custo de vida continua a subir, acreditamos que informação clara e acessível faz toda a diferença.
                 </p>
               </div>
 
               {/* O que oferecemos */}
               <div>
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">O que oferecemos</p>
+                <p className="mb-3" style={LABEL_STYLE}>O que oferecemos</p>
                 <div className="space-y-2.5">
                   {[
                     { emoji: "⛽", titulo: "Combustíveis em tempo real", desc: "Preços atualizados da DGEG, ordenados pelo mais barato perto de ti" },
@@ -510,11 +533,11 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
                     { emoji: "📋", titulo: "Lista de compras", desc: "Organiza o que precisas antes de sair de casa" },
                     { emoji: "🧾", titulo: "Talões e garantias digitais", desc: "Guarda os teus recibos e nunca mais percas uma garantia" },
                   ].map(f => (
-                    <div key={f.titulo} className="flex gap-3 items-start bg-slate-50 rounded-2xl p-3">
+                    <div key={f.titulo} className="flex gap-3 items-start rounded-2xl p-3" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
                       <span className="text-xl flex-shrink-0">{f.emoji}</span>
                       <div>
-                        <p className="text-sm font-bold text-slate-800">{f.titulo}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{f.desc}</p>
+                        <p className="text-sm font-semibold" style={{ color: "#14231c" }}>{f.titulo}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "#8a978e" }}>{f.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -522,18 +545,19 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
               </div>
 
               {/* Contacto */}
-              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-                <p className="text-[11px] font-black text-emerald-700 uppercase tracking-widest mb-2">Fala connosco</p>
-                <p className="text-sm text-slate-600 mb-3">Tens uma sugestão, encontraste um erro ou queres saber mais? Adoramos receber feedback.</p>
+              <div className="rounded-2xl p-4" style={{ background: "#eeece4", border: "1px solid #e4e2d8" }}>
+                <p className="mb-2" style={{ ...LABEL_STYLE, color: "#0b6b4f" }}>Fala connosco</p>
+                <p className="text-sm mb-3" style={{ color: "#5c6b62" }}>Tens uma sugestão, encontraste um erro ou queres saber mais? Adoramos receber feedback.</p>
                 <button
                   onClick={() => window.location.href = "mailto:contacto@poupeja.com"}
-                  className="press w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-black flex items-center justify-center gap-2"
+                  className="press pj-tap w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2"
+                  style={{ background: "#0b6b4f", color: "#fff" }}
                 >
                   <Mail size={13} /> contacto@poupeja.com
                 </button>
               </div>
 
-              <p className="text-[10px] text-slate-300 text-center pb-2">PoupeJá v2.0.2 · © 2026 · Todos os direitos reservados</p>
+              <p className="text-[10px] text-center pb-2" style={{ color: "#b7bdb4" }}>PoupeJá v2.0.2 · © 2026 · Todos os direitos reservados</p>
             </div>
           </div>
         </div>
@@ -541,23 +565,23 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
 
       {/* Modal Termos */}
       {modalTermos && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setModalTermos(false)}>
-          <div className="w-full max-w-lg bg-white rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-lg font-black text-slate-800">Termos e Privacidade</p>
-              <button onClick={() => setModalTermos(false)} className="press w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center">
-                <span className="text-slate-500 text-lg font-bold">✕</span>
+        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(20,35,28,0.45)" }} onClick={() => setModalTermos(false)}>
+          <div className="w-full max-w-lg rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto" style={{ background: "#f6f5f0" }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <p className="font-display text-2xl" style={{ color: "#14231c" }}>Termos e Privacidade</p>
+              <button onClick={() => setModalTermos(false)} className="press pj-tap w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#eeece4" }}>
+                <span className="text-lg font-semibold" style={{ color: "#5c6b62" }}>✕</span>
               </button>
             </div>
-            <div className="text-sm text-slate-600 leading-relaxed space-y-4">
-              <p><strong className="text-slate-800">Última atualização:</strong> junho 2026</p>
-              <p><strong className="text-slate-800">O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências são guardados localmente no teu dispositivo.</p>
-              <p><strong className="text-slate-800">Para que usamos os dados</strong><br/>Apenas para te mostrar os teus próprios dados dentro da app. Não partilhamos dados com terceiros nem usamos publicidade.</p>
-              <p><strong className="text-slate-800">Cookies</strong><br/>Usamos apenas cookies essenciais para o funcionamento da app (sessão de autenticação).</p>
-              <p><strong className="text-slate-800">Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em contacto@poupeja.com</p>
-              <p><strong className="text-slate-800">Dados de terceiros</strong><br/>Os preços de combustíveis são fornecidos pela DGEG. Os postos EV e combustíveis usam a API TomTom. Os folhetos são links para os sites oficiais dos supermercados.</p>
+            <div className="text-sm leading-relaxed space-y-4" style={{ color: "#5c6b62" }}>
+              <p><strong style={{ color: "#14231c" }}>Última atualização:</strong> junho 2026</p>
+              <p><strong style={{ color: "#14231c" }}>O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências são guardados localmente no teu dispositivo.</p>
+              <p><strong style={{ color: "#14231c" }}>Para que usamos os dados</strong><br/>Apenas para te mostrar os teus próprios dados dentro da app. Não partilhamos dados com terceiros nem usamos publicidade.</p>
+              <p><strong style={{ color: "#14231c" }}>Cookies</strong><br/>Usamos apenas cookies essenciais para o funcionamento da app (sessão de autenticação).</p>
+              <p><strong style={{ color: "#14231c" }}>Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em contacto@poupeja.com</p>
+              <p><strong style={{ color: "#14231c" }}>Dados de terceiros</strong><br/>Os preços de combustíveis são fornecidos pela DGEG. Os postos EV e combustíveis usam a API TomTom. Os folhetos são links para os sites oficiais dos supermercados.</p>
             </div>
-            <button onClick={() => setModalTermos(false)} className="press w-full mt-6 py-3 rounded-2xl bg-slate-800 text-white font-black text-sm">
+            <button onClick={() => setModalTermos(false)} className="press pj-tap w-full mt-6 py-3 rounded-2xl font-semibold text-sm" style={{ background: "#14231c", color: "#fff" }}>
               Fechar
             </button>
           </div>
