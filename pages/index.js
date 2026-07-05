@@ -1364,7 +1364,7 @@ export default function PoupeJa() {
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
-                {tab === "casa"       && <SecaoCasa />}
+                {tab === "casa"       && <SecaoCasa setTab={go} />}
                 {tab === "irs"        && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">

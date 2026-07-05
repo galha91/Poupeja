@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { Building2, Plus, Pencil, Trash2, TrendingUp, TrendingDown, Calendar, X, Home, Wallet } from "lucide-react";
+import { Building2, Plus, Pencil, TrendingUp, TrendingDown, Calendar, X, Home, Wallet, ChevronRight } from "lucide-react";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
 const COEF_RENDAS = { 2023: 5.43, 2024: 2.16, 2025: 2.77 };
-
-const EMOJIS_CONTA = ["💡","💧","🔥","📶","🏢","♻️","🏠","🛁","📺","🚿"];
 const CHAVE = "poupeja_casa";
 
 // --- Editorial flat design tokens ---
@@ -31,6 +29,13 @@ function lerLocal() {
 }
 function guardarLocal(d) {
   try { localStorage.setItem(CHAVE, JSON.stringify(d)); } catch {}
+}
+
+// Contas fixas — fonte única de dados, partilhada com o separador "Contas"
+// (poupeja_contas). Aqui só lemos para mostrar o total; a gestão (adicionar/
+// editar/remover) vive só lá, para não haver duas listas dessincronizadas.
+function lerContasReais() {
+  try { return JSON.parse(localStorage.getItem("poupeja_contas") || "[]"); } catch { return []; }
 }
 
 function calcPMT(capital, spreadPct, euriborPct, prazoAnos) {
@@ -292,73 +297,52 @@ function BlocoRenda({ dados, onEditar }) {
   );
 }
 
-function BlocoContas({ dados, onAdicionar, onEditar, onRemover }) {
-  const contas = dados.contas || [];
+// Resumo — a gestão completa (adicionar/editar/remover, categorias, dias de
+// pagamento) vive no separador "Contas fixas"; aqui mostramos só o total real,
+// para não haver duas listas a divergir uma da outra.
+function BlocoContas({ contas, setTab }) {
   const total = contas.reduce((s, c) => s + (c.valor || 0), 0);
 
   return (
-    <div className="mx-4 mb-4 rounded-2xl overflow-hidden" style={CARD}>
-      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${C.divRow}` }}>
-        <div className="flex items-center gap-2">
+    <button
+      onClick={() => setTab?.("contas")}
+      className="pj-tap press mx-4 mb-4 rounded-2xl overflow-hidden w-[calc(100%-2rem)] text-left"
+      style={CARD}
+    >
+      <div className="flex items-center justify-between px-4 py-3.5">
+        <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.chip }}>
             <Wallet size={14} style={{ color: C.green }} />
           </div>
-          <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: C.text }}>Contas fixas</p>
-        </div>
-        <button onClick={onAdicionar} className="pj-tap press w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.green }}>
-          <Plus size={14} style={{ color: "#ffffff" }} />
-        </button>
-      </div>
-
-      {contas.length === 0 ? (
-        <div className="px-4 py-6 text-center">
-          <p className="text-sm" style={{ color: C.muted }}>Adiciona as tuas contas fixas</p>
-          <p className="text-xs mt-1" style={{ color: C.faint }}>Luz, água, internet, condomínio…</p>
-        </div>
-      ) : (
-        <>
-          {contas.map((c, i) => (
-            <div key={c.id} className="flex items-center gap-3 px-4 py-3 last:border-0" style={{ borderBottom: `1px solid ${C.divRow}` }}>
-              <span className="text-xl shrink-0">{c.emoji}</span>
-              <p className="text-sm flex-1" style={{ fontWeight: 600, color: C.text }}>{c.nome}</p>
-              <p className="text-sm font-display" style={{ fontWeight: 600, color: C.text }}>{fmtEur(c.valor)}<span className="text-[10px] font-medium" style={{ color: C.faint }}>/mês</span></p>
-              <div className="flex gap-1.5 shrink-0">
-                <button onClick={() => onEditar(i)} className="pj-tap press w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.chip }}>
-                  <Pencil size={12} style={{ color: C.muted }} />
-                </button>
-                <button onClick={() => onRemover(i)} className="pj-tap press w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.chip }}>
-                  <Trash2 size={12} style={{ color: C.neg }} />
-                </button>
-              </div>
-            </div>
-          ))}
-          <div className="flex items-center justify-between px-4 py-3" style={{ background: C.chip }}>
-            <p className="text-xs" style={LBL}>Total mensal</p>
-            <div className="text-right">
-              <p className="text-sm font-display" style={{ fontWeight: 600, color: C.text }}>{fmtEur(total)}/mês</p>
-              <p className="text-[10px]" style={{ color: C.faint }}>{fmtEur(total * 12)}/ano</p>
-            </div>
+          <div>
+            <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: C.text }}>Contas fixas</p>
+            <p className="text-xs mt-0.5" style={{ color: C.faint }}>
+              {contas.length === 0
+                ? "Luz, água, internet, condomínio…"
+                : `${contas.length} conta${contas.length !== 1 ? "s" : ""} · ${fmtEur(total)}/mês`}
+            </p>
           </div>
-        </>
-      )}
-    </div>
+        </div>
+        <ChevronRight size={16} style={{ color: C.faint }} />
+      </div>
+    </button>
   );
 }
 
-export default function SecaoCasa() {
+export default function SecaoCasa({ setTab }) {
   const [dados, setDados] = useState({});
+  const [contasReais, setContasReais] = useState([]);
   const [euribor, setEuribor] = useState(null);
   const [loadEuribor, setLoadEuribor] = useState(true);
   const [modal, setModal] = useState(null);
-  const [idxEditando, setIdxEditando] = useState(null);
 
   const [fCredito, setFCredito] = useState({ capital: "", spread: "", prazo: "", indexante: "6M", dataRevisao: "" });
   const [fRenda, setFRenda] = useState({ valor: "", mesRevisao: "1" });
-  const [fConta, setFConta] = useState({ nome: "", valor: "", emoji: "💡" });
 
   useEffect(() => {
     const d = lerLocal();
     setDados(d);
+    setContasReais(lerContasReais());
     if (d.credito) setFCredito({ capital: d.credito.capital, spread: d.credito.spread, prazo: d.credito.prazo, indexante: d.credito.indexante || "6M", dataRevisao: d.credito.dataRevisao || "" });
     if (d.renda) setFRenda({ valor: d.renda.valor, mesRevisao: String(d.renda.mesRevisao || 1) });
   }, []);
@@ -387,33 +371,10 @@ export default function SecaoCasa() {
     setModal(null);
   }
 
-  function guardarConta() {
-    const contas = [...(dados.contas || [])];
-    const nova = { id: Date.now(), nome: fConta.nome, valor: Number(fConta.valor), emoji: fConta.emoji };
-    if (idxEditando != null) contas[idxEditando] = { ...contas[idxEditando], ...nova };
-    else contas.push(nova);
-    salvar({ contas });
-    setModal(null);
-    setIdxEditando(null);
-  }
-
-  function removerConta(i) {
-    const contas = [...(dados.contas || [])];
-    contas.splice(i, 1);
-    salvar({ contas });
-  }
-
-  function abrirEditarConta(i) {
-    const c = dados.contas[i];
-    setFConta({ nome: c.nome, valor: c.valor, emoji: c.emoji });
-    setIdxEditando(i);
-    setModal("conta");
-  }
-
   const prestacaoAtual = dados.credito && euribor
     ? calcPMT(dados.credito.capital, dados.credito.spread, euribor[dados.credito.indexante || "6M"]?.valor ?? 0, dados.credito.prazo)
     : null;
-  const totalContas = (dados.contas || []).reduce((s, c) => s + c.valor, 0);
+  const totalContas = contasReais.reduce((s, c) => s + (c.valor || 0), 0);
   const totalCasa = (prestacaoAtual || 0) + (dados.renda?.valor || 0) + totalContas;
 
   return (
@@ -437,10 +398,7 @@ export default function SecaoCasa() {
       <BlocoRenda dados={dados}
         onEditar={() => { if (dados.renda) setFRenda({ valor: dados.renda.valor, mesRevisao: String(dados.renda.mesRevisao || 1) }); setModal("renda"); }} />
 
-      <BlocoContas dados={dados}
-        onAdicionar={() => { setFConta({ nome: "", valor: "", emoji: "💡" }); setIdxEditando(null); setModal("conta"); }}
-        onEditar={abrirEditarConta}
-        onRemover={removerConta} />
+      <BlocoContas contas={contasReais} setTab={setTab} />
 
       <p className="text-[10px] text-center px-4 mt-2" style={{ color: C.faint }}>
         Os valores são estimativas com base nos dados que introduziste. Confirma sempre com o teu banco.
@@ -517,37 +475,6 @@ export default function SecaoCasa() {
         </Modal>
       )}
 
-      {modal === "conta" && (
-        <Modal titulo={idxEditando != null ? "Editar conta" : "Nova conta"} onFechar={() => { setModal(null); setIdxEditando(null); }}>
-          <Campo label="Emoji">
-            <div className="flex flex-wrap gap-2">
-              {EMOJIS_CONTA.map(e => (
-                <button key={e} onClick={() => setFConta(p => ({ ...p, emoji: e }))}
-                  className="pj-tap press w-10 h-10 rounded-xl text-xl flex items-center justify-center"
-                  style={fConta.emoji === e
-                    ? { border: `1px solid ${C.green}`, background: C.chip }
-                    : { border: `1px solid ${C.divSection}`, background: "#ffffff" }}>
-                  {e}
-                </button>
-              ))}
-            </div>
-          </Campo>
-          <Campo label="Nome">
-            <input type="text" className={inputCls} style={INPUT_STYLE} placeholder="ex: Luz EDP" value={fConta.nome}
-              onChange={e => setFConta(p => ({ ...p, nome: e.target.value }))} />
-          </Campo>
-          <Campo label="Valor mensal (€)">
-            <input type="number" className={inputCls} style={INPUT_STYLE} placeholder="ex: 85" value={fConta.valor}
-              onChange={e => setFConta(p => ({ ...p, valor: e.target.value }))} />
-          </Campo>
-          <button onClick={guardarConta}
-            disabled={!fConta.nome || !fConta.valor}
-            className="pj-tap press w-full py-3.5 rounded-xl text-sm disabled:opacity-40 mt-2"
-            style={{ background: C.green, color: "#ffffff", fontWeight: 600 }}>
-            {idxEditando != null ? "Guardar alterações" : "Adicionar conta"}
-          </button>
-        </Modal>
-      )}
     </div>
   );
 }
