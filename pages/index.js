@@ -17,7 +17,6 @@ const SecaoListaCompras= dynamic(() => import("../SecaoListaCompras"), { loading
 const SecaoDefinicoes  = dynamic(() => import("../SecaoDefinicoes"), { loading: carregandoSeccao });
 const SecaoApoios      = dynamic(() => import("../SecaoApoios"), { loading: carregandoSeccao });
 const SecaoContas      = dynamic(() => import("../SecaoContas"), { loading: carregandoSeccao });
-const SecaoCasa        = dynamic(() => import("../SecaoCasa"), { loading: carregandoSeccao });
 const SecaoIRS         = dynamic(() => import("../SecaoIRS"), { loading: carregandoSeccao });
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
@@ -29,7 +28,7 @@ import {
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight, WifiOff, Download, Flame,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
-  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Building2, Calculator,
+  ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Calculator,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
 import { calcularEstado } from "../lib/desafios";
@@ -40,12 +39,11 @@ const NAV = [
   { id: "mercados",   label: "Mercado",    icon: ShoppingCart },
   { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
   { id: "contas",     label: "Contas",     icon: CalendarClock },
-  { id: "casa",       label: "Casa",       icon: Building2 },
   { id: "mobilidade", label: "Mobilidade", icon: Fuel },
   { id: "apoios",     label: "Apoios",     icon: Landmark },
   { id: "lojas",      label: "Lojas",      icon: Store },
 ];
-const NAV_IDS = ["inicio","poupanca","mercados","contas","casa","mobilidade","apoios","lojas","irs","taloes","lista"];
+const NAV_IDS = ["inicio","poupanca","mercados","contas","mobilidade","apoios","lojas","irs","taloes","lista"];
 
 const TITULOS = {
   inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
@@ -54,8 +52,7 @@ const TITULOS = {
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
-  contas:     { t: "Contas fixas",                      s: "As tuas despesas mensais num só sítio" },
-  casa:       { t: "Crédito Habitação",                 s: "Crédito, renda e Euribor" },
+  contas:     { t: "Contas",                            s: "Despesas fixas, crédito e renda" },
   irs:        { t: "Simulador de IRS",                   s: "Estima o teu IRS antes da hora" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
@@ -501,10 +498,9 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
     { icon: ListChecks,    label: "Lista de compras",  desc: "Organiza antes de ir às compras",      iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "lista" },
     { icon: Fuel,          label: "Combustíveis",        desc: "Preços e postos perto de ti",          iconBg: "bg-orange-50",   iconColor: "text-orange-500",  tab: "mobilidade" },
     { icon: Receipt,       label: "Os meus talões",    desc: "Compras e garantias",                   iconBg: "bg-blue-50",     iconColor: "text-blue-600",    tab: "taloes" },
-    { icon: CalendarClock, label: "Contas fixas",       desc: "Renda, luz, água — tudo controlado",   iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "contas" },
+    { icon: CalendarClock, label: "Contas & Crédito",   desc: "Despesas fixas, crédito e renda",       iconBg: "bg-violet-50",   iconColor: "text-violet-600",  tab: "contas" },
     { icon: Store,         label: "Lojas",              desc: "Moda, eletrónica e desporto",           iconBg: "bg-slate-100",   iconColor: "text-slate-500",   tab: "lojas" },
     { icon: Landmark,      label: "Apoios do Estado",   desc: "Benefícios a que tens direito",         iconBg: "bg-blue-50",     iconColor: "text-blue-600",    tab: "apoios" },
-    { icon: Building2,     label: "A tua casa",         desc: "Crédito, renda e Euribor",              iconBg: "bg-indigo-50",   iconColor: "text-indigo-600",  tab: "casa" },
     { icon: Calculator,    label: "Simulador de IRS",   desc: "Estima o teu reembolso",                iconBg: "bg-fuchsia-50",  iconColor: "text-fuchsia-600", tab: "irs" },
   ];
 
@@ -1364,7 +1360,6 @@ export default function PoupeJa() {
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
-                {tab === "casa"       && <SecaoCasa />}
                 {tab === "irs"        && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">

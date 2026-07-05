@@ -1,10 +1,36 @@
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import {
   Plus, Trash2, ChevronDown, ChevronUp, CheckCircle2,
   Circle, X, AlertCircle, ChevronLeft, ChevronRight,
   TrendingDown, BarChart3, CalendarDays, Pencil, Check,
-  SlidersHorizontal, ExternalLink, Flame,
+  SlidersHorizontal, ExternalLink, Flame, Building2,
 } from "lucide-react";
+
+// Crédito Habitação / Renda — sub-secção irmã, carregada só quando aberta
+const SecaoCasaConteudo = dynamic(() => import("./SecaoCasa"), {
+  loading: () => <div className="mx-4 mt-4 h-40 rounded-2xl animate-pulse" style={{ background: "#eeece4" }} />,
+});
+
+// Sub-navegação (mesmo padrão da secção Mobilidade: Contas / Casa)
+function SubTabBar({ options, value, onChange }) {
+  return (
+    <div className="flex gap-1 p-1 rounded-2xl mx-4 mt-4 mb-2" style={{ background: "#eeece4" }}>
+      {options.map(o => (
+        <button
+          key={o.id}
+          onClick={() => onChange(o.id)}
+          className={`pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            value === o.id ? "shadow-sm" : ""
+          }`}
+          style={value === o.id ? { background: "#fbfaf6", color: "#14231c" } : { color: "#8a978e" }}
+        >
+          <o.icon size={13} /> {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 const CATS = [
   { id: "habitacao",  emoji: "🏠", label: "Habitação",   cor: "#059669", bg: "#ecfdf5" },
@@ -409,7 +435,7 @@ function PoupancaPotencial({ contas }) {
 }
 
 /* ─── Componente principal ─── */
-export default function SecaoContas() {
+function ContasFixasConteudo() {
   const [contas, setContas]           = useState([]);
   const [pagamentos, setPagamentos]   = useState({});
   const [mesOff, setMesOff]           = useState(0);
@@ -957,6 +983,25 @@ export default function SecaoContas() {
       )}
 
 
+    </div>
+  );
+}
+
+/* ═══ Root — Contas fixas + Crédito Habitação, num só separador ═══ */
+export default function SecaoContas() {
+  const [sub, setSub] = useState("contas");
+  return (
+    <div>
+      <SubTabBar
+        value={sub}
+        onChange={setSub}
+        options={[
+          { id: "contas", icon: CalendarDays, label: "Contas fixas" },
+          { id: "casa",   icon: Building2,    label: "Crédito Habitação" },
+        ]}
+      />
+      {sub === "contas" && <ContasFixasConteudo />}
+      {sub === "casa"   && <SecaoCasaConteudo />}
     </div>
   );
 }
