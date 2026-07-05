@@ -1,6 +1,22 @@
 // Configuração central — tudo vem do .env, com valores seguros em dev.
 // Em produção, JWT_SECRET e DOWNLOAD_SECRET TÊM de ser definidos.
 
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Carrega o .env da raiz do backend (sem dependências). Variáveis já
+// definidas no ambiente têm sempre prioridade — em produção (Railway,
+// Render…) usa as variáveis da plataforma e não é preciso ficheiro.
+const ficheiroEnv = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", ".env");
+if (fs.existsSync(ficheiroEnv)) {
+  for (const linha of fs.readFileSync(ficheiroEnv, "utf8").split("\n")) {
+    const m = linha.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+    if (!m || m[1] in process.env) continue;
+    process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+  }
+}
+
 const dev = process.env.NODE_ENV !== "production";
 
 function obrigatorio(nome) {
