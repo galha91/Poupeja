@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Building2, Plus, Pencil, TrendingUp, TrendingDown, Calendar, X, Home, Wallet, ChevronRight } from "lucide-react";
+import { Building2, Plus, Pencil, TrendingUp, TrendingDown, Calendar, X, Home } from "lucide-react";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
@@ -29,13 +29,6 @@ function lerLocal() {
 }
 function guardarLocal(d) {
   try { localStorage.setItem(CHAVE, JSON.stringify(d)); } catch {}
-}
-
-// Contas fixas — fonte única de dados, partilhada com o separador "Contas"
-// (poupeja_contas). Aqui só lemos para mostrar o total; a gestão (adicionar/
-// editar/remover) vive só lá, para não haver duas listas dessincronizadas.
-function lerContasReais() {
-  try { return JSON.parse(localStorage.getItem("poupeja_contas") || "[]"); } catch { return []; }
 }
 
 function calcPMT(capital, spreadPct, euriborPct, prazoAnos) {
@@ -297,41 +290,9 @@ function BlocoRenda({ dados, onEditar }) {
   );
 }
 
-// Resumo — a gestão completa (adicionar/editar/remover, categorias, dias de
-// pagamento) vive no separador "Contas fixas"; aqui mostramos só o total real,
-// para não haver duas listas a divergir uma da outra.
-function BlocoContas({ contas, setTab }) {
-  const total = contas.reduce((s, c) => s + (c.valor || 0), 0);
 
-  return (
-    <button
-      onClick={() => setTab?.("contas")}
-      className="pj-tap press mx-4 mb-4 rounded-2xl overflow-hidden w-[calc(100%-2rem)] text-left"
-      style={CARD}
-    >
-      <div className="flex items-center justify-between px-4 py-3.5">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.chip }}>
-            <Wallet size={14} style={{ color: C.green }} />
-          </div>
-          <div>
-            <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: C.text }}>Contas fixas</p>
-            <p className="text-xs mt-0.5" style={{ color: C.faint }}>
-              {contas.length === 0
-                ? "Luz, água, internet, condomínio…"
-                : `${contas.length} conta${contas.length !== 1 ? "s" : ""} · ${fmtEur(total)}/mês`}
-            </p>
-          </div>
-        </div>
-        <ChevronRight size={16} style={{ color: C.faint }} />
-      </div>
-    </button>
-  );
-}
-
-export default function SecaoCasa({ setTab }) {
+export default function SecaoCasa() {
   const [dados, setDados] = useState({});
-  const [contasReais, setContasReais] = useState([]);
   const [euribor, setEuribor] = useState(null);
   const [loadEuribor, setLoadEuribor] = useState(true);
   const [modal, setModal] = useState(null);
@@ -342,7 +303,6 @@ export default function SecaoCasa({ setTab }) {
   useEffect(() => {
     const d = lerLocal();
     setDados(d);
-    setContasReais(lerContasReais());
     if (d.credito) setFCredito({ capital: d.credito.capital, spread: d.credito.spread, prazo: d.credito.prazo, indexante: d.credito.indexante || "6M", dataRevisao: d.credito.dataRevisao || "" });
     if (d.renda) setFRenda({ valor: d.renda.valor, mesRevisao: String(d.renda.mesRevisao || 1) });
   }, []);
@@ -374,15 +334,14 @@ export default function SecaoCasa({ setTab }) {
   const prestacaoAtual = dados.credito && euribor
     ? calcPMT(dados.credito.capital, dados.credito.spread, euribor[dados.credito.indexante || "6M"]?.valor ?? 0, dados.credito.prazo)
     : null;
-  const totalContas = contasReais.reduce((s, c) => s + (c.valor || 0), 0);
-  const totalCasa = (prestacaoAtual || 0) + (dados.renda?.valor || 0) + totalContas;
+  const totalCasa = (prestacaoAtual || 0) + (dados.renda?.valor || 0);
 
   return (
     <div className="pb-28">
       <div className="mx-4 mt-4 mb-5 anim-up" style={{ paddingTop: 12, paddingBottom: 20, borderBottom: `1px solid ${C.divSection}` }}>
         <p className="mb-1.5" style={{ ...LBL, letterSpacing: "0.14em" }}>Habitação</p>
-        <p className="font-display" style={{ fontSize: 26, fontWeight: 600, color: C.text, lineHeight: 1.15 }}>A tua casa</p>
-        <p className="text-xs mt-1" style={{ color: C.muted }}>Crédito, renda e contas fixas num só sítio</p>
+        <p className="font-display" style={{ fontSize: 26, fontWeight: 600, color: C.text, lineHeight: 1.15 }}>Crédito Habitação</p>
+        <p className="text-xs mt-1" style={{ color: C.muted }}>Crédito, renda e Euribor num só sítio</p>
         {totalCasa > 0 && (
           <div className="mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-1.5" style={{ background: C.chip }}>
             <span className="text-xs" style={{ fontWeight: 600, color: C.text }}>Total casa: {fmtEur(totalCasa)}/mês</span>
@@ -397,8 +356,6 @@ export default function SecaoCasa({ setTab }) {
 
       <BlocoRenda dados={dados}
         onEditar={() => { if (dados.renda) setFRenda({ valor: dados.renda.valor, mesRevisao: String(dados.renda.mesRevisao || 1) }); setModal("renda"); }} />
-
-      <BlocoContas contas={contasReais} setTab={setTab} />
 
       <p className="text-[10px] text-center px-4 mt-2" style={{ color: C.faint }}>
         Os valores são estimativas com base nos dados que introduziste. Confirma sempre com o teu banco.

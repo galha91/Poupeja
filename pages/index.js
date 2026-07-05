@@ -55,7 +55,7 @@ const TITULOS = {
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
   contas:     { t: "Contas fixas",                      s: "As tuas despesas mensais num só sítio" },
-  casa:       { t: "A tua casa",                        s: "Crédito, renda e contas fixas" },
+  casa:       { t: "Crédito Habitação",                 s: "Crédito, renda e Euribor" },
   irs:        { t: "Simulador de IRS",                   s: "Estima o teu IRS antes da hora" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
@@ -1364,7 +1364,7 @@ export default function PoupeJa() {
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
-                {tab === "casa"       && <SecaoCasa setTab={go} />}
+                {tab === "casa"       && <SecaoCasa />}
                 {tab === "irs"        && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
