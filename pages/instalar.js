@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import {
   Download, Share, Plus, Check, CheckCircle2, Bell, Zap,
-  WifiOff, Home, Smartphone, Monitor, ArrowRight,
+  WifiOff, Home, Smartphone, Monitor, ArrowRight, MoreVertical,
 } from "lucide-react";
 
 /*
@@ -94,12 +94,12 @@ export default function Instalar() {
           <div className="anim-up flex flex-col items-center text-center">
             <div
               className="w-20 h-20 rounded-3xl flex items-center justify-center overflow-hidden"
-              style={{ background: "linear-gradient(150deg,#047857 0%,#059669 100%)", boxShadow: "0 12px 30px -8px rgba(5,150,105,0.45)" }}
+              style={{ background: "#0b6b4f", boxShadow: "0 12px 30px -8px rgba(11,107,79,0.45)" }}
             >
               {/* icon.svg existe em /public */}
               <img src="/icon.svg" alt="PoupeJá" className="w-12 h-12" />
             </div>
-            <h1 className="mt-4 text-2xl font-black tracking-tight" style={{ color: "var(--text-primary)" }}>PoupeJá</h1>
+            <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>PoupeJá</h1>
             <p className="mt-1 text-[15px] font-medium" style={{ color: "var(--text-muted)" }}>
               A tua carteira digital portuguesa
             </p>
@@ -109,8 +109,8 @@ export default function Instalar() {
           <div className="anim-up anim-up-1 w-full mt-8 grid gap-2.5">
             {BENEFICIOS.map(({ Icon, texto }, i) => (
               <div key={i} className="card flex items-center gap-3.5 px-4 py-3.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                  <Icon size={17} className="text-emerald-600" />
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+                  <Icon size={17} style={{ color: "#0b6b4f" }} />
                 </div>
                 <p className="text-[13.5px] font-semibold leading-snug" style={{ color: "var(--text-primary)" }}>{texto}</p>
               </div>
@@ -140,7 +140,8 @@ export default function Instalar() {
           </p>
           <a
             href="/"
-            className="mt-3 text-[13px] font-bold text-emerald-600 flex items-center gap-1"
+            className="mt-3 text-[13px] font-bold flex items-center gap-1"
+            style={{ color: "#0b6b4f" }}
           >
             Ir para o site <ArrowRight size={14} />
           </a>
@@ -150,44 +151,61 @@ export default function Instalar() {
   );
 }
 
-/* ─── Android / desktop: botão que dispara o popup nativo ─── */
+/* ─── Android / desktop: botão 1-toque quando disponível + guia visual sempre presente ─── */
 function AcaoInstalar({ modo, aInstalar, temPrompt, onInstalar }) {
-  // Quando o browser ainda não ofereceu o evento (ou não suporta),
-  // damos um fallback honesto em vez de um botão que não faz nada.
-  if (!temPrompt) {
-    return (
-      <div className="card p-5 text-center">
-        <div className="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
-          {modo === "desktop" ? <Monitor size={20} className="text-emerald-600" /> : <Smartphone size={20} className="text-emerald-600" />}
-        </div>
-        <p className="text-sm font-black" style={{ color: "var(--text-primary)" }}>Instalar a partir do menu</p>
-        <p className="text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
-          {modo === "desktop"
-            ? "No Chrome ou Edge, clica no ícone de instalar (⊕) na barra de endereço, ou menu ⋮ → “Instalar PoupeJá”."
-            : "No Chrome, abre o menu ⋮ (canto superior direito) e toca em “Instalar aplicação” ou “Adicionar ao ecrã principal”."}
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <button
-      onClick={onInstalar}
-      disabled={aInstalar}
-      className="press w-full py-4 rounded-2xl text-white font-black text-base flex items-center justify-center gap-2 disabled:opacity-70"
-      style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 10px 24px -8px rgba(5,150,105,0.55)" }}
-    >
-      {aInstalar ? (
-        <>
-          <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-          A instalar…
-        </>
-      ) : (
-        <>
-          <Download size={19} /> Instalar agora — é grátis
-        </>
+    <div className="flex flex-col gap-3">
+      {temPrompt && (
+        <button
+          onClick={onInstalar}
+          disabled={aInstalar}
+          className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-70"
+          style={{ background: "#0b6b4f" }}
+        >
+          {aInstalar ? (
+            <>
+              <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              A instalar…
+            </>
+          ) : (
+            <>
+              <Download size={19} /> Instalar agora — é grátis
+            </>
+          )}
+        </button>
       )}
-    </button>
+
+      {modo === "android" ? (
+        <GuiaAndroid comBotaoAcima={temPrompt} />
+      ) : (
+        !temPrompt && <GuiaDesktop />
+      )}
+    </div>
+  );
+}
+
+const PASSO_ICON_BG = "#eeece4";
+const PASSO_NUM_BG  = "#0b6b4f";
+
+function Passo({ Icon, numero, titulo, desc }) {
+  return (
+    <div className="flex gap-3.5 items-start">
+      <div className="relative flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: PASSO_ICON_BG }}>
+          <Icon size={18} style={{ color: "#0b6b4f" }} />
+        </div>
+        <span
+          className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full text-white text-[10px] font-semibold flex items-center justify-center"
+          style={{ background: PASSO_NUM_BG }}
+        >
+          {numero}
+        </span>
+      </div>
+      <div className="flex-1 pt-0.5">
+        <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{titulo}</p>
+        <p className="text-[12px] mt-0.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>{desc}</p>
+      </div>
+    </div>
   );
 }
 
@@ -200,33 +218,55 @@ function GuiaIos() {
   ];
   return (
     <div className="card overflow-hidden">
-      <div className="px-4 py-3 bg-emerald-600 flex items-center gap-2">
+      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "#0b6b4f" }}>
         <Smartphone size={16} className="text-white" />
-        <p className="text-[13px] font-black text-white">Instalar no iPhone (Safari)</p>
+        <p className="text-[13px] font-semibold text-white">Instalar no iPhone (Safari)</p>
       </div>
       <div className="p-4 flex flex-col gap-3.5">
-        {passos.map(({ Icon, titulo, desc }, i) => (
-          <div key={i} className="flex gap-3.5 items-start">
-            <div className="relative flex-shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
-                <Icon size={18} className="text-emerald-600" />
-              </div>
-              <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center">
-                {i + 1}
-              </span>
-            </div>
-            <div className="flex-1 pt-0.5">
-              <p className="text-sm font-black" style={{ color: "var(--text-primary)" }}>{titulo}</p>
-              <p className="text-[12px] mt-0.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>{desc}</p>
-            </div>
-          </div>
-        ))}
+        {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
       </div>
-      <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl bg-amber-50 border border-amber-100">
-        <p className="text-[11.5px] text-amber-700 font-medium leading-relaxed">
-          ⚠️ <strong>Tem de ser no Safari.</strong> Se abriste este link no Chrome, Instagram ou noutra app, toca em ⋯ → “Abrir no Safari” primeiro.
+      <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "#eeece4" }}>
+        <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "#a8432f" }}>
+          <strong>Tem de ser no Safari.</strong> Se abriste este link no Chrome, Instagram ou noutra app, toca em ⋯ → “Abrir no Safari” primeiro.
         </p>
       </div>
+    </div>
+  );
+}
+
+/* ─── Android: guia passo-a-passo (mesma qualidade visual do iOS) ─── */
+function GuiaAndroid({ comBotaoAcima }) {
+  const passos = [
+    { Icon: MoreVertical, titulo: "Abre o menu ⋮", desc: "No canto superior direito do Chrome." },
+    { Icon: Plus,         titulo: "“Instalar aplicação”", desc: "Ou “Adicionar ao ecrã principal”, consoante a versão do Chrome." },
+    { Icon: Check,        titulo: "Confirma a instalação", desc: "O ícone do PoupeJá aparece logo no teu ecrã inicial." },
+  ];
+  return (
+    <div className="card overflow-hidden">
+      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "#0b6b4f" }}>
+        <Smartphone size={16} className="text-white" />
+        <p className="text-[13px] font-semibold text-white">
+          {comBotaoAcima ? "Ou instala pelo menu do Chrome" : "Instalar no Android (Chrome)"}
+        </p>
+      </div>
+      <div className="p-4 flex flex-col gap-3.5">
+        {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Desktop: guia curto (Chrome/Edge) ─── */
+function GuiaDesktop() {
+  return (
+    <div className="card p-5 text-center">
+      <div className="w-11 h-11 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "#eeece4" }}>
+        <Monitor size={20} style={{ color: "#0b6b4f" }} />
+      </div>
+      <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Instalar a partir do browser</p>
+      <p className="text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+        No Chrome ou Edge, clica no ícone de instalar (⊕) na barra de endereço, ou no menu ⋮ → “Instalar PoupeJá”.
+      </p>
     </div>
   );
 }
@@ -235,15 +275,15 @@ function GuiaIos() {
 function EstadoInstalado() {
   return (
     <div className="card p-6 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
-        <CheckCircle2 size={28} className="text-emerald-600" />
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "#eeece4" }}>
+        <CheckCircle2 size={28} style={{ color: "#0b6b4f" }} />
       </div>
-      <p className="text-base font-black" style={{ color: "var(--text-primary)" }}>Já tens o PoupeJá instalado 🎉</p>
+      <p className="font-display text-base font-semibold" style={{ color: "var(--text-primary)" }}>Já tens o PoupeJá instalado</p>
       <p className="text-[13px] mt-1.5" style={{ color: "var(--text-muted)" }}>Está no teu ecrã inicial, pronto a usar.</p>
       <a
         href="/"
-        className="press inline-flex items-center justify-center gap-2 mt-4 w-full py-3.5 rounded-2xl text-white font-black text-[15px]"
-        style={{ background: "linear-gradient(135deg,#065f46,#059669)", boxShadow: "0 10px 24px -8px rgba(5,150,105,0.55)" }}
+        className="pj-tap inline-flex items-center justify-center gap-2 mt-4 w-full py-3.5 rounded-2xl text-white font-semibold text-[15px]"
+        style={{ background: "#0b6b4f" }}
       >
         Abrir o PoupeJá <ArrowRight size={17} />
       </a>
