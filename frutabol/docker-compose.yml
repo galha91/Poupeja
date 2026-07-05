@@ -1,0 +1,16 @@
+# Base de dados de desenvolvimento — `docker compose up -d`
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: frutabol
+      POSTGRES_PASSWORD: frutabol
+      POSTGRES_DB: frutabol
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
