@@ -11,6 +11,18 @@ const SITE_URL = "https://xn--poupej-uta.com";
  */
 export default function Apoios({ apoios, categorias, atualizado }) {
   const nomeCat = Object.fromEntries(categorias.map(c => [c.id, c.nome]));
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Apoios do Estado a que podes ter direito",
+    numberOfItems: apoios.length,
+    itemListElement: apoios.map((a, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: a.titulo,
+      url: `${SITE_URL}/apoios#${a.id}`,
+    })),
+  };
   return (
     <LayoutPublico>
       <Head>
@@ -20,6 +32,7 @@ export default function Apoios({ apoios, categorias, atualizado }) {
         <meta property="og:title" content={`Apoios do Estado — ${apoios.length} benefícios a que podes ter direito`} />
         <meta property="og:description" content="Quem pode pedir e como requerer, com links diretos para os serviços oficiais." />
         <meta property="og:url" content={`${SITE_URL}/apoios`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

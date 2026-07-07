@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
-import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
+import { lerFolhetos, construirEmailFolhetos, calcularResumoUtilizador } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
 import { urlUnsub } from "../../lib/unsubscribeToken";
 import { bearerValido } from "../../lib/seguranca";
@@ -50,6 +50,21 @@ export default async function handler(req, res) {
     console.error("cron-email: erro a ler prefs:", e);
   }
 
+  // Talões sincronizados → resumo pessoal por utilizador
+  const taloesPorUser = new Map();
+  try {
+    const { data: taloesRows } = await admin
+      .from("dados_utilizador")
+      .select("user_id, valor")
+      .eq("chave", "poupeja_taloes");
+    for (const row of taloesRows || []) {
+      const v = typeof row.valor === "string" ? JSON.parse(row.valor) : row.valor;
+      if (Array.isArray(v)) taloesPorUser.set(row.user_id, v);
+    }
+  } catch (e) {
+    console.error("cron-email: erro a ler talões:", e);
+  }
+
   // 3. Listar utilizadores (paginado) e enviar
   let enviados = 0, ignorados = 0, falhas = 0, pagina = 1;
   const PER_PAGE = 1000;
@@ -69,7 +84,8 @@ export default async function handler(req, res) {
 
       const nome = u.user_metadata?.nome || u.email.split("@")[0];
       const unsubscribeUrl = urlUnsub(base, u.id);
-      const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl });
+      const resumo = calcularResumoUtilizador(taloesPorUser.get(u.id));
+      const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl, resumo });
       try {
         await resend.emails.send({
           from: "PoupeJá <noreply@xn--poupej-uta.com>",

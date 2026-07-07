@@ -58,6 +58,7 @@ export default async function handler(req, res) {
     const ultimos7 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 7 * DIA).length;
     const ultimos30 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 30 * DIA).length;
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
+    const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
 
     // Utilizadores ATIVOS (fizeram login no período) — engagement real, não só registo
     const ativosHoje = todos.filter(u => u.last_sign_in_at && new Date(u.last_sign_in_at) >= inicioHoje).length;
@@ -153,6 +154,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       total,
+      convidados,
       hoje,
       ultimos7,
       ultimos30,

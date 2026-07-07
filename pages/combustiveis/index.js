@@ -1,5 +1,6 @@
 import Head from "next/head";
-import LayoutPublico, { CtaApp } from "../LayoutPublico";
+import LayoutPublico, { CtaApp } from "../../LayoutPublico";
+import { CIDADES } from "../../lib/seo-slugs";
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -18,6 +19,16 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
   const dataStr = atualizadoEm
     ? new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long", year: "numeric" })
     : "";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: "Preços dos combustíveis hoje em Portugal",
+    description: "Preços mínimos e médios de gasóleo, gasolina e GPL por marca em Portugal, com dados oficiais da DGEG. Atualizado diariamente.",
+    url: `${SITE_URL}/combustiveis`,
+    inLanguage: "pt-PT",
+    creator: { "@type": "Organization", name: "DGEG — Direção-Geral de Energia e Geologia" },
+    ...(atualizadoEm ? { dateModified: atualizadoEm } : {}),
+  };
 
   return (
     <LayoutPublico>
@@ -28,6 +39,7 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
         <meta property="og:title" content="Preços dos combustíveis hoje em Portugal" />
         <meta property="og:description" content="Gasóleo e gasolina mais baratos por marca, com dados oficiais da DGEG. Atualizado diariamente." />
         <meta property="og:url" content={`${SITE_URL}/combustiveis`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>
@@ -83,6 +95,23 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
             </p>
           </>
         )}
+
+        {/* Páginas por cidade */}
+        <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
+          Preços por cidade
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {CIDADES.map(c => (
+            <a
+              key={c.slug}
+              href={`/combustiveis/${c.slug}`}
+              className="pj-tap no-underline"
+              style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+            >
+              {c.nome}
+            </a>
+          ))}
+        </div>
 
         <CtaApp texto="Vê os postos mais baratos perto de ti — grátis" />
       </div>

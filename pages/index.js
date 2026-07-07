@@ -100,7 +100,7 @@ function ModalCriarConta({ onFechar, onConvertido }) {
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser(
-        { email: email.toLowerCase().trim(), password: pass, data: { nome: nome.trim() || "Utilizador" } },
+        { email: email.toLowerCase().trim(), password: pass, data: { nome: nome.trim() || "Utilizador", ref: (() => { try { return localStorage.getItem("poupeja_ref") || undefined; } catch { return undefined; } })() } },
         { emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined }
       );
       if (error) throw error;
@@ -244,7 +244,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
             </p>
             <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "#14231c" }}>Instalar o PoupeJá</p>
           </div>
-          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }} aria-label="Fechar">
             <X size={16} style={{ color: "#5c6b62" }} />
           </button>
         </div>
@@ -1287,6 +1287,32 @@ export default function PoupeJa() {
       setTimeout(() => setModalInstalarAberto(true), 2500);
     }
   }, [hydrated, installModo]);
+
+  /* Referral: capturar ?ref= de quem convidou + guardar o uid próprio p/ partilhas */
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      const atalho = params.get("atalho");
+      if (atalho && NAV_IDS.includes(atalho)) {
+        setTabRaw(atalho);
+        params.delete("atalho");
+        const q0 = params.toString();
+        window.history.replaceState({}, "", window.location.pathname + (q0 ? `?${q0}` : ""));
+      }
+      if (ref && !localStorage.getItem("poupeja_ref")) {
+        localStorage.setItem("poupeja_ref", ref.slice(0, 16));
+        evento("referral_visit", { ref: ref.slice(0, 16) });
+        params.delete("ref");
+        const q = params.toString();
+        window.history.replaceState({}, "", window.location.pathname + (q ? `?${q}` : ""));
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    if (!user?.id) return;
+    try { localStorage.setItem("poupeja_uid", user.id.slice(0, 8)); } catch {}
+  }, [user?.id]);
 
   /* Instalação da PWA confirmada → evento de analytics */
   useEffect(() => {

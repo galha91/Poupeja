@@ -33,5 +33,40 @@
     "utilities"
   ],
   "screenshots": [],
-  "id": "/"
+  "id": "/",
+  "shortcuts": [
+    {
+      "name": "Digitalizar talão",
+      "short_name": "Talão",
+      "url": "/?atalho=taloes",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Combustível mais barato",
+      "short_name": "Combustível",
+      "url": "/?atalho=mobilidade",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Folhetos da semana",
+      "short_name": "Folhetos",
+      "url": "/?atalho=mercados",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }

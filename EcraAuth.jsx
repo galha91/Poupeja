@@ -159,7 +159,7 @@ function Registo({ onVoltar }) {
         email: email.toLowerCase().trim(),
         password: pass,
         options: {
-          data: { nome: nome.trim() },
+          data: { nome: nome.trim(), ref: (() => { try { return localStorage.getItem("poupeja_ref") || undefined; } catch { return undefined; } })() },
           emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
         },
       });

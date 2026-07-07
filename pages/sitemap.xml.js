@@ -1,3 +1,5 @@
+import { LOJAS_SLUGS, CIDADES } from '../lib/seo-slugs';
+
 const SITE_URL = 'https://xn--poupej-uta.com';
 
 const PAGINAS = [
@@ -7,6 +9,8 @@ const PAGINAS = [
   { path: '/apoios',       changefreq: 'monthly', priority: '0.8' },
   { path: '/instalar',     changefreq: 'monthly', priority: '0.8' },
   { path: '/privacidade',  changefreq: 'yearly',  priority: '0.3' },
+  ...LOJAS_SLUGS.map(l => ({ path: `/folhetos/${l.slug}`,     changefreq: 'weekly', priority: '0.8' })),
+  ...CIDADES.map(c =>     ({ path: `/combustiveis/${c.slug}`, changefreq: 'daily',  priority: '0.8' })),
 ];
 
 function generateSitemap() {

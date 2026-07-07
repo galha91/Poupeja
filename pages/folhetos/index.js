@@ -1,14 +1,9 @@
 import Head from "next/head";
-import LayoutPublico, { CtaApp } from "../LayoutPublico";
-import dadosFolhetos from "../public/folhetos.json";
+import LayoutPublico, { CtaApp } from "../../LayoutPublico";
+import dadosFolhetos from "../../public/folhetos.json";
+import { slugify, LOGO } from "../../lib/seo-slugs";
 
 const SITE_URL = "https://xn--poupej-uta.com";
-
-const LOGO = {
-  "Continente": "continente", "Pingo Doce": "pingodoce", "Lidl": "lidl",
-  "Aldi": "aldi", "Auchan": "auchan", "Intermarché": "intermarche",
-  "Froiz": "froiz", "E.Leclerc": "eleclerc", "El Corte Inglés": "elcorteingles",
-};
 
 /*
  * Página pública SEO — folhetos dos supermercados desta semana.
@@ -17,6 +12,18 @@ const LOGO = {
  */
 export default function Folhetos({ folhetos, atualizadoEm }) {
   const lojas = folhetos.map(f => f.loja).join(", ");
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Folhetos dos supermercados desta semana",
+    numberOfItems: folhetos.length,
+    itemListElement: folhetos.map((f, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: `Folheto ${f.loja}`,
+      url: `${SITE_URL}/folhetos/${slugify(f.loja)}`,
+    })),
+  };
   return (
     <LayoutPublico>
       <Head>
@@ -26,6 +33,7 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
         <meta property="og:title" content="Folhetos dos supermercados desta semana" />
         <meta property="og:description" content={`${lojas} — links diretos para os folhetos oficiais.`} />
         <meta property="og:url" content={`${SITE_URL}/folhetos`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>
@@ -43,25 +51,32 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
 
         <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
           {folhetos.map((f, i) => (
-            <a
+            <div
               key={f.id}
-              href={f.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3.5 px-4 py-3.5 no-underline"
+              className="flex items-center gap-3.5 px-4 py-3.5"
               style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}
             >
-              <span className="flex items-center justify-center flex-shrink-0" style={{ width: 44, height: 44, borderRadius: 12, background: "#eeece4" }}>
-                {LOGO[f.loja]
-                  ? <img src={`/logos/${LOGO[f.loja]}.svg`} alt={f.loja} width={26} height={26} style={{ objectFit: "contain" }} />
-                  : <span style={{ fontSize: 15, fontWeight: 700, color: "#2c3b33" }}>{f.loja[0]}</span>}
-              </span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "#14231c" }}>Folheto {f.loja}</span>
-                <span style={{ display: "block", fontSize: 12.5, color: "#5c6b62", marginTop: 1 }}>{f.titulo}{f.validade ? ` · ${f.validade}` : ""}</span>
-              </span>
-              <span style={{ fontSize: 12.5, fontWeight: 600, color: "#0b6b4f", flexShrink: 0 }}>Ver →</span>
-            </a>
+              <a href={`/folhetos/${slugify(f.loja)}`} className="flex items-center gap-3.5 no-underline" style={{ flex: 1, minWidth: 0 }}>
+                <span className="flex items-center justify-center flex-shrink-0" style={{ width: 44, height: 44, borderRadius: 12, background: "#eeece4" }}>
+                  {LOGO[f.loja]
+                    ? <img src={`/logos/${LOGO[f.loja]}.svg`} alt={f.loja} width={26} height={26} style={{ objectFit: "contain" }} />
+                    : <span style={{ fontSize: 15, fontWeight: 700, color: "#2c3b33" }}>{f.loja[0]}</span>}
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "#14231c" }}>Folheto {f.loja}</span>
+                  <span style={{ display: "block", fontSize: 12.5, color: "#5c6b62", marginTop: 1 }}>{f.titulo}{f.validade ? ` · ${f.validade}` : ""}</span>
+                </span>
+              </a>
+              <a
+                href={f.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline flex-shrink-0"
+                style={{ fontSize: 12.5, fontWeight: 600, color: "#0b6b4f" }}
+              >
+                Ver →
+              </a>
+            </div>
           ))}
         </div>
 

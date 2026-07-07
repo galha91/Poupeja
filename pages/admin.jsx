@@ -185,7 +185,7 @@ export default function Admin() {
               </div>
               <div className="text-5xl font-black mt-2">{stats.total}</div>
               <div className="text-emerald-100 text-sm font-medium mt-1">
-                {stats.confirmados} com email confirmado
+                {stats.confirmados} com email confirmado{stats.convidados > 0 ? ` · ${stats.convidados} convidados por converter` : ""}
               </div>
             </div>
 

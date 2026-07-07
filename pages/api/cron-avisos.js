@@ -1,6 +1,7 @@
 import webpush from "web-push";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
+import { DESAFIOS_MENSAIS } from "../../lib/desafios";
 
 /*
  * Avisos personalizados por utilizador — cron diário (Vercel, 18:00 UTC).
@@ -13,6 +14,8 @@ import { bearerValido } from "../../lib/seguranca";
  *                     (com supressão de 6 dias para não repetir todos os dias)
  *   🛡️ Garantias    — poupeja_taloes: garantia a expirar em 30, 7 ou 1 dia(s)
  *   📅 Contas fixas — poupeja_contas: diaVencimento é amanhã e ainda não paga
+ *   🔥 Streak       — poupeja_taloes: domingo, sequência semanal ≥2 em risco
+ *   🎯 Desafio      — poupeja_taloes: ≥80% da meta do mês por completar
  *
  * Estado de supressão do combustível fica em dados_utilizador com a chave
  * 'poupeja_avisos_notificados' (fora do CHAVES_SYNC do cliente — só o
@@ -152,6 +155,60 @@ export default async function handler(req, res) {
         body: `€${Number(c.valor || 0).toFixed(2)} — dia ${diaAmanha}. Marca como paga quando tratares disto.`,
         url: "/",
       });
+    }
+
+    // 🔥 Streak semanal em risco (só ao domingo — última oportunidade da semana)
+    // + 🎯 Desafio do mês quase completo (≥80%, uma vez por mês)
+    {
+      const dataDoTalao = t => (t.dataCompra || (t.criadoEm || "").slice(0, 10)) || null;
+      const segundaDaSemana = iso => {
+        const d = new Date(iso);
+        const dow = (d.getDay() + 6) % 7; // 0 = segunda
+        d.setDate(d.getDate() - dow);
+        return d.toISOString().slice(0, 10);
+      };
+      const diaSemana = new Date(hoje.iso).getDay(); // 0 = domingo
+
+      if (diaSemana === 0 && taloes.length) {
+        const semanas = new Set(taloes.map(dataDoTalao).filter(Boolean).map(segundaDaSemana));
+        const estaSemana = segundaDaSemana(hoje.iso);
+        if (!semanas.has(estaSemana)) {
+          // contar sequência a terminar na semana passada
+          let streak = 0;
+          const cursor = new Date(estaSemana);
+          for (;;) {
+            cursor.setDate(cursor.getDate() - 7);
+            if (semanas.has(cursor.toISOString().slice(0, 10))) streak++;
+            else break;
+          }
+          if (streak >= 2) {
+            notifs.push({
+              title: `🔥 Não percas a tua sequência de ${streak} semanas`,
+              body: "Hoje é o último dia da semana. Guarda um talão e mantém o ritmo!",
+              url: "/",
+            });
+          }
+        }
+      }
+
+      const mesAtual = hoje.iso.slice(0, 7);
+      const desafio = DESAFIOS_MENSAIS[Number(hoje.iso.slice(5, 7)) - 1];
+      if (desafio && !notificados[`desafio_${mesAtual}`]) {
+        const totalMes = taloes
+          .filter(t => t.tipo === "compra" && t.valorPoupado != null)
+          .filter(t => (dataDoTalao(t) || "").slice(0, 7) === mesAtual)
+          .reduce((acc, t) => acc + (t.valorPoupado || 0), 0);
+        if (totalMes >= desafio.meta * 0.8 && totalMes < desafio.meta) {
+          const falta = desafio.meta - totalMes;
+          notifs.push({
+            title: `🎯 Faltam €${falta.toFixed(2)} para completares "${desafio.nome}"`,
+            body: `Já poupaste €${totalMes.toFixed(2)} este mês. A meta de €${desafio.meta} está mesmo aí.`,
+            url: "/",
+          });
+          notificados[`desafio_${mesAtual}`] = hoje.iso;
+          notificadosMudou = true;
+        }
+      }
     }
 
     if (!notifs.length) continue;

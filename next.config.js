@@ -21,6 +21,16 @@ const nextConfig = {
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
+  async redirects() {
+    // Domínio canónico: poupejá.com (xn--poupej-uta.com). Se as variantes
+    // estiverem ligadas ao projeto no Vercel, redirecionam aqui — sem
+    // configuração no painel.
+    return [
+      { source: "/:path*", has: [{ type: "host", value: "poupeja.com" }],          destination: "https://xn--poupej-uta.com/:path*", permanent: true },
+      { source: "/:path*", has: [{ type: "host", value: "www.poupeja.com" }],      destination: "https://xn--poupej-uta.com/:path*", permanent: true },
+      { source: "/:path*", has: [{ type: "host", value: "www.xn--poupej-uta.com" }], destination: "https://xn--poupej-uta.com/:path*", permanent: true },
+    ];
+  },
 };
 
 module.exports = withPWA(nextConfig);

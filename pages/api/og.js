@@ -3,15 +3,30 @@ import { ImageResponse } from "next/og";
 export const config = { runtime: "edge" };
 
 export default function handler(req) {
-  let variante = "default";
-  try { variante = new URL(req.url).searchParams.get("v") || "default"; } catch {}
+  let variante = "default", valorRaw = null;
+  try {
+    const sp = new URL(req.url).searchParams;
+    variante = sp.get("v") || "default";
+    valorRaw = sp.get("valor");
+  } catch {}
   const lista = variante === "lista";
+  const poupanca = variante === "poupanca";
+  const valorNum = poupanca ? Math.min(Math.max(parseFloat(valorRaw) || 0, 0), 99999) : 0;
+  const valorFmt = valorNum.toFixed(2).replace(".", ",");
 
-  const eyebrow = lista ? "Lista de compras partilhada" : "A app de poupança portuguesa";
-  const titulo1 = lista ? "A nossa lista" : "Poupa nas compras";
-  const titulo2 = lista ? "de compras" : "do dia a dia";
+  const eyebrow = lista ? "Lista de compras partilhada"
+    : poupanca ? "Poupança real, medida talão a talão"
+    : "A app de poupança portuguesa";
+  const titulo1 = lista ? "A nossa lista"
+    : poupanca ? `Já poupei €${valorFmt}`
+    : "Poupa nas compras";
+  const titulo2 = lista ? "de compras"
+    : poupanca ? "nas compras 🐷"
+    : "do dia a dia";
   const subtitulo = lista
     ? "Abre o link e edita a lista comigo — em tempo real, grátis."
+    : poupanca
+    ? "Folhetos, talões e combustíveis — experimenta grátis, sem registo."
     : "Folhetos, combustíveis e mais de 50 lojas. Grátis.";
 
   return new ImageResponse(
@@ -23,7 +38,7 @@ export default function handler(req) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "linear-gradient(135deg, #064e3b 0%, #047857 100%)",
+          background: "linear-gradient(135deg, #084c39 0%, #0b6b4f 100%)",
           padding: "60px 80px",
           color: "#fff",
           position: "relative",
