@@ -552,7 +552,12 @@ export default function EcraAuth({ onAuth }) {
       const u = data.user;
       onAuth({ id: u.id, nome: "Convidado", email: null, criado: u.created_at, convidado: true });
     } catch (_) {
-      setConvidadoErro("O modo convidado não está disponível de momento. Cria uma conta gratuita — demora menos de um minuto.");
+      // Fallback: convidado LOCAL (sem Supabase). Os dados vivem no
+      // localStorage e sobem para a conta quando a pessoa se registar —
+      // o pull() do lib/sync.js envia as chaves locais para contas novas.
+      try { localStorage.setItem("poupeja_convidado_local", "1"); } catch {}
+      evento("login", { method: "convidado_local" });
+      onAuth({ id: null, nome: "Convidado", email: null, criado: new Date().toISOString(), convidado: true, local: true });
     } finally {
       setConvidadoLoading(false);
     }

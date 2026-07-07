@@ -84,7 +84,7 @@ function SectionLabel({ children, icon: Icon, className = "" }) {
 }
 
 /* ─── Converter convidado em conta — updateUser mantém o user_id, zero migração ─── */
-function ModalCriarConta({ onFechar, onConvertido }) {
+function ModalCriarConta({ local = false, onFechar, onConvertido }) {
   const [nome, setNome]       = useState("");
   const [email, setEmail]     = useState("");
   const [pass, setPass]       = useState("");
@@ -99,11 +99,26 @@ function ModalCriarConta({ onFechar, onConvertido }) {
     setErro("");
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser(
-        { email: email.toLowerCase().trim(), password: pass, data: { nome: nome.trim() || "Utilizador", ref: (() => { try { return localStorage.getItem("poupeja_ref") || undefined; } catch { return undefined; } })() } },
-        { emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined }
-      );
-      if (error) throw error;
+      const dadosMeta = { nome: nome.trim() || "Utilizador", ref: (() => { try { return localStorage.getItem("poupeja_ref") || undefined; } catch { return undefined; } })() };
+      if (local) {
+        // Convidado local (sem sessão Supabase): conta nova por signUp.
+        // Os dados locais sobem sozinhos no primeiro login (pull do lib/sync).
+        const { data, error } = await supabase.auth.signUp({
+          email: email.toLowerCase().trim(),
+          password: pass,
+          options: { data: dadosMeta, emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined },
+        });
+        if (error) throw error;
+        if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          throw new Error("already registered");
+        }
+      } else {
+        const { error } = await supabase.auth.updateUser(
+          { email: email.toLowerCase().trim(), password: pass, data: dadosMeta },
+          { emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined }
+        );
+        if (error) throw error;
+      }
       try { localStorage.setItem("poupeja_conversao_pendente", "1"); } catch {}
       evento("sign_up", { method: "convidado_upgrade" });
       setFeito(true);
@@ -1161,14 +1176,27 @@ export default function PoupeJa() {
   /* Lê a sessão Supabase e fica a ouvir alterações (login, logout, recuperação) */
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(sessionParaUser(session));
+      if (session) {
+        try { localStorage.removeItem("poupeja_convidado_local"); } catch {}
+        setUser(sessionParaUser(session));
+      } else {
+        let convidadoLocal = false;
+        try { convidadoLocal = !!localStorage.getItem("poupeja_convidado_local"); } catch {}
+        setUser(convidadoLocal ? { id: null, nome: "Convidado", email: null, convidado: true, local: true } : null);
+      }
       setHydrated(true);
     });
     calcGarantiasAviso();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") setRecovery(true);
-      setUser(sessionParaUser(session));
+      if (session) {
+        try { localStorage.removeItem("poupeja_convidado_local"); } catch {}
+        setUser(sessionParaUser(session));
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+      }
+      // sem sessão e sem SIGNED_OUT explícito → não mexe (preserva convidado local)
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -1347,6 +1375,7 @@ export default function PoupeJa() {
       return;
     }
     pararSync();
+    try { localStorage.removeItem("poupeja_convidado_local"); } catch {}
     try { await supabase.auth.signOut(); } catch {}
     setUser(null);
     setTabRaw("inicio");
@@ -1610,6 +1639,7 @@ export default function PoupeJa() {
         {/* Modal de instalação */}
         {modalConta && user?.convidado && (
           <ModalCriarConta
+            local={!!user?.local}
             onFechar={() => setModalConta(false)}
             onConvertido={(nome, email) => setUser(u => ({ ...u, nome, email }))}
           />
