@@ -1,9 +1,12 @@
 const SITE_URL = 'https://xn--poupej-uta.com';
 
 const PAGINAS = [
-  { path: '/',            changefreq: 'daily',   priority: '1.0' },
-  { path: '/instalar',    changefreq: 'monthly', priority: '0.8' },
-  { path: '/privacidade', changefreq: 'yearly',  priority: '0.3' },
+  { path: '/',             changefreq: 'daily',   priority: '1.0' },
+  { path: '/combustiveis', changefreq: 'daily',   priority: '0.9' },
+  { path: '/folhetos',     changefreq: 'weekly',  priority: '0.9' },
+  { path: '/apoios',       changefreq: 'monthly', priority: '0.8' },
+  { path: '/instalar',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/privacidade',  changefreq: 'yearly',  priority: '0.3' },
 ];
 
 function generateSitemap() {
