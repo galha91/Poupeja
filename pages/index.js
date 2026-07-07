@@ -31,6 +31,7 @@ import {
   ExternalLink, TrendingDown, Lightbulb, Landmark, CalendarClock, X, Calculator,
 } from "lucide-react";
 import { partilharPoupanca } from "../lib/partilhar";
+import { evento, ecra } from "../lib/analytics";
 import { calcularEstado } from "../lib/desafios";
 
 /* ─── nav config ─── */
@@ -1133,6 +1134,7 @@ export default function PoupeJa() {
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
             body: JSON.stringify({ subscription: sub }),
           });
+          evento("push_subscribed");
         }
       } catch {}
     }, 3000); // pequeno delay para não assustar logo ao abrir a app
@@ -1152,6 +1154,13 @@ export default function PoupeJa() {
       setTimeout(() => setModalInstalarAberto(true), 2500);
     }
   }, [hydrated, installModo]);
+
+  /* Instalação da PWA confirmada → evento de analytics */
+  useEffect(() => {
+    const onInstalled = () => evento("app_installed", { platform: installModo || "desconhecido" });
+    window.addEventListener("appinstalled", onInstalled);
+    return () => window.removeEventListener("appinstalled", onInstalled);
+  }, [installModo]);
 
   /* Dados chegaram de outro dispositivo → re-renderiza o ecrã atual */
   useEffect(() => {
@@ -1200,6 +1209,7 @@ export default function PoupeJa() {
     const d = ni === -1 ? "up" : pi === -1 ? "fade" : ni > pi ? "right" : "left";
     setDir(d);
     setTabRaw(newTab);
+    ecra(newTab);
   }
 
   function goGarantias() {

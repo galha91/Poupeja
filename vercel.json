@@ -8,6 +8,9 @@
     },
     "pages/api/cron-validar-urls.js": {
       "maxDuration": 60
+    },
+    "pages/api/push-enviar.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -18,6 +21,10 @@
     {
       "path": "/api/cron-validar-urls",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/push-enviar",
+      "schedule": "0 9 * * 4"
     }
   ]
 }

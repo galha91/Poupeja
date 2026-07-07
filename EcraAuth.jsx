@@ -5,6 +5,7 @@ import {
   ArrowRight, ArrowLeft, Eye, EyeOff, Check, AlertCircle, KeyRound,
 } from "lucide-react";
 import { supabase } from "./lib/supabase";
+import { evento } from "./lib/analytics";
 import BannerInstalar from "./BannerInstalar";
 import Onboarding from "./Onboarding";
 
@@ -153,6 +154,7 @@ function Registo({ onVoltar }) {
       if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
         throw new Error("Já existe uma conta com este email. Entra em vez disso.");
       }
+      evento("sign_up", { method: "email" });
       setEmailEnviado(true);
     } catch (err) {
       setErro(err.message);
@@ -445,6 +447,7 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
       });
       if (error) throw new Error(traduzErro(error.message));
       const u = data.user;
+      evento("login", { method: "email" });
       onAuth({
         nome: u.user_metadata?.nome || u.email.split("@")[0],
         email: u.email,

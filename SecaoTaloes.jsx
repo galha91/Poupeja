@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { comprimirImagem } from "./lib/imagem";
+import { evento } from "./lib/analytics";
 import {
   Camera, Upload, Receipt, ShieldCheck, ShoppingCart,
   X, TrendingUp, Package, Check, Trash2, Image, ChevronRight, Loader2, Euro,
@@ -40,6 +42,7 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
   const [erroNome, setErroNome]       = useState(false);
 
   async function lerValorTalao(base64) {
+    let ok = false;
     try {
       const res = await fetch("/api/ler-talao", {
         method: "POST",
@@ -51,10 +54,12 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
       const v = data.poupanca ?? data.valor ?? null;
       if (v !== null && !isNaN(parseFloat(v))) {
         setValorPoupado(parseFloat(v).toFixed(2));
+        ok = true;
       }
       if (data.loja && !nome) setNome(data.loja);
       if (data.data) setDataCompra(data.data);
     } catch {}
+    evento("receipt_scanned", { ok });
     setLendo(false);
     setFase("confirmar");
   }
@@ -62,18 +67,16 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
   function handleFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      setPreview(ev.target.result);
+    comprimirImagem(file).then(dataUrl => {
+      setPreview(dataUrl);
       if (modo === "garantia") {
         setFase("detalhes");
       } else {
         setLendo(true);
         setFase("lendo");
-        lerValorTalao(ev.target.result);
+        lerValorTalao(dataUrl);
       }
-    };
-    reader.readAsDataURL(file);
+    }).catch(() => {});
     e.target.value = "";
   }
 
