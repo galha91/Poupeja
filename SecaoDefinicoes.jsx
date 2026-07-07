@@ -75,7 +75,7 @@ function IconChip({ active = false, children }) {
   );
 }
 
-export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
+export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta }) {
   const [prefs, setPrefs]   = useState(lerPrefs);
   const [saved, setSaved]   = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -99,7 +99,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
       reg.pushManager.getSubscription().then(sub => {
         if (sub) { setPushEstado("ativo"); return; }
         // Permissão já concedida mas sem subscrição — subscreve automaticamente
-        if (Notification.permission === "granted") {
+        // (nunca para convidados: abriria o modal de conta sem interação)
+        if (Notification.permission === "granted" && !user?.convidado) {
           ativarPush();
         } else {
           setPushEstado("inativo");
@@ -109,6 +110,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
   }, [VAPID_PUBLIC]);
 
   async function ativarPush() {
+    if (user?.convidado) { onCriarConta?.(); return; } // exclusivo de contas registadas
     if (!VAPID_PUBLIC) return;
     setPushLoading(true);
     try {
@@ -222,9 +224,27 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
           <p className="font-display text-2xl leading-tight truncate" style={{ color: "#14231c" }}>
             {user?.nome || "O teu perfil"}
           </p>
-          <p className="text-sm mt-0.5 truncate" style={{ color: "#5c6b62" }}>{user?.email || ""}</p>
+          <p className="text-sm mt-0.5 truncate" style={{ color: "#5c6b62" }}>{user?.convidado ? "Modo convidado" : (user?.email || "")}</p>
         </div>
       </div>
+
+      {/* Convidado → convite a criar conta */}
+      {user?.convidado && (
+        <button
+          onClick={onCriarConta}
+          className="pj-tap press mx-4 mb-8 w-[calc(100%-2rem)] text-left rounded-2xl px-4 py-3.5 flex items-center gap-3"
+          style={{ background: "#eef3ef", border: "1.5px dashed #0b6b4f55" }}
+        >
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#0b6b4f" }}>
+            <Heart size={16} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13.5px] font-semibold" style={{ color: "#14231c" }}>Cria a tua conta grátis</p>
+            <p className="text-[12px] mt-0.5" style={{ color: "#5c6b62" }}>Guarda o teu progresso e desbloqueia avisos, sincronização e email semanal</p>
+          </div>
+          <ChevronRight size={16} style={{ color: "#0b6b4f" }} />
+        </button>
+      )}
 
       {/* Guardado */}
       {saved && (
@@ -428,7 +448,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar }) {
                 <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Todas as quintas, com os folhetos da semana.</p>
               </div>
             </div>
-            <Toggle on={prefs.emailSemanal !== false} onChange={v => set("emailSemanal", v)} />
+            <Toggle on={!user?.convidado && prefs.emailSemanal !== false} onChange={v => { if (user?.convidado) { onCriarConta?.(); return; } set("emailSemanal", v); }} />
           </div>
         </Row>
         <Row border={false}>

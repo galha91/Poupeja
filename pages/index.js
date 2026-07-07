@@ -24,7 +24,7 @@ import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
-  Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users,
+  Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users, UserPlus,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight, WifiOff, Download, Flame,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
@@ -80,6 +80,112 @@ function SectionLabel({ children, icon: Icon, className = "" }) {
       {Icon && <Icon size={12} className="text-slate-300" />}
       {children}
     </p>
+  );
+}
+
+/* ─── Converter convidado em conta — updateUser mantém o user_id, zero migração ─── */
+function ModalCriarConta({ onFechar, onConvertido }) {
+  const [nome, setNome]       = useState("");
+  const [email, setEmail]     = useState("");
+  const [pass, setPass]       = useState("");
+  const [erro, setErro]       = useState("");
+  const [loading, setLoading] = useState(false);
+  const [feito, setFeito]     = useState(false);
+
+  async function submeter(e) {
+    e.preventDefault();
+    if (!email.includes("@")) return setErro("Escreve um email válido.");
+    if (pass.length < 6)      return setErro("A password precisa de pelo menos 6 caracteres.");
+    setErro("");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser(
+        { email: email.toLowerCase().trim(), password: pass, data: { nome: nome.trim() || "Utilizador" } },
+        { emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined }
+      );
+      if (error) throw error;
+      try { localStorage.setItem("poupeja_conversao_pendente", "1"); } catch {}
+      evento("sign_up", { method: "convidado_upgrade" });
+      setFeito(true);
+      onConvertido?.(nome.trim() || "Utilizador", email.toLowerCase().trim());
+    } catch (err) {
+      const m = String(err?.message || "").toLowerCase();
+      setErro(m.includes("already") || m.includes("registered")
+        ? "Já existe uma conta com este email. Sai do modo convidado e entra com ela."
+        : "Não foi possível criar a conta agora. Tenta novamente daqui a pouco.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(20,35,28,0.55)" }} onClick={onFechar}>
+      <div className="w-full rounded-t-3xl overflow-hidden" style={{ maxHeight: "92vh", overflowY: "auto", background: "#fbfaf6" }} onClick={e => e.stopPropagation()}>
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full" style={{ background: "#e4e2d8" }} />
+        </div>
+
+        <div className="px-5 py-4 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
+            <UserPlus size={20} style={{ color: "#0b6b4f" }} />
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Modo convidado</p>
+            <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "#14231c" }}>Cria a tua conta grátis</p>
+          </div>
+          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }} aria-label="Fechar">
+            <X size={16} style={{ color: "#5c6b62" }} />
+          </button>
+        </div>
+
+        <div className="mx-5" style={{ height: 1, background: "#e4e2d8" }} />
+
+        {feito ? (
+          <div className="px-5 pt-5 pb-9 text-center">
+            <p className="font-display text-[17px] font-semibold" style={{ color: "#14231c" }}>Só falta confirmares o email</p>
+            <p className="text-[13px] leading-relaxed mt-2" style={{ color: "#5c6b62" }}>
+              Enviámos-te um link para <strong style={{ color: "#14231c" }}>{email}</strong>. Tudo o que fizeste
+              como convidado fica guardado nesta conta — não perdes nada.
+            </p>
+            <button onClick={onFechar} className="pj-tap w-full py-3.5 mt-5 rounded-2xl text-white font-semibold" style={{ background: "#0b6b4f" }}>
+              Continuar a usar a app
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={submeter} className="px-5 pt-4 pb-9 flex flex-col gap-3">
+            <p className="text-[12.5px] leading-relaxed" style={{ color: "#5c6b62" }}>
+              O teu progresso de convidado <strong style={{ color: "#14231c" }}>passa todo</strong> para a conta.
+              E desbloqueias o que é só para membros:
+            </p>
+            <div className="rounded-2xl px-4 py-3 flex flex-col gap-1.5" style={{ background: "#eeece4" }}>
+              {["Avisos no telemóvel: gasóleo barato, garantias, contas a vencer", "Dados seguros e sincronizados em todos os dispositivos", "Folhetos da semana no teu email"].map((b, i) => (
+                <p key={i} className="text-[12px] font-semibold flex items-start gap-1.5" style={{ color: "#14231c" }}>
+                  <span style={{ color: "#0b6b4f" }}>✓</span> {b}
+                </p>
+              ))}
+            </div>
+            <input type="text" placeholder="O teu nome" value={nome} onChange={e => setNome(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
+              style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }} />
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
+              className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
+              style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }} />
+            <input type="password" placeholder="Password (mín. 6 caracteres)" value={pass} onChange={e => setPass(e.target.value)} required
+              className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
+              style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }} />
+            {erro && <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>}
+            <button type="submit" disabled={loading}
+              className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px]"
+              style={{ background: "#0b6b4f", opacity: loading ? 0.7 : 1 }}>
+              {loading ? "A criar a conta…" : "Criar conta e guardar o meu progresso"}
+            </button>
+            <button type="button" onClick={onFechar} className="pj-tap w-full py-2 font-semibold text-[13px]" style={{ color: "#8a978e" }}>
+              Agora não
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -465,7 +571,10 @@ function LogoFolheto({ loja }) {
 }
 
 /* ─── Ecrã Início ─── */
-function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoes, avisosCount = 0 }) {
+function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, avisosCount = 0 }) {
+  const [convPendente] = useState(() => {
+    try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
+  });
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
 
   const [totalMes, setTotalMes]       = useState(0);
@@ -526,6 +635,28 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
             </button>
           </div>
         </div>
+
+        {/* Convidado: convite a criar conta (ou lembrete de confirmação) */}
+        {user?.convidado && (
+          convPendente ? (
+            <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "#eef3ef" }}>
+              <Bell size={16} style={{ color: "#0b6b4f", flexShrink: 0 }} />
+              <p style={{ fontSize: 12.5, fontWeight: 600, color: "#14231c" }}>
+                Confirma o teu email para concluíres a conta — enviámos-te um link.
+              </p>
+            </div>
+          ) : (
+            <button onClick={onCriarConta} className="pj-tap w-full text-left flex items-center anim-up"
+              style={{ gap: 12, marginTop: 18, padding: "12px 14px", borderRadius: 14, background: "#eef3ef", border: "1.5px dashed #0b6b4f55" }}>
+              <UserPlus size={18} style={{ color: "#0b6b4f", flexShrink: 0 }} />
+              <span style={{ flex: 1 }}>
+                <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#14231c" }}>A usar como convidado</span>
+                <span style={{ display: "block", fontSize: 12, color: "#5c6b62", marginTop: 1 }}>Cria conta grátis para guardares o progresso e receberes avisos</span>
+              </span>
+              <ChevronRight size={16} style={{ color: "#0b6b4f", flexShrink: 0 }} />
+            </button>
+          )
+        )}
 
         {/* Poupança do mês */}
         <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
@@ -1008,6 +1139,7 @@ export default function PoupeJa() {
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
+  const [modalConta, setModalConta] = useState(false);
   const { modo: installModo, prompt: installPrompt } = useInstallDetect();
 
   function calcGarantiasAviso() {
@@ -1068,6 +1200,7 @@ export default function PoupeJa() {
   /* Pede permissão de push automaticamente ao fazer login (se ainda não foi pedida) */
   useEffect(() => {
     if (!user?.id) return;
+    if (user?.convidado) return; // push personalizado é exclusivo de contas registadas
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
     const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     if (!VAPID_PUBLIC) return;
@@ -1183,6 +1316,10 @@ export default function PoupeJa() {
   }
 
   async function handleLogout() {
+    if (user?.convidado && typeof window !== "undefined" &&
+        !window.confirm("Estás em modo convidado. Se saíres, não consegues voltar a esta conta nem aos dados dela. Sair mesmo?")) {
+      return;
+    }
     pararSync();
     try { await supabase.auth.signOut(); } catch {}
     setUser(null);
@@ -1307,6 +1444,7 @@ export default function PoupeJa() {
             user={user}
             onVoltar={() => { setDir("fade"); setTabRaw("inicio"); setVerDefs(false); }}
             onLogout={handleLogout}
+            onCriarConta={() => setModalConta(true)}
           />
         ) : (
           <>
@@ -1363,7 +1501,7 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} avisosCount={garantiasAviso.length} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} avisosCount={garantiasAviso.length} />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
@@ -1444,6 +1582,13 @@ export default function PoupeJa() {
         )}
 
         {/* Modal de instalação */}
+        {modalConta && user?.convidado && (
+          <ModalCriarConta
+            onFechar={() => setModalConta(false)}
+            onConvertido={(nome, email) => setUser(u => ({ ...u, nome, email }))}
+          />
+        )}
+
         {modalInstalarAberto && installModo && installModo !== "instalado" && (
           <ModalInstalar
             modo={installModo}

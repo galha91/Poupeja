@@ -58,7 +58,7 @@ function Campo({ label, type = "text", value, onChange, placeholder, action }) {
 }
 
 /* ── Ecrã Landing ── */
-function Landing({ onRegister, onLogin }) {
+function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidadoErro }) {
   return (
     <div className="min-h-dvh flex flex-col" style={{ background: "#f6f5f0" }}>
       {/* Hero */}
@@ -107,8 +107,22 @@ function Landing({ onRegister, onLogin }) {
           Criar conta gratuita <ArrowRight size={18} />
         </button>
         <button
+          onClick={onConvidado}
+          disabled={convidadoLoading}
+          className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[14px]"
+          style={{ background: "#fbfaf6", color: "#0b6b4f", border: "1.5px dashed #0b6b4f66", opacity: convidadoLoading ? 0.6 : 1 }}
+        >
+          {convidadoLoading ? "A preparar a tua conta…" : "Espreitar como convidado — sem registo"}
+        </button>
+        <p className="text-center text-[11px] font-medium -mt-1" style={{ color: "#8a978e" }}>
+          Conhece a app primeiro · regista-te quando quiseres
+        </p>
+        {convidadoErro && (
+          <p className="text-center text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{convidadoErro}</p>
+        )}
+        <button
           onClick={onLogin}
-          className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[13px]"
+          className="press pj-tap w-full py-3 rounded-2xl font-semibold text-[13px]"
           style={{ background: "#eeece4", color: "#14231c" }}
         >
           Já tenho conta — Entrar
@@ -521,6 +535,29 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
 
 /* ── Export principal ── */
 export default function EcraAuth({ onAuth }) {
+  const [convidadoLoading, setConvidadoLoading] = useState(false);
+  const [convidadoErro, setConvidadoErro] = useState("");
+
+  /* Modo convidado: conta anónima Supabase — o user_id fica desde já e
+     mantém-se quando a pessoa se registar (updateUser), sem migrar dados. */
+  async function entrarConvidado() {
+    setConvidadoErro("");
+    setConvidadoLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously({
+        options: { data: { nome: "Convidado" } },
+      });
+      if (error) throw error;
+      evento("login", { method: "convidado" });
+      const u = data.user;
+      onAuth({ id: u.id, nome: "Convidado", email: null, criado: u.created_at, convidado: true });
+    } catch (_) {
+      setConvidadoErro("O modo convidado não está disponível de momento. Cria uma conta gratuita — demora menos de um minuto.");
+    } finally {
+      setConvidadoLoading(false);
+    }
+  }
+
   // Onboarding só na 1ª visita (EcraAuth renderiza apenas no cliente)
   const [ecra, setEcra] = useState(() => {
     try {
@@ -538,7 +575,15 @@ export default function EcraAuth({ onAuth }) {
   if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} />;
   if (ecra === "login")     return <Login        onVoltar={() => setEcra("landing")} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
   if (ecra === "recuperar") return <RecuperarPass onVoltar={() => setEcra("login")} />;
-  return <Landing onRegister={() => setEcra("registo")} onLogin={() => setEcra("login")} />;
+  return (
+    <Landing
+      onRegister={() => setEcra("registo")}
+      onLogin={() => setEcra("login")}
+      onConvidado={entrarConvidado}
+      convidadoLoading={convidadoLoading}
+      convidadoErro={convidadoErro}
+    />
+  );
 }
 
 /* ── Helpers de sessão Supabase ── */
@@ -547,8 +592,9 @@ export function sessionParaUser(session) {
   const u = session.user;
   return {
     id: u.id,
-    nome: u.user_metadata?.nome || (u.email ? u.email.split("@")[0] : "Utilizador"),
+    nome: u.is_anonymous ? "Convidado" : (u.user_metadata?.nome || (u.email ? u.email.split("@")[0] : "Utilizador")),
     email: u.email,
     criado: u.created_at,
+    convidado: !!u.is_anonymous,
   };
 }
