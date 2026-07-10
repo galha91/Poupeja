@@ -211,6 +211,24 @@ export default async function handler(req, res) {
       }
     }
 
+    // 🎁 Dia 1: retrato do mês anterior pronto (para quem tem compras nesse mês)
+    if (hoje.dia === 1 && taloes.length) {
+      const dAnt = new Date(hoje.ano, hoje.mes - 2, 1);
+      const chaveAnt = `${dAnt.getFullYear()}-${String(dAnt.getMonth() + 1).padStart(2, "0")}`;
+      const nomeAnt = dAnt.toLocaleDateString("pt-PT", { month: "long" });
+      const totalAnt = taloes
+        .filter(t => t.tipo === "compra" && t.valorPoupado != null)
+        .filter(t => ((t.dataCompra || (t.criadoEm || "").slice(0, 10)) || "").slice(0, 7) === chaveAnt)
+        .reduce((acc, t) => acc + (t.valorPoupado || 0), 0);
+      if (totalAnt > 0) {
+        notifs.push({
+          title: `🎁 O teu retrato de ${nomeAnt} está pronto`,
+          body: `Poupaste €${totalAnt.toFixed(2)} — vê o resumo do teu mês e partilha.`,
+          url: "/",
+        });
+      }
+    }
+
     if (!notifs.length) continue;
 
     // Guardar estado de supressão do combustível

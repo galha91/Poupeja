@@ -9,11 +9,16 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * valor real) em vez de um link seco, e para carregar o ?ref= de quem
  * convidou até à app.
  */
-export default function Partilha({ valor, ref_ }) {
+export default function Partilha({ valor, ref_, variante, mes, taloes, streak }) {
   const valorFmt = valor.toFixed(2).replace(".", ",");
   const destino = ref_ ? `/?ref=${encodeURIComponent(ref_)}` : "/";
-  const ogImg = `${SITE_URL}/api/og?v=poupanca&valor=${valor.toFixed(2)}`;
-  const titulo = `Já poupei €${valorFmt} nas compras com o PoupeJá`;
+  const retrato = variante === "retrato";
+  const ogImg = retrato
+    ? `${SITE_URL}/api/og?v=retrato&total=${valor.toFixed(2)}&mes=${encodeURIComponent(mes)}&taloes=${taloes}&streak=${streak}`
+    : `${SITE_URL}/api/og?v=poupanca&valor=${valor.toFixed(2)}`;
+  const titulo = retrato
+    ? `O meu retrato de ${mes || "mês"}: €${valorFmt} poupados com o PoupeJá`
+    : `Já poupei €${valorFmt} nas compras com o PoupeJá`;
 
   return (
     <>
@@ -35,7 +40,9 @@ export default function Partilha({ valor, ref_ }) {
           Poupança real com o PoupeJá
         </p>
         <h1 className="font-display mt-3" style={{ fontSize: 34, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em" }}>
-          Alguém já poupou <span style={{ color: "#0b6b4f" }}>€{valorFmt}</span> nas compras
+          {retrato
+            ? <>Alguém poupou <span style={{ color: "#0b6b4f" }}>€{valorFmt}</span> em {mes || "um mês"}</>
+            : <>Alguém já poupou <span style={{ color: "#0b6b4f" }}>€{valorFmt}</span> nas compras</>}
         </h1>
         <p className="mt-3 max-w-sm" style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6 }}>
           Folhetos dos supermercados, combustível mais barato, talões e apoios do Estado — tudo grátis.
@@ -54,7 +61,11 @@ export default function Partilha({ valor, ref_ }) {
 
 export async function getServerSideProps({ query, res }) {
   res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate");
-  const valor = Math.min(Math.max(parseFloat(query.valor) || 0, 0), 99999);
+  const valor = Math.min(Math.max(parseFloat(query.valor ?? query.total) || 0, 0), 99999);
   const ref_ = typeof query.ref === "string" ? query.ref.slice(0, 16) : null;
-  return { props: { valor, ref_ } };
+  const variante = query.v === "retrato" ? "retrato" : "poupanca";
+  const mes = typeof query.mes === "string" ? query.mes.slice(0, 12).replace(/[^a-zçã]/gi, "") : "";
+  const taloes = Math.min(parseInt(query.taloes) || 0, 999);
+  const streak = Math.min(parseInt(query.streak) || 0, 99);
+  return { props: { valor, ref_, variante, mes, taloes, streak } };
 }

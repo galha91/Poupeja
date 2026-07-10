@@ -3,28 +3,37 @@ import { ImageResponse } from "next/og";
 export const config = { runtime: "edge" };
 
 export default function handler(req) {
-  let variante = "default", valorRaw = null;
+  let variante = "default", valorRaw = null, mesRaw = "", taloesRaw = null, streakRaw = null;
   try {
     const sp = new URL(req.url).searchParams;
     variante = sp.get("v") || "default";
-    valorRaw = sp.get("valor");
+    valorRaw = sp.get("valor") || sp.get("total");
+    mesRaw = (sp.get("mes") || "").slice(0, 12).replace(/[^a-zçã]/gi, "");
+    taloesRaw = parseInt(sp.get("taloes")) || 0;
+    streakRaw = parseInt(sp.get("streak")) || 0;
   } catch {}
   const lista = variante === "lista";
-  const poupanca = variante === "poupanca";
+  const retrato = variante === "retrato";
+  const poupanca = variante === "poupanca" || retrato;
   const valorNum = poupanca ? Math.min(Math.max(parseFloat(valorRaw) || 0, 0), 99999) : 0;
   const valorFmt = valorNum.toFixed(2).replace(".", ",");
 
+  const statsRetrato = [taloesRaw > 0 ? `${taloesRaw} tal${taloesRaw !== 1 ? "ões" : "ão"}` : null, streakRaw >= 2 ? `${streakRaw} semanas seguidas` : null].filter(Boolean).join(" · ");
   const eyebrow = lista ? "Lista de compras partilhada"
+    : retrato ? `O meu retrato de ${mesRaw || "mês"}`
     : poupanca ? "Poupança real, medida talão a talão"
     : "A app de poupança portuguesa";
   const titulo1 = lista ? "A nossa lista"
-    : poupanca ? `Já poupei €${valorFmt}`
+    : poupanca ? `${retrato ? "Poupei" : "Já poupei"} €${valorFmt}`
     : "Poupa nas compras";
   const titulo2 = lista ? "de compras"
+    : retrato ? "num só mês 🐷"
     : poupanca ? "nas compras 🐷"
     : "do dia a dia";
   const subtitulo = lista
     ? "Abre o link e edita a lista comigo — em tempo real, grátis."
+    : retrato
+    ? `${statsRetrato ? statsRetrato + " — " : ""}vê o teu retrato em poupejá.com`
     : poupanca
     ? "Folhetos, talões e combustíveis — experimenta grátis, sem registo."
     : "Folhetos, combustíveis e mais de 50 lojas. Grátis.";

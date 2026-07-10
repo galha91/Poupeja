@@ -20,6 +20,8 @@ const SecaoContas      = dynamic(() => import("../SecaoContas"), { loading: carr
 const SecaoIRS         = dynamic(() => import("../SecaoIRS"), { loading: carregandoSeccao });
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
+import RetratoMes from "../RetratoMes";
+import { retratoPorVer, calcularRetrato } from "../lib/retrato";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
@@ -586,7 +588,7 @@ function LogoFolheto({ loja }) {
 }
 
 /* ─── Ecrã Início ─── */
-function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, avisosCount = 0 }) {
+function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0 }) {
   const [convPendente] = useState(() => {
     try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
   });
@@ -650,6 +652,19 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
             </button>
           </div>
         </div>
+
+        {/* Retrato do mês pronto */}
+        {retratoDisponivel && (
+          <button onClick={onAbrirRetrato} className="pj-tap w-full text-left flex items-center anim-up"
+            style={{ gap: 12, marginTop: 18, padding: "13px 14px", borderRadius: 14, background: "#0b6b4f" }}>
+            <span style={{ fontSize: 22, flexShrink: 0 }}>🎁</span>
+            <span style={{ flex: 1 }}>
+              <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "#fff" }}>O teu retrato de {retratoDisponivel.mes.nome} está pronto</span>
+              <span style={{ display: "block", fontSize: 12, color: "#a7cbbb", marginTop: 1 }}>€{retratoDisponivel.total.toFixed(2).replace(".", ",")} poupados — vê e partilha</span>
+            </span>
+            <ChevronRight size={16} style={{ color: "#a7cbbb", flexShrink: 0 }} />
+          </button>
+        )}
 
         {/* Convidado: convite a criar conta (ou lembrete de confirmação) */}
         {user?.convidado && (
@@ -787,7 +802,7 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
 }
 
 /* ─── Ecrã Poupança ─── */
-function SecaoPoupanca({ setTab }) {
+function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
   const [dados, setDados] = useState(null);
   const [feedbackPartilha, setFeedbackPartilha] = useState("");
   const [barSelecionada, setBarSelecionada] = useState(null);
@@ -885,6 +900,11 @@ function SecaoPoupanca({ setTab }) {
           {!semDados && (
             <button onClick={partilhar} className="press inline-flex items-center" style={{ gap: 6, background: "#eeece4", color: "#14231c", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
               <Share2 size={13} /> {feedbackPartilha || "Partilhar"}
+            </button>
+          )}
+          {retrato && (
+            <button onClick={onAbrirRetrato} className="press inline-flex items-center" style={{ gap: 6, background: "#eeece4", color: "#0b6b4f", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
+              🎁 Retrato de {retrato.mes.nome}
             </button>
           )}
         </div>
@@ -1155,6 +1175,9 @@ export default function PoupeJa() {
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
   const [modalConta, setModalConta] = useState(false);
+  const [retrato, setRetrato] = useState(null);          // retrato do mês anterior, se houver dados
+  const [bannerRetrato, setBannerRetrato] = useState(null); // só dias 1-7 e ainda não visto
+  const [retratoAberto, setRetratoAberto] = useState(false);
   const { modo: installModo, prompt: installPrompt } = useInstallDetect();
 
   function calcGarantiasAviso() {
@@ -1316,6 +1339,15 @@ export default function PoupeJa() {
     }
   }, [hydrated, installModo]);
 
+  /* Retrato do mês: banner nos primeiros 7 dias; acessível sempre via Poupança */
+  useEffect(() => {
+    if (!user) return;
+    try {
+      setRetrato(calcularRetrato());
+      setBannerRetrato(retratoPorVer());
+    } catch {}
+  }, [user?.id, syncTick]);
+
   /* Referral: capturar ?ref= de quem convidou + guardar o uid próprio p/ partilhas */
   useEffect(() => {
     try {
@@ -1323,6 +1355,7 @@ export default function PoupeJa() {
       const ref = params.get("ref");
       const atalho = params.get("atalho");
       if (atalho && NAV_IDS.includes(atalho)) {
+        window.__pjAtalho = atalho; // reaplicado quando o user fica pronto (corrida no boot)
         setTabRaw(atalho);
         params.delete("atalho");
         const q0 = params.toString();
@@ -1341,6 +1374,11 @@ export default function PoupeJa() {
     if (!user?.id) return;
     try { localStorage.setItem("poupeja_uid", user.id.slice(0, 8)); } catch {}
   }, [user?.id]);
+  useEffect(() => {
+    if (!user) return;
+    const a = typeof window !== "undefined" && window.__pjAtalho;
+    if (a && NAV_IDS.includes(a)) { setTabRaw(a); delete window.__pjAtalho; }
+  }, [user]);
 
   /* Instalação da PWA confirmada → evento de analytics */
   useEffect(() => {
@@ -1556,11 +1594,11 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} avisosCount={garantiasAviso.length} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
                 {tab === "mercados"   && <SecaoMercados />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
-                {tab === "poupanca"   && <SecaoPoupanca setTab={go} />}
+                {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
                 {tab === "irs"        && (
@@ -1637,6 +1675,10 @@ export default function PoupeJa() {
         )}
 
         {/* Modal de instalação */}
+        {retratoAberto && retrato && (
+          <RetratoMes retrato={retrato} onFechar={() => { setRetratoAberto(false); setBannerRetrato(null); }} />
+        )}
+
         {modalConta && user?.convidado && (
           <ModalCriarConta
             local={!!user?.local}
