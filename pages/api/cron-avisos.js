@@ -24,7 +24,7 @@ import { DESAFIOS_MENSAIS } from "../../lib/desafios";
  * Requer: VAPID_*, SUPABASE_SERVICE_ROLE_KEY, CRON_SECRET.
  */
 
-const CHAVES = ["poupeja_avisos", "poupeja_taloes", "poupeja_contas", "poupeja_contas_pago", "poupeja_avisos_notificados"];
+const CHAVES = ["poupeja_avisos", "poupeja_taloes", "poupeja_contas", "poupeja_contas_pago", "poupeja_meta", "poupeja_avisos_notificados"];
 const MAX_POR_USER = 3;
 const SUPRESSAO_COMBUSTIVEL_DIAS = 6;
 
@@ -208,6 +208,27 @@ export default async function handler(req, res) {
           notificados[`desafio_${mesAtual}`] = hoje.iso;
           notificadosMudou = true;
         }
+      }
+    }
+
+    // 🎯 Meta de poupança: marcos 25/50/75/100% (uma vez por marco por meta)
+    const meta = d.poupeja_meta;
+    if (meta?.valor > 0 && meta?.criadoEm) {
+      const prog = taloes
+        .filter(t => t.tipo === "compra" && t.valorPoupado != null)
+        .filter(t => ((t.dataCompra || (t.criadoEm || "").slice(0, 10)) || "") >= meta.criadoEm)
+        .reduce((acc, t) => acc + (t.valorPoupado || 0), 0);
+      const pct = (prog / meta.valor) * 100;
+      for (const marco of [100, 75, 50, 25]) {
+        if (pct < marco) continue;
+        const chaveMarco = `meta_${meta.criadoEm}_${marco}`;
+        if (notificados[chaveMarco]) break; // marcos menores já implícitos
+        notifs.push(marco === 100
+          ? { title: `🎉 ${meta.emoji || "🎯"} "${meta.nome}" — meta alcançada!`, body: `Poupaste €${prog.toFixed(2)} e chegaste aos €${meta.valor}. Parabéns!`, url: "/" }
+          : { title: `${meta.emoji || "🎯"} ${marco}% da meta "${meta.nome}"`, body: `Já lá vão €${prog.toFixed(2)} de €${meta.valor}. Continua!`, url: "/" });
+        notificados[chaveMarco] = hoje.iso;
+        notificadosMudou = true;
+        break; // só o marco mais alto novo por dia
       }
     }
 

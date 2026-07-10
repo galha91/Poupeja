@@ -21,6 +21,7 @@ const SecaoIRS         = dynamic(() => import("../SecaoIRS"), { loading: carrega
 import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import RetratoMes from "../RetratoMes";
+import MetaPoupanca from "../MetaPoupanca";
 import { retratoPorVer, calcularRetrato } from "../lib/retrato";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
@@ -911,6 +912,9 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
       </div>
       <div className="px-6"><Divisoria /></div>
 
+      {/* Meta de poupança — "estou a poupar para…" */}
+      <MetaPoupanca />
+
       {dados && dados.totalGeral > 0 ? (<>
 
         {/* Cartões de resumo */}
@@ -1165,7 +1169,17 @@ export default function PoupeJa() {
   const [user, setUser]           = useState(null);
   const [hydrated, setHydrated]   = useState(false);
   const [recovery, setRecovery]   = useState(false);
-  const [tab, setTabRaw]          = useState("inicio");
+  const [tab, setTabRaw]          = useState(() => {
+    // Atalhos do manifest (?atalho=taloes|mobilidade|mercados): ler já no
+    // inicializador — sobrevive a qualquer remontagem/corrida no boot.
+    if (typeof window !== "undefined") {
+      try {
+        const a = new URLSearchParams(window.location.search).get("atalho");
+        if (a && NAV_IDS.includes(a)) return a;
+      } catch {}
+    }
+    return "inicio";
+  });
   const [dir, setDir]             = useState("right");
   const [bounce, setBounce]       = useState(null);
   const [verAvisos, setVerAvisos]       = useState(false);
@@ -1353,14 +1367,10 @@ export default function PoupeJa() {
     try {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get("ref");
-      const atalho = params.get("atalho");
-      if (atalho && NAV_IDS.includes(atalho)) {
-        window.__pjAtalho = atalho; // reaplicado quando o user fica pronto (corrida no boot)
-        setTabRaw(atalho);
-        params.delete("atalho");
-        const q0 = params.toString();
-        window.history.replaceState({}, "", window.location.pathname + (q0 ? `?${q0}` : ""));
-      }
+      // ?atalho= é tratado no initializer do useState do tab e fica no URL
+      // de propósito: o reload do service worker na 1ª visita recarrega a
+      // página, e o parâmetro tem de sobreviver. Na PWA instalada (único
+      // sítio onde os atalhos existem) a barra de endereço nem é visível.
       if (ref && !localStorage.getItem("poupeja_ref")) {
         localStorage.setItem("poupeja_ref", ref.slice(0, 16));
         evento("referral_visit", { ref: ref.slice(0, 16) });
@@ -1374,11 +1384,6 @@ export default function PoupeJa() {
     if (!user?.id) return;
     try { localStorage.setItem("poupeja_uid", user.id.slice(0, 8)); } catch {}
   }, [user?.id]);
-  useEffect(() => {
-    if (!user) return;
-    const a = typeof window !== "undefined" && window.__pjAtalho;
-    if (a && NAV_IDS.includes(a)) { setTabRaw(a); delete window.__pjAtalho; }
-  }, [user]);
 
   /* Instalação da PWA confirmada → evento de analytics */
   useEffect(() => {
