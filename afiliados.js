@@ -19,7 +19,7 @@ const AFILIADOS = {
 
   // ── ELETRÓNICA (prioridade máxima — cabazes grandes, comissão 2–5%) ──
   "Amazon":          "https://www.amazon.es/?tag=poupeja-21",
-  "Worten":          "https://www.awin1.com/cread.php?awinmid=99897&awinaffid=2930079&ued=https%3A%2F%2Fwww.worten.pt%2Fcampanha%2Ftudo-e-mais-nao-sei-o-que%2Fprodutos%3Flf%3Dp_campanha-10%26seller_id%3Dworten-1%26p_campanha-10%3DLeva%2B2%2BPaga%2B1%26utm_source%3Dawin%26utm_medium%3Dafiliados%26utm_campaign%3D00mrkpgen590_promo_awin_afiliados_pa_nu_varias_display_1x1_cv",  // Awin PT — afiliado 2930079 (campanha "Leva 2, Paga 1")
+  "Worten":          "https://www.awin1.com/cread.php?awinmid=99897&awinaffid=2930079&ued=https%3A%2F%2Fwww.worten.pt%2F",  // Awin PT — afiliado 2930079 (link permanente p/ homepage)
   "Fnac":            null,  // Awin PT — candidatar em: awin.com → Fnac Portugal
   "Darty":           null,  // Awin PT — mesmo grupo que Fnac
   "Radio Popular":   null,  // Contacto directo: radiopopular.pt
