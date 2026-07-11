@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Clock, ShoppingCart, Check, Sparkles, ChefHat, Leaf } from "lucide-react";
 import { EMENTAS, sugestaoDaSemana, emojiIngrediente } from "./lib/ementas-data";
 import { evento } from "./lib/analytics";
@@ -146,8 +147,9 @@ export default function SecaoEmentas({ setTab }) {
         Espreita os folhetos antes de ires às compras.
       </p>
 
-      {/* Detalhe da receita */}
-      {aberta && (
+      {/* Detalhe da receita — via portal: o wrapper de transição da secção
+          tem transform residual, que faria o position:fixed ancorar nele */}
+      {aberta && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(20,35,28,0.55)", backdropFilter: "blur(3px)" }} onClick={() => setAberta(null)}>
           <div className="w-full max-w-md rounded-t-3xl px-5 pt-5 pb-9" style={{ maxHeight: "90vh", overflowY: "auto", background: "#f6f5f0" }} onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-3 mb-1">
@@ -166,6 +168,25 @@ export default function SecaoEmentas({ setTab }) {
                 <X size={15} style={{ color: "#5c6b62" }} />
               </button>
             </div>
+
+            {/* CTA no topo — visível assim que a receita abre */}
+            {adicionado !== 0 ? (
+              <div className="mt-4">
+                <div className="flex items-center justify-center gap-2 py-3 rounded-2xl" style={{ background: "#eef3ef" }}>
+                  <Check size={15} style={{ color: "#0b6b4f" }} />
+                  <span className="text-[13px] font-semibold" style={{ color: "#0b6b4f" }}>
+                    {adicionado === -1 ? "Já estavam todos na lista" : `${adicionado} ingrediente${adicionado !== 1 ? "s" : ""} na lista`}
+                  </span>
+                </div>
+                <button onClick={() => setTab?.("lista")} className="pj-tap w-full py-3 mt-2 rounded-2xl font-semibold text-[13.5px]" style={{ background: "#0b6b4f", color: "#fff" }}>
+                  Ver a lista de compras →
+                </button>
+              </div>
+            ) : (
+              <button onClick={adicionar} className="pj-tap w-full py-3.5 mt-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-2" style={{ background: "#0b6b4f" }}>
+                <ShoppingCart size={16} /> Adicionar {naoDespensa} ingredientes à lista
+              </button>
+            )}
 
             <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mt-5 mb-2" style={{ color: "#8a978e" }}>Ingredientes</p>
             <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
@@ -189,25 +210,9 @@ export default function SecaoEmentas({ setTab }) {
               ))}
             </ol>
 
-            {adicionado !== 0 ? (
-              <div className="mt-5">
-                <div className="flex items-center justify-center gap-2 py-3.5 rounded-2xl" style={{ background: "#eef3ef" }}>
-                  <Check size={16} style={{ color: "#0b6b4f" }} />
-                  <span className="text-[13.5px] font-semibold" style={{ color: "#0b6b4f" }}>
-                    {adicionado === -1 ? "Já estavam todos na lista" : `${adicionado} ingrediente${adicionado !== 1 ? "s" : ""} na lista`}
-                  </span>
-                </div>
-                <button onClick={() => setTab?.("lista")} className="pj-tap w-full py-3 mt-2 rounded-2xl font-semibold text-[13.5px]" style={{ background: "#0b6b4f", color: "#fff" }}>
-                  Ver a lista de compras →
-                </button>
-              </div>
-            ) : (
-              <button onClick={adicionar} className="pj-tap w-full py-4 mt-5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2" style={{ background: "#0b6b4f" }}>
-                <ShoppingCart size={16} /> Adicionar {naoDespensa} ingredientes à lista
-              </button>
-            )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
