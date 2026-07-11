@@ -10,6 +10,7 @@ const carregandoSeccao = () => (
   </div>
 );
 const SecaoFolhetos    = dynamic(() => import("../SecaoFolhetos"), { loading: carregandoSeccao });
+const SecaoEmentas     = dynamic(() => import("../SecaoEmentas"), { loading: carregandoSeccao });
 const SecaoLojas       = dynamic(() => import("../SecaoLojas"), { loading: carregandoSeccao });
 const SecaoMobilidade  = dynamic(() => import("../SecaoMobilidade"), { loading: carregandoSeccao });
 const SecaoTaloes      = dynamic(() => import("../SecaoTaloes"), { loading: carregandoSeccao });
@@ -27,7 +28,7 @@ import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
-  Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users, UserPlus,
+  Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users, UserPlus, ChefHat,
   Receipt, Tag, Battery, Shirt, Smartphone, ChevronRight, WifiOff, Download, Flame,
   Zap, ArrowRight, BarChart, Target, Coffee, ArrowLeft,
   Trophy, Star, Sparkles, TrendingUp, Plus, ShieldCheck, ListChecks, Share2,
@@ -51,7 +52,7 @@ const NAV_IDS = ["inicio","poupanca","mercados","contas","mobilidade","apoios","
 
 const TITULOS = {
   inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
-  mercados:   { t: "Supermercados",                     s: "Os folhetos da semana num só sítio" },
+  mercados:   { t: "Supermercados",                     s: "Folhetos e ementas económicas da semana" },
   lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
@@ -630,6 +631,7 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
     { icon: Store,         label: "Lojas",              desc: "Moda, eletrónica e desporto",           iconBg: "bg-slate-100",   iconColor: "text-slate-500",   tab: "lojas" },
     { icon: Landmark,      label: "Apoios do Estado",   desc: "Benefícios a que tens direito",         iconBg: "bg-blue-50",     iconColor: "text-blue-600",    tab: "apoios" },
     { icon: Calculator,    label: "Simulador de IRS",   desc: "Estima o teu reembolso",                iconBg: "bg-fuchsia-50",  iconColor: "text-fuchsia-600", tab: "irs" },
+    { icon: ChefHat,       label: "Ementas económicas", desc: "Receitas baratas → lista num toque",    iconBg: "bg-emerald-50",  iconColor: "text-emerald-600", tab: "mercados" },
   ];
 
 
@@ -1156,10 +1158,27 @@ const LEADS_FINANCEIROS = [
 ];
 
 /* ─── Wrapper Mercados ─── */
-function SecaoMercados() {
+function SecaoMercados({ setTab }) {
+  const [sub, setSub] = useState("folhetos");
   return (
     <div className="pb-28 pt-4">
-      <SecaoFolhetos />
+      <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "#eeece4" }}>
+        {[
+          { id: "folhetos", icon: Tag, label: "Folhetos" },
+          { id: "ementas", icon: ChefHat, label: "Ementas" },
+        ].map(o => (
+          <button
+            key={o.id}
+            onClick={() => setSub(o.id)}
+            className={`pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${sub === o.id ? "shadow-sm" : ""}`}
+            style={sub === o.id ? { background: "#fbfaf6", color: "#14231c" } : { color: "#8a978e" }}
+          >
+            <o.icon size={13} /> {o.label}
+          </button>
+        ))}
+      </div>
+      {sub === "folhetos" && <SecaoFolhetos />}
+      {sub === "ementas" && <SecaoEmentas setTab={setTab} />}
     </div>
   );
 }
@@ -1600,7 +1619,7 @@ export default function PoupeJa() {
             <main style={{ overflowX: "hidden" }}>
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
-                {tab === "mercados"   && <SecaoMercados />}
+                {tab === "mercados"   && <SecaoMercados setTab={go} />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
