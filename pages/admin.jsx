@@ -205,6 +205,12 @@ export default function Admin() {
               <Cartao rotulo="30 dias" valor={stats.ativos30 ?? "—"} cor="text-blue-600" />
             </div>
 
+            {/* Contas convidadas / nunca voltaram */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <Cartao rotulo="Contas convidadas" valor={stats.convidados ?? 0} cor="text-amber-600" />
+              <Cartao rotulo="Nunca voltaram" valor={stats.nuncaVoltaram ?? "—"} cor="text-slate-500" />
+            </div>
+
             {/* Mini-gráfico de crescimento (14 dias) */}
             {Array.isArray(stats.crescimento) && stats.crescimento.length > 0 && (
               <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
