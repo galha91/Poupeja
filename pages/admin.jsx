@@ -205,6 +205,12 @@ export default function Admin() {
               <Cartao rotulo="30 dias" valor={stats.ativos30 ?? "—"} cor="text-blue-600" />
             </div>
 
+            {/* Contas convidadas / nunca voltaram */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <Cartao rotulo="Contas convidadas" valor={stats.convidados ?? 0} cor="text-amber-600" />
+              <Cartao rotulo="Nunca voltaram" valor={stats.nuncaVoltaram ?? "—"} cor="text-slate-500" />
+            </div>
+
             {/* Mini-gráfico de crescimento (14 dias) */}
             {Array.isArray(stats.crescimento) && stats.crescimento.length > 0 && (
               <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
@@ -341,16 +347,21 @@ export default function Admin() {
                   <div key={i} className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {/* Avatar */}
-                      <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-black text-slate-500">
-                          {(u.email || "?")[0].toUpperCase()}
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${u.convidado ? "bg-amber-50" : "bg-slate-100"}`}>
+                        <span className={`text-xs font-black ${u.convidado ? "text-amber-500" : "text-slate-500"}`}>
+                          {u.convidado ? "👤" : (u.email || "?")[0].toUpperCase()}
                         </span>
                       </div>
 
                       {/* Info principal */}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <p className="text-sm font-bold text-slate-800 truncate">{u.email}</p>
+                          <p className="text-sm font-bold text-slate-800 truncate">{u.convidado ? "Convidado" : u.email}</p>
+                          {u.convidado && (
+                            <span className="text-[9px] font-black bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-full shrink-0">
+                              CONVIDADO
+                            </span>
+                          )}
                           {u.confirmado && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
                         </div>
                         <div className="flex flex-col gap-0.5 mt-1">

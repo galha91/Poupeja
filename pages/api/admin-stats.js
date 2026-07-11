@@ -148,6 +148,7 @@ export default async function handler(req, res) {
         email: u.email,
         criado: u.created_at,
         confirmado: !!(u.email_confirmed_at || u.confirmed_at),
+        convidado: !!u.is_anonymous,
         ultimoAcesso: u.last_sign_in_at || null,
         dispositivo: dispositivoMap[u.id] || null,
       }));
