@@ -4,6 +4,7 @@ export const config = { runtime: "edge" };
 
 export default function handler(req) {
   let variante = "default", valorRaw = null, mesRaw = "", taloesRaw = null, streakRaw = null;
+  let nomeRaw = "", tempoRaw = 0, custoRaw = 1;
   try {
     const sp = new URL(req.url).searchParams;
     variante = sp.get("v") || "default";
@@ -11,27 +12,36 @@ export default function handler(req) {
     mesRaw = (sp.get("mes") || "").slice(0, 12).replace(/[^a-zçã]/gi, "");
     taloesRaw = parseInt(sp.get("taloes")) || 0;
     streakRaw = parseInt(sp.get("streak")) || 0;
+    nomeRaw = (sp.get("nome") || "").slice(0, 60);
+    tempoRaw = Math.min(parseInt(sp.get("tempo")) || 0, 999);
+    custoRaw = Math.min(Math.max(parseInt(sp.get("custo")) || 1, 1), 3);
   } catch {}
   const lista = variante === "lista";
   const retrato = variante === "retrato";
+  const receita = variante === "receita";
   const poupanca = variante === "poupanca" || retrato;
   const valorNum = poupanca ? Math.min(Math.max(parseFloat(valorRaw) || 0, 0), 99999) : 0;
   const valorFmt = valorNum.toFixed(2).replace(".", ",");
 
   const statsRetrato = [taloesRaw > 0 ? `${taloesRaw} tal${taloesRaw !== 1 ? "ões" : "ão"}` : null, streakRaw >= 2 ? `${streakRaw} semanas seguidas` : null].filter(Boolean).join(" · ");
   const eyebrow = lista ? "Lista de compras partilhada"
+    : receita ? "Receita económica · 4 pessoas"
     : retrato ? `O meu retrato de ${mesRaw || "mês"}`
     : poupanca ? "Poupança real, medida talão a talão"
     : "A app de poupança portuguesa";
   const titulo1 = lista ? "A nossa lista"
+    : receita ? (nomeRaw || "Receita barata")
     : poupanca ? `${retrato ? "Poupei" : "Já poupei"} €${valorFmt}`
     : "Poupa nas compras";
   const titulo2 = lista ? "de compras"
+    : receita ? `${tempoRaw ? `${tempoRaw} min · ` : ""}${"€".repeat(custoRaw)} 🍲`
     : retrato ? "num só mês 🐷"
     : poupanca ? "nas compras 🐷"
     : "do dia a dia";
   const subtitulo = lista
     ? "Abre o link e edita a lista comigo — em tempo real, grátis."
+    : receita
+    ? "Ingredientes direto para a lista de compras — grátis, em poupejá.com"
     : retrato
     ? `${statsRetrato ? statsRetrato + " — " : ""}vê o teu retrato em poupejá.com`
     : poupanca
@@ -166,7 +176,7 @@ export default function handler(req) {
           </div>
           <div
             style={{
-              fontSize: 70,
+              fontSize: receita ? 54 : 70,
               fontWeight: "900",
               lineHeight: "1.05",
               marginBottom: 12,
