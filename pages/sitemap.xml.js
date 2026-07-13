@@ -1,4 +1,4 @@
-import { LOJAS_SLUGS, CIDADES } from '../lib/seo-slugs';
+import { LOJAS_SLUGS, CIDADES, RECEITAS_SLUGS } from '../lib/seo-slugs';
 
 const SITE_URL = 'https://xn--poupej-uta.com';
 
@@ -6,11 +6,13 @@ const PAGINAS = [
   { path: '/',             changefreq: 'daily',   priority: '1.0' },
   { path: '/combustiveis', changefreq: 'daily',   priority: '0.9' },
   { path: '/folhetos',     changefreq: 'weekly',  priority: '0.9' },
+  { path: '/receitas',     changefreq: 'weekly',  priority: '0.9' },
   { path: '/apoios',       changefreq: 'monthly', priority: '0.8' },
   { path: '/instalar',     changefreq: 'monthly', priority: '0.8' },
   { path: '/privacidade',  changefreq: 'yearly',  priority: '0.3' },
   ...LOJAS_SLUGS.map(l => ({ path: `/folhetos/${l.slug}`,     changefreq: 'weekly', priority: '0.8' })),
   ...CIDADES.map(c =>     ({ path: `/combustiveis/${c.slug}`, changefreq: 'daily',  priority: '0.8' })),
+  ...RECEITAS_SLUGS.map(r => ({ path: `/receitas/${r.slug}`,  changefreq: 'monthly', priority: '0.7' })),
 ];
 
 function generateSitemap() {

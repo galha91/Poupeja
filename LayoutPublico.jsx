@@ -31,6 +31,7 @@ export default function LayoutPublico({ children }) {
           <a href="/instalar" style={{ color: "#5c6b62" }}>Instalar a app</a>
           <a href="/combustiveis" style={{ color: "#5c6b62" }}>Combustíveis</a>
           <a href="/folhetos" style={{ color: "#5c6b62" }}>Folhetos</a>
+          <a href="/receitas" style={{ color: "#5c6b62" }}>Receitas baratas</a>
           <a href="/apoios" style={{ color: "#5c6b62" }}>Apoios do Estado</a>
           <a href="/privacidade" style={{ color: "#5c6b62" }}>Privacidade</a>
         </nav>
