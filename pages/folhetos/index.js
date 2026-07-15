@@ -2,6 +2,7 @@ import Head from "next/head";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import dadosFolhetos from "../../public/folhetos.json";
 import { slugify, LOGO } from "../../lib/seo-slugs";
+import { semanaAtual } from "../../lib/semana-atual";
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -87,10 +88,11 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
 }
 
 export async function getStaticProps() {
+  const { validade, atualizadoEm } = semanaAtual();
   return {
     props: {
-      folhetos: dadosFolhetos.folhetos || [],
-      atualizadoEm: dadosFolhetos.atualizadoEm || null,
+      folhetos: (dadosFolhetos.folhetos || []).map(f => ({ ...f, validade })),
+      atualizadoEm,
     },
     revalidate: 3600,
   };
