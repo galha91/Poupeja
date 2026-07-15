@@ -2,6 +2,7 @@ import Head from "next/head";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import dadosFolhetos from "../../public/folhetos.json";
 import { slugify, LOGO, LOJAS_SLUGS } from "../../lib/seo-slugs";
+import { semanaAtual } from "../../lib/semana-atual";
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -118,11 +119,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const folheto = (dadosFolhetos.folhetos || []).find(f => slugify(f.loja) === params.loja);
   if (!folheto) return { notFound: true };
+  const { validade, atualizadoEm } = semanaAtual();
   return {
     props: {
-      folheto,
+      folheto: { ...folheto, validade },
       outras: LOJAS_SLUGS.filter(l => l.slug !== params.loja),
-      atualizadoEm: dadosFolhetos.atualizadoEm || null,
+      atualizadoEm,
     },
     revalidate: 3600,
   };
