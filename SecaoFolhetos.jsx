@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
 import { RefreshCw, AlertCircle, Tag, ShoppingCart, Clock } from "lucide-react";
+import { LOGO } from "./lib/seo-slugs";
 
 const LOJA_CORES = {
   Continente: "#e63329", "Pingo Doce": "#009a3e",
   Lidl: "#0050aa", Aldi: "#1a3b6f", "Intermarché": "#e2001a",
   Auchan: "#d6180b", "E.Leclerc": "#0066b2",
   "El Corte Inglés": "#006400", Froiz: "#c8102e",
-};
-const LOJA_DOMINIOS = {
-  Continente:        "continente.pt",
-  "Pingo Doce":      "pingodoce.pt",
-  Lidl:              "lidl.pt",
-  Aldi:              "aldi.pt",
-  "Intermarché":     "intermarche.pt",
-  Auchan:            "auchan.pt",
-  "E.Leclerc":       "e-leclerc.pt",
-  "El Corte Inglés": "elcorteingles.pt",
-  Froiz:             "froiz.pt",
 };
 const LOJA_TAGLINE = {
   Continente: "Folheto semanal",
@@ -33,25 +23,19 @@ const LOJA_TAGLINE = {
 function LogoLoja({ loja, size }) {
   const s = size || 56;
   const cor = LOJA_CORES[loja] || "#888";
-  const dominio = LOJA_DOMINIOS[loja];
-  const [nivel, setNivel] = useState(0);
+  const chave = LOGO[loja];
   const iniciais = loja.slice(0, 2).toUpperCase();
-  const fontes = dominio ? [
-    `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
-    `https://logo.clearbit.com/${dominio}`,
-  ] : [];
 
   return (
     <div
       className="flex items-center justify-center overflow-hidden flex-shrink-0"
       style={{ width: s, height: s, background: "#fbfaf6", borderRadius: 14, border: "1px solid #e4e2d8" }}
     >
-      {nivel < fontes.length ? (
+      {chave ? (
         <img
-          src={fontes[nivel]}
+          src={`/logos/${chave}.svg`}
           alt={loja}
-          onError={() => setNivel(n => n + 1)}
-          style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", padding: 6 }}
+          style={{ width: s * 0.6, height: s * 0.6, objectFit: "contain" }}
         />
       ) : (
         <div
