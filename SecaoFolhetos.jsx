@@ -20,22 +20,47 @@ const LOJA_TAGLINE = {
   Froiz: "Folheto em vigor",
 };
 
+const LOJA_DOMINIOS = {
+  Continente:        "continente.pt",
+  "Pingo Doce":      "pingodoce.pt",
+  Lidl:              "lidl.pt",
+  Aldi:              "aldi.pt",
+  "Intermarché":     "intermarche.pt",
+  Auchan:            "auchan.pt",
+  "E.Leclerc":       "e-leclerc.pt",
+  "El Corte Inglés": "elcorteingles.pt",
+  Froiz:             "froiz.pt",
+};
+
 function LogoLoja({ loja, size }) {
   const s = size || 56;
   const cor = LOJA_CORES[loja] || "#888";
+  const dominio = LOJA_DOMINIOS[loja];
   const chave = LOGO[loja];
+  const [nivel, setNivel] = useState(0);
   const iniciais = loja.slice(0, 2).toUpperCase();
+  // Favicons reais dos sites oficiais primeiro; se falharem (só acontece no
+  // dispositivo de quem usa a app, não aqui), cai para o desenho local e,
+  // em último caso, para as iniciais.
+  const fontes = [
+    ...(dominio ? [
+      `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
+      `https://logo.clearbit.com/${dominio}`,
+    ] : []),
+    ...(chave ? [`/logos/${chave}.svg`] : []),
+  ];
 
   return (
     <div
       className="flex items-center justify-center overflow-hidden flex-shrink-0"
       style={{ width: s, height: s, background: "#fbfaf6", borderRadius: 14, border: "1px solid #e4e2d8" }}
     >
-      {chave ? (
+      {nivel < fontes.length ? (
         <img
-          src={`/logos/${chave}.svg`}
+          src={fontes[nivel]}
           alt={loja}
-          style={{ width: s * 0.6, height: s * 0.6, objectFit: "contain" }}
+          onError={() => setNivel(n => n + 1)}
+          style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", padding: 6 }}
         />
       ) : (
         <div
