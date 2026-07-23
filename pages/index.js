@@ -23,6 +23,7 @@ import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import RetratoMes from "../RetratoMes";
 import MetaPoupanca from "../MetaPoupanca";
+import LogoLoja from "../LogoLoja";
 import { retratoPorVer, calcularRetrato } from "../lib/retrato";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
@@ -573,20 +574,8 @@ function CardCombustivelHome({ setTab }) {
 function Divisoria() {
   return <div style={{ height: 1, background: "#e4e2d8", margin: "26px 0" }} />;
 }
-const FOLHETO_LOGO = {
-  "Continente": "continente", "Pingo Doce": "pingodoce", "Lidl": "lidl",
-  "Aldi": "aldi", "Auchan": "auchan", "Intermarché": "intermarche",
-  "Froiz": "froiz", "E.Leclerc": "eleclerc", "El Corte Inglés": "elcorteingles",
-};
 function LogoFolheto({ loja }) {
-  const key = FOLHETO_LOGO[loja];
-  return (
-    <div className="flex items-center justify-center flex-none overflow-hidden" style={{ width: 44, height: 44, borderRadius: 12, background: "#eeece4" }}>
-      {key
-        ? <img src={`/logos/${key}.svg`} alt={loja} style={{ width: 26, height: 26, objectFit: "contain" }} />
-        : <span style={{ fontSize: 15, fontWeight: 700, color: "#2c3b33" }}>{(loja || "?")[0]}</span>}
-    </div>
-  );
+  return <LogoLoja loja={loja} size={44} radius={12} bg="#eeece4" />;
 }
 
 /* ─── Ecrã Início ─── */
