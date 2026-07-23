@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { RefreshCw, AlertCircle, Tag, ShoppingCart, Clock } from "lucide-react";
-import { LOGO } from "./lib/seo-slugs";
+import LogoLoja from "./LogoLoja";
 
 const LOJA_CORES = {
   Continente: "#e63329", "Pingo Doce": "#009a3e",
@@ -19,60 +19,6 @@ const LOJA_TAGLINE = {
   "El Corte Inglés": "Ofertas do supermercado",
   Froiz: "Folheto em vigor",
 };
-
-const LOJA_DOMINIOS = {
-  Continente:        "continente.pt",
-  "Pingo Doce":      "pingodoce.pt",
-  Lidl:              "lidl.pt",
-  Aldi:              "aldi.pt",
-  "Intermarché":     "intermarche.pt",
-  Auchan:            "auchan.pt",
-  "E.Leclerc":       "e-leclerc.pt",
-  "El Corte Inglés": "elcorteingles.pt",
-  Froiz:             "froiz.pt",
-};
-
-function LogoLoja({ loja, size }) {
-  const s = size || 56;
-  const cor = LOJA_CORES[loja] || "#888";
-  const dominio = LOJA_DOMINIOS[loja];
-  const chave = LOGO[loja];
-  const [nivel, setNivel] = useState(0);
-  const iniciais = loja.slice(0, 2).toUpperCase();
-  // Favicons reais dos sites oficiais primeiro; se falharem (só acontece no
-  // dispositivo de quem usa a app, não aqui), cai para o desenho local e,
-  // em último caso, para as iniciais.
-  const fontes = [
-    ...(dominio ? [
-      `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
-      `https://logo.clearbit.com/${dominio}`,
-    ] : []),
-    ...(chave ? [`/logos/${chave}.svg`] : []),
-  ];
-
-  return (
-    <div
-      className="flex items-center justify-center overflow-hidden flex-shrink-0"
-      style={{ width: s, height: s, background: "#fbfaf6", borderRadius: 14, border: "1px solid #e4e2d8" }}
-    >
-      {nivel < fontes.length ? (
-        <img
-          src={fontes[nivel]}
-          alt={loja}
-          onError={() => setNivel(n => n + 1)}
-          style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "inherit", padding: 6 }}
-        />
-      ) : (
-        <div
-          className="w-full h-full flex items-center justify-center"
-          style={{ background: cor, borderRadius: 14 }}
-        >
-          <span style={{ fontSize: s * 0.3, fontWeight: 700, color: "white" }}>{iniciais}</span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function CardSkeleton() {
   return (
@@ -178,7 +124,7 @@ export default function SecaoFolhetos() {
                   className="pj-tap p-4 flex flex-col items-center gap-3 relative overflow-hidden anim-up text-left"
                   style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8", boxShadow: "0 1px 2px rgba(20,35,28,0.04)" }}
                 >
-                  <LogoLoja loja={f.loja} size={56} />
+                  <LogoLoja loja={f.loja} size={56} radius={14} bg="#fbfaf6" />
 
                   <div className="text-center">
                     <p

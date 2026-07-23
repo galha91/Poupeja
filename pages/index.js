@@ -23,6 +23,7 @@ import DesafiosMensais from "../DesafiosMensais";
 import PainelAvisos from "../PainelAvisos";
 import RetratoMes from "../RetratoMes";
 import MetaPoupanca from "../MetaPoupanca";
+import LogoLoja from "../LogoLoja";
 import { retratoPorVer, calcularRetrato } from "../lib/retrato";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
@@ -573,36 +574,8 @@ function CardCombustivelHome({ setTab }) {
 function Divisoria() {
   return <div style={{ height: 1, background: "#e4e2d8", margin: "26px 0" }} />;
 }
-const FOLHETO_LOGO = {
-  "Continente": "continente", "Pingo Doce": "pingodoce", "Lidl": "lidl",
-  "Aldi": "aldi", "Auchan": "auchan", "Intermarché": "intermarche",
-  "Froiz": "froiz", "E.Leclerc": "eleclerc", "El Corte Inglés": "elcorteingles",
-};
-const FOLHETO_DOMINIO = {
-  "Continente": "continente.pt", "Pingo Doce": "pingodoce.pt", "Lidl": "lidl.pt",
-  "Aldi": "aldi.pt", "Auchan": "auchan.pt", "Intermarché": "intermarche.pt",
-  "Froiz": "froiz.pt", "E.Leclerc": "e-leclerc.pt", "El Corte Inglés": "elcorteingles.pt",
-};
 function LogoFolheto({ loja }) {
-  const key = FOLHETO_LOGO[loja];
-  const dominio = FOLHETO_DOMINIO[loja];
-  const [nivel, setNivel] = useState(0);
-  // Favicon oficial do site e Clearbit primeiro; só cai para o desenho
-  // local se ambos falharem, e para a inicial em último caso.
-  const fontes = [
-    ...(dominio ? [
-      `https://www.google.com/s2/favicons?domain=${dominio}&sz=128`,
-      `https://logo.clearbit.com/${dominio}`,
-    ] : []),
-    ...(key ? [`/logos/${key}.svg`] : []),
-  ];
-  return (
-    <div className="flex items-center justify-center flex-none overflow-hidden" style={{ width: 44, height: 44, borderRadius: 12, background: "#eeece4" }}>
-      {nivel < fontes.length
-        ? <img src={fontes[nivel]} alt={loja} onError={() => setNivel(n => n + 1)} style={{ width: 30, height: 30, objectFit: "contain" }} />
-        : <span style={{ fontSize: 15, fontWeight: 700, color: "#2c3b33" }}>{(loja || "?")[0]}</span>}
-    </div>
-  );
+  return <LogoLoja loja={loja} size={44} radius={12} bg="#eeece4" />;
 }
 
 /* ─── Ecrã Início ─── */
