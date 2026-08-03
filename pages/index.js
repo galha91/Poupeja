@@ -25,7 +25,7 @@ import RetratoMes from "../RetratoMes";
 import MetaPoupanca from "../MetaPoupanca";
 import LogoLoja from "../LogoLoja";
 import { retratoPorVer, calcularRetrato } from "../lib/retrato";
-import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
+import EcraAuth, { DefinirNovaPass, sessionParaUser, IconGoogle } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
@@ -96,6 +96,30 @@ function ModalCriarConta({ local = false, onFechar, onConvertido }) {
   const [erro, setErro]       = useState("");
   const [loading, setLoading] = useState(false);
   const [feito, setFeito]     = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function continuarComGoogle() {
+    setErro("");
+    setGoogleLoading(true);
+    evento("sign_up", { method: "convidado_upgrade_google" });
+    const redirectTo = typeof window !== "undefined" ? window.location.origin : undefined;
+    try {
+      if (local) {
+        // Convidado local (sem sessão Supabase): entra/regista com Google normalmente.
+        const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
+        if (error) throw error;
+      } else {
+        // Convidado com sessão anónima: liga a identidade Google à MESMA conta
+        // (mesmo user_id) — zero migração, tal como o upgrade por email.
+        const { error } = await supabase.auth.linkIdentity({ provider: "google", options: { redirectTo } });
+        if (error) throw error;
+      }
+      // A navegação para o Google acontece aqui; ao voltar, a sessão já vem trocada.
+    } catch (err) {
+      setErro("Não foi possível continuar com o Google agora. Tenta por email.");
+      setGoogleLoading(false);
+    }
+  }
 
   async function submeter(e) {
     e.preventDefault();
@@ -183,6 +207,16 @@ function ModalCriarConta({ local = false, onFechar, onConvertido }) {
                   <span style={{ color: "#0b6b4f" }}>✓</span> {b}
                 </p>
               ))}
+            </div>
+            <button type="button" onClick={continuarComGoogle} disabled={googleLoading}
+              className="pj-tap w-full py-3.5 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2.5"
+              style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8", opacity: googleLoading ? 0.7 : 1 }}>
+              <IconGoogle size={17} /> {googleLoading ? "A abrir o Google…" : "Continuar com Google"}
+            </button>
+            <div className="flex items-center gap-3 -my-0.5">
+              <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
+              <span className="text-[11px] font-semibold" style={{ color: "#8a978e" }}>ou por email</span>
+              <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
             </div>
             <input type="text" placeholder="O teu nome" value={nome} onChange={e => setNome(e.target.value)}
               className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"

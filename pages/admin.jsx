@@ -246,7 +246,7 @@ export default function Admin() {
             </div>
 
             {/* Plataformas e PWA */}
-            <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="grid grid-cols-2 gap-3 mb-3">
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-2">Plataforma</p>
                 <div className="flex flex-col gap-1.5">
@@ -271,6 +271,21 @@ export default function Admin() {
                   <p className="text-[11px] text-slate-400 font-medium mt-0.5">
                     {stats.total > 0 ? `${Math.round(((stats.totalPwa ?? 0) / stats.total) * 100)}% dos utilizadores` : "—"}
                   </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Método de login — adoção do "Continuar com Google" */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm mb-5">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-2">Método de login (contas registadas)</p>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm flex items-center gap-1.5">🔵 <span className="text-slate-600 font-bold">Google</span></span>
+                  <span className="text-sm font-black text-slate-800">{stats.porMetodo?.google ?? "—"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm flex items-center gap-1.5">✉️ <span className="text-slate-600 font-bold">Email / password</span></span>
+                  <span className="text-sm font-black text-slate-800">{stats.porMetodo?.email ?? "—"}</span>
                 </div>
               </div>
             </div>
@@ -360,6 +375,11 @@ export default function Admin() {
                           {u.convidado && (
                             <span className="text-[9px] font-black bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-full shrink-0">
                               CONVIDADO
+                            </span>
+                          )}
+                          {u.google && (
+                            <span className="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full shrink-0">
+                              GOOGLE
                             </span>
                           )}
                           {u.confirmado && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}

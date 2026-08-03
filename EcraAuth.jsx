@@ -57,6 +57,26 @@ function Campo({ label, type = "text", value, onChange, placeholder, action }) {
   );
 }
 
+/* Logótipo oficial do Google, para o botão "Continuar com Google" */
+export function IconGoogle({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#FFC107" d="M43.6 20.5H42V20.4H24v7.2h11.3c-1.6 4.6-6 7.9-11.3 7.9-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.1-5.1C33.4 6 28.9 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.1-7.7 19.1-19.1 0-1.3-.1-2.3-.3-3.4z"/>
+      <path fill="#FF3D00" d="M6.3 14.7l6 4.4C13.9 15.2 18.6 12 24 12c3 0 5.8 1.1 7.9 3l5.1-5.1C33.4 6 28.9 4 24 4c-7.5 0-14 4.2-17.7 10.7z"/>
+      <path fill="#4CAF50" d="M24 44c4.8 0 9.2-1.8 12.5-4.9l-5.8-4.7C28.9 36 26.6 36.8 24 36.8c-5.3 0-9.7-3.4-11.3-8l-6 4.6C9.9 39.6 16.4 44 24 44z"/>
+      <path fill="#1976D2" d="M43.6 20.5H42V20.4H24v7.2h11.3c-.8 2.3-2.2 4.2-4.1 5.6l5.8 4.7C40.5 35 44 30.1 44 24c0-1.3-.1-2.3-.4-3.5z"/>
+    </svg>
+  );
+}
+
+async function entrarComGoogle() {
+  evento("login", { method: "google_attempt" });
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: typeof window !== "undefined" ? window.location.origin : undefined },
+  });
+}
+
 /* ── Ecrã Landing ── */
 function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidadoErro }) {
   return (
@@ -100,11 +120,23 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
           Grátis · Sem cartão · Conta válida em qualquer dispositivo
         </p>
         <button
+          onClick={entrarComGoogle}
+          className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2.5"
+          style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8" }}
+        >
+          <IconGoogle /> Continuar com Google
+        </button>
+        <div className="flex items-center gap-3 -my-0.5">
+          <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
+          <span className="text-[11px] font-semibold" style={{ color: "#8a978e" }}>ou</span>
+          <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
+        </div>
+        <button
           onClick={onRegister}
           className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2"
           style={{ background: "#0b6b4f" }}
         >
-          Criar conta gratuita <ArrowRight size={18} />
+          Criar conta com email <ArrowRight size={18} />
         </button>
         <button
           onClick={onConvidado}
