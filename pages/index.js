@@ -25,7 +25,7 @@ import RetratoMes from "../RetratoMes";
 import MetaPoupanca from "../MetaPoupanca";
 import LogoLoja from "../LogoLoja";
 import { retratoPorVer, calcularRetrato } from "../lib/retrato";
-import EcraAuth, { DefinirNovaPass, sessionParaUser, IconGoogle } from "../EcraAuth";
+import EcraAuth, { DefinirNovaPass, sessionParaUser, IconGoogle, IconFacebook } from "../EcraAuth";
 import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
@@ -96,28 +96,28 @@ function ModalCriarConta({ local = false, onFechar, onConvertido }) {
   const [erro, setErro]       = useState("");
   const [loading, setLoading] = useState(false);
   const [feito, setFeito]     = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [providerLoading, setProviderLoading] = useState(null); // "google" | "facebook" | null
 
-  async function continuarComGoogle() {
+  async function continuarComProvider(provider) {
     setErro("");
-    setGoogleLoading(true);
-    evento("sign_up", { method: "convidado_upgrade_google" });
+    setProviderLoading(provider);
+    evento("sign_up", { method: `convidado_upgrade_${provider}` });
     const redirectTo = typeof window !== "undefined" ? window.location.origin : undefined;
     try {
       if (local) {
-        // Convidado local (sem sessão Supabase): entra/regista com Google normalmente.
-        const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
+        // Convidado local (sem sessão Supabase): entra/regista normalmente.
+        const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
         if (error) throw error;
       } else {
-        // Convidado com sessão anónima: liga a identidade Google à MESMA conta
+        // Convidado com sessão anónima: liga a identidade à MESMA conta
         // (mesmo user_id) — zero migração, tal como o upgrade por email.
-        const { error } = await supabase.auth.linkIdentity({ provider: "google", options: { redirectTo } });
+        const { error } = await supabase.auth.linkIdentity({ provider, options: { redirectTo } });
         if (error) throw error;
       }
-      // A navegação para o Google acontece aqui; ao voltar, a sessão já vem trocada.
+      // A navegação acontece aqui; ao voltar, a sessão já vem trocada.
     } catch (err) {
-      setErro("Não foi possível continuar com o Google agora. Tenta por email.");
-      setGoogleLoading(false);
+      setErro("Não foi possível continuar agora. Tenta por email.");
+      setProviderLoading(null);
     }
   }
 
@@ -208,11 +208,18 @@ function ModalCriarConta({ local = false, onFechar, onConvertido }) {
                 </p>
               ))}
             </div>
-            <button type="button" onClick={continuarComGoogle} disabled={googleLoading}
-              className="pj-tap w-full py-3.5 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2.5"
-              style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8", opacity: googleLoading ? 0.7 : 1 }}>
-              <IconGoogle size={17} /> {googleLoading ? "A abrir o Google…" : "Continuar com Google"}
-            </button>
+            <div className="flex gap-2.5">
+              <button type="button" onClick={() => continuarComProvider("google")} disabled={!!providerLoading}
+                className="pj-tap flex-1 py-3.5 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2"
+                style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8", opacity: providerLoading && providerLoading !== "google" ? 0.5 : 1 }}>
+                <IconGoogle size={17} /> {providerLoading === "google" ? "A abrir…" : "Google"}
+              </button>
+              <button type="button" onClick={() => continuarComProvider("facebook")} disabled={!!providerLoading}
+                className="pj-tap flex-1 py-3.5 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2"
+                style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8", opacity: providerLoading && providerLoading !== "facebook" ? 0.5 : 1 }}>
+                <IconFacebook size={17} /> {providerLoading === "facebook" ? "A abrir…" : "Facebook"}
+              </button>
+            </div>
             <div className="flex items-center gap-3 -my-0.5">
               <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
               <span className="text-[11px] font-semibold" style={{ color: "#8a978e" }}>ou por email</span>
