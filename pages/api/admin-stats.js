@@ -60,6 +60,16 @@ export default async function handler(req, res) {
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
     const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
 
+    // Método de login das contas não-anónimas — para medir a adoção do
+    // "Continuar com Google" (inclui quem começou como convidado e ligou
+    // a conta Google depois, via linkIdentity).
+    const naoConvidados = todos.filter(u => !u.is_anonymous);
+    const comGoogle = naoConvidados.filter(u => (u.app_metadata?.providers || []).includes("google")).length;
+    const porMetodo = {
+      google: comGoogle,
+      email: naoConvidados.length - comGoogle,
+    };
+
     // Utilizadores ATIVOS (fizeram login no período) — engagement real, não só registo
     const ativosHoje = todos.filter(u => u.last_sign_in_at && new Date(u.last_sign_in_at) >= inicioHoje).length;
     const ativos7 = todos.filter(u => u.last_sign_in_at && agora - new Date(u.last_sign_in_at).getTime() < 7 * DIA).length;
@@ -149,6 +159,7 @@ export default async function handler(req, res) {
         criado: u.created_at,
         confirmado: !!(u.email_confirmed_at || u.confirmed_at),
         convidado: !!u.is_anonymous,
+        google: (u.app_metadata?.providers || []).includes("google"),
         ultimoAcesso: u.last_sign_in_at || null,
         dispositivo: dispositivoMap[u.id] || null,
       }));
@@ -156,6 +167,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       total,
       convidados,
+      porMetodo,
       hoje,
       ultimos7,
       ultimos30,
