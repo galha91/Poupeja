@@ -126,18 +126,6 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
         >
           <IconGoogle /> Continuar com Google
         </button>
-        <div className="flex items-center gap-3 -my-0.5">
-          <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
-          <span className="text-[11px] font-semibold" style={{ color: "#8a978e" }}>ou</span>
-          <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
-        </div>
-        <button
-          onClick={onRegister}
-          className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2"
-          style={{ background: "#0b6b4f" }}
-        >
-          Criar conta com email <ArrowRight size={18} />
-        </button>
         <button
           onClick={onConvidado}
           disabled={convidadoLoading}
@@ -152,13 +140,16 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
         {convidadoErro && (
           <p className="text-center text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{convidadoErro}</p>
         )}
-        <button
-          onClick={onLogin}
-          className="press pj-tap w-full py-3 rounded-2xl font-semibold text-[13px]"
-          style={{ background: "#eeece4", color: "#14231c" }}
-        >
-          Já tenho conta — Entrar
-        </button>
+        <p className="text-center text-[12.5px] font-medium mt-1.5" style={{ color: "#8a978e" }}>
+          Preferes email?{" "}
+          <button onClick={onRegister} className="press font-semibold underline underline-offset-2" style={{ color: "#0b6b4f" }}>
+            Criar conta
+          </button>
+          {" · "}
+          <button onClick={onLogin} className="press font-semibold underline underline-offset-2" style={{ color: "#0b6b4f" }}>
+            Já tenho conta
+          </button>
+        </p>
 
         <BannerInstalar inline />
       </div>
