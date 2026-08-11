@@ -275,17 +275,13 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* Método de login — adoção do "Continuar com Google/Facebook" */}
+            {/* Método de login — adoção do "Continuar com Google" */}
             <div className="bg-white rounded-2xl p-4 shadow-sm mb-5">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-2">Método de login (contas registadas)</p>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-sm flex items-center gap-1.5">🔵 <span className="text-slate-600 font-bold">Google</span></span>
                   <span className="text-sm font-black text-slate-800">{stats.porMetodo?.google ?? "—"}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm flex items-center gap-1.5">🔷 <span className="text-slate-600 font-bold">Facebook</span></span>
-                  <span className="text-sm font-black text-slate-800">{stats.porMetodo?.facebook ?? "—"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm flex items-center gap-1.5">✉️ <span className="text-slate-600 font-bold">Email / password</span></span>
@@ -384,11 +380,6 @@ export default function Admin() {
                           {u.google && (
                             <span className="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full shrink-0">
                               GOOGLE
-                            </span>
-                          )}
-                          {u.facebook && (
-                            <span className="text-[9px] font-black bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full shrink-0">
-                              FACEBOOK
                             </span>
                           )}
                           {u.confirmado && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
