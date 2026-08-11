@@ -77,23 +77,6 @@ async function entrarComGoogle() {
   });
 }
 
-/* Logótipo oficial do Facebook, para o botão "Continuar com Facebook" */
-export function IconFacebook({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#1877F2" d="M24 4C12.95 4 4 12.95 4 24c0 9.98 7.31 18.25 16.87 19.76V29.7h-5.08V24h5.08v-4.34c0-5.02 2.99-7.79 7.56-7.79 2.19 0 4.48.39 4.48.39v4.92h-2.52c-2.49 0-3.26 1.54-3.26 3.13V24h5.55l-.89 5.7h-4.66v14.06C36.69 42.25 44 33.98 44 24c0-11.05-8.95-20-20-20z"/>
-    </svg>
-  );
-}
-
-async function entrarComFacebook() {
-  evento("login", { method: "facebook_attempt" });
-  await supabase.auth.signInWithOAuth({
-    provider: "facebook",
-    options: { redirectTo: typeof window !== "undefined" ? window.location.origin : undefined },
-  });
-}
-
 /* ── Ecrã Landing ── */
 function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidadoErro }) {
   return (
@@ -136,22 +119,13 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
         <p className="text-center text-[11px] font-medium mb-1" style={{ color: "#8a978e" }}>
           Grátis · Sem cartão · Conta válida em qualquer dispositivo
         </p>
-        <div className="flex gap-2.5">
-          <button
-            onClick={entrarComGoogle}
-            className="press pj-tap flex-1 py-4 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2"
-            style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8" }}
-          >
-            <IconGoogle size={17} /> Google
-          </button>
-          <button
-            onClick={entrarComFacebook}
-            className="press pj-tap flex-1 py-4 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2"
-            style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8" }}
-          >
-            <IconFacebook size={17} /> Facebook
-          </button>
-        </div>
+        <button
+          onClick={entrarComGoogle}
+          className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2.5"
+          style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8" }}
+        >
+          <IconGoogle /> Continuar com Google
+        </button>
         <button
           onClick={onConvidado}
           disabled={convidadoLoading}

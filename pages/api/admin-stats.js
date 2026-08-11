@@ -61,15 +61,13 @@ export default async function handler(req, res) {
     const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
 
     // Método de login das contas não-anónimas — para medir a adoção do
-    // "Continuar com Google/Facebook" (inclui quem começou como convidado
-    // e ligou a conta depois, via linkIdentity).
+    // "Continuar com Google" (inclui quem começou como convidado e ligou
+    // a conta Google depois, via linkIdentity).
     const naoConvidados = todos.filter(u => !u.is_anonymous);
     const comGoogle = naoConvidados.filter(u => (u.app_metadata?.providers || []).includes("google")).length;
-    const comFacebook = naoConvidados.filter(u => (u.app_metadata?.providers || []).includes("facebook")).length;
     const porMetodo = {
       google: comGoogle,
-      facebook: comFacebook,
-      email: naoConvidados.length - comGoogle - comFacebook,
+      email: naoConvidados.length - comGoogle,
     };
 
     // Utilizadores ATIVOS (fizeram login no período) — engagement real, não só registo
@@ -162,7 +160,6 @@ export default async function handler(req, res) {
         confirmado: !!(u.email_confirmed_at || u.confirmed_at),
         convidado: !!u.is_anonymous,
         google: (u.app_metadata?.providers || []).includes("google"),
-        facebook: (u.app_metadata?.providers || []).includes("facebook"),
         ultimoAcesso: u.last_sign_in_at || null,
         dispositivo: dispositivoMap[u.id] || null,
       }));
