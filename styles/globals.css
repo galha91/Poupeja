@@ -26,7 +26,11 @@
   --pj-text:        #14231c;
   --pj-text-strong: #2c3b33;
   --pj-text-muted:  #5c6b62;
-  --pj-text-faint:  #8a978e;
+  /* Era #8a978e, que dava 2.79:1 sobre a superfície e reprovava o mínimo
+     de acessibilidade (4.5:1) — e isto são rótulos e datas com significado,
+     não decoração. Este é o tom MAIS CLARO da mesma família que passa nos
+     três fundos claros (4.54:1 no pior caso, que são os chips). */
+  --pj-text-faint:  #636d66;
 
   /* Marca */
   --pj-brand:       #0b6b4f;
@@ -224,7 +228,7 @@ html.dark {
   --pj-text:        #eef0ea;
   --pj-text-strong: #dce3dd;
   --pj-text-muted:  #a8b4ac;
-  --pj-text-faint:  #7f8c84;
+  --pj-text-faint:  #839088;  /* passa 4.54:1 até sobre os chips escuros */
 
   --pj-brand:       #0d7a5a;
   --pj-brand-ink:   #57b392;
