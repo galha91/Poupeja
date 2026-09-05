@@ -49,16 +49,16 @@ export default function Receita({ receita, outras }) {
       </Head>
 
       <div style={{ paddingTop: 24 }}>
-        <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-          <a href="/receitas" style={{ color: "#8a978e" }}>Receitas baratas</a>
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+          <a href="/receitas" style={{ color: "var(--pj-text-faint)" }}>Receitas baratas</a>
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           {receita.emoji} {receita.nome}
         </h1>
-        <p className="flex flex-wrap items-center gap-x-4 gap-y-1" style={{ fontSize: 13.5, color: "#5c6b62", marginTop: 12 }}>
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-1" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12 }}>
           <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {receita.tempoMin} min</span>
           <span className="inline-flex items-center gap-1.5"><Users size={13} /> 4 pessoas</span>
-          <span style={{ fontWeight: 600, color: "#0b6b4f" }}>
+          <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>
             {"€".repeat(receita.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - receita.custo)}</span>
             {" "}{receita.custo === 1 ? "muito barata" : "barata"}
           </span>
@@ -69,17 +69,17 @@ export default function Receita({ receita, outras }) {
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>
           Ingredientes
         </h2>
-        <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           {receita.ingredientes.map((ing, i) => (
-            <div key={i} className="flex items-center justify-between px-4 py-2.5" style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}>
-              <span style={{ fontSize: 14, fontWeight: ing.despensa ? 500 : 600, color: ing.despensa ? "#8a978e" : "#14231c" }}>
+            <div key={i} className="flex items-center justify-between px-4 py-2.5" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
+              <span style={{ fontSize: 14, fontWeight: ing.despensa ? 500 : 600, color: ing.despensa ? "var(--pj-text-faint)" : "var(--pj-text)" }}>
                 {emojiIngrediente(ing.nome)} {ing.nome}{ing.despensa ? " · da despensa" : ""}
               </span>
-              <span style={{ fontSize: 13, color: "#5c6b62" }}>{ing.qtd}</span>
+              <span style={{ fontSize: 13, color: "var(--pj-text-muted)" }}>{ing.qtd}</span>
             </div>
           ))}
         </div>
-        <p style={{ fontSize: 12.5, color: "#8a978e", marginTop: 10 }}>
+        <p style={{ fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 10 }}>
           Os ingredientes "da despensa" são básicos que quase toda a gente tem em casa.
         </p>
 
@@ -89,8 +89,8 @@ export default function Receita({ receita, outras }) {
         <ol className="flex flex-col gap-3" style={{ paddingLeft: 0, listStyle: "none" }}>
           {receita.passos.map((p, i) => (
             <li key={i} className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full text-white flex items-center justify-center" style={{ background: "#0b6b4f", fontSize: 12, fontWeight: 600, marginTop: 1 }}>{i + 1}</span>
-              <span style={{ fontSize: 14.5, color: "#2c3b33", lineHeight: 1.6 }}>{p}</span>
+              <span className="flex-shrink-0 w-6 h-6 rounded-full text-white flex items-center justify-center" style={{ background: "var(--pj-brand)", fontSize: 12, fontWeight: 600, marginTop: 1 }}>{i + 1}</span>
+              <span style={{ fontSize: 14.5, color: "var(--pj-text-strong)", lineHeight: 1.6 }}>{p}</span>
             </li>
           ))}
         </ol>
@@ -98,10 +98,10 @@ export default function Receita({ receita, outras }) {
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36 }}>
           Quanto custa esta receita?
         </h2>
-        <p style={{ fontSize: 14, color: "#5c6b62", lineHeight: 1.7, marginTop: 10 }}>
+        <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginTop: 10 }}>
           Indicamos uma faixa de custo ({"€".repeat(receita.custo)}) em vez de um total ao cêntimo,
           porque os preços variam por loja e época. Para pagares o mínimo, espreita os{" "}
-          <a href="/folhetos" style={{ color: "#0b6b4f", fontWeight: 600 }}>folhetos dos supermercados desta semana</a>{" "}
+          <a href="/folhetos" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>folhetos dos supermercados desta semana</a>{" "}
           antes de ires às compras — na app PoupeJá os ingredientes desta receita entram na tua lista
           de compras num toque.
         </p>
@@ -115,7 +115,7 @@ export default function Receita({ receita, outras }) {
               key={o.id}
               href={`/receitas/${o.id}`}
               className="pj-tap no-underline"
-              style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+              style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
             >
               {o.emoji} {o.nome}
             </a>
@@ -123,7 +123,7 @@ export default function Receita({ receita, outras }) {
           <a
             href="/receitas"
             className="pj-tap no-underline"
-            style={{ fontSize: 13, fontWeight: 600, color: "#5c6b62", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+            style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
           >
             Todas as receitas
           </a>

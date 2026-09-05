@@ -14,7 +14,7 @@ const LABEL_STYLE = {
   fontWeight: 600,
   letterSpacing: "0.09em",
   textTransform: "uppercase",
-  color: "#8a978e",
+  color: "var(--pj-text-faint)",
 };
 
 function lerPrefs() {
@@ -35,7 +35,7 @@ function Toggle({ on, onChange }) {
     <button
       onClick={() => onChange(!on)}
       className="w-12 h-7 rounded-full relative transition-colors flex-shrink-0"
-      style={{ background: on ? "#0b6b4f" : "#e4e2d8" }}
+      style={{ background: on ? "var(--pj-brand)" : "var(--pj-border)" }}
     >
       <span className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-sm transition-all ${on ? "left-6" : "left-1"}`} />
     </button>
@@ -48,7 +48,7 @@ function Section({ label, children }) {
       <p className="px-5 mb-3" style={LABEL_STYLE}>{label}</p>
       <div
         className="mx-4"
-        style={{ borderTop: "1px solid #e4e2d8", borderBottom: "1px solid #e4e2d8" }}
+        style={{ borderTop: "1px solid var(--pj-border)", borderBottom: "1px solid var(--pj-border)" }}
       >
         {children}
       </div>
@@ -58,7 +58,7 @@ function Section({ label, children }) {
 
 function Row({ border = true, children }) {
   return (
-    <div className="px-1 py-4" style={border ? { borderBottom: "1px solid #eeece4" } : undefined}>
+    <div className="px-1 py-4" style={border ? { borderBottom: "1px solid var(--pj-subtle)" } : undefined}>
       {children}
     </div>
   );
@@ -68,7 +68,7 @@ function IconChip({ active = false, children }) {
   return (
     <div
       className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-      style={{ background: active ? "#0b6b4f" : "#eeece4" }}
+      style={{ background: active ? "var(--pj-brand)" : "var(--pj-subtle)" }}
     >
       {children}
     </div>
@@ -201,12 +201,12 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
   const inicial = (user?.nome || user?.email || "?").trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <div className="pb-28 pt-4" style={{ background: "#f6f5f0", minHeight: "100vh" }}>
+    <div className="pb-28 pt-4" style={{ background: "var(--pj-surface)", minHeight: "100vh" }}>
 
       <button
         onClick={onVoltar}
         className="press pj-tap mx-4 mb-6 flex items-center gap-1.5 text-sm font-semibold"
-        style={{ color: "#8a978e" }}
+        style={{ color: "var(--pj-text-faint)" }}
       >
         <ArrowLeft size={15} /> Voltar
       </button>
@@ -215,16 +215,16 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
       <div className="mx-4 mb-8 flex items-center gap-4">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: "#0b6b4f" }}
+          style={{ background: "var(--pj-brand)" }}
         >
           <span className="font-display text-2xl text-white leading-none">{inicial}</span>
         </div>
         <div className="min-w-0">
           <p style={LABEL_STYLE}>Conta</p>
-          <p className="font-display text-2xl leading-tight truncate" style={{ color: "#14231c" }}>
+          <p className="font-display text-2xl leading-tight truncate" style={{ color: "var(--pj-text)" }}>
             {user?.nome || "O teu perfil"}
           </p>
-          <p className="text-sm mt-0.5 truncate" style={{ color: "#5c6b62" }}>{user?.convidado ? "Modo convidado" : (user?.email || "")}</p>
+          <p className="text-sm mt-0.5 truncate" style={{ color: "var(--pj-text-muted)" }}>{user?.convidado ? "Modo convidado" : (user?.email || "")}</p>
         </div>
       </div>
 
@@ -233,24 +233,24 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <button
           onClick={onCriarConta}
           className="pj-tap press mx-4 mb-8 w-[calc(100%-2rem)] text-left rounded-2xl px-4 py-3.5 flex items-center gap-3"
-          style={{ background: "#eef3ef", border: "1.5px dashed #0b6b4f55" }}
+          style={{ background: "var(--pj-brand-wash)", border: "1.5px dashed var(--pj-brand-soft)" }}
         >
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#0b6b4f" }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-brand)" }}>
             <Heart size={16} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13.5px] font-semibold" style={{ color: "#14231c" }}>Cria a tua conta grátis</p>
-            <p className="text-[12px] mt-0.5" style={{ color: "#5c6b62" }}>Guarda o teu progresso e desbloqueia avisos, sincronização e email semanal</p>
+            <p className="text-[13.5px] font-semibold" style={{ color: "var(--pj-text)" }}>Cria a tua conta grátis</p>
+            <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Guarda o teu progresso e desbloqueia avisos, sincronização e email semanal</p>
           </div>
-          <ChevronRight size={16} style={{ color: "#0b6b4f" }} />
+          <ChevronRight size={16} style={{ color: "var(--pj-brand-ink)" }} />
         </button>
       )}
 
       {/* Guardado */}
       {saved && (
         <div className="mx-4 mb-6 flex items-center gap-2 anim-up">
-          <Check size={13} style={{ color: "#0b6b4f" }} />
-          <span className="text-xs font-semibold" style={{ color: "#0b6b4f" }}>Guardado automaticamente</span>
+          <Check size={13} style={{ color: "var(--pj-brand-ink)" }} />
+          <span className="text-xs font-semibold" style={{ color: "var(--pj-brand-ink)" }}>Guardado automaticamente</span>
         </div>
       )}
 
@@ -275,8 +275,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
       <Section label="Preferências">
         <Row>
           <div className="flex items-center gap-2 mb-3">
-            <Fuel size={15} style={{ color: "#0b6b4f" }} />
-            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Combustível habitual</p>
+            <Fuel size={15} style={{ color: "var(--pj-brand-ink)" }} />
+            <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Combustível habitual</p>
           </div>
           <div className="flex gap-2">
             {COMBUSTIVEIS.map(c => {
@@ -287,8 +287,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
                   onClick={() => set("combustivel", c)}
                   className="press pj-tap flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
                   style={ativo
-                    ? { background: "#0b6b4f", color: "#fff" }
-                    : { background: "#eeece4", color: "#5c6b62" }}
+                    ? { background: "var(--pj-brand)", color: "#fff" }
+                    : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
                 >
                   {c}
                 </button>
@@ -300,10 +300,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <MapPin size={15} style={{ color: "#0b6b4f" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Distância máxima</p>
+              <MapPin size={15} style={{ color: "var(--pj-brand-ink)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Distância máxima</p>
             </div>
-            <span className="text-sm font-semibold" style={{ color: "#0b6b4f" }}>{prefs.distancia} km</span>
+            <span className="text-sm font-semibold" style={{ color: "var(--pj-brand-ink)" }}>{prefs.distancia} km</span>
           </div>
           <input
             type="range" min="1" max="50" value={prefs.distancia}
@@ -315,8 +315,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
 
         <Row border={false}>
           <div className="flex items-center gap-2 mb-3">
-            <Heart size={15} style={{ color: "#0b6b4f" }} />
-            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Supermercados favoritos</p>
+            <Heart size={15} style={{ color: "var(--pj-brand-ink)" }} />
+            <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Supermercados favoritos</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {SUPERMERCADOS.map(s => {
@@ -327,8 +327,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
                   onClick={() => toggleFav(s)}
                   className="press pj-tap px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1"
                   style={ativo
-                    ? { background: "#0b6b4f", color: "#fff" }
-                    : { background: "#eeece4", color: "#5c6b62" }}
+                    ? { background: "var(--pj-brand)", color: "#fff" }
+                    : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
                 >
                   {ativo && <Check size={10} />} {s}
                 </button>
@@ -343,8 +343,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <ShieldCheck size={17} style={{ color: "#5c6b62" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Avisos de garantias</p>
+              <ShieldCheck size={17} style={{ color: "var(--pj-text-muted)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Avisos de garantias</p>
             </div>
             <Toggle on={prefs.avisoGarantias} onChange={v => set("avisoGarantias", v)} />
           </div>
@@ -352,16 +352,16 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Bell size={17} style={{ color: "#5c6b62" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Avisos de preços</p>
+              <Bell size={17} style={{ color: "var(--pj-text-muted)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Avisos de preços</p>
             </div>
             <Toggle on={prefs.avisoPrecos} onChange={v => set("avisoPrecos", v)} />
           </div>
         </Row>
         <Row border={false}>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Avisar com antecedência</p>
-            <span className="text-sm font-semibold" style={{ color: "#0b6b4f" }}>{prefs.diasGarantia} dias</span>
+            <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Avisar com antecedência</p>
+            <span className="text-sm font-semibold" style={{ color: "var(--pj-brand-ink)" }}>{prefs.diasGarantia} dias</span>
           </div>
           <input
             type="range" min="15" max="120" step="15" value={prefs.diasGarantia}
@@ -379,12 +379,12 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
             <IconChip active={pushEstado === "ativo"}>
               {pushEstado === "ativo"
                 ? <BellRing size={18} className="text-white" />
-                : <BellOff size={18} style={{ color: "#8a978e" }} />
+                : <BellOff size={18} style={{ color: "var(--pj-text-faint)" }} />
               }
             </IconChip>
             <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Folhetos no ecrã bloqueado</p>
-              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#8a978e" }}>
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Folhetos no ecrã bloqueado</p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
                 {pushEstado === "ativo"
                   ? "Notificações ativas. Avisamos quando saem folhetos novos."
                   : pushEstado === "bloqueado"
@@ -400,8 +400,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
                   disabled={pushLoading || pushEstado === "a-verificar"}
                   className="press pj-tap mt-3 w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                   style={pushEstado === "ativo"
-                    ? { background: "#eeece4", color: "#5c6b62" }
-                    : { background: "#0b6b4f", color: "#fff" }}
+                    ? { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }
+                    : { background: "var(--pj-brand)", color: "#fff" }}
                 >
                   {pushLoading ? "A processar…"
                     : pushEstado === "ativo"
@@ -420,10 +420,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row border={false}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Moon size={17} style={{ color: "#5c6b62" }} />
+              <Moon size={17} style={{ color: "var(--pj-text-muted)" }} />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Modo escuro</p>
-                <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Mais confortável à noite e poupa bateria.</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Modo escuro</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>Mais confortável à noite e poupa bateria.</p>
               </div>
             </div>
             <Toggle
@@ -442,10 +442,10 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Mail size={17} style={{ color: "#5c6b62" }} />
+              <Mail size={17} style={{ color: "var(--pj-text-muted)" }} />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Resumo automático semanal</p>
-                <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Todas as quintas, com os folhetos da semana.</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Resumo automático semanal</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>Todas as quintas, com os folhetos da semana.</p>
               </div>
             </div>
             <Toggle on={!user?.convidado && prefs.emailSemanal !== false} onChange={v => { if (user?.convidado) { onCriarConta?.(); return; } set("emailSemanal", v); }} />
@@ -454,18 +454,18 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row border={false}>
           <div className="flex items-start gap-3">
             <IconChip>
-              <Mail size={18} style={{ color: "#0b6b4f" }} />
+              <Mail size={18} style={{ color: "var(--pj-brand-ink)" }} />
             </IconChip>
             <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Enviar agora</p>
-              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#8a978e" }}>Recebe já um resumo com todos os folhetos ativos.</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Enviar agora</p>
+              <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>Recebe já um resumo com todos os folhetos ativos.</p>
               <button
                 onClick={enviarEmailSemanal}
                 disabled={enviando || enviado}
                 className="press pj-tap mt-3 w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                 style={enviado
-                  ? { background: "#eeece4", color: "#0b6b4f" }
-                  : { background: "#0b6b4f", color: "#fff" }}
+                  ? { background: "var(--pj-subtle)", color: "var(--pj-brand-ink)" }
+                  : { background: "var(--pj-brand)", color: "#fff" }}
               >
                 {enviando ? "A enviar…" : enviado ? <><Check size={13} /> Enviado!</> : <><Mail size={13} /> Enviar para {user?.email}</>}
               </button>
@@ -479,8 +479,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row>
           <button onClick={() => setModalSobre(true)} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Heart size={17} style={{ color: "#8a978e" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Sobre nós</p>
+              <Heart size={17} style={{ color: "var(--pj-text-faint)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Sobre nós</p>
             </div>
             <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
@@ -488,17 +488,17 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Info size={17} style={{ color: "#8a978e" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Versão</p>
+              <Info size={17} style={{ color: "var(--pj-text-faint)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Versão</p>
             </div>
-            <span className="text-xs font-semibold" style={{ color: "#8a978e" }}>2.0.2</span>
+            <span className="text-xs font-semibold" style={{ color: "var(--pj-text-faint)" }}>2.0.2</span>
           </div>
         </Row>
         <Row>
           <button onClick={() => setModalTermos(true)} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <FileText size={17} style={{ color: "#8a978e" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Termos e privacidade</p>
+              <FileText size={17} style={{ color: "var(--pj-text-faint)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Termos e privacidade</p>
             </div>
             <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
@@ -506,8 +506,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         <Row border={false}>
           <button onClick={() => window.location.href = "mailto:contacto@poupeja.com"} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Mail size={17} style={{ color: "#8a978e" }} />
-              <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Contacto e ajuda</p>
+              <Mail size={17} style={{ color: "var(--pj-text-faint)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Contacto e ajuda</p>
             </div>
             <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
@@ -519,25 +519,25 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
       {/* Modal Sobre nós */}
       {modalSobre && (
         <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(20,35,28,0.45)" }} onClick={() => setModalSobre(false)}>
-          <div className="w-full max-w-lg rounded-t-3xl overflow-hidden max-h-[90vh] overflow-y-auto" style={{ background: "#f6f5f0" }} onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-t-3xl overflow-hidden max-h-[90vh] overflow-y-auto" style={{ background: "var(--pj-surface)" }} onClick={e => e.stopPropagation()}>
 
             {/* Cabeçalho editorial */}
-            <div className="relative p-6 pb-6" style={{ background: "#fbfaf6", borderBottom: "1px solid #e4e2d8" }}>
-              <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#eeece4" }}>
-                <span className="font-semibold text-sm" style={{ color: "#5c6b62" }}>✕</span>
+            <div className="relative p-6 pb-6" style={{ background: "var(--pj-card)", borderBottom: "1px solid var(--pj-border)" }}>
+              <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+                <span className="font-semibold text-sm" style={{ color: "var(--pj-text-muted)" }}>✕</span>
               </button>
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style={{ background: "#0b6b4f" }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style={{ background: "var(--pj-brand)" }}>
                 <PiggyBank size={24} className="text-white" />
               </div>
-              <p className="font-display text-3xl leading-tight" style={{ color: "#14231c" }}>PoupeJá</p>
-              <p className="text-sm mt-1" style={{ color: "#5c6b62" }}>Feito com orgulho em Portugal 🇵🇹</p>
+              <p className="font-display text-3xl leading-tight" style={{ color: "var(--pj-text)" }}>PoupeJá</p>
+              <p className="text-sm mt-1" style={{ color: "var(--pj-text-muted)" }}>Feito com orgulho em Portugal 🇵🇹</p>
             </div>
 
             <div className="p-6 space-y-6">
               {/* Missão */}
               <div>
                 <p className="mb-2" style={LABEL_STYLE}>A nossa missão</p>
-                <p className="text-sm leading-relaxed" style={{ color: "#5c6b62" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
                   A PoupeJá nasceu com um objetivo simples: ajudar as famílias portuguesas a gastar menos nas compras do dia a dia. Num país onde o custo de vida continua a subir, acreditamos que informação clara e acessível faz toda a diferença.
                 </p>
               </div>
@@ -553,11 +553,11 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
                     { emoji: "📋", titulo: "Lista de compras", desc: "Organiza o que precisas antes de sair de casa" },
                     { emoji: "🧾", titulo: "Talões e garantias digitais", desc: "Guarda os teus recibos e nunca mais percas uma garantia" },
                   ].map(f => (
-                    <div key={f.titulo} className="flex gap-3 items-start rounded-2xl p-3" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+                    <div key={f.titulo} className="flex gap-3 items-start rounded-2xl p-3" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
                       <span className="text-xl flex-shrink-0">{f.emoji}</span>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: "#14231c" }}>{f.titulo}</p>
-                        <p className="text-xs mt-0.5" style={{ color: "#8a978e" }}>{f.desc}</p>
+                        <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>{f.titulo}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--pj-text-faint)" }}>{f.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -565,13 +565,13 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               </div>
 
               {/* Contacto */}
-              <div className="rounded-2xl p-4" style={{ background: "#eeece4", border: "1px solid #e4e2d8" }}>
-                <p className="mb-2" style={{ ...LABEL_STYLE, color: "#0b6b4f" }}>Fala connosco</p>
-                <p className="text-sm mb-3" style={{ color: "#5c6b62" }}>Tens uma sugestão, encontraste um erro ou queres saber mais? Adoramos receber feedback.</p>
+              <div className="rounded-2xl p-4" style={{ background: "var(--pj-subtle)", border: "1px solid var(--pj-border)" }}>
+                <p className="mb-2" style={{ ...LABEL_STYLE, color: "var(--pj-brand-ink)" }}>Fala connosco</p>
+                <p className="text-sm mb-3" style={{ color: "var(--pj-text-muted)" }}>Tens uma sugestão, encontraste um erro ou queres saber mais? Adoramos receber feedback.</p>
                 <button
                   onClick={() => window.location.href = "mailto:contacto@poupeja.com"}
                   className="press pj-tap w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2"
-                  style={{ background: "#0b6b4f", color: "#fff" }}
+                  style={{ background: "var(--pj-brand)", color: "#fff" }}
                 >
                   <Mail size={13} /> contacto@poupeja.com
                 </button>
@@ -586,20 +586,20 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
       {/* Modal Termos */}
       {modalTermos && (
         <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(20,35,28,0.45)" }} onClick={() => setModalTermos(false)}>
-          <div className="w-full max-w-lg rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto" style={{ background: "#f6f5f0" }} onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto" style={{ background: "var(--pj-surface)" }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-              <p className="font-display text-2xl" style={{ color: "#14231c" }}>Termos e Privacidade</p>
-              <button onClick={() => setModalTermos(false)} className="press pj-tap w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#eeece4" }}>
-                <span className="text-lg font-semibold" style={{ color: "#5c6b62" }}>✕</span>
+              <p className="font-display text-2xl" style={{ color: "var(--pj-text)" }}>Termos e Privacidade</p>
+              <button onClick={() => setModalTermos(false)} className="press pj-tap w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+                <span className="text-lg font-semibold" style={{ color: "var(--pj-text-muted)" }}>✕</span>
               </button>
             </div>
-            <div className="text-sm leading-relaxed space-y-4" style={{ color: "#5c6b62" }}>
-              <p><strong style={{ color: "#14231c" }}>Última atualização:</strong> junho 2026</p>
-              <p><strong style={{ color: "#14231c" }}>O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências são guardados localmente no teu dispositivo.</p>
-              <p><strong style={{ color: "#14231c" }}>Para que usamos os dados</strong><br/>Apenas para te mostrar os teus próprios dados dentro da app. Não partilhamos dados com terceiros nem usamos publicidade.</p>
-              <p><strong style={{ color: "#14231c" }}>Cookies</strong><br/>Usamos apenas cookies essenciais para o funcionamento da app (sessão de autenticação).</p>
-              <p><strong style={{ color: "#14231c" }}>Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em contacto@poupeja.com</p>
-              <p><strong style={{ color: "#14231c" }}>Dados de terceiros</strong><br/>Os preços de combustíveis são fornecidos pela DGEG. Os postos EV e combustíveis usam a API TomTom. Os folhetos são links para os sites oficiais dos supermercados.</p>
+            <div className="text-sm leading-relaxed space-y-4" style={{ color: "var(--pj-text-muted)" }}>
+              <p><strong style={{ color: "var(--pj-text)" }}>Última atualização:</strong> junho 2026</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências são guardados localmente no teu dispositivo.</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>Para que usamos os dados</strong><br/>Apenas para te mostrar os teus próprios dados dentro da app. Não partilhamos dados com terceiros nem usamos publicidade.</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>Cookies</strong><br/>Usamos apenas cookies essenciais para o funcionamento da app (sessão de autenticação).</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em contacto@poupeja.com</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>Dados de terceiros</strong><br/>Os preços de combustíveis são fornecidos pela DGEG. Os postos EV e combustíveis usam a API TomTom. Os folhetos são links para os sites oficiais dos supermercados.</p>
             </div>
             <button onClick={() => setModalTermos(false)} className="press pj-tap w-full mt-6 py-3 rounded-2xl font-semibold text-sm" style={{ background: "#14231c", color: "#fff" }}>
               Fechar

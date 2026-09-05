@@ -3,16 +3,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────
+   TOKENS DE COR — fonte única da verdade
+   Cada token é um PAPEL, não uma cor. É por isso que
+   o tema escuro funciona: troca-se o valor do papel
+   num sítio só, e a app inteira acompanha.
+
+   Regra importante: o verde da marca tem DOIS papéis.
+   Como preenchimento (--pj-brand) leva texto branco por
+   cima; como texto (--pj-brand-ink) assenta sobre fundos
+   claros. No escuro divergem — #0b6b4f como texto sobre
+   fundo escuro dá 2.84:1 e reprovava em acessibilidade.
+   ───────────────────────────────────────────── */
 :root {
-  --brand-green:  #0b6b4f;
+  /* Superfícies */
+  --pj-surface:     #f6f5f0;
+  --pj-card:        #fbfaf6;
+  --pj-subtle:      #eeece4;
+  --pj-border:      #e4e2d8;
+
+  /* Texto */
+  --pj-text:        #14231c;
+  --pj-text-strong: #2c3b33;
+  --pj-text-muted:  #5c6b62;
+  --pj-text-faint:  #8a978e;
+
+  /* Marca */
+  --pj-brand:       #0b6b4f;
+  --pj-brand-ink:   #0b6b4f;
+  /* Bordas tracejadas da marca (convite a criar conta, metas por definir) */
+  --pj-brand-soft:  rgba(11,107,79,0.35);
+  /* Superfície com tinta da marca (avisos, convites, destaques suaves) */
+  --pj-brand-wash:  #eef3ef;
+
+  /* Aliases antigos — mantidos para não partir o que já os usa */
+  --brand-green:  var(--pj-brand);
   --brand-blue:   #2563eb;
   --brand-amber:  #b5701f;
-  --surface:      #f6f5f0;
-  --card:         #fbfaf6;
-  --border:       #e4e2d8;
-  --text-primary: #14231c;
-  --text-muted:   #5c6b62;
-  --text-faint:   #6e7d73;
+  --surface:      var(--pj-surface);
+  --card:         var(--pj-card);
+  --border:       var(--pj-border);
+  --text-primary: var(--pj-text);
+  --text-muted:   var(--pj-text-muted);
+  --text-faint:   var(--pj-text-faint);
+
   --radius-card:  16px;
   --radius-btn:   12px;
   --shadow-card:  0 1px 2px rgba(20,35,28,0.04), 0 4px 14px rgba(20,35,28,0.05);
@@ -177,62 +211,75 @@ input[type="range"]::-moz-range-thumb {
    ───────────────────────────────────────────── */
 html.dark {
   color-scheme: dark;
+
+  /* Só os VALORES dos papéis mudam. Escuro quente com laivo verde,
+     para continuar a ser a mesma marca — não um azul-ardósia genérico. */
+  --pj-surface:     #101512;
+  --pj-card:        #171d19;
+  --pj-subtle:      #202823;
+  --pj-border:      #2b342e;
+
+  --pj-text:        #eef0ea;
+  --pj-text-strong: #dce3dd;
+  --pj-text-muted:  #a8b4ac;
+  --pj-text-faint:  #7f8c84;
+
+  --pj-brand:       #0d7a5a;
+  --pj-brand-ink:   #57b392;
+  --pj-brand-soft:  rgba(87,179,146,0.32);
+  --pj-brand-wash:  #17241e;
+
+  --shadow-card:  0 2px 12px rgba(0,0,0,0.4);
 }
 html.dark body {
-  --surface:      #0b1120;
-  --card:         #1e293b;
-  --border:       #334155;
-  --text-primary: #f1f5f9;
-  --text-muted:   #94a3b8;
-  --text-faint:   #64748b;
-  --shadow-card:  0 2px 12px rgba(0,0,0,0.4);
-  background: var(--surface);
-  color: var(--text-primary);
+  background: var(--pj-surface);
+  color: var(--pj-text);
 }
 
-/* Superfícies */
-.dark .bg-white         { background-color: #1e293b !important; }
-.dark .bg-slate-50      { background-color: #172033 !important; }
-.dark .bg-slate-100     { background-color: #334155 !important; }
-.dark .bg-gray-50       { background-color: #172033 !important; }
-.dark .bg-gray-100      { background-color: #334155 !important; }
+/* Ecrãs que ainda usam classes Tailwind em vez de estilo inline.
+   Apontam para os mesmos tokens, para não haver dois temas escuros. */
+.dark .bg-white         { background-color: var(--pj-card) !important; }
+.dark .bg-slate-50      { background-color: var(--pj-surface) !important; }
+.dark .bg-slate-100     { background-color: var(--pj-subtle) !important; }
+.dark .bg-gray-50       { background-color: var(--pj-surface) !important; }
+.dark .bg-gray-100      { background-color: var(--pj-subtle) !important; }
 
 /* Texto */
 .dark .text-slate-900,
 .dark .text-slate-800,
-.dark .text-slate-700   { color: #e2e8f0 !important; }
+.dark .text-slate-700   { color: var(--pj-text) !important; }
 .dark .text-slate-600,
-.dark .text-slate-500   { color: #94a3b8 !important; }
+.dark .text-slate-500   { color: var(--pj-text-muted) !important; }
 .dark .text-slate-400,
-.dark .text-slate-300   { color: #64748b !important; }
+.dark .text-slate-300   { color: var(--pj-text-faint) !important; }
 
 /* Bordas e divisores */
 .dark .border-slate-100,
 .dark .border-slate-200,
 .dark .border-gray-100,
-.dark .border-gray-200  { border-color: #334155 !important; }
+.dark .border-gray-200  { border-color: var(--pj-border) !important; }
 .dark .divide-slate-100 > * + *,
-.dark .divide-slate-50  > * + * { border-color: #334155 !important; }
+.dark .divide-slate-50  > * + * { border-color: var(--pj-border) !important; }
 
 /* Inputs */
 .dark input,
 .dark select,
 .dark textarea {
-  background-color: #0f172a !important;
-  border-color: #334155 !important;
-  color: #e2e8f0 !important;
+  background-color: var(--pj-surface) !important;
+  border-color: var(--pj-border) !important;
+  color: var(--pj-text) !important;
 }
 .dark input::placeholder,
-.dark textarea::placeholder { color: #64748b !important; }
+.dark textarea::placeholder { color: var(--pj-text-faint) !important; }
 
 /* Range track */
-.dark input[type="range"] { background: #334155; }
+.dark input[type="range"] { background: var(--pj-border); }
 
 /* Skeletons mais discretos no escuro */
 .dark .bg-slate-100.animate-pulse,
 .dark .animate-pulse .bg-slate-100,
-.dark .animate-pulse .bg-slate-50 { background-color: #334155 !important; }
+.dark .animate-pulse .bg-slate-50 { background-color: var(--pj-subtle) !important; }
 
 /* App shell de fundo */
 .dark .min-h-screen.bg-slate-50,
-.dark .min-h-screen.bg-gray-50 { background-color: #0b1120 !important; }
+.dark .min-h-screen.bg-gray-50 { background-color: var(--pj-surface) !important; }

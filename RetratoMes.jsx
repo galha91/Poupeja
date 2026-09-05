@@ -37,7 +37,7 @@ export default function RetratoMes({ retrato, onFechar }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(20,35,28,0.6)", backdropFilter: "blur(4px)" }} onClick={fechar}>
-      <div className="w-full max-w-md rounded-t-3xl overflow-hidden" style={{ maxHeight: "92vh", overflowY: "auto", background: "#0b6b4f" }} onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-t-3xl overflow-hidden" style={{ maxHeight: "92vh", overflowY: "auto", background: "var(--pj-brand)" }} onClick={e => e.stopPropagation()}>
 
         {/* Cartão principal — verde profundo, número gigante */}
         <div className="px-7 pt-8 pb-6 text-center relative">
@@ -61,7 +61,7 @@ export default function RetratoMes({ retrato, onFechar }) {
         </div>
 
         {/* Estatísticas — painel claro */}
-        <div className="rounded-t-3xl px-6 pt-6 pb-9" style={{ background: "#f6f5f0" }}>
+        <div className="rounded-t-3xl px-6 pt-6 pb-9" style={{ background: "var(--pj-surface)" }}>
           {(() => { const stats = [
               { Icon: Receipt, valor: String(nTaloes), rotulo: nTaloes !== 1 ? "talões" : "talão" },
               ...(streak >= 1 ? [{ Icon: Flame, valor: String(streak), rotulo: streak !== 1 ? "semanas seguidas" : "semana" }] : []),
@@ -69,19 +69,19 @@ export default function RetratoMes({ retrato, onFechar }) {
             ]; return (
           <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${stats.length}, 1fr)` }}>
             {stats.map((s, i) => (
-              <div key={i} className="rounded-2xl p-3 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-                <s.Icon size={16} className="mx-auto" style={{ color: "#0b6b4f" }} />
-                <p className="font-display mt-1.5" style={{ fontSize: 20, fontWeight: 600, color: "#14231c" }}>{s.valor}</p>
-                <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#8a978e" }}>{s.rotulo}</p>
+              <div key={i} className="rounded-2xl p-3 text-center" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                <s.Icon size={16} className="mx-auto" style={{ color: "var(--pj-brand-ink)" }} />
+                <p className="font-display mt-1.5" style={{ fontSize: 20, fontWeight: 600, color: "var(--pj-text)" }}>{s.valor}</p>
+                <p className="text-[10px] font-semibold mt-0.5" style={{ color: "var(--pj-text-faint)" }}>{s.rotulo}</p>
               </div>
             ))}
           </div>
             ); })()}
 
           {desafio && (
-            <div className="flex items-center gap-3 mt-4 rounded-2xl px-4 py-3" style={{ background: desafio.completo ? "#eef3ef" : "#fbfaf6", border: "1px solid #e4e2d8" }}>
-              <Trophy size={17} style={{ color: desafio.completo ? "#0b6b4f" : "#8a978e" }} />
-              <p className="text-[12.5px] font-semibold flex-1" style={{ color: "#14231c" }}>
+            <div className="flex items-center gap-3 mt-4 rounded-2xl px-4 py-3" style={{ background: desafio.completo ? "var(--pj-brand-wash)" : "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+              <Trophy size={17} style={{ color: desafio.completo ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }} />
+              <p className="text-[12.5px] font-semibold flex-1" style={{ color: "var(--pj-text)" }}>
                 {desafio.completo
                   ? <>Completaste o desafio “{desafio.nome}” {desafio.emoji}</>
                   : <>Desafio “{desafio.nome}”: €{total.toFixed(0)} de €{desafio.meta}</>}
@@ -89,10 +89,10 @@ export default function RetratoMes({ retrato, onFechar }) {
             </div>
           )}
 
-          <button onClick={partilhar} className="pj-tap w-full py-4 mt-5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2" style={{ background: "#0b6b4f" }}>
+          <button onClick={partilhar} className="pj-tap w-full py-4 mt-5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2" style={{ background: "var(--pj-brand)" }}>
             <Share2 size={17} /> {feedback || "Partilhar o meu retrato"}
           </button>
-          <button onClick={fechar} className="pj-tap w-full py-2.5 mt-2 font-semibold text-[13px]" style={{ color: "#8a978e" }}>
+          <button onClick={fechar} className="pj-tap w-full py-2.5 mt-2 font-semibold text-[13px]" style={{ color: "var(--pj-text-faint)" }}>
             Fechar
           </button>
         </div>

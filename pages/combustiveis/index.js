@@ -43,31 +43,31 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
       </Head>
 
       <div style={{ paddingTop: 24 }}>
-        <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           Dados oficiais DGEG · {dataStr}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Preços dos combustíveis hoje em Portugal
         </h1>
-        <p style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6, marginTop: 12 }}>
+        <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           O preço mais baixo por marca, em todo o país, atualizado com os dados oficiais da
           Direção-Geral de Energia e Geologia. Na app PoupeJá vês os postos mais baratos{" "}
-          <strong style={{ color: "#14231c" }}>perto de ti</strong> e crias avisos de preço.
+          <strong style={{ color: "var(--pj-text)" }}>perto de ti</strong> e crias avisos de preço.
         </p>
 
         {erro ? (
-          <p style={{ marginTop: 28, color: "#5c6b62" }}>Os dados não estão disponíveis neste momento. Tenta novamente daqui a pouco.</p>
+          <p style={{ marginTop: 28, color: "var(--pj-text-muted)" }}>Os dados não estão disponíveis neste momento. Tenta novamente daqui a pouco.</p>
         ) : (
           <>
             {/* Mais barato por tipo */}
             <div className="grid gap-3 mt-8" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
               {tiposDestaque.map(t => (
-                <div key={t} className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-                  <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>{t} mais barato</p>
-                  <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "#0b6b4f", marginTop: 6 }}>
+                <div key={t} className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>{t} mais barato</p>
+                  <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 6 }}>
                     €{porTipo[t].preco.toFixed(3)}
                   </p>
-                  <p style={{ fontSize: 12.5, color: "#5c6b62", marginTop: 2 }}>{porTipo[t].posto}</p>
+                  <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>{porTipo[t].posto}</p>
                 </div>
               ))}
             </div>
@@ -76,21 +76,21 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
             <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
               Preço mínimo por marca
             </h2>
-            <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               {(dados || []).slice(0, 16).map((d, i) => (
-                <div key={`${d.posto}-${d.tipo}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}>
+                <div key={`${d.posto}-${d.tipo}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
                   <div>
                     <p style={{ fontSize: 14, fontWeight: 600 }}>{d.posto}</p>
-                    <p style={{ fontSize: 12, color: "#8a978e" }}>{d.tipo} · {d.totalPostos} posto{d.totalPostos !== 1 ? "s" : ""}</p>
+                    <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{d.tipo} · {d.totalPostos} posto{d.totalPostos !== 1 ? "s" : ""}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "#0b6b4f" }}>€{d.preco.toFixed(3)}</p>
-                    <p style={{ fontSize: 11, color: "#8a978e" }}>médio €{d.precoMedio.toFixed(3)}</p>
+                    <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{d.preco.toFixed(3)}</p>
+                    <p style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>médio €{d.precoMedio.toFixed(3)}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: 12, color: "#8a978e", marginTop: 10 }}>
+            <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
               Fonte: DGEG — preços comunicados pelos postos. O preço no posto pode variar.
             </p>
           </>
@@ -106,7 +106,7 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
               key={c.slug}
               href={`/combustiveis/${c.slug}`}
               className="pj-tap no-underline"
-              style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+              style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
             >
               {c.nome}
             </a>

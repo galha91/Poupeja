@@ -17,14 +17,15 @@ const ICONES_CAT = {
 
 // --- Editorial flat design tokens (matches app-wide rebrand) ---
 const C = {
-  text:   "#14231c",
-  muted:  "#5c6b62",
-  faint:  "#8a978e",
-  green:  "#0b6b4f",
-  chip:   "#eeece4",
-  border: "#e4e2d8",
-  card:   "#fbfaf6",
-  divRow: "#eeece4",
+  text:      "var(--pj-text)",
+  muted:     "var(--pj-text-muted)",
+  faint:     "var(--pj-text-faint)",
+  green:     "var(--pj-brand-ink)",   // verde como texto
+  greenFill: "var(--pj-brand)",       // verde como preenchimento
+  chip:      "var(--pj-subtle)",
+  border:    "var(--pj-border)",
+  card:      "var(--pj-card)",
+  divRow:    "var(--pj-subtle)",
 };
 const LBL = { fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: C.faint, textTransform: "uppercase" };
 const LBL_SM = { fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: C.faint, textTransform: "uppercase" };
@@ -102,7 +103,7 @@ export default function SecaoApoios() {
                 onClick={() => { setCatAtiva(cat.id); setAberto(null); }}
                 className="pj-tap press flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-semibold transition-all duration-150"
                 style={ativa
-                  ? { background: C.green, color: "#fff" }
+                  ? { background: C.greenFill, color: "#fff" }
                   : { background: C.chip, color: C.muted }
                 }
               >
@@ -175,7 +176,7 @@ export default function SecaoApoios() {
                           <li key={i} className="flex items-start gap-2">
                             <span
                               className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
-                              style={{ background: C.green }}
+                              style={{ background: C.greenFill }}
                             />
                             <span className="text-[12px] leading-relaxed" style={{ color: C.muted }}>{req}</span>
                           </li>
@@ -193,7 +194,7 @@ export default function SecaoApoios() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="pj-tap press mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-semibold"
-                      style={{ background: C.green, color: "#fff" }}
+                      style={{ background: C.greenFill, color: "#fff" }}
                       onClick={e => e.stopPropagation()}
                     >
                       Ver no site oficial <ExternalLink size={12} />

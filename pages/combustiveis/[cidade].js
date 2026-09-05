@@ -36,31 +36,31 @@ export default function CombustiveisCidade({ cidade, destaques, estacoes, atuali
       </Head>
 
       <div style={{ paddingTop: 24 }}>
-        <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           Dados oficiais DGEG{dataStr ? ` · ${dataStr}` : ""}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Preço dos combustíveis em {cidade.nome} hoje
         </h1>
-        <p style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6, marginTop: 12 }}>
+        <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           Os postos mais baratos num raio de 15 km de {cidade.nome}, com os preços
           comunicados à Direção-Geral de Energia e Geologia. Na app PoupeJá vês os postos{" "}
-          <strong style={{ color: "#14231c" }}>à tua volta</strong> e crias avisos de preço.
+          <strong style={{ color: "var(--pj-text)" }}>à tua volta</strong> e crias avisos de preço.
         </p>
 
         {erro || !estacoes.length ? (
-          <p style={{ marginTop: 28, color: "#5c6b62" }}>Os dados não estão disponíveis neste momento. Tenta novamente daqui a pouco.</p>
+          <p style={{ marginTop: 28, color: "var(--pj-text-muted)" }}>Os dados não estão disponíveis neste momento. Tenta novamente daqui a pouco.</p>
         ) : (
           <>
             {/* Mais barato por tipo */}
             <div className="grid gap-3 mt-8" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
               {destaques.map(d => (
-                <div key={d.tipoLabel} className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-                  <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>{d.tipoLabel} mais barato</p>
-                  <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "#0b6b4f", marginTop: 6 }}>
+                <div key={d.tipoLabel} className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>{d.tipoLabel} mais barato</p>
+                  <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 6 }}>
                     €{d.preco.toFixed(3)}
                   </p>
-                  <p style={{ fontSize: 12.5, color: "#5c6b62", marginTop: 2 }}>
+                  <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>
                     {d.nome || d.marca}{d.distancia != null ? ` · a ${d.distancia} km` : ""}
                   </p>
                 </div>
@@ -71,22 +71,22 @@ export default function CombustiveisCidade({ cidade, destaques, estacoes, atuali
             <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
               Postos mais baratos perto de {cidade.nome}
             </h2>
-            <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               {estacoes.map((e, i) => (
-                <div key={`${e.id}-${e.tipoLabel}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}>
+                <div key={`${e.id}-${e.tipoLabel}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
                   <div style={{ minWidth: 0, paddingRight: 12 }}>
                     <p style={{ fontSize: 14, fontWeight: 600 }}>{e.nome || e.marca}</p>
-                    <p style={{ fontSize: 12, color: "#8a978e" }}>
+                    <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>
                       {e.tipoLabel}
                       {e.municipio ? ` · ${e.municipio}` : ""}
                       {e.distancia != null ? ` · a ${e.distancia} km` : ""}
                     </p>
                   </div>
-                  <p className="font-display flex-shrink-0" style={{ fontSize: 17, fontWeight: 600, color: "#0b6b4f" }}>€{e.preco.toFixed(3)}</p>
+                  <p className="font-display flex-shrink-0" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{e.preco.toFixed(3)}</p>
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: 12, color: "#8a978e", marginTop: 10 }}>
+            <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
               Fonte: DGEG — preços comunicados pelos postos. O preço no posto pode variar.
             </p>
           </>
@@ -102,7 +102,7 @@ export default function CombustiveisCidade({ cidade, destaques, estacoes, atuali
               key={c.slug}
               href={`/combustiveis/${c.slug}`}
               className="pj-tap no-underline"
-              style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+              style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
             >
               {c.nome}
             </a>
@@ -110,7 +110,7 @@ export default function CombustiveisCidade({ cidade, destaques, estacoes, atuali
           <a
             href="/combustiveis"
             className="pj-tap no-underline"
-            style={{ fontSize: 13, fontWeight: 600, color: "#5c6b62", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+            style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
           >
             Todo o país
           </a>

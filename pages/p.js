@@ -34,24 +34,24 @@ export default function Partilha({ valor, ref_, variante, mes, taloes, streak })
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={ogImg} />
       </Head>
-      <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: "#f6f5f0", color: "#14231c" }}>
+      <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: "var(--pj-surface)", color: "var(--pj-text)" }}>
         <img src="/icon-192.png" alt="PoupeJá" width={64} height={64} style={{ borderRadius: 16 }} />
-        <p className="mt-6" style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <p className="mt-6" style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           Poupança real com o PoupeJá
         </p>
         <h1 className="font-display mt-3" style={{ fontSize: 34, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em" }}>
           {retrato
-            ? <>Alguém poupou <span style={{ color: "#0b6b4f" }}>€{valorFmt}</span> em {mes || "um mês"}</>
-            : <>Alguém já poupou <span style={{ color: "#0b6b4f" }}>€{valorFmt}</span> nas compras</>}
+            ? <>Alguém poupou <span style={{ color: "var(--pj-brand-ink)" }}>€{valorFmt}</span> em {mes || "um mês"}</>
+            : <>Alguém já poupou <span style={{ color: "var(--pj-brand-ink)" }}>€{valorFmt}</span> nas compras</>}
         </h1>
-        <p className="mt-3 max-w-sm" style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6 }}>
+        <p className="mt-3 max-w-sm" style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6 }}>
           Folhetos dos supermercados, combustível mais barato, talões e apoios do Estado — tudo grátis.
           Podes experimentar sem criar conta.
         </p>
-        <a href={destino} className="pj-tap inline-flex items-center gap-2 no-underline mt-7 rounded-2xl px-7 py-4 text-white font-semibold" style={{ background: "#0b6b4f", fontSize: 15 }}>
+        <a href={destino} className="pj-tap inline-flex items-center gap-2 no-underline mt-7 rounded-2xl px-7 py-4 text-white font-semibold" style={{ background: "var(--pj-brand)", fontSize: 15 }}>
           Experimentar grátis <ArrowRight size={17} />
         </a>
-        <a href="/instalar" className="mt-4 no-underline" style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f" }}>
+        <a href="/instalar" className="mt-4 no-underline" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
           Ou instala a app no telemóvel →
         </a>
       </main>

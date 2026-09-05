@@ -36,38 +36,38 @@ export default function Apoios({ apoios, categorias, atualizado }) {
       </Head>
 
       <div style={{ paddingTop: 24 }}>
-        <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           Estado Português · atualizado a {new Date(atualizado).toLocaleDateString("pt-PT", { day: "numeric", month: "long", year: "numeric" })}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Apoios do Estado a que podes ter direito
         </h1>
-        <p style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6, marginTop: 12 }}>
+        <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           {apoios.length} apoios e benefícios oficiais, com quem pode pedir, como requerer e
           link direto para o serviço do Estado. Sem intermediários, sem custos.
         </p>
 
         <div className="mt-8 flex flex-col gap-3">
           {apoios.map(a => (
-            <article key={a.id} id={a.id} className="rounded-2xl p-5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-              <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+            <article key={a.id} id={a.id} className="rounded-2xl p-5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+              <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
                 {nomeCat[a.categoria] || a.categoria}
               </p>
               <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600, marginTop: 6 }}>{a.titulo}</h2>
-              {a.valor && <p style={{ fontSize: 14, fontWeight: 600, color: "#0b6b4f", marginTop: 4 }}>{a.valor}</p>}
-              <p style={{ fontSize: 13.5, color: "#5c6b62", lineHeight: 1.6, marginTop: 8 }}>{a.descricao}</p>
+              {a.valor && <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 4 }}>{a.valor}</p>}
+              <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 8 }}>{a.descricao}</p>
               {a.quemPode?.length > 0 && (
                 <>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#14231c", marginTop: 12 }}>Quem pode pedir</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text)", marginTop: 12 }}>Quem pode pedir</p>
                   <ul style={{ margin: "6px 0 0", paddingLeft: 18 }}>
                     {a.quemPode.map((q, i) => (
-                      <li key={i} style={{ fontSize: 13, color: "#5c6b62", lineHeight: 1.6 }}>{q}</li>
+                      <li key={i} style={{ fontSize: 13, color: "var(--pj-text-muted)", lineHeight: 1.6 }}>{q}</li>
                     ))}
                   </ul>
                 </>
               )}
               {a.link && (
-                <a href={a.link} target="_blank" rel="noopener noreferrer" className="inline-block no-underline mt-3" style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f" }}>
+                <a href={a.link} target="_blank" rel="noopener noreferrer" className="inline-block no-underline mt-3" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
                   Ver no site oficial →
                 </a>
               )}

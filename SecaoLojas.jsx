@@ -77,7 +77,8 @@ const CAT_CONFIG = {
 const TXT = "#14231c";
 const MUTED = "#5c6b62";
 const FAINT = "#8a978e";
-const ACCENT = "#0b6b4f";
+const ACCENT      = "var(--pj-brand-ink)";  // verde como texto
+const ACCENT_FILL = "var(--pj-brand)";      // verde como preenchimento
 const CHIP = "#eeece4";
 const DIV_ROW = "#eeece4";
 const DIV_SEC = "#e4e2d8";
@@ -173,7 +174,7 @@ export default function SecaoLojas() {
   const favoritasAtuais = LOJAS[cat]?.filter(l => favs.has(l.nome)) || [];
 
   return (
-    <div className="pb-28 pt-4" style={{ background: "#f6f5f0", color: TXT }}>
+    <div className="pb-28 pt-4" style={{ background: "var(--pj-surface)", color: TXT }}>
 
       {/* Tab principal */}
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-5" style={{ background: CHIP }}>
@@ -213,7 +214,7 @@ export default function SecaoLojas() {
                   onClick={() => setCat(id)}
                   className="pj-tap flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs transition-all"
                   style={ativo
-                    ? { background: ACCENT, color: "#f6f5f0", fontWeight: 600 }
+                    ? { background: ACCENT_FILL, color: "#f6f5f0", fontWeight: 600 }
                     : { background: CHIP, color: MUTED, fontWeight: 600 }}
                 >
                   <c.icon size={13} /> {c.label}

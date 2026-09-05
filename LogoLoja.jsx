@@ -27,6 +27,9 @@ const DOMINIO = {
   "Froiz":           "froiz.pt",
 };
 
+/* O fundo do chip fica claro nos dois temas, de propósito: os logótipos dos
+   supermercados são desenhados para fundo claro e perdem-se num fundo escuro.
+   Por isso `bg` é hex literal e não um token. */
 export default function LogoLoja({ loja, size = 44, radius = 12, bg = "#eeece4" }) {
   const dominio = DOMINIO[loja];
   const chave = LOGO[loja];
@@ -54,7 +57,7 @@ export default function LogoLoja({ loja, size = 44, radius = 12, bg = "#eeece4" 
           style={{ width: "100%", height: "100%", objectFit: "contain", padding: Math.round(size * 0.16) }}
         />
       ) : (
-        <span style={{ fontSize: Math.round(size * 0.34), fontWeight: 700, color: "#2c3b33" }}>{inicial}</span>
+        <span style={{ fontSize: Math.round(size * 0.34), fontWeight: 700, color: "var(--pj-text-strong)" }}>{inicial}</span>
       )}
     </div>
   );
