@@ -35,6 +35,8 @@
   --pj-brand-soft:  rgba(11,107,79,0.35);
   /* Superfície com tinta da marca (avisos, convites, destaques suaves) */
   --pj-brand-wash:  #eef3ef;
+  /* Barra de navegação — translúcida, por isso leva alpha própria */
+  --pj-nav:         rgba(255,255,255,0.95);
 
   /* Aliases antigos — mantidos para não partir o que já os usa */
   --brand-green:  var(--pj-brand);
@@ -228,6 +230,7 @@ html.dark {
   --pj-brand-ink:   #57b392;
   --pj-brand-soft:  rgba(87,179,146,0.32);
   --pj-brand-wash:  #17241e;
+  --pj-nav:         rgba(20,26,22,0.95);
 
   --shadow-card:  0 2px 12px rgba(0,0,0,0.4);
 }
