@@ -23,7 +23,7 @@ function esc(s) {
 function configPino(p, variante, min) {
   if (variante === "ev") {
     const est = p.estado;
-    const cor = est === "ocupado" ? "#ef4444" : est === "manutenção" ? "#f59e0b" : "#10b981";
+    const cor = est === "ocupado" ? "#ba4a4a" : est === "manutenção" ? "#a6763f" : "#2e7a63";
     const kw = p.potenciaNum || parseInt(p.potencia) || 0;
     const estLabel = est === "ocupado" ? "Ocupado" : est === "manutenção" ? "Manutenção" : "Disponível";
     return {
@@ -97,8 +97,8 @@ export default function MapaPostos({ postos = [], variante = "combustivel", user
       const m = L.marker([p.lat, p.lon], { icon }).addTo(map);
       m.bindPopup(
         `<div style="font-family:system-ui;min-width:150px">
-           <div style="font-weight:900;color:#0f172a;font-size:13px">${esc(cfg.titulo)}</div>
-           <div style="font-size:11px;color:#64748b">${cfg.sub}</div>
+           <div style="font-weight:900;color:var(--pj-text);font-size:13px">${esc(cfg.titulo)}</div>
+           <div style="font-size:11px;color:#5f718c">${cfg.sub}</div>
            <div style="font-weight:900;color:${cfg.cor};margin-top:4px;font-size:14px">${esc(cfg.destaque)}</div>
            <button class="pj-nav" data-lat="${p.lat}" data-lon="${p.lon}" style="margin-top:8px;width:100%;background:${cfg.cor};color:#fff;border:none;font-weight:800;padding:7px;border-radius:8px;font-size:12px;cursor:pointer">Navegar →</button>
          </div>`
@@ -108,7 +108,7 @@ export default function MapaPostos({ postos = [], variante = "combustivel", user
 
     if (userLoc?.lat && userLoc?.lon) {
       L.circleMarker([userLoc.lat, userLoc.lon], {
-        radius: 7, color: "#fff", weight: 2, fillColor: "#3b82f6", fillOpacity: 1,
+        radius: 7, color: "#fff", weight: 2, fillColor: "#456fb5", fillOpacity: 1,
       }).addTo(map).bindPopup("A tua localização");
       bounds.push([userLoc.lat, userLoc.lon]);
     }

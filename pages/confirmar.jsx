@@ -18,10 +18,10 @@ export default function Confirmar() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6"
-         style={{ background: "linear-gradient(160deg,#064e3b 0%,#059669 55%,#34d399 100%)" }}>
+         style={{ background: "linear-gradient(160deg,var(--pj-brand) 0%,var(--pj-brand-ink) 55%,#7ec9ab 100%)" }}>
       <div className="bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-2xl">
         <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
-             style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}>
+             style={{ background: "linear-gradient(135deg,var(--pj-brand),var(--pj-brand-ink))" }}>
           <PiggyBank size={30} className="text-white" />
         </div>
         <Loader size={28} className="text-emerald-500 animate-spin mx-auto mb-4" />

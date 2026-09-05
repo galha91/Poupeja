@@ -19,8 +19,8 @@ const SecaoDefinicoes  = dynamic(() => import("../SecaoDefinicoes"), { loading: 
 const SecaoApoios      = dynamic(() => import("../SecaoApoios"), { loading: carregandoSeccao });
 const SecaoContas      = dynamic(() => import("../SecaoContas"), { loading: carregandoSeccao });
 const SecaoIRS         = dynamic(() => import("../SecaoIRS"), { loading: carregandoSeccao });
+const SecaoPoupanca    = dynamic(() => import("../SecaoPoupanca"), { loading: carregandoSeccao });
 import EcraInicio from "../EcraInicio";
-import SecaoPoupanca from "../SecaoPoupanca";
 import ModalCriarConta from "../ModalCriarConta";
 import { ModalInstalar, useInstallDetect, BarraInstalacao } from "../InstalarApp";
 import PainelAvisos from "../PainelAvisos";
@@ -420,13 +420,13 @@ export default function PoupeJa() {
         {/* Sidebar (apenas desktop) */}
         <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-60 bg-white border-r border-slate-100 z-40 px-4 py-6">
           <div className="flex items-center gap-2 px-2 mb-8">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,var(--pj-brand),var(--pj-cat-verde))" }}>
               <PiggyBank size={19} color="white" />
             </div>
             <span className="text-xl font-black tracking-tight text-slate-900">
               Poupe<span className="text-emerald-600">Já</span>
             </span>
-            <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-md leading-none">PT</span>
+            <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-md leading-none" style={{ background: "var(--pj-brand)" }}>PT</span>
           </div>
           <div className="flex flex-col gap-1">
             {[...NAV, ...NAV_SECUNDARIO].map(it => {
@@ -483,42 +483,42 @@ export default function PoupeJa() {
           <>
             {/* Header — escondido no Início (que tem cabeçalho próprio no ecrã) */}
             {tab !== "inicio" && (<header
-              className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-10 pb-3 sticky top-0 z-30 lg:pt-5 lg:px-8"
-              style={{ boxShadow: "0 1px 12px rgba(15,23,42,0.06)" }}
+              className="backdrop-blur-md border-b px-4 pt-10 pb-3 sticky top-0 z-30 lg:pt-5 lg:px-8"
+              style={{ background: "var(--pj-header)", borderColor: "var(--pj-border)", boxShadow: "0 1px 12px rgba(20,35,28,0.06)" }}
             >
               <div className="flex items-center justify-between mb-1 lg:hidden">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,var(--pj-brand),var(--pj-cat-verde))" }}>
                     <PiggyBank size={17} color="white" />
                   </div>
-                  <span className="text-xl font-black tracking-tight text-slate-900">
-                    Poupe<span className="text-emerald-600">Já</span>
+                  <span className="text-xl font-black tracking-tight" style={{ color: "var(--pj-text)" }}>
+                    Poupe<span style={{ color: "var(--pj-brand-ink)" }}>Já</span>
                   </span>
-                  <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-md leading-none">PT</span>
+                  <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-md leading-none" style={{ background: "var(--pj-brand)" }}>PT</span>
                 </div>
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => { calcGarantiasAviso(); setVerAvisos(true); }}
-                    className="press w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center relative"
+                    className="press w-9 h-9 rounded-xl border flex items-center justify-center relative" style={{ background: "var(--pj-subtle)", borderColor: "var(--pj-border)" }}
                   >
-                    <Bell size={16} className="text-slate-500" />
+                    <Bell size={16} style={{ color: "var(--pj-text-muted)" }} />
                     {garantiasAviso.length > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[9px] font-black text-white">
+                      <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black text-white" style={{ background: "var(--pj-danger)" }}>
                         {garantiasAviso.length}
                       </span>
                     )}
                   </button>
                   <button
                     onClick={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }}
-                    className="press w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center"
+                    className="press w-9 h-9 rounded-xl border flex items-center justify-center" style={{ background: "var(--pj-brand-wash)", borderColor: "var(--pj-border)" }}
                   >
-                    <Users size={16} className="text-emerald-600" />
+                    <Users size={16} style={{ color: "var(--pj-brand-ink)" }} />
                   </button>
                 </div>
               </div>
               <div key={tab} className="mt-0.5 header-title">
-                <h1 className="text-[15px] font-black text-slate-900 leading-tight">{tituloPersonalizado.t}</h1>
-                <p className="text-[11px] text-slate-400 font-medium">{tituloPersonalizado.s}</p>
+                <h1 className="text-[15px] font-black leading-tight" style={{ color: "var(--pj-text)" }}>{tituloPersonalizado.t}</h1>
+                <p className="text-[11px] font-medium" style={{ color: "var(--pj-text-faint)" }}>{tituloPersonalizado.s}</p>
               </div>
             </header>)}
 

@@ -138,7 +138,7 @@ export default function MetaPoupanca({ syncTick = 0 }) {
               {meta ? "Guardar alterações" : "Começar a encher o jarro 🐷"}
             </button>
             {meta && (
-              <button type="button" onClick={remover} className="pj-tap w-full py-2.5 mt-2 inline-flex items-center justify-center gap-1.5 font-semibold text-[13px]" style={{ color: "#a8432f" }}>
+              <button type="button" onClick={remover} className="pj-tap w-full py-2.5 mt-2 inline-flex items-center justify-center gap-1.5 font-semibold text-[13px]" style={{ color: "var(--pj-danger)" }}>
                 <Trash2 size={13} /> Apagar meta
               </button>
             )}

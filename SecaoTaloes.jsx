@@ -208,7 +208,7 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
             {/* Nome do produto */}
             <div>
               <p className="uppercase mb-2" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
-                Nome do produto <span style={{ color: "#cf5a3c" }}>*</span>
+                Nome do produto <span style={{ color: "var(--pj-danger)" }}>*</span>
               </p>
               <input
                 type="text"
@@ -216,9 +216,9 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
                 onChange={e => { setNome(e.target.value); setErroNome(false); }}
                 placeholder={'Ex: TV Samsung 55", Frigorífico Bosch...'}
                 className="w-full px-4 py-3.5 rounded-xl font-semibold text-sm focus:outline-none transition-all"
-                style={{ background: "var(--pj-card)", border: `1px solid ${erroNome ? "#cf5a3c" : "var(--pj-border)"}`, color: "var(--pj-text)" }}
+                style={{ background: "var(--pj-card)", border: `1px solid ${erroNome ? "var(--pj-danger)" : "var(--pj-border)"}`, color: "var(--pj-text)" }}
               />
-              {erroNome && <p className="text-[11px] mt-1.5 font-semibold" style={{ color: "#cf5a3c" }}>Escreve o nome do produto.</p>}
+              {erroNome && <p className="text-[11px] mt-1.5 font-semibold" style={{ color: "var(--pj-danger)" }}>Escreve o nome do produto.</p>}
             </div>
 
             {/* Data de compra */}
@@ -287,7 +287,7 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
 /* ── Card talão/garantia ── */
 function CardTalao({ talao, onApagar }) {
   const dias = diasRestantes(talao.dataExpiracao);
-  const cor   = dias === null ? null : dias > 60 ? "#0b6b4f" : dias > 14 ? "#8a978e" : dias >= 0 ? "#cf5a3c" : "#8a978e";
+  const cor   = dias === null ? null : dias > 60 ? "var(--pj-brand-ink)" : dias > 14 ? "var(--pj-text-faint)" : dias >= 0 ? "var(--pj-danger)" : "var(--pj-text-faint)";
   const bgCor = dias === null ? null : "#eeece4";
   const label = dias === null ? null : dias < 0 ? "Expirada" : dias === 0 ? "Expira hoje" : `${dias}d restantes`;
 

@@ -28,7 +28,7 @@ export default function PainelAvisos({ avisos = {}, onFechar, onAbrirTaloes }) {
             {garantias.length > 0 && (
               <span
                 className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                style={{ background: "#cf5a3c", color: "#fff" }}
+                style={{ background: "var(--pj-danger)", color: "#fff" }}
               >
                 {garantias.length}
               </span>
@@ -48,7 +48,7 @@ export default function PainelAvisos({ avisos = {}, onFechar, onAbrirTaloes }) {
           {/* Garantias urgentes */}
           {garantias.map((g, i) => {
             const urgente = g.restam <= 14;
-            const cor = urgente ? "#cf5a3c" : "#0b6b4f";
+            const cor = urgente ? "var(--pj-danger)" : "var(--pj-brand-ink)";
             return (
               <button
                 key={i}

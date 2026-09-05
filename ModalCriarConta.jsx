@@ -144,7 +144,7 @@ export default function ModalCriarConta({ local = false, onFechar, onConvertido 
             <input type="password" placeholder="Password (mín. 6 caracteres)" value={pass} onChange={e => setPass(e.target.value)} required
               className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
               style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
-            {erro && <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>}
+            {erro && <p className="text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{erro}</p>}
             <button type="submit" disabled={loading}
               className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px]"
               style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}>

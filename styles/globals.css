@@ -41,6 +41,34 @@
   --pj-brand-wash:  #eef3ef;
   /* Barra de navegação — translúcida, por isso leva alpha própria */
   --pj-nav:         rgba(255,255,255,0.95);
+  --pj-header:      rgba(255,255,255,0.90);
+
+  /* Estados. Havia quatro vermelhos quase iguais espalhados pela app
+     (#cf5a3c, #b4472e, #a8432f, #b0574f) e dois âmbares, todos a fazer
+     o mesmo trabalho. O mais usado, #cf5a3c, dava 3.71:1 — mensagens de
+     erro difíceis de ler. Estes passam. */
+  --pj-danger:        #b4472e;
+  --pj-danger-strong: #8f3320;
+  --pj-danger-wash:   #f7ece8;
+  --pj-danger-border: #ecd9d1;
+  --pj-warn:          #8a5616;
+  --pj-warn-wash:     #f6efe0;
+  --pj-warn-border:   #e8dcc2;
+
+  /* Categorias (contas e lista de compras). A cor aqui CODIFICA — serve
+     para varrer a lista com os olhos —, por isso não desapareceu; foi
+     afinada. Cada tom deriva do original: mantém o matiz, corta a
+     saturação a 45% e ajusta a luminosidade até bater 4.5:1. É isso que
+     as tira do registo Tailwind frio e as põe ao lado do verde da marca. */
+  --pj-cat-verde:     #2e7a63;
+  --pj-cat-ocre:      #906737;
+  --pj-cat-azul:      #456fb5;
+  --pj-cat-petroleo:  #387594;
+  --pj-cat-ameixa:    #7f59c0;
+  --pj-cat-rosa:      #ba4a62;
+  --pj-cat-vermelho:  #ba4a4a;
+  --pj-cat-terracota: #9f5e3c;
+  --pj-cat-cinza:     #5f718c;
 
   /* Aliases antigos — mantidos para não partir o que já os usa */
   --brand-green:  var(--pj-brand);
@@ -235,6 +263,25 @@ html.dark {
   --pj-brand-soft:  rgba(87,179,146,0.32);
   --pj-brand-wash:  #17241e;
   --pj-nav:         rgba(20,26,22,0.95);
+  --pj-header:      rgba(20,26,22,0.90);
+
+  --pj-danger:        #d9705a;
+  --pj-danger-strong: #eba58f;
+  --pj-danger-wash:   #2a1a16;
+  --pj-danger-border: #4a2b23;
+  --pj-warn:          #c99a4e;
+  --pj-warn-wash:     #2a2116;
+  --pj-warn-border:   #4a3a23;
+
+  --pj-cat-verde:     #3fa686;
+  --pj-cat-ocre:      #a6763f;
+  --pj-cat-azul:      #5980c0;
+  --pj-cat-petroleo:  #4186aa;
+  --pj-cat-ameixa:    #906fc8;
+  --pj-cat-rosa:      #c36076;
+  --pj-cat-vermelho:  #c36060;
+  --pj-cat-terracota: #b56b45;
+  --pj-cat-cinza:     #6d809c;
 
   --shadow-card:  0 2px 12px rgba(0,0,0,0.4);
 }

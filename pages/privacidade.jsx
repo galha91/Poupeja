@@ -68,7 +68,7 @@ export default function Privacidade() {
       {/* Header */}
       <div
         className="px-4 pt-12 pb-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}
+        style={{ background: "linear-gradient(135deg,var(--pj-brand),var(--pj-brand-ink))" }}
       >
         <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full pointer-events-none" />
         <button

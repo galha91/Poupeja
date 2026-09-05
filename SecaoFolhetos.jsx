@@ -96,7 +96,7 @@ export default function SecaoFolhetos() {
           className="mx-4 mt-4 p-5 text-center anim-up"
           style={{ background: "var(--pj-card)", borderRadius: 16, border: "1px solid var(--pj-border)" }}
         >
-          <AlertCircle size={28} style={{ color: "#b0574f" }} className="mx-auto mb-2" />
+          <AlertCircle size={28} style={{ color: "var(--pj-danger)" }} className="mx-auto mb-2" />
           <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)", marginBottom: 12 }}>
             Não conseguimos carregar os folhetos
           </p>

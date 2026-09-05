@@ -5,7 +5,7 @@ const LS_KEY = "poupeja_lista_compras";
 
 const CATS = {
   "Frutas": {
-    emoji: "🍎", cor: "#ef4444", bg: "#fef2f2",
+    emoji: "🍎", cor: "var(--pj-cat-vermelho)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Maçãs", emoji: "🍎" }, { nome: "Bananas", emoji: "🍌" },
       { nome: "Laranjas", emoji: "🍊" }, { nome: "Morangos", emoji: "🍓" },
@@ -22,7 +22,7 @@ const CATS = {
     ],
   },
   "Legumes": {
-    emoji: "🥦", cor: "#16a34a", bg: "#f0fdf4",
+    emoji: "🥦", cor: "var(--pj-cat-verde)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Tomates", emoji: "🍅" }, { nome: "Alface", emoji: "🥬" },
       { nome: "Cenouras", emoji: "🥕" }, { nome: "Cebolas", emoji: "🧅" },
@@ -41,7 +41,7 @@ const CATS = {
     ],
   },
   "Laticínios & Ovos": {
-    emoji: "🥛", cor: "#3b82f6", bg: "#eff6ff",
+    emoji: "🥛", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Leite meio-gordo", emoji: "🥛" }, { nome: "Leite gordo", emoji: "🥛" },
       { nome: "Iogurte natural", emoji: "🫙" }, { nome: "Iogurte grego", emoji: "🫙" },
@@ -55,7 +55,7 @@ const CATS = {
     ],
   },
   "Padaria": {
-    emoji: "🍞", cor: "#d97706", bg: "#fffbeb",
+    emoji: "🍞", cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Pão de trigo", emoji: "🍞" }, { nome: "Pão de forma", emoji: "🍞" },
       { nome: "Pão integral", emoji: "🍞" }, { nome: "Baguete", emoji: "🥖" },
@@ -69,7 +69,7 @@ const CATS = {
     ],
   },
   "Carnes": {
-    emoji: "🥩", cor: "#dc2626", bg: "#fff1f2",
+    emoji: "🥩", cor: "var(--pj-cat-vermelho)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Frango inteiro", emoji: "🍗" }, { nome: "Peito de frango", emoji: "🍗" },
       { nome: "Coxa de frango", emoji: "🍗" }, { nome: "Carne picada", emoji: "🥩" },
@@ -85,7 +85,7 @@ const CATS = {
     ],
   },
   "Peixe & Marisco": {
-    emoji: "🐟", cor: "#0284c7", bg: "#f0f9ff",
+    emoji: "🐟", cor: "var(--pj-cat-petroleo)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Atum (lata)", emoji: "🐟" }, { nome: "Sardinha (lata)", emoji: "🐟" },
       { nome: "Cavala (lata)", emoji: "🐟" }, { nome: "Bacalhau", emoji: "🐠" },
@@ -99,7 +99,7 @@ const CATS = {
     ],
   },
   "Mercearia": {
-    emoji: "🛒", cor: "#92400e", bg: "#fef3c7",
+    emoji: "🛒", cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Arroz", emoji: "🍚" }, { nome: "Massa esparguete", emoji: "🍝" },
       { nome: "Massa penne", emoji: "🍝" }, { nome: "Massa laços", emoji: "🍝" },
@@ -120,7 +120,7 @@ const CATS = {
     ],
   },
   "Bebidas": {
-    emoji: "🧃", cor: "#7c3aed", bg: "#f5f3ff",
+    emoji: "🧃", cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Água natural", emoji: "💧" }, { nome: "Água com gás", emoji: "💧" },
       { nome: "Sumo de laranja", emoji: "🍊" }, { nome: "Sumo de fruta", emoji: "🧃" },
@@ -136,7 +136,7 @@ const CATS = {
     ],
   },
   "Congelados": {
-    emoji: "🧊", cor: "#0369a1", bg: "#f0f9ff",
+    emoji: "🧊", cor: "var(--pj-cat-petroleo)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Batata frita (cong.)", emoji: "🍟" }, { nome: "Pizza congelada", emoji: "🍕" },
       { nome: "Lasanha congelada", emoji: "🍝" }, { nome: "Legumes cong.", emoji: "🥦" },
@@ -148,7 +148,7 @@ const CATS = {
     ],
   },
   "Snacks": {
-    emoji: "🍫", cor: "#b45309", bg: "#fef9ee",
+    emoji: "🍫", cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Chocolate", emoji: "🍫" }, { nome: "Batatas fritas", emoji: "🥔" },
       { nome: "Pipocas", emoji: "🍿" }, { nome: "Gomas", emoji: "🍬" },
@@ -161,7 +161,7 @@ const CATS = {
     ],
   },
   "Limpeza": {
-    emoji: "🧹", cor: "#0891b2", bg: "#ecfeff",
+    emoji: "🧹", cor: "var(--pj-cat-petroleo)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Detergente loiça", emoji: "🧴" }, { nome: "Detergente máq.", emoji: "🧺" },
       { nome: "Amaciador roupa", emoji: "🧺" }, { nome: "Limpeza WC", emoji: "🚿" },
@@ -177,7 +177,7 @@ const CATS = {
     ],
   },
   "Higiene": {
-    emoji: "🧼", cor: "#db2777", bg: "#fdf4ff",
+    emoji: "🧼", cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Champô", emoji: "🧴" }, { nome: "Condicionador", emoji: "🧴" },
       { nome: "Gel de banho", emoji: "🚿" }, { nome: "Sabonete", emoji: "🧼" },
@@ -194,7 +194,7 @@ const CATS = {
     ],
   },
   "Bebé & Criança": {
-    emoji: "👶", cor: "#ec4899", bg: "#fdf2f8",
+    emoji: "👶", cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Fraldas", emoji: "👶" }, { nome: "Lenços húmidos", emoji: "🧻" },
       { nome: "Leite em pó", emoji: "🥛" }, { nome: "Papas bebé", emoji: "🍼" },
@@ -204,7 +204,7 @@ const CATS = {
     ],
   },
   "Farmácia": {
-    emoji: "💊", cor: "#6366f1", bg: "#eef2ff",
+    emoji: "💊", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)",
     items: [
       { nome: "Paracetamol", emoji: "💊" }, { nome: "Ibuprofeno", emoji: "💊" },
       { nome: "Vitamina C", emoji: "🍊" }, { nome: "Vitamina D", emoji: "☀️" },

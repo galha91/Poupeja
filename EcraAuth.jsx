@@ -140,7 +140,7 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
           Conhece a app primeiro · regista-te quando quiseres
         </p>
         {convidadoErro && (
-          <p className="text-center text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{convidadoErro}</p>
+          <p className="text-center text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{convidadoErro}</p>
         )}
         <p className="text-center text-[12.5px] font-medium mt-1.5" style={{ color: "var(--pj-text-faint)" }}>
           Preferes email?{" "}
@@ -262,8 +262,8 @@ function Registo({ onVoltar }) {
 
         {erro && (
           <div className="flex items-center gap-2 rounded-xl px-3 py-2.5" style={{ background: "rgba(207,90,60,0.08)", border: "1px solid rgba(207,90,60,0.25)" }}>
-            <AlertCircle size={14} className="flex-shrink-0" style={{ color: "#cf5a3c" }} />
-            <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>
+            <AlertCircle size={14} className="flex-shrink-0" style={{ color: "var(--pj-danger)" }} />
+            <p className="text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{erro}</p>
           </div>
         )}
 
@@ -378,8 +378,8 @@ function RecuperarPass({ onVoltar }) {
 
           {erro && (
             <div className="flex items-center gap-2 rounded-xl px-3 py-2.5" style={{ background: "rgba(207,90,60,0.08)", border: "1px solid rgba(207,90,60,0.25)" }}>
-              <AlertCircle size={14} className="flex-shrink-0" style={{ color: "#cf5a3c" }} />
-              <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>
+              <AlertCircle size={14} className="flex-shrink-0" style={{ color: "var(--pj-danger)" }} />
+              <p className="text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{erro}</p>
             </div>
           )}
 
@@ -447,8 +447,8 @@ export function DefinirNovaPass({ onConcluido }) {
 
         {erro && (
           <div className="flex items-center gap-2 rounded-xl px-3 py-2.5" style={{ background: "rgba(207,90,60,0.08)", border: "1px solid rgba(207,90,60,0.25)" }}>
-            <AlertCircle size={14} className="flex-shrink-0" style={{ color: "#cf5a3c" }} />
-            <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>
+            <AlertCircle size={14} className="flex-shrink-0" style={{ color: "var(--pj-danger)" }} />
+            <p className="text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{erro}</p>
           </div>
         )}
 
@@ -531,8 +531,8 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
 
         {erro && (
           <div className="flex items-center gap-2 rounded-xl px-3 py-2.5" style={{ background: "rgba(207,90,60,0.08)", border: "1px solid rgba(207,90,60,0.25)" }}>
-            <AlertCircle size={14} className="flex-shrink-0" style={{ color: "#cf5a3c" }} />
-            <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>
+            <AlertCircle size={14} className="flex-shrink-0" style={{ color: "var(--pj-danger)" }} />
+            <p className="text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{erro}</p>
           </div>
         )}
 
