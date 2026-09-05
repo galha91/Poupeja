@@ -5,6 +5,7 @@ import {
   Circle, X, AlertCircle, ChevronLeft, ChevronRight,
   TrendingDown, BarChart3, CalendarDays, Pencil, Check,
   SlidersHorizontal, ExternalLink, Flame, Building2,
+  Home, Zap, Wifi, ShieldCheck, Pill, Car, Gamepad2, FileText,
 } from "lucide-react";
 
 // Crédito Habitação / Renda — sub-secção irmã, carregada só quando aberta
@@ -33,14 +34,14 @@ function SubTabBar({ options, value, onChange }) {
 }
 
 const CATS = [
-  { id: "habitacao",  emoji: "🏠", label: "Habitação",   cor: "var(--pj-cat-verde)", bg: "var(--pj-subtle)" },
-  { id: "energia",    emoji: "⚡", label: "Energia",      cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)" },
-  { id: "internet",   emoji: "📱", label: "Internet/Tel", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)" },
-  { id: "seguro",     emoji: "🛡️", label: "Seguros",      cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)" },
-  { id: "saude",      emoji: "💊", label: "Saúde",        cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)" },
-  { id: "transporte", emoji: "🚗", label: "Transporte",   cor: "var(--pj-cat-terracota)", bg: "var(--pj-subtle)" },
-  { id: "lazer",      emoji: "🎮", label: "Lazer",        cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)" },
-  { id: "outro",      emoji: "📋", label: "Outro",        cor: "var(--pj-cat-cinza)", bg: "var(--pj-subtle)" },
+  { id: "habitacao", Icone: Home,  emoji: "🏠", label: "Habitação",   cor: "var(--pj-cat-verde)", bg: "var(--pj-subtle)" },
+  { id: "energia", Icone: Zap,    emoji: "⚡", label: "Energia",      cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)" },
+  { id: "internet", Icone: Wifi,   emoji: "📱", label: "Internet/Tel", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)" },
+  { id: "seguro", Icone: ShieldCheck,     emoji: "🛡️", label: "Seguros",      cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)" },
+  { id: "saude", Icone: Pill,      emoji: "💊", label: "Saúde",        cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)" },
+  { id: "transporte", Icone: Car, emoji: "🚗", label: "Transporte",   cor: "var(--pj-cat-terracota)", bg: "var(--pj-subtle)" },
+  { id: "lazer", Icone: Gamepad2,      emoji: "🎮", label: "Lazer",        cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)" },
+  { id: "outro", Icone: FileText,      emoji: "📋", label: "Outro",        cor: "var(--pj-cat-cinza)", bg: "var(--pj-subtle)" },
 ];
 
 const PRESETS = [
@@ -274,7 +275,7 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
               className="pj-tap flex flex-col items-center gap-1 py-2 px-1 rounded-xl border transition-all"
               style={{ borderColor: cat === c.id ? c.cor : "var(--pj-border)", background: cat === c.id ? c.bg : "var(--pj-card)" }}
             >
-              <span className="text-lg leading-none">{c.emoji}</span>
+              <c.Icone size={19} strokeWidth={1.8} style={{ color: cat === c.id ? c.cor : "var(--pj-text-muted)" }} />
               <span className="text-[9px] leading-tight text-center" style={{ fontWeight: 600, color: cat === c.id ? c.cor : "var(--pj-text-faint)" }}>
                 {c.label}
               </span>
@@ -784,7 +785,10 @@ function ContasFixasConteudo() {
           <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
             {contasOrdenadas.map((c, ci) => {
               const cat      = catById[c.categoria] || catById.outro;
-              const icon     = c.emoji || cat.emoji;
+              // O emoji que a pessoa escolheu para a conta manda — é identidade
+              // dela. Sem ele, mostramos o ícone de linha da categoria (o
+              // emoji da categoria era o antigo fallback, e destoava agora).
+              const emojiProprio = c.emoji;
               const pago     = !!pagosMes[c.id];
               const aberto   = expandido === c.id;
               const emEdicao = editando === c.id;
@@ -816,7 +820,9 @@ function ContasFixasConteudo() {
                       className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base leading-none"
                       style={{ background: cat.bg }}
                     >
-                      {icon}
+                      {emojiProprio
+                        ? emojiProprio
+                        : <cat.Icone size={17} strokeWidth={1.8} style={{ color: cat.cor }} />}
                     </div>
 
                     {/* Info */}
@@ -943,8 +949,8 @@ function ContasFixasConteudo() {
 
               return (
                 <div key={cat.id} className="flex items-center gap-3 px-4 py-3" style={cati > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : undefined}>
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0" style={{ background: cat.bg }}>
-                    {cat.emoji}
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: cat.bg }}>
+                    <cat.Icone size={17} strokeWidth={1.8} style={{ color: cat.cor }} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">

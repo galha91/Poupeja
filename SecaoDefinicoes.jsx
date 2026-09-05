@@ -17,17 +17,29 @@ const LABEL_STYLE = {
   color: "var(--pj-text-faint)",
 };
 
+const PREFS_OMISSAO = {
+  nome: "", email: "", combustivel: "Gasolina 95",
+  distancia: 10, favoritos: ["Continente","Pingo Doce"],
+  avisoGarantias: true, avisoPrecos: true, diasGarantia: 60,
+  emailSemanal: true,
+};
+
+/* As prefs guardadas são MISTURADAS com as de omissão, não usadas como
+   estão. Sem isto, um objeto parcial parte o ecrã todo: quem cancela o
+   email semanal sem nunca ter aberto as Definições fica com apenas
+   { emailSemanal: false } gravado (ver pages/api/unsubscribe.js), o sync
+   traz isso para o telemóvel, e depois prefs.favoritos.includes() rebenta. */
 function lerPrefs() {
   try {
     const raw = localStorage.getItem("poupeja_prefs");
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const guardadas = JSON.parse(raw);
+      if (guardadas && typeof guardadas === "object") {
+        return { ...PREFS_OMISSAO, ...guardadas };
+      }
+    }
   } catch (_) {}
-  return {
-    nome: "", email: "", combustivel: "Gasolina 95",
-    distancia: 10, favoritos: ["Continente","Pingo Doce"],
-    avisoGarantias: true, avisoPrecos: true, diasGarantia: 60,
-    emailSemanal: true,
-  };
+  return { ...PREFS_OMISSAO };
 }
 
 function Toggle({ on, onChange }) {
@@ -193,9 +205,9 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
   const set = (k, v) => setPrefs(p => ({ ...p, [k]: v }));
   const toggleFav = s => setPrefs(p => ({
     ...p,
-    favoritos: p.favoritos.includes(s)
-      ? p.favoritos.filter(x => x !== s)
-      : [...p.favoritos, s],
+    favoritos: (p.favoritos || []).includes(s)
+      ? (p.favoritos || []).filter(x => x !== s)
+      : [...(p.favoritos || []), s],
   }));
 
   const inicial = (user?.nome || user?.email || "?").trim().charAt(0).toUpperCase() || "?";
@@ -320,7 +332,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
           </div>
           <div className="flex flex-wrap gap-2">
             {SUPERMERCADOS.map(s => {
-              const ativo = prefs.favoritos.includes(s);
+              const ativo = (prefs.favoritos || []).includes(s);
               return (
                 <button
                   key={s}

@@ -326,6 +326,34 @@ html.dark body {
 .dark input::placeholder,
 .dark textarea::placeholder { color: var(--pj-text-faint) !important; }
 
+/* Acentos por classe Tailwind — usados sobretudo no admin e em restos
+   antigos. Sem isto ficam verde-escuro sobre escuro (o emerald está
+   remapeado para a paleta quente) ou azul-vivo sobre escuro. */
+.dark .text-emerald-500,
+.dark .text-emerald-600,
+.dark .text-emerald-700  { color: var(--pj-brand-ink) !important; }
+.dark .bg-emerald-50     { background-color: var(--pj-brand-wash) !important; }
+.dark .bg-emerald-500,
+.dark .bg-emerald-600    { background-color: var(--pj-brand) !important; }
+.dark .border-emerald-100,
+.dark .border-emerald-200 { border-color: var(--pj-border) !important; }
+
+.dark .text-blue-500,
+.dark .text-blue-600     { color: var(--pj-cat-azul) !important; }
+.dark .bg-blue-50        { background-color: var(--pj-subtle) !important; }
+.dark .border-blue-300   { border-color: var(--pj-border) !important; }
+
+.dark .text-violet-600   { color: var(--pj-cat-ameixa) !important; }
+.dark .bg-violet-50      { background-color: var(--pj-subtle) !important; }
+.dark .text-amber-500,
+.dark .text-amber-600    { color: var(--pj-warn) !important; }
+.dark .text-orange-500   { color: var(--pj-cat-terracota) !important; }
+.dark .bg-orange-50      { background-color: var(--pj-subtle) !important; }
+.dark .text-rose-500,
+.dark .text-red-400,
+.dark .text-red-500      { color: var(--pj-danger) !important; }
+.dark .bg-red-500        { background-color: var(--pj-danger) !important; }
+
 /* Range track */
 .dark input[type="range"] { background: var(--pj-border); }
 
