@@ -29,9 +29,9 @@ export default function Receitas() {
         <title>{`Receitas Baratas para 4 Pessoas — ${EMENTAS.length} refeições económicas | PoupeJá`}</title>
         <meta name="description" content={`${EMENTAS.length} receitas portuguesas baratas para 4 pessoas, com ingredientes, quantidades e passo a passo. Sopas, massas, arroz, frango e pratos vegetarianos — grátis, sem registo.`} />
         <link rel="canonical" href={`${SITE_URL}/receitas`} />
-        <meta property="og:title" content="Receitas baratas para 4 pessoas" />
-        <meta property="og:description" content={`${EMENTAS.length} refeições económicas portuguesas com passo a passo — e os ingredientes entram na lista de compras num toque.`} />
-        <meta property="og:url" content={`${SITE_URL}/receitas`} />
+        <meta property="og:title" content="Receitas baratas para 4 pessoas" key="og:title" />
+        <meta property="og:description" content={`${EMENTAS.length} refeições económicas portuguesas com passo a passo — e os ingredientes entram na lista de compras num toque.`} key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/receitas`} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 

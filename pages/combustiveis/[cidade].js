@@ -30,9 +30,9 @@ export default function CombustiveisCidade({ cidade, destaques, estacoes, atuali
         <title>{`Preço dos Combustíveis em ${cidade.nome} Hoje — gasóleo e gasolina mais baratos | PoupeJá`}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/combustiveis/${cidade.slug}`} />
-        <meta property="og:title" content={`Preço dos combustíveis em ${cidade.nome} hoje`} />
-        <meta property="og:description" content={descricao} />
-        <meta property="og:url" content={`${SITE_URL}/combustiveis/${cidade.slug}`} />
+        <meta property="og:title" content={`Preço dos combustíveis em ${cidade.nome} hoje`} key="og:title" />
+        <meta property="og:description" content={descricao} key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/combustiveis/${cidade.slug}`} key="og:url" />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

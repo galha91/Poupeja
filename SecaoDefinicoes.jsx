@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import {
   Fuel, MapPin, Bell, ShieldCheck, Info,
   ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
-  PiggyBank, LogOut, BellRing, BellOff, Moon,
+  PiggyBank, LogOut, BellRing, BellOff, Moon, Share2,
 } from "lucide-react";
 import { supabase } from "./lib/supabase";
+import { partilharApp } from "./lib/partilhar";
 
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan","Minipreço"];
 const COMBUSTIVEIS  = ["Gasolina 95","Gasóleo","GPL"];
@@ -94,6 +95,14 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
   const [enviado, setEnviado]   = useState(false);
   const [modalTermos, setModalTermos] = useState(false);
   const [modalSobre, setModalSobre]   = useState(false);
+  const [feedbackConvite, setFeedbackConvite] = useState("");
+
+  async function convidar() {
+    const r = await partilharApp();
+    if (!r) return; // cancelado ou sem suporte — não dizer nada
+    setFeedbackConvite(r === "copiado" ? "Link copiado ✓" : "Obrigado! 💚");
+    setTimeout(() => setFeedbackConvite(""), 2500);
+  }
 
   // Push notifications
   const [pushEstado, setPushEstado] = useState("a-verificar"); // a-verificar | inativo | ativo | sem-suporte
@@ -483,6 +492,26 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               </button>
             </div>
           </div>
+        </Row>
+      </Section>
+
+      {/* Convidar — a única partilha que não está agarrada a um número */}
+      <Section label="Espalhar a palavra">
+        <Row border={false}>
+          <button onClick={convidar} className="press pj-tap w-full flex items-center justify-between text-left">
+            <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-3">
+              <Share2 size={17} className="flex-shrink-0" style={{ color: "var(--pj-brand-ink)" }} />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>
+                  {feedbackConvite || "Convidar amigos"}
+                </p>
+                <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>
+                  Manda o PoupeJá a quem também quer poupar
+                </p>
+              </div>
+            </div>
+            <ChevronRight size={15} className="flex-shrink-0" style={{ color: "#c9cec7" }} />
+          </button>
         </Row>
       </Section>
 

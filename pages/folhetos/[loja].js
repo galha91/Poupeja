@@ -21,9 +21,9 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
         <title>{`Folheto ${folheto.loja} desta Semana — promoções e descontos | PoupeJá`}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/folhetos/${slug}`} />
-        <meta property="og:title" content={`Folheto ${folheto.loja} desta semana`} />
-        <meta property="og:description" content={descricao} />
-        <meta property="og:url" content={`${SITE_URL}/folhetos/${slug}`} />
+        <meta property="og:title" content={`Folheto ${folheto.loja} desta semana`} key="og:title" />
+        <meta property="og:description" content={descricao} key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/folhetos/${slug}`} key="og:url" />
       </Head>
 
       <div style={{ paddingTop: 24 }}>
