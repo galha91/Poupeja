@@ -43,3 +43,12 @@ Orçamento partilhado do agregado familiar. Cada membro tem objetivos de poupan�
 ### Instalar dependências
 ```bash
 npm install
+```
+
+### MCP — Context7 (opcional, para desenvolvimento com Claude Code)
+Este projeto define o servidor MCP [Context7](https://github.com/upstash/context7) em `.mcp.json` para consulta de documentação atualizada durante o desenvolvimento. Define a tua chave de API num `.env` local (nunca commitada, já está no `.gitignore`):
+```bash
+CONTEXT7_API_KEY=a-tua-chave-aqui
+```
+O Claude Code lê automaticamente `.mcp.json` e substitui `${CONTEXT7_API_KEY}` pelo valor da variável de ambiente.
+
