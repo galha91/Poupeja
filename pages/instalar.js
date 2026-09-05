@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 /*
- * Página dedicada de instalação — poupeja.com/instalar
+ * Página dedicada de instalação — poupejá.com/instalar
  * Link limpo e partilhável (WhatsApp, redes) que leva a pessoa
  * a instalar a PWA com o mínimo de fricção:
  *   • Android / Chrome / desktop → botão que dispara o popup nativo (1 toque)

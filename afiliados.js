@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  LINKS DE AFILIADO — poupeja.com
+//  LINKS DE AFILIADO — poupejá.com
 //  Como usar:
 //    1. Cria conta em awin.com → "Become a Publisher"
 //    2. Candidata-te a cada programa individualmente

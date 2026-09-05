@@ -545,7 +545,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
           </button>
         </Row>
         <Row border={false}>
-          <button onClick={() => window.location.href = "mailto:contacto@poupeja.com"} className="press pj-tap w-full flex items-center justify-between">
+          <button onClick={() => window.location.href = "mailto:poupeja.portugal@gmail.com"} className="press pj-tap w-full flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Mail size={17} style={{ color: "var(--pj-text-faint)" }} />
               <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Contacto e ajuda</p>
@@ -610,11 +610,11 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
                 <p className="mb-2" style={{ ...LABEL_STYLE, color: "var(--pj-brand-ink)" }}>Fala connosco</p>
                 <p className="text-sm mb-3" style={{ color: "var(--pj-text-muted)" }}>Tens uma sugestão, encontraste um erro ou queres saber mais? Adoramos receber feedback.</p>
                 <button
-                  onClick={() => window.location.href = "mailto:contacto@poupeja.com"}
+                  onClick={() => window.location.href = "mailto:poupeja.portugal@gmail.com"}
                   className="press pj-tap w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2"
                   style={{ background: "var(--pj-brand)", color: "#fff" }}
                 >
-                  <Mail size={13} /> contacto@poupeja.com
+                  <Mail size={13} /> poupeja.portugal@gmail.com
                 </button>
               </div>
 
@@ -639,7 +639,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               <p><strong style={{ color: "var(--pj-text)" }}>O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências são guardados localmente no teu dispositivo.</p>
               <p><strong style={{ color: "var(--pj-text)" }}>Para que usamos os dados</strong><br/>Apenas para te mostrar os teus próprios dados dentro da app. Não partilhamos dados com terceiros nem usamos publicidade.</p>
               <p><strong style={{ color: "var(--pj-text)" }}>Cookies</strong><br/>Usamos apenas cookies essenciais para o funcionamento da app (sessão de autenticação).</p>
-              <p><strong style={{ color: "var(--pj-text)" }}>Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em contacto@poupeja.com</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>Os teus direitos</strong><br/>Podes apagar a tua conta a qualquer momento em Definições → Conta. Para questões de privacidade, contacta-nos em poupeja.portugal@gmail.com</p>
               <p><strong style={{ color: "var(--pj-text)" }}>Dados de terceiros</strong><br/>Os preços de combustíveis são fornecidos pela DGEG. Os postos EV e combustíveis usam a API TomTom. Os folhetos são links para os sites oficiais dos supermercados.</p>
             </div>
             <button onClick={() => setModalTermos(false)} className="press pj-tap w-full mt-6 py-3 rounded-2xl font-semibold text-sm" style={{ background: "#14231c", color: "#fff" }}>

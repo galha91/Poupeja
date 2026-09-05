@@ -24,4 +24,4 @@ Ir a: console.anthropic.com → Settings → Limits
 ## Resend — Criar conta (se ainda não tens)
 - Ir a resend.com e criar conta gratuita
 - Criar uma API Key e adicionar ao Vercel (ver tabela acima)
-- Confirmar o domínio poupeja.com nas definições do Resend
+- Confirmar o domínio poupejá.com (xn--poupej-uta.com) nas definições do Resend
