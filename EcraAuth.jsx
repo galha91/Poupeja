@@ -31,7 +31,7 @@ function traduzErro(msg = "") {
 function Campo({ label, type = "text", value, onChange, placeholder, action }) {
   return (
     <div>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "#8a978e" }}>{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "var(--pj-text-faint)" }}>{label}</p>
       <div className="relative">
         <input
           type={type}
@@ -39,15 +39,15 @@ function Campo({ label, type = "text", value, onChange, placeholder, action }) {
           onChange={e => onChange(e.target.value)}
           onInput={e => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-4 py-3.5 rounded-2xl border font-medium text-sm placeholder:text-[#8a978e] focus:outline-none focus:border-[#0b6b4f] focus:shadow-[0_0_0_3px_rgba(11,107,79,0.12)] transition-all"
-          style={{ background: "#fbfaf6", borderColor: "#e4e2d8", color: "#14231c" }}
+          className="w-full px-4 py-3.5 rounded-2xl border font-medium text-sm placeholder:text-[color:var(--pj-text-faint)] focus:outline-none focus:border-[color:var(--pj-brand)] focus:shadow-[0_0_0_3px_rgba(11,107,79,0.12)] transition-all"
+          style={{ background: "var(--pj-card)", borderColor: "var(--pj-border)", color: "var(--pj-text)" }}
         />
         {action && (
           <button
             type="button"
             onClick={action.onClick}
             className="pj-tap absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center"
-            style={{ color: "#8a978e" }}
+            style={{ color: "var(--pj-text-faint)" }}
           >
             {action.icon}
           </button>
@@ -80,21 +80,21 @@ async function entrarComGoogle() {
 /* ── Ecrã Landing ── */
 function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidadoErro }) {
   return (
-    <div className="min-h-dvh flex flex-col" style={{ background: "#f6f5f0" }}>
+    <div className="min-h-dvh flex flex-col" style={{ background: "var(--pj-surface)" }}>
       {/* Hero */}
       <div className="flex flex-col items-center justify-center px-6 pt-16 pb-8">
         <div
           className="w-20 h-20 rounded-3xl flex items-center justify-center mb-5"
-          style={{ background: "#0b6b4f" }}
+          style={{ background: "var(--pj-brand)" }}
         >
           <PiggyBank size={38} className="text-white" />
         </div>
 
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-2" style={{ color: "#8a978e" }}>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-2" style={{ color: "var(--pj-text-faint)" }}>
           A tua carteira digital portuguesa
         </p>
-        <h1 className="font-display text-4xl text-center leading-tight" style={{ color: "#14231c", fontWeight: 600, letterSpacing: "-0.01em" }}>
-          Poupe<span style={{ color: "#0b6b4f" }}>Já</span>
+        <h1 className="font-display text-4xl text-center leading-tight" style={{ color: "var(--pj-text)", fontWeight: 600, letterSpacing: "-0.01em" }}>
+          Poupe<span style={{ color: "var(--pj-brand-ink)" }}>Já</span>
         </h1>
 
         {/* Features */}
@@ -103,12 +103,12 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
             <div
               key={i}
               className="flex items-center gap-3 rounded-2xl px-4 py-3"
-              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+              style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
             >
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-                <f.icon size={15} style={{ color: "#0b6b4f" }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+                <f.icon size={15} style={{ color: "var(--pj-brand-ink)" }} />
               </div>
-              <p className="font-semibold text-[13px]" style={{ color: "#14231c" }}>{f.text}</p>
+              <p className="font-semibold text-[13px]" style={{ color: "var(--pj-text)" }}>{f.text}</p>
             </div>
           ))}
         </div>
@@ -116,13 +116,15 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
 
       {/* CTAs */}
       <div className="flex-1 px-6 pt-2 flex flex-col gap-3" style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom, 2rem) + 1rem)" }}>
-        <p className="text-center text-[11px] font-medium mb-1" style={{ color: "#8a978e" }}>
+        <p className="text-center text-[11px] font-medium mb-1" style={{ color: "var(--pj-text-faint)" }}>
           Grátis · Sem cartão · Conta válida em qualquer dispositivo
         </p>
         <button
           onClick={entrarComGoogle}
           className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2.5"
-          style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8" }}
+          /* Fundo branco fixo (exigência da marca Google) → tinta e borda
+             também fixas, senão no tema escuro fica branco sobre branco. */
+          style={{ background: "#fff", color: "#14231c", border: "1.5px solid #dadce0" }}
         >
           <IconGoogle /> Continuar com Google
         </button>
@@ -130,23 +132,23 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
           onClick={onConvidado}
           disabled={convidadoLoading}
           className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[14px]"
-          style={{ background: "#fbfaf6", color: "#0b6b4f", border: "1.5px dashed #0b6b4f66", opacity: convidadoLoading ? 0.6 : 1 }}
+          style={{ background: "var(--pj-card)", color: "var(--pj-brand-ink)", border: "1.5px dashed var(--pj-brand-soft)", opacity: convidadoLoading ? 0.6 : 1 }}
         >
           {convidadoLoading ? "A preparar a tua conta…" : "Espreitar como convidado — sem registo"}
         </button>
-        <p className="text-center text-[11px] font-medium -mt-1" style={{ color: "#8a978e" }}>
+        <p className="text-center text-[11px] font-medium -mt-1" style={{ color: "var(--pj-text-faint)" }}>
           Conhece a app primeiro · regista-te quando quiseres
         </p>
         {convidadoErro && (
           <p className="text-center text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{convidadoErro}</p>
         )}
-        <p className="text-center text-[12.5px] font-medium mt-1.5" style={{ color: "#8a978e" }}>
+        <p className="text-center text-[12.5px] font-medium mt-1.5" style={{ color: "var(--pj-text-faint)" }}>
           Preferes email?{" "}
-          <button onClick={onRegister} className="press font-semibold underline underline-offset-2" style={{ color: "#0b6b4f" }}>
+          <button onClick={onRegister} className="press font-semibold underline underline-offset-2" style={{ color: "var(--pj-brand-ink)" }}>
             Criar conta
           </button>
           {" · "}
-          <button onClick={onLogin} className="press font-semibold underline underline-offset-2" style={{ color: "#0b6b4f" }}>
+          <button onClick={onLogin} className="press font-semibold underline underline-offset-2" style={{ color: "var(--pj-brand-ink)" }}>
             Já tenho conta
           </button>
         </p>
@@ -201,33 +203,33 @@ function Registo({ onVoltar }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#f6f5f0" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--pj-surface)" }}>
       {/* Header */}
       <div className="px-4 pt-12 pb-6">
-        <button onClick={onVoltar} className="press pj-tap flex items-center gap-1.5 text-sm font-semibold mb-4" style={{ color: "#5c6b62" }}>
+        <button onClick={onVoltar} className="press pj-tap flex items-center gap-1.5 text-sm font-semibold mb-4" style={{ color: "var(--pj-text-muted)" }}>
           <ArrowLeft size={16} /> Voltar
         </button>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Nova conta</p>
-        <h2 className="font-display text-2xl mt-0.5" style={{ color: "#14231c", fontWeight: 600 }}>Cria a tua conta</h2>
-        <p className="text-[12px] mt-0.5" style={{ color: "#5c6b62" }}>Grátis, sem cartão, sem compromisso.</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Nova conta</p>
+        <h2 className="font-display text-2xl mt-0.5" style={{ color: "var(--pj-text)", fontWeight: 600 }}>Cria a tua conta</h2>
+        <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Grátis, sem cartão, sem compromisso.</p>
       </div>
 
       {emailEnviado ? (
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-4">
-          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2" style={{ background: "#eeece4" }}>
-            <ShieldCheck size={36} style={{ color: "#0b6b4f" }} />
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2" style={{ background: "var(--pj-subtle)" }}>
+            <ShieldCheck size={36} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
-          <h2 className="font-display text-2xl" style={{ color: "#14231c", fontWeight: 600 }}>Confirma o teu email</h2>
-          <p className="text-[14px] leading-relaxed" style={{ color: "#5c6b62" }}>
-            Enviámos um email para <strong style={{ color: "#14231c" }}>{email}</strong>.{" "}
+          <h2 className="font-display text-2xl" style={{ color: "var(--pj-text)", fontWeight: 600 }}>Confirma o teu email</h2>
+          <p className="text-[14px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
+            Enviámos um email para <strong style={{ color: "var(--pj-text)" }}>{email}</strong>.{" "}
             Clica no link para ativar a tua conta.
           </p>
-          <div className="rounded-2xl p-3.5 w-full text-left" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-            <p className="text-[12px] leading-relaxed" style={{ color: "#5c6b62" }}>
+          <div className="rounded-2xl p-3.5 w-full text-left" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+            <p className="text-[12px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
               Não vês o email? Verifica a pasta de spam ou lixo.
             </p>
           </div>
-          <button type="button" onClick={onVoltar} className="press pj-tap text-sm font-semibold mt-2" style={{ color: "#8a978e" }}>
+          <button type="button" onClick={onVoltar} className="press pj-tap text-sm font-semibold mt-2" style={{ color: "var(--pj-text-faint)" }}>
             Voltar ao início
           </button>
         </div>
@@ -265,9 +267,9 @@ function Registo({ onVoltar }) {
           </div>
         )}
 
-        <div className="rounded-xl p-3 flex gap-2" style={{ background: "#eeece4", border: "1px solid #e4e2d8" }}>
-          <ShieldCheck size={14} className="flex-shrink-0 mt-0.5" style={{ color: "#0b6b4f" }} />
-          <p className="text-[11px] leading-relaxed" style={{ color: "#5c6b62" }}>
+        <div className="rounded-xl p-3 flex gap-2" style={{ background: "var(--pj-subtle)", border: "1px solid var(--pj-border)" }}>
+          <ShieldCheck size={14} className="flex-shrink-0 mt-0.5" style={{ color: "var(--pj-brand-ink)" }} />
+          <p className="text-[11px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
             A tua conta fica guardada em segurança e funciona em qualquer dispositivo.
           </p>
         </div>
@@ -279,15 +281,15 @@ function Registo({ onVoltar }) {
             onClick={() => setAceitou(a => !a)}
             className="pj-tap w-5 h-5 rounded-md flex-shrink-0 mt-0.5 flex items-center justify-center transition-all"
             style={{
-              background: aceitou ? "#0b6b4f" : "#fbfaf6",
+              background: aceitou ? "var(--pj-brand)" : "var(--pj-card)",
               border: aceitou ? "2px solid #0b6b4f" : "2px solid #e4e2d8",
             }}
           >
             {aceitou && <Check size={12} className="text-white" strokeWidth={3} />}
           </button>
-          <p className="text-[12px] leading-relaxed" style={{ color: "#5c6b62" }}>
+          <p className="text-[12px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
             Li e aceito a{" "}
-            <Link href="/privacidade" target="_blank" className="pj-tap font-semibold underline underline-offset-2" style={{ color: "#0b6b4f" }}>
+            <Link href="/privacidade" target="_blank" className="pj-tap font-semibold underline underline-offset-2" style={{ color: "var(--pj-brand-ink)" }}>
               Política de Privacidade
             </Link>
             .
@@ -298,7 +300,7 @@ function Registo({ onVoltar }) {
           type="submit"
           disabled={loading}
           className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2 mt-2"
-          style={{ background: "#0b6b4f", opacity: loading ? 0.7 : 1 }}
+          style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}
         >
           {loading ? "A criar conta..." : <>Criar conta <ArrowRight size={17} /></>}
         </button>
@@ -334,36 +336,36 @@ function RecuperarPass({ onVoltar }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#f6f5f0" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--pj-surface)" }}>
       <div className="px-4 pt-12 pb-6">
-        <button onClick={onVoltar} className="press pj-tap flex items-center gap-1.5 text-sm font-semibold mb-4" style={{ color: "#5c6b62" }}>
+        <button onClick={onVoltar} className="press pj-tap flex items-center gap-1.5 text-sm font-semibold mb-4" style={{ color: "var(--pj-text-muted)" }}>
           <ArrowLeft size={16} /> Voltar
         </button>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Recuperar acesso</p>
-        <h2 className="font-display text-2xl mt-0.5" style={{ color: "#14231c", fontWeight: 600 }}>Esqueceu a password?</h2>
-        <p className="text-[12px] mt-0.5" style={{ color: "#5c6b62" }}>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Recuperar acesso</p>
+        <h2 className="font-display text-2xl mt-0.5" style={{ color: "var(--pj-text)", fontWeight: 600 }}>Esqueceu a password?</h2>
+        <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>
           Enviamos-te um link por email para definires uma nova.
         </p>
       </div>
 
       {enviado ? (
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-4">
-          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2" style={{ background: "#eeece4" }}>
-            <ShieldCheck size={36} style={{ color: "#0b6b4f" }} />
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-2" style={{ background: "var(--pj-subtle)" }}>
+            <ShieldCheck size={36} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
-          <h2 className="font-display text-2xl" style={{ color: "#14231c", fontWeight: 600 }}>Verifica o teu email</h2>
-          <p className="text-[14px] leading-relaxed" style={{ color: "#5c6b62" }}>
-            Se existir uma conta com <strong style={{ color: "#14231c" }}>{email}</strong>,{" "}
+          <h2 className="font-display text-2xl" style={{ color: "var(--pj-text)", fontWeight: 600 }}>Verifica o teu email</h2>
+          <p className="text-[14px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
+            Se existir uma conta com <strong style={{ color: "var(--pj-text)" }}>{email}</strong>,{" "}
             vais receber um link para definir uma nova password.
           </p>
-          <button type="button" onClick={onVoltar} className="press pj-tap text-sm font-semibold mt-2" style={{ color: "#8a978e" }}>
+          <button type="button" onClick={onVoltar} className="press pj-tap text-sm font-semibold mt-2" style={{ color: "var(--pj-text-faint)" }}>
             Voltar ao login
           </button>
         </div>
       ) : (
         <form onSubmit={submeter} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: "#eeece4" }}>
-            <KeyRound size={26} style={{ color: "#0b6b4f" }} />
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+            <KeyRound size={26} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
 
           <Campo
@@ -385,7 +387,7 @@ function RecuperarPass({ onVoltar }) {
             type="submit"
             disabled={loading}
             className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2 mt-2"
-            style={{ background: "#0b6b4f", opacity: loading ? 0.7 : 1 }}
+            style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}
           >
             {loading ? "A enviar..." : <>Enviar link <ArrowRight size={17} /></>}
           </button>
@@ -419,16 +421,16 @@ export function DefinirNovaPass({ onConcluido }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#f6f5f0" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--pj-surface)" }}>
       <div className="px-4 pt-12 pb-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Recuperar acesso</p>
-        <h2 className="font-display text-2xl mt-0.5" style={{ color: "#14231c", fontWeight: 600 }}>Define a nova password</h2>
-        <p className="text-[12px] mt-0.5" style={{ color: "#5c6b62" }}>Escolhe uma password segura para a tua conta.</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Recuperar acesso</p>
+        <h2 className="font-display text-2xl mt-0.5" style={{ color: "var(--pj-text)", fontWeight: 600 }}>Define a nova password</h2>
+        <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Escolhe uma password segura para a tua conta.</p>
       </div>
 
       <form onSubmit={submeter} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: "#eeece4" }}>
-          <KeyRound size={26} style={{ color: "#0b6b4f" }} />
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+          <KeyRound size={26} style={{ color: "var(--pj-brand-ink)" }} />
         </div>
 
         <Campo
@@ -454,7 +456,7 @@ export function DefinirNovaPass({ onConcluido }) {
           type="submit"
           disabled={loading}
           className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2 mt-2"
-          style={{ background: "#0b6b4f", opacity: loading ? 0.7 : 1 }}
+          style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}
         >
           {loading ? "A guardar..." : <>Guardar nova password <ArrowRight size={17} /></>}
         </button>
@@ -497,14 +499,14 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#f6f5f0" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--pj-surface)" }}>
       <div className="px-4 pt-12 pb-6">
-        <button onClick={onVoltar} className="press pj-tap flex items-center gap-1.5 text-sm font-semibold mb-4" style={{ color: "#5c6b62" }}>
+        <button onClick={onVoltar} className="press pj-tap flex items-center gap-1.5 text-sm font-semibold mb-4" style={{ color: "var(--pj-text-muted)" }}>
           <ArrowLeft size={16} /> Voltar
         </button>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Bem-vindo de volta</p>
-        <h2 className="font-display text-2xl mt-0.5" style={{ color: "#14231c", fontWeight: 600 }}>Entrar na conta</h2>
-        <p className="text-[12px] mt-0.5" style={{ color: "#5c6b62" }}>Usa as credenciais que criaste.</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Bem-vindo de volta</p>
+        <h2 className="font-display text-2xl mt-0.5" style={{ color: "var(--pj-text)", fontWeight: 600 }}>Entrar na conta</h2>
+        <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Usa as credenciais que criaste.</p>
       </div>
 
       <form onSubmit={submeter} className="flex-1 px-5 pt-6 pb-10 flex flex-col gap-4">
@@ -538,7 +540,7 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
           type="submit"
           disabled={loading}
           className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2 mt-2"
-          style={{ background: "#0b6b4f", opacity: loading ? 0.7 : 1 }}
+          style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}
         >
           {loading ? "A entrar..." : <>Entrar <ArrowRight size={17} /></>}
         </button>
@@ -547,7 +549,7 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
           type="button"
           onClick={onEsqueceu}
           className="press pj-tap text-center text-sm font-semibold mt-1 py-1"
-          style={{ color: "#0b6b4f" }}
+          style={{ color: "var(--pj-brand-ink)" }}
         >
           Esqueceu a palavra-passe?
         </button>

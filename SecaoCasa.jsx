@@ -8,21 +8,22 @@ const CHAVE = "poupeja_casa";
 
 // --- Editorial flat design tokens ---
 const C = {
-  bg: "#f6f5f0",
-  text: "#14231c",
-  muted: "#5c6b62",
-  faint: "#8a978e",
-  green: "#0b6b4f",
-  chip: "#eeece4",
-  divSection: "#e4e2d8",
-  divRow: "#eeece4",
-  card: "#fbfaf6",
-  neg: "#a8432f",
+  bg:         "var(--pj-surface)",
+  text:       "var(--pj-text)",
+  muted:      "var(--pj-text-muted)",
+  faint:      "var(--pj-text-faint)",
+  green:      "var(--pj-brand-ink)",   // verde como texto
+  greenFill:  "var(--pj-brand)",       // verde como preenchimento
+  chip:       "var(--pj-subtle)",
+  divSection: "var(--pj-border)",
+  divRow:     "var(--pj-subtle)",
+  card:       "var(--pj-card)",
+  neg:        "#a8432f",
 };
 const LBL = { fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: C.faint, textTransform: "uppercase" };
 const LBL_SM = { fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: C.faint, textTransform: "uppercase" };
 const CARD = { background: C.card, border: `1px solid ${C.divSection}` };
-const INPUT_STYLE = { padding: "10px 12px", border: `1px solid ${C.divSection}`, background: "#ffffff", color: C.text, accentColor: C.green };
+const INPUT_STYLE = { padding: "10px 12px", border: `1px solid ${C.divSection}`, background: "var(--pj-card)", color: C.text, accentColor: C.green };
 
 function lerLocal() {
   try { return JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch { return {}; }
@@ -390,7 +391,7 @@ export default function SecaoCasa() {
           <button onClick={guardarCredito}
             disabled={!fCredito.capital || !fCredito.spread || !fCredito.prazo}
             className="pj-tap press w-full py-3.5 rounded-xl text-sm disabled:opacity-40 mt-2"
-            style={{ background: C.green, color: "#ffffff", fontWeight: 600 }}>
+            style={{ background: C.greenFill, color: "#ffffff", fontWeight: 600 }}>
             Guardar
           </button>
           {dados.credito && (
@@ -419,7 +420,7 @@ export default function SecaoCasa() {
           <button onClick={guardarRenda}
             disabled={!fRenda.valor}
             className="pj-tap press w-full py-3.5 rounded-xl text-sm disabled:opacity-40 mt-2"
-            style={{ background: C.green, color: "#ffffff", fontWeight: 600 }}>
+            style={{ background: C.greenFill, color: "#ffffff", fontWeight: 600 }}>
             Guardar
           </button>
           {dados.renda && (

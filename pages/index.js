@@ -164,76 +164,77 @@ function ModalCriarConta({ local = false, onFechar, onConvertido }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(20,35,28,0.55)" }} onClick={onFechar}>
-      <div className="w-full rounded-t-3xl overflow-hidden" style={{ maxHeight: "92vh", overflowY: "auto", background: "#fbfaf6" }} onClick={e => e.stopPropagation()}>
+      <div className="w-full rounded-t-3xl overflow-hidden" style={{ maxHeight: "92vh", overflowY: "auto", background: "var(--pj-card)" }} onClick={e => e.stopPropagation()}>
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full" style={{ background: "#e4e2d8" }} />
+          <div className="w-10 h-1 rounded-full" style={{ background: "var(--pj-border)" }} />
         </div>
 
         <div className="px-5 py-4 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-            <UserPlus size={20} style={{ color: "#0b6b4f" }} />
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+            <UserPlus size={20} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Modo convidado</p>
-            <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "#14231c" }}>Cria a tua conta grátis</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Modo convidado</p>
+            <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "var(--pj-text)" }}>Cria a tua conta grátis</p>
           </div>
-          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }} aria-label="Fechar">
-            <X size={16} style={{ color: "#5c6b62" }} />
+          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }} aria-label="Fechar">
+            <X size={16} style={{ color: "var(--pj-text-muted)" }} />
           </button>
         </div>
 
-        <div className="mx-5" style={{ height: 1, background: "#e4e2d8" }} />
+        <div className="mx-5" style={{ height: 1, background: "var(--pj-border)" }} />
 
         {feito ? (
           <div className="px-5 pt-5 pb-9 text-center">
-            <p className="font-display text-[17px] font-semibold" style={{ color: "#14231c" }}>Só falta confirmares o email</p>
-            <p className="text-[13px] leading-relaxed mt-2" style={{ color: "#5c6b62" }}>
-              Enviámos-te um link para <strong style={{ color: "#14231c" }}>{email}</strong>. Tudo o que fizeste
+            <p className="font-display text-[17px] font-semibold" style={{ color: "var(--pj-text)" }}>Só falta confirmares o email</p>
+            <p className="text-[13px] leading-relaxed mt-2" style={{ color: "var(--pj-text-muted)" }}>
+              Enviámos-te um link para <strong style={{ color: "var(--pj-text)" }}>{email}</strong>. Tudo o que fizeste
               como convidado fica guardado nesta conta — não perdes nada.
             </p>
-            <button onClick={onFechar} className="pj-tap w-full py-3.5 mt-5 rounded-2xl text-white font-semibold" style={{ background: "#0b6b4f" }}>
+            <button onClick={onFechar} className="pj-tap w-full py-3.5 mt-5 rounded-2xl text-white font-semibold" style={{ background: "var(--pj-brand)" }}>
               Continuar a usar a app
             </button>
           </div>
         ) : (
           <form onSubmit={submeter} className="px-5 pt-4 pb-9 flex flex-col gap-3">
-            <p className="text-[12.5px] leading-relaxed" style={{ color: "#5c6b62" }}>
-              O teu progresso de convidado <strong style={{ color: "#14231c" }}>passa todo</strong> para a conta.
+            <p className="text-[12.5px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
+              O teu progresso de convidado <strong style={{ color: "var(--pj-text)" }}>passa todo</strong> para a conta.
               E desbloqueias o que é só para membros:
             </p>
-            <div className="rounded-2xl px-4 py-3 flex flex-col gap-1.5" style={{ background: "#eeece4" }}>
+            <div className="rounded-2xl px-4 py-3 flex flex-col gap-1.5" style={{ background: "var(--pj-subtle)" }}>
               {["Avisos no telemóvel: gasóleo barato, garantias, contas a vencer", "Dados seguros e sincronizados em todos os dispositivos", "Folhetos da semana no teu email"].map((b, i) => (
-                <p key={i} className="text-[12px] font-semibold flex items-start gap-1.5" style={{ color: "#14231c" }}>
-                  <span style={{ color: "#0b6b4f" }}>✓</span> {b}
+                <p key={i} className="text-[12px] font-semibold flex items-start gap-1.5" style={{ color: "var(--pj-text)" }}>
+                  <span style={{ color: "var(--pj-brand-ink)" }}>✓</span> {b}
                 </p>
               ))}
             </div>
             <button type="button" onClick={continuarComGoogle} disabled={googleLoading}
               className="pj-tap w-full py-3.5 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2.5"
-              style={{ background: "#fff", color: "#14231c", border: "1.5px solid #e4e2d8", opacity: googleLoading ? 0.7 : 1 }}>
+              /* Fundo branco fixo (marca Google) → tinta e borda fixas também. */
+              style={{ background: "#fff", color: "#14231c", border: "1.5px solid #dadce0", opacity: googleLoading ? 0.7 : 1 }}>
               <IconGoogle size={17} /> {googleLoading ? "A abrir o Google…" : "Continuar com Google"}
             </button>
             <div className="flex items-center gap-3 -my-0.5">
-              <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
-              <span className="text-[11px] font-semibold" style={{ color: "#8a978e" }}>ou por email</span>
-              <div style={{ flex: 1, height: 1, background: "#e4e2d8" }} />
+              <div style={{ flex: 1, height: 1, background: "var(--pj-border)" }} />
+              <span className="text-[11px] font-semibold" style={{ color: "var(--pj-text-faint)" }}>ou por email</span>
+              <div style={{ flex: 1, height: 1, background: "var(--pj-border)" }} />
             </div>
             <input type="text" placeholder="O teu nome" value={nome} onChange={e => setNome(e.target.value)}
               className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
-              style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }} />
+              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
             <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
               className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
-              style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }} />
+              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
             <input type="password" placeholder="Password (mín. 6 caracteres)" value={pass} onChange={e => setPass(e.target.value)} required
               className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
-              style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }} />
+              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
             {erro && <p className="text-[12px] font-semibold" style={{ color: "#cf5a3c" }}>{erro}</p>}
             <button type="submit" disabled={loading}
               className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px]"
-              style={{ background: "#0b6b4f", opacity: loading ? 0.7 : 1 }}>
+              style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}>
               {loading ? "A criar a conta…" : "Criar conta e guardar o meu progresso"}
             </button>
-            <button type="button" onClick={onFechar} className="pj-tap w-full py-2 font-semibold text-[13px]" style={{ color: "#8a978e" }}>
+            <button type="button" onClick={onFechar} className="pj-tap w-full py-2 font-semibold text-[13px]" style={{ color: "var(--pj-text-faint)" }}>
               Agora não
             </button>
           </form>
@@ -245,17 +246,17 @@ function ModalCriarConta({ local = false, onFechar, onConvertido }) {
 
 function EmptyState({ icon: Icon, titulo, sub, cta, onCta }) {
   return (
-    <div className="mx-4 rounded-2xl p-8 flex flex-col items-center text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "#eeece4" }}>
-        <Icon size={30} style={{ color: "#8a978e" }} />
+    <div className="mx-4 rounded-2xl p-8 flex flex-col items-center text-center" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "var(--pj-subtle)" }}>
+        <Icon size={30} style={{ color: "var(--pj-text-faint)" }} />
       </div>
-      <p className="font-display text-sm font-semibold" style={{ color: "#14231c" }}>{titulo}</p>
-      <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "#8a978e" }}>{sub}</p>
+      <p className="font-display text-sm font-semibold" style={{ color: "var(--pj-text)" }}>{titulo}</p>
+      <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>{sub}</p>
       {cta && (
         <button
           onClick={onCta}
           className="pj-tap press mt-4 px-5 py-2.5 rounded-xl text-white text-xs font-semibold"
-          style={{ background: "#0b6b4f" }}
+          style={{ background: "var(--pj-brand)" }}
         >
           {cta}
         </button>
@@ -279,40 +280,40 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
     <div className="fixed inset-0 z-50 flex items-end" style={{ background: "rgba(20,35,28,0.55)" }} onClick={onFechar}>
       <div
         className="w-full rounded-t-3xl overflow-hidden"
-        style={{ maxHeight: "92vh", overflowY: "auto", background: "#fbfaf6" }}
+        style={{ maxHeight: "92vh", overflowY: "auto", background: "var(--pj-card)" }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full" style={{ background: "#e4e2d8" }} />
+          <div className="w-10 h-1 rounded-full" style={{ background: "var(--pj-border)" }} />
         </div>
 
         {/* Cabeçalho */}
         <div className="px-5 py-4 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-            <Smartphone size={20} style={{ color: "#0b6b4f" }} />
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+            <Smartphone size={20} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>
               {modo === "ios" ? "iOS (Safari)" : "Android"}
             </p>
-            <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "#14231c" }}>Instalar o PoupeJá</p>
+            <p className="font-display text-[17px] font-semibold leading-tight" style={{ color: "var(--pj-text)" }}>Instalar o PoupeJá</p>
           </div>
-          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }} aria-label="Fechar">
-            <X size={16} style={{ color: "#5c6b62" }} />
+          <button onClick={onFechar} className="pj-tap ml-auto w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }} aria-label="Fechar">
+            <X size={16} style={{ color: "var(--pj-text-muted)" }} />
           </button>
         </div>
 
-        <div className="mx-5" style={{ height: 1, background: "#e4e2d8" }} />
+        <div className="mx-5" style={{ height: 1, background: "var(--pj-border)" }} />
 
         {/* Benefícios */}
         <div className="px-5 pt-4 pb-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-3" style={{ color: "#8a978e" }}>Porque vale a pena</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] mb-3" style={{ color: "var(--pj-text-faint)" }}>Porque vale a pena</p>
           <div className="grid grid-cols-2 gap-2 mb-4">
             {beneficios.map((b, i) => (
-              <div key={i} className="rounded-2xl p-3 flex items-start gap-2" style={{ background: "#eeece4" }}>
-                <b.Icon size={16} className="flex-shrink-0 mt-0.5" style={{ color: "#0b6b4f" }} />
-                <p className="text-[11px] font-semibold leading-snug" style={{ color: "#14231c" }}>{b.texto}</p>
+              <div key={i} className="rounded-2xl p-3 flex items-start gap-2" style={{ background: "var(--pj-subtle)" }}>
+                <b.Icon size={16} className="flex-shrink-0 mt-0.5" style={{ color: "var(--pj-brand-ink)" }} />
+                <p className="text-[11px] font-semibold leading-snug" style={{ color: "var(--pj-text)" }}>{b.texto}</p>
               </div>
             ))}
           </div>
@@ -325,11 +326,11 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
               <button
                 onClick={onInstalarAndroid}
                 className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2"
-                style={{ background: "#0b6b4f" }}
+                style={{ background: "var(--pj-brand)" }}
               >
                 <Download size={18} /> Instalar agora — é grátis
               </button>
-              <a href="/instalar" className="pj-tap w-full py-3 rounded-2xl font-semibold text-sm text-center" style={{ background: "#eeece4", color: "#5c6b62" }}>
+              <a href="/instalar" className="pj-tap w-full py-3 rounded-2xl font-semibold text-sm text-center" style={{ background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}>
                 Ver o guia completo
               </a>
             </>
@@ -337,7 +338,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
             <a
               href="/instalar"
               className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base text-center flex items-center justify-center gap-2"
-              style={{ background: "#0b6b4f" }}
+              style={{ background: "var(--pj-brand)" }}
             >
               <Download size={18} /> Ver como instalar
             </a>
@@ -345,7 +346,7 @@ function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
           <button
             onClick={onFechar}
             className="pj-tap w-full py-2.5 font-semibold text-sm"
-            style={{ color: "#8a978e" }}
+            style={{ color: "var(--pj-text-faint)" }}
           >
             Agora não
           </button>
@@ -584,29 +585,29 @@ function CardCombustivelHome({ setTab }) {
 
   return (
     <button onClick={() => setTab("mobilidade")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14 }}>
-      <div className="flex items-center justify-center flex-none" style={{ width: 40, height: 40, borderRadius: 12, background: "#eeece4", color: "#2c3b33" }}>
+      <div className="flex items-center justify-center flex-none" style={{ width: 40, height: 40, borderRadius: 12, background: "var(--pj-subtle)", color: "var(--pj-text-strong)" }}>
         <Fuel size={19} strokeWidth={1.8} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500 }}>
+        <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500 }}>
           {dados?.perto ? "Gasóleo mais barato perto de ti" : "Gasóleo mais barato"}
         </div>
-        <div className="truncate" style={{ fontSize: 15, fontWeight: 600, color: "#14231c", marginTop: 3 }}>
+        <div className="truncate" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)", marginTop: 3 }}>
           {dados ? (dados.marca || "—") : "Ver postos e preços"}
-          {dados?.perto && dados.distancia ? <span style={{ color: "#8a978e", fontWeight: 500 }}> · {dados.distancia} km</span> : null}
-          {dados && !dados.perto ? <span onClick={pedirLocalizacao} style={{ color: "#0b6b4f", fontWeight: 600 }}> · {aLocalizar ? "a localizar…" : "perto de ti"}</span> : null}
+          {dados?.perto && dados.distancia ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> · {dados.distancia} km</span> : null}
+          {dados && !dados.perto ? <span onClick={pedirLocalizacao} style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}> · {aLocalizar ? "a localizar…" : "perto de ti"}</span> : null}
         </div>
       </div>
       {dados
-        ? <div className="font-display flex-none" style={{ fontSize: 24, fontWeight: 500, color: "#0b6b4f" }}>{dados.preco.toFixed(2).replace(".", ",")}<span style={{ fontSize: 15 }}>€</span></div>
-        : <ChevronRight size={20} className="flex-none" style={{ color: "#8a978e" }} />}
+        ? <div className="font-display flex-none" style={{ fontSize: 24, fontWeight: 500, color: "var(--pj-brand-ink)" }}>{dados.preco.toFixed(2).replace(".", ",")}<span style={{ fontSize: 15 }}>€</span></div>
+        : <ChevronRight size={20} className="flex-none" style={{ color: "var(--pj-text-faint)" }} />}
     </button>
   );
 }
 
 /* ─── Home: divisória fina e logótipo de folheto ─── */
 function Divisoria() {
-  return <div style={{ height: 1, background: "#e4e2d8", margin: "26px 0" }} />;
+  return <div style={{ height: 1, background: "var(--pj-border)", margin: "26px 0" }} />;
 }
 function LogoFolheto({ loja }) {
   return <LogoLoja loja={loja} size={44} radius={12} bg="#eeece4" />;
@@ -659,21 +660,21 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
 
 
   return (
-    <div className="pb-28" style={{ minHeight: "100vh", background: "#f6f5f0", color: "#14231c" }}>
+    <div className="pb-28" style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
       <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 24px 32px" }}>
 
         {/* Cabeçalho */}
         <div className="flex items-center justify-between anim-up">
-          <div style={{ fontSize: 15, color: "#5c6b62", fontWeight: 500 }}>
-            {saudacaoHora()}, <span className="capitalize" style={{ color: "#14231c", fontWeight: 600 }}>{primeiroNome}</span>
+          <div style={{ fontSize: 15, color: "var(--pj-text-muted)", fontWeight: 500 }}>
+            {saudacaoHora()}, <span className="capitalize" style={{ color: "var(--pj-text)", fontWeight: 600 }}>{primeiroNome}</span>
           </div>
-          <div className="flex items-center" style={{ gap: 16, color: "#14231c" }}>
+          <div className="flex items-center" style={{ gap: 16, color: "var(--pj-text)" }}>
             <button onClick={onAbrirAvisos} className="pj-tap relative flex" aria-label="Avisos">
               <Bell size={21} strokeWidth={1.7} />
               {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "#cf5a3c", border: "1.5px solid #f6f5f0" }} />}
             </button>
             <button onClick={onAbrirDefinicoes} className="pj-tap flex items-center justify-center" aria-label="Perfil"
-              style={{ width: 36, height: 36, borderRadius: "50%", background: "#0b6b4f", color: "#f6f5f0", fontSize: 14, fontWeight: 600 }}>
+              style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--pj-brand)", color: "#f6f5f0", fontSize: 14, fontWeight: 600 }}>
               {(primeiroNome[0] || "P").toUpperCase()}
             </button>
           </div>
@@ -682,7 +683,7 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
         {/* Retrato do mês pronto */}
         {retratoDisponivel && (
           <button onClick={onAbrirRetrato} className="pj-tap w-full text-left flex items-center anim-up"
-            style={{ gap: 12, marginTop: 18, padding: "13px 14px", borderRadius: 14, background: "#0b6b4f" }}>
+            style={{ gap: 12, marginTop: 18, padding: "13px 14px", borderRadius: 14, background: "var(--pj-brand)" }}>
             <span style={{ fontSize: 22, flexShrink: 0 }}>🎁</span>
             <span style={{ flex: 1 }}>
               <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "#fff" }}>O teu retrato de {retratoDisponivel.mes.nome} está pronto</span>
@@ -695,21 +696,21 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
         {/* Convidado: convite a criar conta (ou lembrete de confirmação) */}
         {user?.convidado && (
           convPendente ? (
-            <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "#eef3ef" }}>
-              <Bell size={16} style={{ color: "#0b6b4f", flexShrink: 0 }} />
-              <p style={{ fontSize: 12.5, fontWeight: 600, color: "#14231c" }}>
+            <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+              <Bell size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+              <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>
                 Confirma o teu email para concluíres a conta — enviámos-te um link.
               </p>
             </div>
           ) : (
             <button onClick={onCriarConta} className="pj-tap w-full text-left flex items-center anim-up"
-              style={{ gap: 12, marginTop: 18, padding: "12px 14px", borderRadius: 14, background: "#eef3ef", border: "1.5px dashed #0b6b4f55" }}>
-              <UserPlus size={18} style={{ color: "#0b6b4f", flexShrink: 0 }} />
+              style={{ gap: 12, marginTop: 18, padding: "12px 14px", borderRadius: 14, background: "var(--pj-brand-wash)", border: "1.5px dashed var(--pj-brand-soft)" }}>
+              <UserPlus size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
               <span style={{ flex: 1 }}>
-                <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#14231c" }}>A usar como convidado</span>
-                <span style={{ display: "block", fontSize: 12, color: "#5c6b62", marginTop: 1 }}>Cria conta grátis para guardares o progresso e receberes avisos</span>
+                <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--pj-text)" }}>A usar como convidado</span>
+                <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Cria conta grátis para guardares o progresso e receberes avisos</span>
               </span>
-              <ChevronRight size={16} style={{ color: "#0b6b4f", flexShrink: 0 }} />
+              <ChevronRight size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
             </button>
           )
         )}
@@ -717,12 +718,12 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
         {/* Poupança do mês */}
         <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
           <div className="flex items-center justify-between">
-            <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>Poupança de {mesNome}</div>
-            <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "#0b6b4f", fontWeight: 600 }}>
+            <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>Poupança de {mesNome}</div>
+            <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
               <Flame size={13} /> {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "dia" : "dias"}
             </div>
           </div>
-          <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 16 }}>
+          <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 16 }}>
             <span style={{ fontSize: 38, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>{Math.floor(animMes)}<span style={{ fontSize: 38, color: "#b0b8b0", fontWeight: 400 }}>,{decMes}</span>
           </div>
         </div>
@@ -738,10 +739,10 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
             { Icon: Landmark,    label: "Apoios",      on: () => setTab("apoios") },
           ].map((a, i) => (
             <button key={i} onClick={a.on} className="pj-tap flex flex-col items-center" style={{ gap: 10, padding: "8px 0" }}>
-              <div className="flex items-center justify-center" style={{ width: 52, height: 52, borderRadius: 16, background: "#eeece4", color: "#2c3b33" }}>
+              <div className="flex items-center justify-center" style={{ width: 52, height: 52, borderRadius: 16, background: "var(--pj-subtle)", color: "var(--pj-text-strong)" }}>
                 <a.Icon size={23} strokeWidth={1.7} />
               </div>
-              <span style={{ fontSize: 11.5, fontWeight: 500, color: "#5c6b62" }}>{a.label}</span>
+              <span style={{ fontSize: 11.5, fontWeight: 500, color: "var(--pj-text-muted)" }}>{a.label}</span>
             </button>
           ))}
         </div>
@@ -757,17 +758,17 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
           return (
             <button onClick={() => setTab("poupanca")} className="pj-tap flex items-center w-full text-left anim-up anim-up-3" style={{ gap: 14 }}>
               <div style={{ flex: 1 }}>
-                <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "#14231c" }}>{estadoDesafio.desafio.nome}</div>
-                <div style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500, marginTop: 3 }}>
+                <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{estadoDesafio.desafio.nome}</div>
+                <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 3 }}>
                   {completo ? "Desafio do mês completo 🎉" : `Faltam €${falta.toFixed(2).replace(".", ",")} para a meta de €${estadoDesafio.desafio.meta}`}
                 </div>
               </div>
               <div style={{ position: "relative", width: 44, height: 44, flex: "none" }}>
                 <svg width="44" height="44" viewBox="0 0 44 44">
-                  <circle cx="22" cy="22" r={R} fill="none" stroke="#e4e2d8" strokeWidth="3" />
-                  <circle cx="22" cy="22" r={R} fill="none" stroke="#0b6b4f" strokeWidth="3" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - frac)} transform="rotate(-90 22 22)" />
+                  <circle cx="22" cy="22" r={R} fill="none" style={{ stroke: "var(--pj-border)" }} strokeWidth="3" />
+                  <circle cx="22" cy="22" r={R} fill="none" style={{ stroke: "var(--pj-brand-ink)" }} strokeWidth="3" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - frac)} transform="rotate(-90 22 22)" />
                 </svg>
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600, color: "#14231c" }}>{pct}%</div>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600, color: "var(--pj-text)" }}>{pct}%</div>
               </div>
             </button>
           );
@@ -779,20 +780,20 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
         {folhetos.length > 0 && (
           <div className="anim-up anim-up-4">
             <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
-              <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em" }}>Folhetos a acabar</span>
-              <button onClick={() => setTab("mercados")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f" }}>Ver todos</button>
+              <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos a acabar</span>
+              <button onClick={() => setTab("mercados")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Ver todos</button>
             </div>
             <div className="flex flex-col">
               {folhetos.slice(0, 5).map((f, i) => (
                 <div key={f.id || i}>
-                  {i > 0 && <div style={{ height: 1, background: "#eeece4" }} />}
+                  {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
                   <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14, padding: "12px 0" }}>
                     <LogoFolheto loja={f.loja} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#14231c" }}>{f.loja}</div>
-                      <div className="truncate" style={{ fontSize: 12.5, color: "#5c6b62", fontWeight: 500, marginTop: 1 }}>{f.titulo || "Folheto desta semana"}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{f.loja}</div>
+                      <div className="truncate" style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 1 }}>{f.titulo || "Folheto desta semana"}</div>
                     </div>
-                    <div style={{ fontSize: 12.5, color: "#8a978e", fontWeight: 500, flex: "none" }}>{f.validade || ""}</div>
+                    <div style={{ fontSize: 12.5, color: "var(--pj-text-faint)", fontWeight: 500, flex: "none" }}>{f.validade || ""}</div>
                   </button>
                 </div>
               ))}
@@ -811,12 +812,12 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
 
         {/* Explorar tudo */}
         <div>
-          <div className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em", marginBottom: 14 }}>Explorar tudo</div>
+          <div className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em", marginBottom: 14 }}>Explorar tudo</div>
           <div className="grid grid-cols-2" style={{ gap: 10 }}>
             {FEATURES.map((f, i) => (
-              <button key={i} onClick={() => f.tab && setTab(f.tab)} className="pj-tap flex items-center text-left" style={{ gap: 12, padding: "11px 12px", borderRadius: 14, background: "#eeece4" }}>
-                <f.icon size={17} style={{ color: "#2c3b33" }} />
-                <span style={{ fontSize: 12.5, fontWeight: 600, color: "#14231c" }}>{f.label}</span>
+              <button key={i} onClick={() => f.tab && setTab(f.tab)} className="pj-tap flex items-center text-left" style={{ gap: 12, padding: "11px 12px", borderRadius: 14, background: "var(--pj-subtle)" }}>
+                <f.icon size={17} style={{ color: "var(--pj-text-strong)" }} />
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>{f.label}</span>
               </button>
             ))}
           </div>
@@ -898,38 +899,38 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
 
       {/* Total — editorial */}
       <div className="px-6 anim-up">
-        <div style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           A tua poupança total
         </div>
-        <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "#14231c", marginTop: 14 }}>
+        <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 14 }}>
           <span style={{ fontSize: 32, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>
           {dados ? Math.floor(dados.totalGeral) : 0}
           <span style={{ fontSize: 32, color: "#b0b8b0", fontWeight: 400 }}>,{dados ? String(Math.round((dados.totalGeral % 1) * 100)).padStart(2, "0") : "00"}</span>
         </div>
-        <div style={{ fontSize: 13.5, color: "#5c6b62", fontWeight: 500, marginTop: 12, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 12, lineHeight: 1.5 }}>
           {dados && dados.totalGeral > 0
-            ? <>Poupança real somada em <span style={{ color: "#14231c", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.</>
+            ? <>Poupança real somada em <span style={{ color: "var(--pj-text)", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.</>
             : <>Guarda talões com o valor poupado para veres a tua poupança a crescer aqui.</>}
         </div>
         {dados && dados.totalGeral > 0 && dados.tendencia !== 0 && dados.totalAnterior > 0 && (
-          <div className="inline-flex items-center" style={{ gap: 9, marginTop: 20, padding: "10px 14px", borderRadius: 12, background: "#eef3ef" }}>
-            {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "#0b6b4f" }} /> : <TrendingDown size={16} style={{ color: "#cf5a3c" }} />}
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: dados.tendencia > 0 ? "#0b6b4f" : "#cf5a3c" }}>
+          <div className="inline-flex items-center" style={{ gap: 9, marginTop: 20, padding: "10px 14px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
+            {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "var(--pj-brand-ink)" }} /> : <TrendingDown size={16} style={{ color: "#cf5a3c" }} />}
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: dados.tendencia > 0 ? "var(--pj-brand-ink)" : "#cf5a3c" }}>
               {dados.tendencia > 0 ? "+" : ""}{dados.tendencia}% vs. o mês passado
             </span>
           </div>
         )}
         <div className="flex" style={{ gap: 8, marginTop: 22 }}>
-          <button onClick={() => setTab("taloes")} className="press inline-flex items-center" style={{ gap: 6, background: "#0b6b4f", color: "#f6f5f0", fontSize: 12.5, fontWeight: 700, padding: "9px 16px", borderRadius: 12 }}>
+          <button onClick={() => setTab("taloes")} className="press inline-flex items-center" style={{ gap: 6, background: "var(--pj-brand)", color: "#f6f5f0", fontSize: 12.5, fontWeight: 700, padding: "9px 16px", borderRadius: 12 }}>
             <Plus size={13} /> {semDados ? "Guardar primeiro talão" : "Adicionar talão"}
           </button>
           {!semDados && (
-            <button onClick={partilhar} className="press inline-flex items-center" style={{ gap: 6, background: "#eeece4", color: "#14231c", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
+            <button onClick={partilhar} className="press inline-flex items-center" style={{ gap: 6, background: "var(--pj-subtle)", color: "var(--pj-text)", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
               <Share2 size={13} /> {feedbackPartilha || "Partilhar"}
             </button>
           )}
           {retrato && (
-            <button onClick={onAbrirRetrato} className="press inline-flex items-center" style={{ gap: 6, background: "#eeece4", color: "#0b6b4f", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
+            <button onClick={onAbrirRetrato} className="press inline-flex items-center" style={{ gap: 6, background: "var(--pj-subtle)", color: "var(--pj-brand-ink)", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
               🎁 Retrato de {retrato.mes.nome}
             </button>
           )}
@@ -945,19 +946,19 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         {/* Cartões de resumo */}
         <div className="px-4 mb-5 anim-up anim-up-1">
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Melhor mês</p>
-              <p className="font-display text-xl font-semibold mt-1" style={{ color: "#14231c" }}>
+            <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Melhor mês</p>
+              <p className="font-display text-xl font-semibold mt-1" style={{ color: "var(--pj-text)" }}>
                 €{dados.melhorMes ? dados.melhorMes.v.toFixed(2) : "0.00"}
               </p>
-              <p className="text-[11px] capitalize mt-0.5" style={{ color: "#8a978e" }}>
+              <p className="text-[11px] capitalize mt-0.5" style={{ color: "var(--pj-text-faint)" }}>
                 {dados.melhorMes ? dados.melhorMes.labelLong : "—"}
               </p>
             </div>
-            <div className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Média mensal</p>
-              <p className="font-display text-xl font-semibold mt-1" style={{ color: "#14231c" }}>€{dados.mediaMensal.toFixed(2)}</p>
-              <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>nos meses com dados</p>
+            <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Média mensal</p>
+              <p className="font-display text-xl font-semibold mt-1" style={{ color: "var(--pj-text)" }}>€{dados.mediaMensal.toFixed(2)}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>nos meses com dados</p>
             </div>
           </div>
         </div>
@@ -969,7 +970,7 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
             <button
               onClick={() => { setMostrar12(v => !v); setBarSelecionada(null); }}
               className="pj-tap text-[11px] font-semibold"
-              style={{ color: "#0b6b4f" }}
+              style={{ color: "var(--pj-brand-ink)" }}
             >
               {mostrar12 ? "Ver 6 meses" : "Ver 12 meses"}
             </button>
@@ -977,13 +978,13 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
 
           {/* Tooltip da barra selecionada */}
           {barSelecionada && (
-            <div className="mb-3 mx-auto text-center rounded-2xl py-2.5 px-4" style={{ background: "#eef3ef" }}>
-              <p className="text-[11px] font-semibold capitalize" style={{ color: "#8a978e" }}>{barSelecionada.labelLong}</p>
-              <p className="font-display text-lg font-semibold" style={{ color: "#0b6b4f" }}>€{barSelecionada.v.toFixed(2)}</p>
+            <div className="mb-3 mx-auto text-center rounded-2xl py-2.5 px-4" style={{ background: "var(--pj-brand-wash)" }}>
+              <p className="text-[11px] font-semibold capitalize" style={{ color: "var(--pj-text-faint)" }}>{barSelecionada.labelLong}</p>
+              <p className="font-display text-lg font-semibold" style={{ color: "var(--pj-brand-ink)" }}>€{barSelecionada.v.toFixed(2)}</p>
             </div>
           )}
 
-          <div className="rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+          <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
             <div className="flex items-end gap-1.5 h-32">
               {mesesVisiveis.map(m => {
                 const pct = dados.maxBar > 0 ? (m.v / dados.maxBar) * 100 : 0;
@@ -995,7 +996,7 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
                     onClick={() => setBarSelecionada(isSelecionada ? null : m)}
                     className="flex-1 flex flex-col items-center gap-1 group"
                   >
-                    <p className="text-[8px] font-semibold h-3" style={{ color: "#0b6b4f" }}>
+                    <p className="text-[8px] font-semibold h-3" style={{ color: "var(--pj-brand-ink)" }}>
                       {m.v > 0 ? `€${m.v.toFixed(0)}` : ""}
                     </p>
                     <div
@@ -1010,21 +1011,21 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
                         minHeight: 4,
                       }}
                     />
-                    <p className="text-[9px] font-semibold" style={{ color: isAtual ? "#0b6b4f" : "#8a978e" }}>
+                    <p className="text-[9px] font-semibold" style={{ color: isAtual ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
                       {m.label}
                     </p>
                   </button>
                 );
               })}
             </div>
-            <div className="flex items-center gap-3 mt-3 pt-3" style={{ borderTop: "1px solid #e4e2d8" }}>
+            <div className="flex items-center gap-3 mt-3 pt-3" style={{ borderTop: "1px solid var(--pj-border)" }}>
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#3f9070" }} />
-                <span className="text-[10px] font-medium" style={{ color: "#8a978e" }}>Mês atual</span>
+                <span className="text-[10px] font-medium" style={{ color: "var(--pj-text-faint)" }}>Mês atual</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#cfe3d8" }} />
-                <span className="text-[10px] font-medium" style={{ color: "#8a978e" }}>Meses anteriores</span>
+                <span className="text-[10px] font-medium" style={{ color: "var(--pj-text-faint)" }}>Meses anteriores</span>
               </div>
             </div>
           </div>
@@ -1033,31 +1034,31 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         {/* Lista mensal */}
         <div className="px-4 mb-5 anim-up anim-up-2">
           <SectionLabel icon={TrendingUp}>Detalhe por mês</SectionLabel>
-          <div className="rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
             {[...mesesVisiveis].reverse().filter(m => m.v > 0).map((m, i) => {
               const isAtual = m.k === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
               const pct = dados.totalGeral > 0 ? (m.v / dados.totalGeral) * 100 : 0;
               return (
-                <div key={m.k} className="flex items-center gap-3 px-4 py-3" style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}>
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-                    <span className="text-[10px] font-semibold capitalize" style={{ color: "#0b6b4f" }}>{m.label}</span>
+                <div key={m.k} className="flex items-center gap-3 px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+                    <span className="text-[10px] font-semibold capitalize" style={{ color: "var(--pj-brand-ink)" }}>{m.label}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-semibold capitalize" style={{ color: "#14231c" }}>
-                        {m.labelLong} {isAtual && <span className="text-[10px] font-semibold ml-1" style={{ color: "#0b6b4f" }}>• atual</span>}
+                      <p className="text-sm font-semibold capitalize" style={{ color: "var(--pj-text)" }}>
+                        {m.labelLong} {isAtual && <span className="text-[10px] font-semibold ml-1" style={{ color: "var(--pj-brand-ink)" }}>• atual</span>}
                       </p>
-                      <p className="font-display text-sm font-semibold" style={{ color: "#0b6b4f" }}>€{m.v.toFixed(2)}</p>
+                      <p className="font-display text-sm font-semibold" style={{ color: "var(--pj-brand-ink)" }}>€{m.v.toFixed(2)}</p>
                     </div>
-                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "#eeece4" }}>
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "#0b6b4f" }} />
+                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "var(--pj-subtle)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--pj-brand)" }} />
                     </div>
                   </div>
                 </div>
               );
             })}
             {mesesVisiveis.every(m => m.v === 0) && (
-              <div className="px-4 py-8 text-center text-sm font-medium" style={{ color: "#8a978e" }}>
+              <div className="px-4 py-8 text-center text-sm font-medium" style={{ color: "var(--pj-text-faint)" }}>
                 Sem dados neste período.
               </div>
             )}
@@ -1082,17 +1083,17 @@ function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         <button
           onClick={() => setTab("lista")}
           className="pj-tap press w-full rounded-2xl p-4 flex items-center gap-3.5 text-left"
-          style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+          style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
         >
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-            <ListChecks size={24} style={{ color: "#0b6b4f" }} />
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+            <ListChecks size={24} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
           <div className="flex-1">
-            <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "#8a978e" }}>Novo</p>
-            <p className="font-display text-[15px] font-semibold leading-snug" style={{ color: "#14231c" }}>Lista de compras</p>
-            <p className="text-[11px] mt-0.5" style={{ color: "#5c6b62" }}>Organiza o que precisas antes de ir às compras</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "var(--pj-text-faint)" }}>Novo</p>
+            <p className="font-display text-[15px] font-semibold leading-snug" style={{ color: "var(--pj-text)" }}>Lista de compras</p>
+            <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Organiza o que precisas antes de ir às compras</p>
           </div>
-          <ChevronRight size={18} style={{ color: "#8a978e" }} className="flex-shrink-0" />
+          <ChevronRight size={18} style={{ color: "var(--pj-text-faint)" }} className="flex-shrink-0" />
         </button>
       </div>
 
@@ -1185,7 +1186,7 @@ function SecaoMercados({ setTab }) {
   const [sub, setSub] = useState("folhetos");
   return (
     <div className="pb-28 pt-4">
-      <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "#eeece4" }}>
+      <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
         {[
           { id: "folhetos", icon: Tag, label: "Folhetos" },
           { id: "ementas", icon: ChefHat, label: "Ementas" },
@@ -1194,7 +1195,7 @@ function SecaoMercados({ setTab }) {
             key={o.id}
             onClick={() => setSub(o.id)}
             className={`pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${sub === o.id ? "shadow-sm" : ""}`}
-            style={sub === o.id ? { background: "#fbfaf6", color: "#14231c" } : { color: "#8a978e" }}
+            style={sub === o.id ? { background: "var(--pj-card)", color: "var(--pj-text)" } : { color: "var(--pj-text-faint)" }}
           >
             <o.icon size={13} /> {o.label}
           </button>

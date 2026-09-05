@@ -118,50 +118,50 @@ export default function SecaoIRS() {
     fontWeight: 600,
     letterSpacing: "0.09em",
     textTransform: "uppercase",
-    color: "#8a978e",
+    color: "var(--pj-text-faint)",
   };
   const inputCls =
-    "w-full px-3 py-2.5 rounded-xl border border-[#e4e2d8] bg-white text-sm outline-none pj-tap focus:border-[#0b6b4f] focus:ring-2 focus:ring-[#0b6b4f]/10";
-  const inputStyle = { color: "#14231c", accentColor: "#0b6b4f" };
+    "w-full px-3 py-2.5 rounded-xl border border-[color:var(--pj-border)] bg-white text-sm outline-none pj-tap focus:border-[color:var(--pj-brand)] focus:ring-2 focus:ring-[#0b6b4f]/10";
+  const inputStyle = { color: "var(--pj-text)", accentColor: "var(--pj-brand-ink)" };
 
   return (
-    <div className="pb-28" style={{ background: "#f6f5f0" }}>
+    <div className="pb-28" style={{ background: "var(--pj-surface)" }}>
       {/* Header (flat) */}
       <div className="anim-up mx-4 mt-6 mb-5">
         <div className="flex items-center gap-3">
           <div
             className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "#eeece4" }}
+            style={{ background: "var(--pj-subtle)" }}
           >
-            <Calculator size={22} style={{ color: "#0b6b4f" }} />
+            <Calculator size={22} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
           <div>
             <p style={LABEL}>Estimativa fiscal</p>
             <p
               className="font-display"
-              style={{ fontSize: 24, fontWeight: 600, color: "#14231c", lineHeight: 1.15 }}
+              style={{ fontSize: 24, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.15 }}
             >
               Simulador de IRS
             </p>
-            <p style={{ fontSize: 12, color: "#5c6b62", marginTop: 2 }}>
+            <p style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>
               Estima o teu IRS antes da hora
             </p>
           </div>
         </div>
       </div>
 
-      <div className="mx-4 mb-5" style={{ borderTop: "1px solid #e4e2d8" }} />
+      <div className="mx-4 mb-5" style={{ borderTop: "1px solid var(--pj-border)" }} />
 
       {/* Formulário */}
       <div
         className="anim-up mx-4 mb-4 rounded-2xl p-5"
-        style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+        style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
       >
         <p
           className="font-display mb-4 flex items-center gap-2"
-          style={{ fontSize: 16, fontWeight: 600, color: "#14231c" }}
+          style={{ fontSize: 16, fontWeight: 600, color: "var(--pj-text)" }}
         >
-          <Wallet size={16} style={{ color: "#0b6b4f" }} /> Os teus dados
+          <Wallet size={16} style={{ color: "var(--pj-brand-ink)" }} /> Os teus dados
         </p>
 
         <label className="block mb-3">
@@ -243,7 +243,7 @@ export default function SecaoIRS() {
           </label>
         </div>
 
-        <div className="mt-5 mb-4" style={{ borderTop: "1px solid #eeece4" }} />
+        <div className="mt-5 mb-4" style={{ borderTop: "1px solid var(--pj-subtle)" }} />
         <p style={{ ...LABEL, marginBottom: 12 }}>Despesas dedutíveis</p>
         <div className="flex flex-col gap-3">
           {[
@@ -256,14 +256,14 @@ export default function SecaoIRS() {
             <label key={d.campo} className="flex items-center gap-3">
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "#eeece4" }}
+                style={{ background: "var(--pj-subtle)" }}
               >
-                <d.icon size={16} style={{ color: "#0b6b4f" }} />
+                <d.icon size={16} style={{ color: "var(--pj-brand-ink)" }} />
               </div>
               <div className="flex-1">
                 <span
                   className="block mb-1 leading-tight"
-                  style={{ fontSize: 12, color: "#5c6b62" }}
+                  style={{ fontSize: 12, color: "var(--pj-text-muted)" }}
                 >
                   {d.label}
                 </span>
@@ -273,7 +273,7 @@ export default function SecaoIRS() {
                   value={form[d.campo]}
                   onChange={set(d.campo)}
                   placeholder="0"
-                  className="w-full px-3 py-2 rounded-xl border border-[#e4e2d8] bg-white text-sm outline-none pj-tap focus:border-[#0b6b4f] focus:ring-2 focus:ring-[#0b6b4f]/10"
+                  className="w-full px-3 py-2 rounded-xl border border-[color:var(--pj-border)] bg-white text-sm outline-none pj-tap focus:border-[color:var(--pj-brand)] focus:ring-2 focus:ring-[#0b6b4f]/10"
                   style={inputStyle}
                 />
               </div>
@@ -288,16 +288,16 @@ export default function SecaoIRS() {
           {/* IRS estimado */}
           <div
             className="anim-up mx-4 mb-4 rounded-2xl p-5"
-            style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+            style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
           >
             <p style={LABEL}>IRS anual estimado</p>
             <p
               className="font-display"
-              style={{ fontSize: 40, fontWeight: 600, color: "#14231c", marginTop: 4, lineHeight: 1.05 }}
+              style={{ fontSize: 40, fontWeight: 600, color: "var(--pj-text)", marginTop: 4, lineHeight: 1.05 }}
             >
               {fmt(calc.irsFinal)}
             </p>
-            <p style={{ fontSize: 12, color: "#5c6b62", marginTop: 6 }}>
+            <p style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 6 }}>
               Taxa efetiva de {calc.taxaEfetiva.toFixed(1)}%
             </p>
           </div>
@@ -306,21 +306,21 @@ export default function SecaoIRS() {
           {calc.temRetido && (
             <div
               className="anim-up mx-4 mb-4 rounded-2xl p-5"
-              style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+              style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
             >
               <div className="flex items-center gap-3">
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: "#eeece4" }}
+                  style={{ background: "var(--pj-subtle)" }}
                 >
                   {reembolso ? (
-                    <TrendingUp size={22} style={{ color: "#0b6b4f" }} />
+                    <TrendingUp size={22} style={{ color: "var(--pj-brand-ink)" }} />
                   ) : (
                     <TrendingDown size={22} style={{ color: "#b4531f" }} />
                   )}
                 </div>
                 <div>
-                  <p style={{ ...LABEL, color: reembolso ? "#0b6b4f" : "#b4531f" }}>
+                  <p style={{ ...LABEL, color: reembolso ? "var(--pj-brand-ink)" : "#b4531f" }}>
                     {reembolso ? "Reembolso estimado" : "Valor a pagar"}
                   </p>
                   <p
@@ -328,7 +328,7 @@ export default function SecaoIRS() {
                     style={{
                       fontSize: 28,
                       fontWeight: 600,
-                      color: reembolso ? "#0b6b4f" : "#b4531f",
+                      color: reembolso ? "var(--pj-brand-ink)" : "#b4531f",
                       marginTop: 2,
                       lineHeight: 1.05,
                     }}
@@ -343,13 +343,13 @@ export default function SecaoIRS() {
           {/* Desdobramento */}
           <div
             className="anim-up mx-4 mb-4 rounded-2xl p-5"
-            style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+            style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
           >
             <p
               className="font-display mb-4 flex items-center gap-2"
-              style={{ fontSize: 16, fontWeight: 600, color: "#14231c" }}
+              style={{ fontSize: 16, fontWeight: 600, color: "var(--pj-text)" }}
             >
-              <Users size={16} style={{ color: "#0b6b4f" }} /> Desdobramento
+              <Users size={16} style={{ color: "var(--pj-brand-ink)" }} /> Desdobramento
             </p>
             <div className="flex flex-col">
               {[
@@ -363,7 +363,7 @@ export default function SecaoIRS() {
                   key={r.label}
                   className="flex items-center justify-between py-2.5"
                   style={
-                    i < arr.length - 1 ? { borderBottom: "1px solid #eeece4" } : undefined
+                    i < arr.length - 1 ? { borderBottom: "1px solid var(--pj-subtle)" } : undefined
                   }
                 >
                   <span
@@ -371,7 +371,7 @@ export default function SecaoIRS() {
                     style={{
                       fontSize: 14,
                       fontWeight: r.forte ? 600 : 500,
-                      color: r.forte ? "#14231c" : "#5c6b62",
+                      color: r.forte ? "var(--pj-text)" : "var(--pj-text-muted)",
                     }}
                   >
                     {r.label}
@@ -381,7 +381,7 @@ export default function SecaoIRS() {
                     style={{
                       fontSize: 14,
                       fontWeight: 600,
-                      color: r.forte ? "#0b6b4f" : "#14231c",
+                      color: r.forte ? "var(--pj-brand-ink)" : "var(--pj-text)",
                     }}
                   >
                     {r.valor}
@@ -396,10 +396,10 @@ export default function SecaoIRS() {
       {/* Disclaimer */}
       <div
         className="anim-up mx-4 mb-4 rounded-2xl p-4 flex gap-2.5"
-        style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}
+        style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
       >
-        <Info size={16} style={{ color: "#8a978e" }} className="flex-shrink-0 mt-0.5" />
-        <p style={{ fontSize: 12, color: "#5c6b62", lineHeight: 1.6 }}>
+        <Info size={16} style={{ color: "var(--pj-text-faint)" }} className="flex-shrink-0 mt-0.5" />
+        <p style={{ fontSize: 12, color: "var(--pj-text-muted)", lineHeight: 1.6 }}>
           ⚠️ Esta é uma estimativa simplificada para te orientares. O valor real
           depende de outros fatores. Confirma sempre no Portal das Finanças.
         </p>

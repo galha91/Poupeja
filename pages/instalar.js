@@ -94,7 +94,7 @@ export default function Instalar() {
           <div className="anim-up flex flex-col items-center text-center">
             <div
               className="w-20 h-20 rounded-3xl flex items-center justify-center overflow-hidden"
-              style={{ background: "#0b6b4f", boxShadow: "0 12px 30px -8px rgba(11,107,79,0.45)" }}
+              style={{ background: "var(--pj-brand)", boxShadow: "0 12px 30px -8px rgba(11,107,79,0.45)" }}
             >
               {/* icon.svg existe em /public */}
               <img src="/icon.svg" alt="PoupeJá" className="w-12 h-12" />
@@ -109,8 +109,8 @@ export default function Instalar() {
           <div className="anim-up anim-up-1 w-full mt-8 grid gap-2.5">
             {BENEFICIOS.map(({ Icon, texto }, i) => (
               <div key={i} className="card flex items-center gap-3.5 px-4 py-3.5">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-                  <Icon size={17} style={{ color: "#0b6b4f" }} />
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+                  <Icon size={17} style={{ color: "var(--pj-brand-ink)" }} />
                 </div>
                 <p className="text-[13.5px] font-semibold leading-snug" style={{ color: "var(--text-primary)" }}>{texto}</p>
               </div>
@@ -141,7 +141,7 @@ export default function Instalar() {
           <a
             href="/"
             className="mt-3 text-[13px] font-bold flex items-center gap-1"
-            style={{ color: "#0b6b4f" }}
+            style={{ color: "var(--pj-brand-ink)" }}
           >
             Ir para o site <ArrowRight size={14} />
           </a>
@@ -160,7 +160,7 @@ function AcaoInstalar({ modo, aInstalar, temPrompt, onInstalar }) {
           onClick={onInstalar}
           disabled={aInstalar}
           className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-70"
-          style={{ background: "#0b6b4f" }}
+          style={{ background: "var(--pj-brand)" }}
         >
           {aInstalar ? (
             <>
@@ -192,7 +192,7 @@ function Passo({ Icon, numero, titulo, desc }) {
     <div className="flex gap-3.5 items-start">
       <div className="relative flex-shrink-0">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: PASSO_ICON_BG }}>
-          <Icon size={18} style={{ color: "#0b6b4f" }} />
+          <Icon size={18} style={{ color: "var(--pj-brand-ink)" }} />
         </div>
         <span
           className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full text-white text-[10px] font-semibold flex items-center justify-center"
@@ -218,14 +218,14 @@ function GuiaIos() {
   ];
   return (
     <div className="card overflow-hidden">
-      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "#0b6b4f" }}>
+      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "var(--pj-brand)" }}>
         <Smartphone size={16} className="text-white" />
         <p className="text-[13px] font-semibold text-white">Instalar no iPhone (Safari)</p>
       </div>
       <div className="p-4 flex flex-col gap-3.5">
         {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
       </div>
-      <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "#eeece4" }}>
+      <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "var(--pj-subtle)" }}>
         <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "#a8432f" }}>
           <strong>Tem de ser no Safari.</strong> Se abriste este link no Chrome, Instagram ou noutra app, toca em ⋯ → “Abrir no Safari” primeiro.
         </p>
@@ -243,7 +243,7 @@ function GuiaAndroid({ comBotaoAcima }) {
   ];
   return (
     <div className="card overflow-hidden">
-      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "#0b6b4f" }}>
+      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "var(--pj-brand)" }}>
         <Smartphone size={16} className="text-white" />
         <p className="text-[13px] font-semibold text-white">
           {comBotaoAcima ? "Ou instala pelo menu do Chrome" : "Instalar no Android (Chrome)"}
@@ -260,8 +260,8 @@ function GuiaAndroid({ comBotaoAcima }) {
 function GuiaDesktop() {
   return (
     <div className="card p-5 text-center">
-      <div className="w-11 h-11 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "#eeece4" }}>
-        <Monitor size={20} style={{ color: "#0b6b4f" }} />
+      <div className="w-11 h-11 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "var(--pj-subtle)" }}>
+        <Monitor size={20} style={{ color: "var(--pj-brand-ink)" }} />
       </div>
       <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Instalar a partir do browser</p>
       <p className="text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -275,15 +275,15 @@ function GuiaDesktop() {
 function EstadoInstalado() {
   return (
     <div className="card p-6 text-center">
-      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "#eeece4" }}>
-        <CheckCircle2 size={28} style={{ color: "#0b6b4f" }} />
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "var(--pj-subtle)" }}>
+        <CheckCircle2 size={28} style={{ color: "var(--pj-brand-ink)" }} />
       </div>
       <p className="font-display text-base font-semibold" style={{ color: "var(--text-primary)" }}>Já tens o PoupeJá instalado</p>
       <p className="text-[13px] mt-1.5" style={{ color: "var(--text-muted)" }}>Está no teu ecrã inicial, pronto a usar.</p>
       <a
         href="/"
         className="pj-tap inline-flex items-center justify-center gap-2 mt-4 w-full py-3.5 rounded-2xl text-white font-semibold text-[15px]"
-        style={{ background: "#0b6b4f" }}
+        style={{ background: "var(--pj-brand)" }}
       >
         Abrir o PoupeJá <ArrowRight size={17} />
       </a>

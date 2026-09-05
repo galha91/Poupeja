@@ -47,22 +47,22 @@ export default function BannerInstalar({ inline = false }) {
   const card = (
     <div
       className="rounded-3xl p-4 flex items-center gap-3"
-      style={{ background: "#fbfaf6", border: "1px solid #e4e2d8", boxShadow: "0 6px 20px -12px rgba(20,35,28,0.18)" }}
+      style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", boxShadow: "0 6px 20px -12px rgba(20,35,28,0.18)" }}
     >
       <div
         className="w-11 h-11 rounded-2xl flex-shrink-0 flex items-center justify-center"
-        style={{ background: "#0b6b4f" }}
+        style={{ background: "var(--pj-brand)" }}
       >
         <Smartphone size={20} className="text-white" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-[14px] leading-tight" style={{ color: "#14231c" }}>Instala o PoupeJá</p>
-        <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>Disponível para iOS e Android · Grátis</p>
+        <p className="font-semibold text-[14px] leading-tight" style={{ color: "var(--pj-text)" }}>Instala o PoupeJá</p>
+        <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>Disponível para iOS e Android · Grátis</p>
       </div>
       <button
         onClick={instalar}
         className="press pj-tap flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-white font-semibold text-[13px]"
-        style={{ background: "#0b6b4f" }}
+        style={{ background: "var(--pj-brand)" }}
       >
         <Download size={14} /> Instalar
       </button>
@@ -85,20 +85,20 @@ export default function BannerInstalar({ inline = false }) {
         >
           <div
             className="w-full max-w-md rounded-t-3xl p-6 pb-10"
-            style={{ background: "#fbfaf6" }}
+            style={{ background: "var(--pj-card)" }}
             onClick={e => e.stopPropagation()}
           >
-            <div className="w-10 h-1 rounded-full mx-auto mb-6" style={{ background: "#e4e2d8" }} />
+            <div className="w-10 h-1 rounded-full mx-auto mb-6" style={{ background: "var(--pj-border)" }} />
             <div className="flex items-center gap-3 mb-5">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                style={{ background: "#0b6b4f" }}
+                style={{ background: "var(--pj-brand)" }}
               >
                 <Smartphone size={22} className="text-white" />
               </div>
               <div>
-                <p className="font-semibold text-base" style={{ color: "#14231c" }}>Instalar no iPhone / iPad</p>
-                <p className="text-[12px]" style={{ color: "#8a978e" }}>3 passos simples</p>
+                <p className="font-semibold text-base" style={{ color: "var(--pj-text)" }}>Instalar no iPhone / iPad</p>
+                <p className="text-[12px]" style={{ color: "var(--pj-text-faint)" }}>3 passos simples</p>
               </div>
             </div>
 
@@ -111,13 +111,13 @@ export default function BannerInstalar({ inline = false }) {
                 <div key={p.n} className="flex items-start gap-3">
                   <div
                     className="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center font-semibold text-white text-sm mt-0.5"
-                    style={{ background: "#0b6b4f" }}
+                    style={{ background: "var(--pj-brand)" }}
                   >
                     {p.n}
                   </div>
                   <div>
-                    <p className="font-semibold text-[13px]" style={{ color: "#14231c" }}>{p.titulo}</p>
-                    <p className="text-[11px] mt-0.5" style={{ color: "#8a978e" }}>{p.sub}</p>
+                    <p className="font-semibold text-[13px]" style={{ color: "var(--pj-text)" }}>{p.titulo}</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>{p.sub}</p>
                   </div>
                 </div>
               ))}
@@ -126,7 +126,7 @@ export default function BannerInstalar({ inline = false }) {
             <button
               onClick={() => setInstrucoesIOS(false)}
               className="press pj-tap w-full py-3.5 rounded-2xl text-white font-semibold text-sm"
-              style={{ background: "#0b6b4f" }}
+              style={{ background: "var(--pj-brand)" }}
             >
               Percebi, obrigado!
             </button>

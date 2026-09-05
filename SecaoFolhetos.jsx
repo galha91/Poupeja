@@ -24,11 +24,11 @@ function CardSkeleton() {
   return (
     <div
       className="p-4 flex flex-col items-center gap-3 animate-pulse"
-      style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8" }}
+      style={{ background: "var(--pj-card)", borderRadius: 16, border: "1px solid var(--pj-border)" }}
     >
-      <div style={{ width: 56, height: 56, borderRadius: 14, background: "#eeece4" }} />
-      <div style={{ height: 10, width: 80, borderRadius: 999, background: "#eeece4" }} />
-      <div style={{ height: 8, width: 56, borderRadius: 999, background: "#f0efe8" }} />
+      <div style={{ width: 56, height: 56, borderRadius: 14, background: "var(--pj-subtle)" }} />
+      <div style={{ height: 10, width: 80, borderRadius: 999, background: "var(--pj-subtle)" }} />
+      <div style={{ height: 8, width: 56, borderRadius: 999, background: "var(--pj-border)" }} />
     </div>
   );
 }
@@ -53,36 +53,36 @@ export default function SecaoFolhetos() {
   useEffect(() => { carregar(); }, []);
 
   return (
-    <div className="pb-6" style={{ background: "#f6f5f0" }}>
+    <div className="pb-6" style={{ background: "var(--pj-surface)" }}>
 
       {/* Cabeçalho editorial */}
-      <div className="px-4 pt-5 pb-4 anim-up" style={{ borderBottom: "1px solid #e4e2d8" }}>
+      <div className="px-4 pt-5 pb-4 anim-up" style={{ borderBottom: "1px solid var(--pj-border)" }}>
         <div className="flex items-start justify-between">
           <div className="min-w-0">
             <p
               className="flex items-center gap-1.5 mb-2"
-              style={{ textTransform: "uppercase", fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: "#8a978e" }}
+              style={{ textTransform: "uppercase", fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}
             >
-              <Tag size={11} style={{ color: "#0b6b4f" }} /> Supermercados
+              <Tag size={11} style={{ color: "var(--pj-brand-ink)" }} /> Supermercados
             </p>
             <h2
               className="font-display"
-              style={{ fontSize: 19, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em", lineHeight: 1.2 }}
+              style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em", lineHeight: 1.2 }}
             >
               Folhetos da semana
             </h2>
-            <p style={{ fontSize: 13, color: "#5c6b62", marginTop: 4 }}>
+            <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 4 }}>
               Toca num supermercado para ver as promoções
             </p>
             <div className="mt-3 flex items-center gap-1.5">
-              <Clock size={11} style={{ color: "#8a978e" }} />
-              <span style={{ fontSize: 11, color: "#8a978e" }}>Atualizado automaticamente</span>
+              <Clock size={11} style={{ color: "var(--pj-text-faint)" }} />
+              <span style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>Atualizado automaticamente</span>
             </div>
           </div>
           <button
             onClick={carregar}
             className="pj-tap flex items-center justify-center flex-shrink-0"
-            style={{ width: 44, height: 44, borderRadius: 14, background: "#eeece4", color: "#2c3b33" }}
+            style={{ width: 44, height: 44, borderRadius: 14, background: "var(--pj-subtle)", color: "var(--pj-text-strong)" }}
             aria-label="Atualizar folhetos"
           >
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
@@ -94,16 +94,16 @@ export default function SecaoFolhetos() {
       {erro && (
         <div
           className="mx-4 mt-4 p-5 text-center anim-up"
-          style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8" }}
+          style={{ background: "var(--pj-card)", borderRadius: 16, border: "1px solid var(--pj-border)" }}
         >
           <AlertCircle size={28} style={{ color: "#b0574f" }} className="mx-auto mb-2" />
-          <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "#14231c", marginBottom: 12 }}>
+          <p className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)", marginBottom: 12 }}>
             Não conseguimos carregar os folhetos
           </p>
           <button
             onClick={carregar}
             className="pj-tap"
-            style={{ fontSize: 13, fontWeight: 600, color: "white", background: "#0b6b4f", padding: "10px 20px", borderRadius: 12 }}
+            style={{ fontSize: 13, fontWeight: 600, color: "white", background: "var(--pj-brand)", padding: "10px 20px", borderRadius: 12 }}
           >
             Tentar de novo
           </button>
@@ -122,27 +122,27 @@ export default function SecaoFolhetos() {
                   key={f.id}
                   onClick={() => window.open(f.url, "_blank")}
                   className="pj-tap p-4 flex flex-col items-center gap-3 relative overflow-hidden anim-up text-left"
-                  style={{ background: "#fbfaf6", borderRadius: 16, border: "1px solid #e4e2d8", boxShadow: "0 1px 2px rgba(20,35,28,0.04)" }}
+                  style={{ background: "var(--pj-card)", borderRadius: 16, border: "1px solid var(--pj-border)", boxShadow: "0 1px 2px rgba(20,35,28,0.04)" }}
                 >
                   <LogoLoja loja={f.loja} size={56} radius={14} bg="#fbfaf6" />
 
                   <div className="text-center">
                     <p
                       className="font-display"
-                      style={{ fontSize: 14, fontWeight: 600, color: "#14231c", letterSpacing: "-0.01em" }}
+                      style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}
                     >
                       {f.loja}
                     </p>
                     <div
                       className="mt-1.5 inline-flex items-center gap-1"
-                      style={{ padding: "3px 10px", borderRadius: 999, background: "#eeece4" }}
+                      style={{ padding: "3px 10px", borderRadius: 999, background: "var(--pj-subtle)" }}
                     >
                       <span style={{ fontSize: 10, fontWeight: 600, color: cor }}>{tagline}</span>
                     </div>
                     {f.validade && (
                       <p
                         className="mt-1 flex items-center justify-center gap-1"
-                        style={{ fontSize: 10, color: "#8a978e" }}
+                        style={{ fontSize: 10, color: "var(--pj-text-faint)" }}
                       >
                         <Clock size={9} />
                         {f.validade}
@@ -156,7 +156,7 @@ export default function SecaoFolhetos() {
 
       {/* Nota rodapé */}
       {!loading && !erro && (
-        <p className="text-center mt-5 px-4" style={{ fontSize: 11, color: "#8a978e" }}>
+        <p className="text-center mt-5 px-4" style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>
           Os folhetos abrem no site oficial de cada supermercado, sempre atualizados.
         </p>
       )}

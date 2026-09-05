@@ -27,7 +27,7 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
       </Head>
 
       <div style={{ paddingTop: 24 }}>
-        <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           {atualizadoEm
             ? `Atualizado a ${new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long" })}`
             : "Folhetos"}
@@ -35,22 +35,22 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Folheto {folheto.loja} desta semana
         </h1>
-        <p style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6, marginTop: 12 }}>
+        <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           Link direto para o folheto oficial do {folheto.loja}. Na app PoupeJá recebes um{" "}
-          <strong style={{ color: "#14231c" }}>aviso todas as semanas</strong> quando sai o folheto novo.
+          <strong style={{ color: "var(--pj-text)" }}>aviso todas as semanas</strong> quando sai o folheto novo.
         </p>
 
         {/* Cartão do folheto */}
-        <div className="mt-8 rounded-2xl p-5" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+        <div className="mt-8 rounded-2xl p-5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           <div className="flex items-center gap-3.5">
-            <span className="flex items-center justify-center flex-shrink-0" style={{ width: 52, height: 52, borderRadius: 14, background: "#eeece4" }}>
+            <span className="flex items-center justify-center flex-shrink-0" style={{ width: 52, height: 52, borderRadius: 14, background: "var(--pj-subtle)" }}>
               {LOGO[folheto.loja]
                 ? <img src={`/logos/${LOGO[folheto.loja]}.svg`} alt={folheto.loja} width={30} height={30} style={{ objectFit: "contain" }} />
-                : <span style={{ fontSize: 17, fontWeight: 700, color: "#2c3b33" }}>{folheto.loja[0]}</span>}
+                : <span style={{ fontSize: 17, fontWeight: 700, color: "var(--pj-text-strong)" }}>{folheto.loja[0]}</span>}
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 15.5, fontWeight: 600, color: "#14231c" }}>{folheto.titulo}</p>
-              <p style={{ fontSize: 12.5, color: "#5c6b62", marginTop: 1 }}>
+              <p style={{ fontSize: 15.5, fontWeight: 600, color: "var(--pj-text)" }}>{folheto.titulo}</p>
+              <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>
                 {folheto.validade ? `Válido ${folheto.validade}` : "Consulta a validade no folheto oficial"}
               </p>
             </div>
@@ -60,7 +60,7 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block no-underline mt-4"
-            style={{ fontSize: 13.5, fontWeight: 600, color: "#0b6b4f" }}
+            style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}
           >
             Ver folheto oficial →
           </a>
@@ -70,7 +70,7 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36 }}>
           Porque vale a pena ver o folheto todas as semanas
         </h2>
-        <p style={{ fontSize: 14, color: "#5c6b62", lineHeight: 1.7, marginTop: 10 }}>
+        <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginTop: 10 }}>
           Os folhetos do {folheto.loja} mudam normalmente todas as semanas, e é neles que
           aparecem os descontos em produtos do dia a dia. Antes de ires às compras, vê o
           folheto da semana e aponta o que já compras habitualmente — assim aproveitas as
@@ -89,7 +89,7 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
               key={o.slug}
               href={`/folhetos/${o.slug}`}
               className="pj-tap no-underline"
-              style={{ fontSize: 13, fontWeight: 600, color: "#0b6b4f", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+              style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
             >
               Folheto {o.loja}
             </a>
@@ -97,7 +97,7 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
           <a
             href="/folhetos"
             className="pj-tap no-underline"
-            style={{ fontSize: 13, fontWeight: 600, color: "#5c6b62", background: "#fbfaf6", border: "1px solid #e4e2d8", borderRadius: 12, padding: "8px 14px" }}
+            style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}
           >
             Todos os folhetos
           </a>

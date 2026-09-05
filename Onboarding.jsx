@@ -33,10 +33,10 @@ export default function Onboarding({ onConcluido }) {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col" style={{ background: "#f6f5f0" }}>
+    <div className="min-h-dvh flex flex-col" style={{ background: "var(--pj-surface)" }}>
       {/* Saltar */}
       <div className="flex justify-end px-5 pt-12">
-        <button onClick={onConcluido} className="press pj-tap text-[13px] font-semibold px-3 py-1.5" style={{ color: "#8a978e" }}>
+        <button onClick={onConcluido} className="press pj-tap text-[13px] font-semibold px-3 py-1.5" style={{ color: "var(--pj-text-faint)" }}>
           Saltar
         </button>
       </div>
@@ -46,7 +46,7 @@ export default function Onboarding({ onConcluido }) {
         <div
           key={passo}
           className="w-28 h-28 rounded-[2rem] flex items-center justify-center mb-8 anim-up"
-          style={{ background: "#eeece4", border: "1px solid #e4e2d8" }}
+          style={{ background: "var(--pj-subtle)", border: "1px solid var(--pj-border)" }}
         >
           <span style={{ fontSize: 52 }}>{p.emoji}</span>
         </div>
@@ -54,11 +54,11 @@ export default function Onboarding({ onConcluido }) {
         <h1
           key={`t-${passo}`}
           className="font-display text-[26px] leading-tight whitespace-pre-line anim-up"
-          style={{ color: "#14231c", fontWeight: 600, letterSpacing: "-0.01em" }}
+          style={{ color: "var(--pj-text)", fontWeight: 600, letterSpacing: "-0.01em" }}
         >
           {p.titulo}
         </h1>
-        <p key={`s-${passo}`} className="text-[14px] leading-relaxed mt-4 max-w-xs anim-up" style={{ color: "#5c6b62" }}>
+        <p key={`s-${passo}`} className="text-[14px] leading-relaxed mt-4 max-w-xs anim-up" style={{ color: "var(--pj-text-muted)" }}>
           {p.sub}
         </p>
       </div>
@@ -73,7 +73,7 @@ export default function Onboarding({ onConcluido }) {
               style={{
                 width: i === passo ? 24 : 8,
                 height: 8,
-                background: i === passo ? "#0b6b4f" : "#e4e2d8",
+                background: i === passo ? "var(--pj-brand)" : "var(--pj-border)",
               }}
             />
           ))}
@@ -82,7 +82,7 @@ export default function Onboarding({ onConcluido }) {
         <button
           onClick={avancar}
           className="press pj-tap w-full max-w-xs py-4 rounded-2xl text-white font-semibold text-[15px] flex items-center justify-center gap-2"
-          style={{ background: "#0b6b4f" }}
+          style={{ background: "var(--pj-brand)" }}
         >
           {ultimo ? "Começar a poupar" : "Seguinte"} <ArrowRight size={18} />
         </button>

@@ -11,7 +11,7 @@ import {
 // Mapa carregado só no cliente (a Leaflet precisa do `window`).
 const MapaPostos = dynamic(() => import("./MapaPostos"), {
   ssr: false,
-  loading: () => <div className="mx-4 h-[380px] rounded-2xl bg-[#eeece4] animate-pulse" />,
+  loading: () => <div className="mx-4 h-[380px] rounded-2xl bg-[color:var(--pj-subtle)] animate-pulse" />,
 });
 
 /* ─── ícones dos conectores EV ─── */
@@ -185,13 +185,13 @@ const EST = {
 /* ─── micro components ─── */
 function TabBar({ options, value, onChange }) {
   return (
-    <div className="flex gap-1 p-1 bg-[#eeece4] rounded-2xl mx-4 mb-4">
+    <div className="flex gap-1 p-1 bg-[color:var(--pj-subtle)] rounded-2xl mx-4 mb-4">
       {options.map(o => (
         <button
           key={o.id}
           onClick={() => onChange(o.id)}
           className={`press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-            value === o.id ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"
+            value === o.id ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"
           }`}
         >
           <o.icon size={13} /> {o.label}
@@ -208,8 +208,8 @@ function FonteBadge({ fonte, atualizadoEm }) {
     : null;
   return (
     <div className="mx-4 mt-4 mb-2 flex items-center gap-1.5">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#0b6b4f]" />
-      <p className="text-[10px] text-[#8a978e]">{fonte}{hora ? ` · ${hora}` : ""}</p>
+      <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--pj-brand)]" />
+      <p className="text-[10px] text-[color:var(--pj-text-faint)]">{fonte}{hora ? ` · ${hora}` : ""}</p>
     </div>
   );
 }
@@ -252,12 +252,12 @@ function LogoPosto({ posto, size = 44 }) {
 function ErroCard({ onRetry, titulo = "Sem dados de momento", sub = "A fonte não respondeu agora mesmo. Tenta novamente daqui a pouco." }) {
   return (
     <div className="mx-4 card p-6 text-center">
-      <div className="w-11 h-11 rounded-2xl bg-[#eeece4] flex items-center justify-center mx-auto mb-3">
-        <RefreshCw size={18} className="text-[#8a978e]" />
+      <div className="w-11 h-11 rounded-2xl bg-[color:var(--pj-subtle)] flex items-center justify-center mx-auto mb-3">
+        <RefreshCw size={18} className="text-[color:var(--pj-text-faint)]" />
       </div>
-      <p className="font-display text-[17px] font-semibold text-[#14231c]">{titulo}</p>
-      <p className="text-[12px] text-[#5c6b62] mt-1 mb-4 leading-relaxed max-w-[240px] mx-auto">{sub}</p>
-      <button onClick={onRetry} className="press text-[13px] font-semibold text-white bg-[#0b6b4f] px-5 py-2.5 rounded-xl">
+      <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)]">{titulo}</p>
+      <p className="text-[12px] text-[color:var(--pj-text-muted)] mt-1 mb-4 leading-relaxed max-w-[240px] mx-auto">{sub}</p>
+      <button onClick={onRetry} className="press text-[13px] font-semibold text-white bg-[color:var(--pj-brand)] px-5 py-2.5 rounded-xl">
         Tentar de novo
       </button>
     </div>
@@ -332,14 +332,14 @@ function TendenciaPrecos({ historico }) {
   return (
     <div className="mx-4 mb-4 card p-4">
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-7 h-7 rounded-lg bg-[#eeece4] flex items-center justify-center">
+        <div className="w-7 h-7 rounded-lg bg-[color:var(--pj-subtle)] flex items-center justify-center">
           <Calendar size={14} className="text-[#b5701f]" />
         </div>
-        <p className="font-display text-[17px] font-semibold text-[#14231c]">Tendência de preços</p>
+        <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)]">Tendência de preços</p>
       </div>
 
       {!temTendencia ? (
-        <p className="text-[11px] text-[#8a978e] leading-relaxed">
+        <p className="text-[11px] text-[color:var(--pj-text-faint)] leading-relaxed">
           Estamos a recolher o histórico de preços. A tendência aparece a partir da próxima semana.
         </p>
       ) : (
@@ -351,21 +351,21 @@ function TendenciaPrecos({ historico }) {
             return (
               <div key={tipo} className="flex items-center justify-between gap-2 py-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[13px] font-semibold text-[#14231c] truncate">{tipo}</span>
+                  <span className="text-[13px] font-semibold text-[color:var(--pj-text)] truncate">{tipo}</span>
                   {mexeu && (
-                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[#eeece4] text-[#0b6b4f]" : "bg-[#f4e3d8] text-[#cf5a3c]"}`}>
+                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)]" : "bg-[#f4e3d8] text-[#cf5a3c]"}`}>
                       {desceu ? <TrendingDown size={11} /> : <TrendingUp size={11} />}{cent}
                     </span>
                   )}
                 </div>
                 {typeof preco === "number" && (
-                  <span className="font-display text-[15px] font-semibold text-[#14231c] flex-shrink-0">{preco.toFixed(3)} €</span>
+                  <span className="font-display text-[15px] font-semibold text-[color:var(--pj-text)] flex-shrink-0">{preco.toFixed(3)} €</span>
                 )}
               </div>
             );
           })}
           {linhas.some(l => l.tendencia?.dir === "desceu") && (
-            <p className="text-[11px] font-semibold text-[#0b6b4f] pt-2.5 flex items-center gap-1">
+            <p className="text-[11px] font-semibold text-[color:var(--pj-brand-ink)] pt-2.5 flex items-center gap-1">
               <TrendingDown size={12} /> Preços em queda — boa altura para abastecer
             </p>
           )}
@@ -505,46 +505,46 @@ function SubCombustiveis() {
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#eeece4] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[color:var(--pj-subtle)] flex items-center justify-center">
                 <Fuel size={15} className="text-[#b5701f]" />
               </div>
-              <span className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em]">
+              <span className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em]">
                 {locNome ? `Melhor preço · ${raio} km` : "Melhor preço · DGEG"}
               </span>
             </div>
-            <button onClick={() => carregar()} className="press w-8 h-8 bg-[#eeece4] rounded-xl flex items-center justify-center">
-              <RefreshCw size={14} className={`text-[#5c6b62] ${loading ? "animate-spin" : ""}`} />
+            <button onClick={() => carregar()} className="press w-8 h-8 bg-[color:var(--pj-subtle)] rounded-xl flex items-center justify-center">
+              <RefreshCw size={14} className={`text-[color:var(--pj-text-muted)] ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
 
           {loading ? (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-5 h-5 rounded-full border-2 border-[#e4e2d8] border-t-[#b5701f] animate-spin" />
-              <span className="text-xs font-semibold text-[#8a978e]">A obter preços…</span>
+              <div className="w-5 h-5 rounded-full border-2 border-[color:var(--pj-border)] border-t-[#b5701f] animate-spin" />
+              <span className="text-xs font-semibold text-[color:var(--pj-text-faint)]">A obter preços…</span>
             </div>
           ) : melhor ? (
             <>
-              <p className="text-[12px] font-semibold text-[#5c6b62]">{tipoAtivo}</p>
-              <p className="font-display text-[34px] leading-none font-semibold text-[#14231c] mt-1">
-                {melhor.preco.toFixed(3)} <span className="text-sm font-semibold text-[#8a978e]">€/litro</span>
+              <p className="text-[12px] font-semibold text-[color:var(--pj-text-muted)]">{tipoAtivo}</p>
+              <p className="font-display text-[34px] leading-none font-semibold text-[color:var(--pj-text)] mt-1">
+                {melhor.preco.toFixed(3)} <span className="text-sm font-semibold text-[color:var(--pj-text-faint)]">€/litro</span>
               </p>
-              <p className="text-[12px] text-[#5c6b62] mt-2 flex items-center gap-1">
-                <MapPin size={11} className="text-[#8a978e]" /> {melhor.nome || melhor.posto}
-                {melhor.distancia && <span className="text-[#8a978e]">· {melhor.distancia} km</span>}
+              <p className="text-[12px] text-[color:var(--pj-text-muted)] mt-2 flex items-center gap-1">
+                <MapPin size={11} className="text-[color:var(--pj-text-faint)]" /> {melhor.nome || melhor.posto}
+                {melhor.distancia && <span className="text-[color:var(--pj-text-faint)]">· {melhor.distancia} km</span>}
               </p>
             </>
           ) : erro ? null : (
-            <p className="text-[13px] text-[#8a978e] py-2">Sem preços para mostrar de momento.</p>
+            <p className="text-[13px] text-[color:var(--pj-text-faint)] py-2">Sem preços para mostrar de momento.</p>
           )}
         </div>
 
         {/* Tipo selector */}
         {!loading && tiposDisponiveis.length > 0 && (
-          <div className="px-4 pb-4 pt-1 flex gap-2 overflow-x-auto no-scrollbar border-t border-[#eeece4]">
+          <div className="px-4 pb-4 pt-1 flex gap-2 overflow-x-auto no-scrollbar border-t border-[color:var(--pj-subtle)]">
             {tiposDisponiveis.map(t => (
               <button key={t} onClick={() => setTipo(t)}
                 className={`press flex-shrink-0 mt-3 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                  tipoAtivo === t ? "bg-[#0b6b4f] text-white" : "bg-[#eeece4] text-[#5c6b62]"
+                  tipoAtivo === t ? "bg-[color:var(--pj-brand)] text-white" : "bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-muted)]"
                 }`}
               >{t}</button>
             ))}
@@ -559,10 +559,10 @@ function SubCombustiveis() {
       {loc && (
         <div className="mx-4 mb-4 card p-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8a978e] flex items-center gap-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)] flex items-center gap-1.5">
               <MapPin size={13} className="text-[#b5701f]" /> Raio de pesquisa
             </p>
-            <span className="font-display text-lg font-semibold text-[#14231c]">{raio} km</span>
+            <span className="font-display text-lg font-semibold text-[color:var(--pj-text)]">{raio} km</span>
           </div>
           <input
             type="range" min="5" max="30" step="5" value={raio}
@@ -571,12 +571,12 @@ function SubCombustiveis() {
             onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
             className="w-full mb-3" style={{ accentColor: "#b5701f" }}
           />
-          <div className="flex justify-between text-[9px] text-[#8a978e] mb-3">
+          <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
             <span>5 km</span><span>15 km</span><span>30 km</span>
           </div>
           <button
             onClick={obterLocalizacao}
-            className="press w-full py-2.5 rounded-xl bg-[#eeece4] text-[#14231c] text-xs font-semibold flex items-center justify-center gap-1.5"
+            className="press w-full py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-xs font-semibold flex items-center justify-center gap-1.5"
           >
             <MapPin size={13} className="text-[#b5701f]" /> Atualizar localização
           </button>
@@ -588,7 +588,7 @@ function SubCombustiveis() {
         <div className="mx-4 mb-4">
           <button
             onClick={obterLocalizacao}
-            className="press w-full py-3 rounded-2xl bg-[#0b6b4f] text-white text-sm font-semibold flex items-center justify-center gap-2"
+            className="press w-full py-3 rounded-2xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold flex items-center justify-center gap-2"
           >
             <MapPin size={15} /> Usar a minha localização
           </button>
@@ -598,14 +598,14 @@ function SubCombustiveis() {
       {/* Ordenar + favoritos */}
       {/* Seletor Lista / Mapa */}
       {!loading && !erro && doTipo.length > 0 && (
-        <div className="px-4 mb-3 flex gap-1 p-1 bg-[#eeece4] rounded-xl">
+        <div className="px-4 mb-3 flex gap-1 p-1 bg-[color:var(--pj-subtle)] rounded-xl">
           <button
             onClick={() => setVista("lista")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"}`}
           ><ListIcon size={14} /> Lista</button>
           <button
             onClick={() => setVista("mapa")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"}`}
           ><MapIcon size={14} /> Mapa</button>
         </div>
       )}
@@ -614,7 +614,7 @@ function SubCombustiveis() {
       {!erro && vista === "mapa" && doTipo.length > 0 && (
         <div className="px-4 mb-4">
           <MapaPostos postos={doTipo} userLoc={loc} min={min} onNavegar={(lat, lon) => navegarPara({ lat, lon })} />
-          <p className="text-[10px] text-[#8a978e] mt-1.5 text-center">
+          <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 text-center">
             Toca num pino para ver o preço e navegar · <span className="text-[#b5701f] font-semibold">laranja = mais barato</span>
           </p>
         </div>
@@ -623,20 +623,20 @@ function SubCombustiveis() {
       {/* Ordenar + favoritos (só na vista de lista) */}
       {!loading && !erro && vista === "lista" && doTipo.length > 0 && (
         <div className="px-4 mb-3 flex items-center gap-2">
-          <div className="flex gap-1 p-1 bg-[#eeece4] rounded-xl flex-1">
+          <div className="flex gap-1 p-1 bg-[color:var(--pj-subtle)] rounded-xl flex-1">
             <button
               onClick={() => setOrdenar("preco")}
-              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordenar === "preco" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
+              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordenar === "preco" ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"}`}
             >Mais barato</button>
             <button
               onClick={() => setOrdenar("distancia")}
               disabled={!loc}
-              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordenar === "distancia" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"} ${!loc ? "opacity-40" : ""}`}
+              className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordenar === "distancia" ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"} ${!loc ? "opacity-40" : ""}`}
             >Mais perto</button>
           </div>
           <button
             onClick={() => setSoFavoritos(v => !v)}
-            className={`press px-3 py-2 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-[#eeece4] text-[#b5701f] border-[#e4e2d8]" : "bg-[#fbfaf6] text-[#5c6b62] border-[#e4e2d8]"}`}
+            className={`press px-3 py-2 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-[color:var(--pj-subtle)] text-[#b5701f] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
           >
             <Star size={13} className={soFavoritos ? "fill-[#b5701f] text-[#b5701f]" : ""} />
             {favoritos.length || ""}
@@ -650,8 +650,8 @@ function SubCombustiveis() {
           {soFavoritos && filtrados.length === 0 && (
             <div className="card p-6 text-center">
               <Star size={28} className="text-[#c9c6ba] mx-auto mb-2" />
-              <p className="font-display text-[17px] font-semibold text-[#14231c]">Sem postos favoritos</p>
-              <p className="text-xs text-[#8a978e] mt-0.5">Toca na estrela de um posto para o guardar aqui</p>
+              <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)]">Sem postos favoritos</p>
+              <p className="text-xs text-[color:var(--pj-text-faint)] mt-0.5">Toca na estrela de um posto para o guardar aqui</p>
             </div>
           )}
           {filtrados.map((c, i) => {
@@ -669,25 +669,25 @@ function SubCombustiveis() {
                   <LogoPosto posto={marca} size={44} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="font-semibold text-[#14231c] text-sm truncate max-w-[150px]">{nome}</p>
+                      <p className="font-semibold text-[color:var(--pj-text)] text-sm truncate max-w-[150px]">{nome}</p>
                       {`${c.nome}__${c.distancia}` === keyMaisProximo && (
-                        <span className="text-[9px] font-semibold bg-[#eeece4] text-[#0b6b4f] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
+                        <span className="text-[9px] font-semibold bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
                       {isBest && (
                         <span className="text-[9px] font-semibold bg-[#f4e3d8] text-[#b5701f] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
-                    {c.municipio && <p className="text-[10px] text-[#8a978e] mb-1">{c.municipio}</p>}
-                    <div className="h-1.5 bg-[#eeece4] rounded-full overflow-hidden">
+                    {c.municipio && <p className="text-[10px] text-[color:var(--pj-text-faint)] mb-1">{c.municipio}</p>}
+                    <div className="h-1.5 bg-[color:var(--pj-subtle)] rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all"
                         style={{ width: `${pct}%`, backgroundColor: isBest ? "#b5701f" : cor + "99" }} />
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="font-display text-xl font-semibold text-[#14231c]">{c.preco.toFixed(3)}</p>
-                    <p className="text-[9px] text-[#8a978e]">€ / litro</p>
+                    <p className="font-display text-xl font-semibold text-[color:var(--pj-text)]">{c.preco.toFixed(3)}</p>
+                    <p className="text-[9px] text-[color:var(--pj-text-faint)]">€ / litro</p>
                     {c.distancia && (
-                      <p className="text-[10px] text-[#8a978e] flex items-center gap-0.5 justify-end mt-0.5">
+                      <p className="text-[10px] text-[color:var(--pj-text-faint)] flex items-center gap-0.5 justify-end mt-0.5">
                         <MapPin size={9} /> {c.distancia} km
                       </p>
                     )}
@@ -698,16 +698,16 @@ function SubCombustiveis() {
                 </div>
 
                 {/* Ações: navegar + favorito */}
-                <div className="flex gap-2 mt-3 pt-3 border-t border-[#eeece4]">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-[color:var(--pj-subtle)]">
                   <button
                     onClick={() => navegarPara(c)}
-                    className="press flex-1 py-2 rounded-xl text-[11px] font-semibold bg-[#0b6b4f] text-white flex items-center justify-center gap-1.5"
+                    className="press flex-1 py-2 rounded-xl text-[11px] font-semibold bg-[color:var(--pj-brand)] text-white flex items-center justify-center gap-1.5"
                   >
                     <Navigation size={12} /> Navegar
                   </button>
                   <button
                     onClick={() => toggleFavorito(c)}
-                    className={`press px-3 py-2 rounded-xl text-[11px] font-semibold border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-[#eeece4] text-[#b5701f] border-[#e4e2d8]" : "bg-[#fbfaf6] text-[#5c6b62] border-[#e4e2d8]"}`}
+                    className={`press px-3 py-2 rounded-xl text-[11px] font-semibold border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-[color:var(--pj-subtle)] text-[#b5701f] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
                   >
                     <Star size={13} className={fav ? "fill-[#b5701f] text-[#b5701f]" : ""} /> {fav ? "Guardado" : "Favorito"}
                   </button>
@@ -817,34 +817,34 @@ function SubPostosEV() {
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#eeece4] flex items-center justify-center">
-                <Zap size={15} className="text-[#0b6b4f]" />
+              <div className="w-8 h-8 rounded-xl bg-[color:var(--pj-subtle)] flex items-center justify-center">
+                <Zap size={15} className="text-[color:var(--pj-brand-ink)]" />
               </div>
-              <span className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em]">Postos de carregamento</span>
+              <span className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em]">Postos de carregamento</span>
             </div>
-            <button onClick={carregar} className="press w-8 h-8 bg-[#eeece4] rounded-xl flex items-center justify-center">
-              <RefreshCw size={14} className={`text-[#5c6b62] ${loading ? "animate-spin" : ""}`} />
+            <button onClick={carregar} className="press w-8 h-8 bg-[color:var(--pj-subtle)] rounded-xl flex items-center justify-center">
+              <RefreshCw size={14} className={`text-[color:var(--pj-text-muted)] ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
-          <p className="text-[12px] text-[#5c6b62] flex items-center gap-1 mb-3 ml-0.5">
-            <MapPin size={11} className="text-[#8a978e]" /> {locNome || "A obter localização…"}
+          <p className="text-[12px] text-[color:var(--pj-text-muted)] flex items-center gap-1 mb-3 ml-0.5">
+            <MapPin size={11} className="text-[color:var(--pj-text-faint)]" /> {locNome || "A obter localização…"}
           </p>
 
           {loading ? (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-5 h-5 rounded-full border-2 border-[#e4e2d8] border-t-[#0b6b4f] animate-spin" />
-              <span className="text-xs font-semibold text-[#8a978e]">A carregar postos…</span>
+              <div className="w-5 h-5 rounded-full border-2 border-[color:var(--pj-border)] border-t-[color:var(--pj-brand)] animate-spin" />
+              <span className="text-xs font-semibold text-[color:var(--pj-text-faint)]">A carregar postos…</span>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-0 divide-x divide-[#eeece4]">
               {[
-                { label: "Disponíveis", value: counts.disponível, color: "text-[#0b6b4f]" },
+                { label: "Disponíveis", value: counts.disponível, color: "text-[var(--pj-brand-ink)]" },
                 { label: "Ocupados",    value: counts.ocupado,    color: "text-[#cf5a3c]" },
                 { label: "Manutenção",  value: counts.manutenção, color: "text-[#b5701f]" },
               ].map(s => (
                 <div key={s.label} className="py-1 text-center">
                   <p className={`font-display text-2xl font-semibold ${s.color}`}>{s.value}</p>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.06em] text-[#8a978e] mt-0.5">{s.label}</p>
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.06em] text-[color:var(--pj-text-faint)] mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -856,13 +856,13 @@ function SubPostosEV() {
       {locDenied && (
         <div className="mx-4 mb-4 card p-5 text-center">
           <MapPin size={28} className="text-[#b5701f] mx-auto mb-2" />
-          <p className="font-display text-[17px] font-semibold text-[#14231c] mb-1">Localização não disponível</p>
-          <p className="text-xs text-[#5c6b62] mb-4">Ativa a localização no browser ou usa Lisboa como ponto de partida</p>
+          <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)] mb-1">Localização não disponível</p>
+          <p className="text-xs text-[color:var(--pj-text-muted)] mb-4">Ativa a localização no browser ou usa Lisboa como ponto de partida</p>
           <div className="flex gap-2">
-            <button onClick={obterLocalizacao} className="press flex-1 py-2.5 rounded-xl text-xs font-semibold bg-[#0b6b4f] text-white flex items-center justify-center gap-1.5">
+            <button onClick={obterLocalizacao} className="press flex-1 py-2.5 rounded-xl text-xs font-semibold bg-[color:var(--pj-brand)] text-white flex items-center justify-center gap-1.5">
               <MapPin size={13} /> Tentar de novo
             </button>
-            <button onClick={usarLisboa} className="press flex-1 py-2.5 rounded-xl text-xs font-semibold bg-[#eeece4] text-[#14231c] flex items-center justify-center gap-1.5">
+            <button onClick={usarLisboa} className="press flex-1 py-2.5 rounded-xl text-xs font-semibold bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] flex items-center justify-center gap-1.5">
               Usar Lisboa
             </button>
           </div>
@@ -872,10 +872,10 @@ function SubPostosEV() {
       {/* Controlos */}
       {loc && <div className="mx-4 mb-4 card p-4">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8a978e] flex items-center gap-1.5">
-            <MapPin size={13} className="text-[#0b6b4f]" /> Raio de pesquisa
+          <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)] flex items-center gap-1.5">
+            <MapPin size={13} className="text-[color:var(--pj-brand-ink)]" /> Raio de pesquisa
           </p>
-          <span className="font-display text-lg font-semibold text-[#14231c]">{raioInput} km</span>
+          <span className="font-display text-lg font-semibold text-[color:var(--pj-text)]">{raioInput} km</span>
         </div>
         <input
           type="range" min="1" max="50" value={raioInput}
@@ -884,14 +884,14 @@ function SubPostosEV() {
           onTouchEnd={e => setRaio(parseInt(e.target.value))}
           className="w-full mb-3" style={{ accentColor: "#0b6b4f" }}
         />
-        <div className="flex justify-between text-[9px] text-[#8a978e] mb-3">
+        <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
           <span>1 km</span><span>25 km</span><span>50 km</span>
         </div>
         <button
           onClick={obterLocalizacao}
-          className="press w-full py-2.5 rounded-xl bg-[#eeece4] text-[#14231c] text-xs font-semibold flex items-center justify-center gap-1.5"
+          className="press w-full py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-xs font-semibold flex items-center justify-center gap-1.5"
         >
-          <MapPin size={13} className="text-[#0b6b4f]" /> Usar a minha localização atual
+          <MapPin size={13} className="text-[color:var(--pj-brand-ink)]" /> Usar a minha localização atual
         </button>
       </div>}
 
@@ -902,29 +902,29 @@ function SubPostosEV() {
           className="press w-full px-4 py-3 flex items-center justify-between"
         >
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#eeece4] flex items-center justify-center">
-              <Car size={14} className="text-[#0b6b4f]" />
+            <div className="w-7 h-7 rounded-lg bg-[color:var(--pj-subtle)] flex items-center justify-center">
+              <Car size={14} className="text-[color:var(--pj-brand-ink)]" />
             </div>
             <div className="text-left">
-              <p className="text-[13px] font-semibold text-[#14231c]">
+              <p className="text-[13px] font-semibold text-[color:var(--pj-text)]">
                 {carro ? carro.marca + " " + carro.modelo : "Simular carregamento"}
               </p>
               {carro && (
-                <p className="text-[10px] text-[#8a978e]">{batDe}% → {batAte}% · {carro.bateria} kWh</p>
+                <p className="text-[10px] text-[color:var(--pj-text-faint)]">{batDe}% → {batAte}% · {carro.bateria} kWh</p>
               )}
             </div>
           </div>
-          <span className="text-[#8a978e] text-xs">{simOpen ? "▲" : "▼"}</span>
+          <span className="text-[color:var(--pj-text-faint)] text-xs">{simOpen ? "▲" : "▼"}</span>
         </button>
 
         {simOpen && (
-          <div className="px-4 pb-4 border-t border-[#eeece4]">
+          <div className="px-4 pb-4 border-t border-[color:var(--pj-subtle)]">
             {/* Seletor de carro */}
-            <p className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em] mt-3 mb-1.5">O meu carro</p>
+            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mt-3 mb-1.5">O meu carro</p>
             <select
               value={carroId}
               onChange={e => setCarroId(e.target.value)}
-              className="w-full text-xs font-medium text-[#14231c] bg-[#f6f5f0] border border-[#e4e2d8] rounded-xl px-3 py-2.5 mb-3"
+              className="w-full text-xs font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2.5 mb-3"
             >
               <option value="">— Selecionar modelo —</option>
               {Object.keys(MARCAS_EV).sort().map(marca => (
@@ -937,33 +937,33 @@ function SubPostosEV() {
             </select>
 
             {/* Percentagem de bateria */}
-            <p className="text-[11px] font-semibold text-[#8a978e] uppercase tracking-[0.09em] mb-2">Bateria</p>
+            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mb-2">Bateria</p>
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <p className="text-[9px] text-[#8a978e] mb-1">De</p>
+                <p className="text-[9px] text-[color:var(--pj-text-faint)] mb-1">De</p>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="range" min={0} max={99} step={5} value={batDe}
                     onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
                     className="flex-1" style={{ accentColor: "#0b6b4f" }}
                   />
-                  <span className="text-xs font-semibold text-[#0b6b4f] w-8 text-right">{batDe}%</span>
+                  <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-8 text-right">{batDe}%</span>
                 </div>
               </div>
               <div className="flex-1">
-                <p className="text-[9px] text-[#8a978e] mb-1">Até</p>
+                <p className="text-[9px] text-[color:var(--pj-text-faint)] mb-1">Até</p>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="range" min={0} max={100} step={5} value={batAte}
                     onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
                     className="flex-1" style={{ accentColor: "#0b6b4f" }}
                   />
-                  <span className="text-xs font-semibold text-[#0b6b4f] w-8 text-right">{batAte}%</span>
+                  <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-8 text-right">{batAte}%</span>
                 </div>
               </div>
             </div>
             {carro && (
-              <p className="text-[10px] text-[#8a978e] mt-2 text-center">
+              <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-2 text-center">
                 {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh a carregar
               </p>
             )}
@@ -973,15 +973,15 @@ function SubPostosEV() {
 
       {/* Alertas disparados */}
       {alertasDisparados.map(a => (
-        <div key={a.id} className="mx-4 mb-3 rounded-2xl p-4 border border-[#e4e2d8] bg-[#eeece4] flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#0b6b4f] flex items-center justify-center flex-shrink-0">
+        <div key={a.id} className="mx-4 mb-3 rounded-2xl p-4 border border-[color:var(--pj-border)] bg-[color:var(--pj-subtle)] flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[color:var(--pj-brand)] flex items-center justify-center flex-shrink-0">
             <Bell size={16} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-semibold text-[#0b6b4f] uppercase tracking-[0.09em]">Alerta ativo</p>
-            <p className="text-sm font-semibold text-[#14231c] truncate">{a.nome} está disponível!</p>
+            <p className="text-[11px] font-semibold text-[color:var(--pj-brand-ink)] uppercase tracking-[0.09em]">Alerta ativo</p>
+            <p className="text-sm font-semibold text-[color:var(--pj-text)] truncate">{a.nome} está disponível!</p>
           </div>
-          <button onClick={() => toggleAlerta(a)} className="press text-[10px] font-semibold text-[#0b6b4f] bg-[#fbfaf6] border border-[#e4e2d8] px-2.5 py-1.5 rounded-lg">
+          <button onClick={() => toggleAlerta(a)} className="press text-[10px] font-semibold text-[color:var(--pj-brand-ink)] bg-[color:var(--pj-card)] border border-[color:var(--pj-border)] px-2.5 py-1.5 rounded-lg">
             Dispensar
           </button>
         </div>
@@ -1000,8 +1000,8 @@ function SubPostosEV() {
             onClick={() => setFiltro(f.id)}
             className={`press flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               filtroEstado === f.id
-                ? "bg-[#0b6b4f] text-white"
-                : "bg-[#eeece4] text-[#5c6b62]"
+                ? "bg-[color:var(--pj-brand)] text-white"
+                : "bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-muted)]"
             }`}
           >
             {f.label}
@@ -1010,20 +1010,20 @@ function SubPostosEV() {
       </div>
 
       <div className="px-4 mb-3 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-[#0b6b4f] animate-pulse" />
-        <p className="text-[10px] text-[#8a978e]">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
+        <span className="w-2 h-2 rounded-full bg-[color:var(--pj-brand)] animate-pulse" />
+        <p className="text-[10px] text-[color:var(--pj-text-faint)]">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
       </div>
 
       {/* Seletor Lista / Mapa */}
       {!loading && !erro && postos.length > 0 && (
-        <div className="px-4 mb-3 flex gap-1 p-1 bg-[#eeece4] rounded-xl">
+        <div className="px-4 mb-3 flex gap-1 p-1 bg-[color:var(--pj-subtle)] rounded-xl">
           <button
             onClick={() => setVista("lista")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "lista" ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"}`}
           ><ListIcon size={14} /> Lista</button>
           <button
             onClick={() => setVista("mapa")}
-            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-[#0b6b4f] text-white" : "text-[#5c6b62]"}`}
+            className={`press flex-1 py-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all ${vista === "mapa" ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"}`}
           ><MapIcon size={14} /> Mapa</button>
         </div>
       )}
@@ -1325,34 +1325,34 @@ function SubAvisos() {
       {/* Cabeçalho — flat editorial */}
       <div className="mx-4 mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-            <Bell size={19} style={{ color: "#2c3b33" }} />
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+            <Bell size={19} style={{ color: "var(--pj-text-strong)" }} />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#8a978e" }}>Os teus avisos</p>
-            <p className="font-display text-lg font-semibold" style={{ color: "#14231c" }}>Avisa-me quando valer a pena</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Os teus avisos</p>
+            <p className="font-display text-lg font-semibold" style={{ color: "var(--pj-text)" }}>Avisa-me quando valer a pena</p>
           </div>
         </div>
-        <div className="h-px mt-4" style={{ background: "#e4e2d8" }} />
+        <div className="h-px mt-4" style={{ background: "var(--pj-border)" }} />
       </div>
 
       {/* Info */}
-      <div className="mx-4 mb-4 rounded-xl p-3 flex gap-2" style={{ background: "#eeece4" }}>
-        <Info size={14} className="flex-shrink-0 mt-0.5" style={{ color: "#8a978e" }} />
-        <p className="text-[11px] leading-relaxed" style={{ color: "#5c6b62" }}>
+      <div className="mx-4 mb-4 rounded-xl p-3 flex gap-2" style={{ background: "var(--pj-subtle)" }}>
+        <Info size={14} className="flex-shrink-0 mt-0.5" style={{ color: "var(--pj-text-faint)" }} />
+        <p className="text-[11px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
           Os avisos são verificados ao abrir a app. Notificações automáticas chegam com a versão instalável (em breve).
         </p>
       </div>
 
       {/* Disparados */}
       {disparados.map(d => (
-        <div key={d.id} className="mx-4 mb-3 rounded-2xl p-4 flex items-center gap-3" style={{ background: "#fbfaf6", border: "1px solid #0b6b4f33" }}>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#0b6b4f" }}>
+        <div key={d.id} className="mx-4 mb-3 rounded-2xl p-4 flex items-center gap-3" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-brand-soft)" }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-brand)" }}>
             <Check size={17} className="text-white" />
           </div>
           <div>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#0b6b4f" }}>Aviso ativado</p>
-            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>{d.texto}</p>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-brand-ink)" }}>Aviso ativado</p>
+            <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>{d.texto}</p>
           </div>
         </div>
       ))}
@@ -1363,7 +1363,7 @@ function SubAvisos() {
           <button
             onClick={() => setCriar(true)}
             className="pj-tap press w-full py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
-            style={{ background: "#0b6b4f" }}
+            style={{ background: "var(--pj-brand)" }}
           >
             <Plus size={17} /> Criar novo aviso
           </button>
@@ -1372,11 +1372,11 @@ function SubAvisos() {
 
       {/* Form criar */}
       {criar && (
-        <div className="mx-4 mb-4 rounded-2xl p-4" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+        <div className="mx-4 mb-4 rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-semibold" style={{ color: "#14231c" }}>Novo aviso</p>
-            <button onClick={() => setCriar(false)} className="pj-tap press w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#eeece4" }}>
-              <X size={15} style={{ color: "#5c6b62" }} />
+            <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Novo aviso</p>
+            <button onClick={() => setCriar(false)} className="pj-tap press w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+              <X size={15} style={{ color: "var(--pj-text-muted)" }} />
             </button>
           </div>
 
@@ -1389,7 +1389,7 @@ function SubAvisos() {
                 key={t.id}
                 onClick={() => setTipo(t.id)}
                 className="pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
-                style={tipo === t.id ? { background: "#0b6b4f", color: "#fff" } : { background: "#eeece4", color: "#5c6b62" }}
+                style={tipo === t.id ? { background: "var(--pj-brand)", color: "#fff" } : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
               >
                 <t.icon size={13} /> {t.label}
               </button>
@@ -1398,36 +1398,36 @@ function SubAvisos() {
 
           {tipo === "combustivel" ? (
             <>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-2" style={{ color: "#8a978e" }}>Tipo</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-2" style={{ color: "var(--pj-text-faint)" }}>Tipo</p>
               <div className="flex gap-2 mb-4 flex-wrap">
                 {["Gasolina 95", "Gasóleo", "GPL Auto"].map(t => (
                   <button
                     key={t}
                     onClick={() => setCombTipo(t)}
                     className="pj-tap press px-3 py-1.5 rounded-xl text-xs font-semibold"
-                    style={combTipo === t ? { background: "#0b6b4f", color: "#fff" } : { background: "#eeece4", color: "#5c6b62" }}
+                    style={combTipo === t ? { background: "var(--pj-brand)", color: "#fff" } : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
                   >
                     {t}
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "#8a978e" }}>Avisar abaixo de (€/litro)</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "var(--pj-text-faint)" }}>Avisar abaixo de (€/litro)</p>
               <input
                 type="number" step="0.001" value={precoAlvo}
                 onChange={e => setPrecoAlvo(e.target.value)}
                 className="font-display w-full px-4 py-3 rounded-xl text-lg font-medium focus:outline-none"
-                style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }}
+                style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }}
                 placeholder="1.650"
               />
             </>
           ) : (
             <>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "#8a978e" }}>Avisar com posto livre até (km)</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] mb-1.5" style={{ color: "var(--pj-text-faint)" }}>Avisar com posto livre até (km)</p>
               <input
                 type="number" step="1" value={distAlvo}
                 onChange={e => setDistAlvo(e.target.value)}
                 className="font-display w-full px-4 py-3 rounded-xl text-lg font-medium focus:outline-none"
-                style={{ background: "#f6f5f0", border: "1px solid #e4e2d8", color: "#14231c" }}
+                style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }}
                 placeholder="5"
               />
             </>
@@ -1436,7 +1436,7 @@ function SubAvisos() {
           <button
             onClick={adicionar}
             className="pj-tap press w-full mt-4 py-3 rounded-xl text-white font-semibold"
-            style={{ background: "#0b6b4f" }}
+            style={{ background: "var(--pj-brand)" }}
           >
             Guardar aviso
           </button>
@@ -1446,9 +1446,9 @@ function SubAvisos() {
       {/* Lista avisos */}
       <div className="mx-4 flex flex-col gap-2.5">
         {avisos.length === 0 && !criar ? (
-          <div className="rounded-2xl p-6 text-center" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+          <div className="rounded-2xl p-6 text-center" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
             <Bell size={28} className="mx-auto mb-2" style={{ color: "#cfccbf" }} />
-            <p className="text-sm font-semibold" style={{ color: "#8a978e" }}>Ainda não tens avisos</p>
+            <p className="text-sm font-semibold" style={{ color: "var(--pj-text-faint)" }}>Ainda não tens avisos</p>
             <p className="text-xs mt-0.5" style={{ color: "#b0b8b0" }}>Cria um para saberes quando o preço baixa</p>
           </div>
         ) : avisos.map(a => {
@@ -1458,25 +1458,25 @@ function SubAvisos() {
             <div
               key={a.id}
               className="rounded-2xl p-4 flex items-center gap-3"
-              style={{ background: "#fbfaf6", border: ativo ? "1px solid #0b6b4f33" : "1px solid #e4e2d8" }}
+              style={{ background: "var(--pj-card)", border: ativo ? "1px solid #0b6b4f33" : "1px solid #e4e2d8" }}
             >
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eeece4" }}>
-                <Icone size={19} style={{ color: "#0b6b4f" }} />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+                <Icone size={19} style={{ color: "var(--pj-brand-ink)" }} />
               </div>
               <div className="flex-1 min-w-0">
                 {a.tipo === "combustivel" ? (
                   <>
-                    <p className="font-semibold text-sm" style={{ color: "#14231c" }}>{a.combTipo}</p>
-                    <p className="text-xs" style={{ color: "#8a978e" }}>Avisar abaixo de {a.precoAlvo?.toFixed(3)} €/litro</p>
+                    <p className="font-semibold text-sm" style={{ color: "var(--pj-text)" }}>{a.combTipo}</p>
+                    <p className="text-xs" style={{ color: "var(--pj-text-faint)" }}>Avisar abaixo de {a.precoAlvo?.toFixed(3)} €/litro</p>
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-sm" style={{ color: "#14231c" }}>Posto de carregamento</p>
-                    <p className="text-xs" style={{ color: "#8a978e" }}>Posto livre até {a.distAlvo} km</p>
+                    <p className="font-semibold text-sm" style={{ color: "var(--pj-text)" }}>Posto de carregamento</p>
+                    <p className="text-xs" style={{ color: "var(--pj-text-faint)" }}>Posto livre até {a.distAlvo} km</p>
                   </>
                 )}
                 {ativo && (
-                  <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#eef3ef", color: "#0b6b4f" }}>
+                  <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
                     <Check size={8} /> Condição cumprida agora
                   </span>
                 )}
@@ -1484,7 +1484,7 @@ function SubAvisos() {
               <button
                 onClick={() => guardar(avisos.filter(x => x.id !== a.id))}
                 className="pj-tap press w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "#eeece4" }}
+                style={{ background: "var(--pj-subtle)" }}
               >
                 <Trash2 size={15} style={{ color: "#a8432f" }} />
               </button>

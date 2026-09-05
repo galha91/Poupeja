@@ -38,34 +38,34 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
       </Head>
 
       <div style={{ paddingTop: 24 }}>
-        <p style={{ fontSize: 11, color: "#8a978e", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           Atualizado a {new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long" })}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Folhetos dos supermercados desta semana
         </h1>
-        <p style={{ fontSize: 14.5, color: "#5c6b62", lineHeight: 1.6, marginTop: 12 }}>
+        <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           Links diretos para os folhetos oficiais de {folhetos.length} supermercados em Portugal.
-          Na app PoupeJá recebes um <strong style={{ color: "#14231c" }}>aviso todas as semanas</strong> quando
+          Na app PoupeJá recebes um <strong style={{ color: "var(--pj-text)" }}>aviso todas as semanas</strong> quando
           saem folhetos novos.
         </p>
 
-        <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "#fbfaf6", border: "1px solid #e4e2d8" }}>
+        <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           {folhetos.map((f, i) => (
             <div
               key={f.id}
               className="flex items-center gap-3.5 px-4 py-3.5"
-              style={i > 0 ? { borderTop: "1px solid #eeece4" } : {}}
+              style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}
             >
               <a href={`/folhetos/${slugify(f.loja)}`} className="flex items-center gap-3.5 no-underline" style={{ flex: 1, minWidth: 0 }}>
-                <span className="flex items-center justify-center flex-shrink-0" style={{ width: 44, height: 44, borderRadius: 12, background: "#eeece4" }}>
+                <span className="flex items-center justify-center flex-shrink-0" style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)" }}>
                   {LOGO[f.loja]
                     ? <img src={`/logos/${LOGO[f.loja]}.svg`} alt={f.loja} width={26} height={26} style={{ objectFit: "contain" }} />
-                    : <span style={{ fontSize: 15, fontWeight: 700, color: "#2c3b33" }}>{f.loja[0]}</span>}
+                    : <span style={{ fontSize: 15, fontWeight: 700, color: "var(--pj-text-strong)" }}>{f.loja[0]}</span>}
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "#14231c" }}>Folheto {f.loja}</span>
-                  <span style={{ display: "block", fontSize: 12.5, color: "#5c6b62", marginTop: 1 }}>{f.titulo}{f.validade ? ` · ${f.validade}` : ""}</span>
+                  <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>Folheto {f.loja}</span>
+                  <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>{f.titulo}{f.validade ? ` · ${f.validade}` : ""}</span>
                 </span>
               </a>
               <a
@@ -73,7 +73,7 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-underline flex-shrink-0"
-                style={{ fontSize: 12.5, fontWeight: 600, color: "#0b6b4f" }}
+                style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}
               >
                 Ver →
               </a>
