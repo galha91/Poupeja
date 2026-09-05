@@ -18,77 +18,77 @@ const MapaPostos = dynamic(() => import("./MapaPostos"), {
 const CONECTOR_ICONS = {
   "Tipo 2": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 36">
-      <polygon points="13,2 23,2 34,13 34,23 23,34 13,34 2,23 2,13" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.8" strokeLinejoin="round"/>
-      <circle cx="18" cy="9"  r="2.2" fill="#64748b"/>
-      <circle cx="11" cy="14" r="2.2" fill="#64748b"/>
-      <circle cx="25" cy="14" r="2.2" fill="#64748b"/>
-      <circle cx="11" cy="22" r="2.2" fill="#64748b"/>
-      <circle cx="25" cy="22" r="2.2" fill="#64748b"/>
-      <circle cx="15" cy="28" r="2.2" fill="#64748b"/>
-      <circle cx="21" cy="28" r="2.2" fill="#64748b"/>
+      <polygon points="13,2 23,2 34,13 34,23 23,34 13,34 2,23 2,13" fill="#f1f5f9" stroke="#8a978e" strokeWidth="1.8" strokeLinejoin="round"/>
+      <circle cx="18" cy="9"  r="2.2" fill="#5f718c"/>
+      <circle cx="11" cy="14" r="2.2" fill="#5f718c"/>
+      <circle cx="25" cy="14" r="2.2" fill="#5f718c"/>
+      <circle cx="11" cy="22" r="2.2" fill="#5f718c"/>
+      <circle cx="25" cy="22" r="2.2" fill="#5f718c"/>
+      <circle cx="15" cy="28" r="2.2" fill="#5f718c"/>
+      <circle cx="21" cy="28" r="2.2" fill="#5f718c"/>
     </svg>
   ),
   "CCS2": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 40">
-      <polygon points="12,2 24,2 34,12 34,22 24,30 12,30 2,22 2,12" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8" strokeLinejoin="round"/>
-      <circle cx="18" cy="8"  r="1.8" fill="#3b82f6"/>
-      <circle cx="12" cy="13" r="1.8" fill="#3b82f6"/>
-      <circle cx="24" cy="13" r="1.8" fill="#3b82f6"/>
-      <circle cx="12" cy="20" r="1.8" fill="#3b82f6"/>
-      <circle cx="24" cy="20" r="1.8" fill="#3b82f6"/>
-      <rect x="2" y="32" width="32" height="8" rx="4" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8"/>
-      <circle cx="11" cy="36" r="2.8" fill="#3b82f6"/>
-      <circle cx="25" cy="36" r="2.8" fill="#3b82f6"/>
+      <polygon points="12,2 24,2 34,12 34,22 24,30 12,30 2,22 2,12" fill="#e2e7ee" stroke="#456fb5" strokeWidth="1.8" strokeLinejoin="round"/>
+      <circle cx="18" cy="8"  r="1.8" fill="#456fb5"/>
+      <circle cx="12" cy="13" r="1.8" fill="#456fb5"/>
+      <circle cx="24" cy="13" r="1.8" fill="#456fb5"/>
+      <circle cx="12" cy="20" r="1.8" fill="#456fb5"/>
+      <circle cx="24" cy="20" r="1.8" fill="#456fb5"/>
+      <rect x="2" y="32" width="32" height="8" rx="4" fill="#e2e7ee" stroke="#456fb5" strokeWidth="1.8"/>
+      <circle cx="11" cy="36" r="2.8" fill="#456fb5"/>
+      <circle cx="25" cy="36" r="2.8" fill="#456fb5"/>
     </svg>
   ),
   "CHAdeMO": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 36">
-      <circle cx="18" cy="18" r="16" fill="#fef3c7" stroke="#d97706" strokeWidth="1.8"/>
-      <circle cx="18" cy="18" r="6"  fill="none"    stroke="#d97706" strokeWidth="1.5"/>
-      <circle cx="18" cy="4"   r="2.2" fill="#d97706"/>
-      <circle cx="28" cy="8"   r="2.2" fill="#d97706"/>
-      <circle cx="32" cy="18"  r="2.2" fill="#d97706"/>
-      <circle cx="28" cy="28"  r="2.2" fill="#d97706"/>
-      <circle cx="18" cy="32"  r="2.2" fill="#d97706"/>
-      <circle cx="8"  cy="28"  r="2.2" fill="#d97706"/>
-      <circle cx="4"  cy="18"  r="2.2" fill="#d97706"/>
-      <circle cx="8"  cy="8"   r="2.2" fill="#d97706"/>
+      <circle cx="18" cy="18" r="16" fill="#efe8d8" stroke="#906737" strokeWidth="1.8"/>
+      <circle cx="18" cy="18" r="6"  fill="none"    stroke="#906737" strokeWidth="1.5"/>
+      <circle cx="18" cy="4"   r="2.2" fill="#906737"/>
+      <circle cx="28" cy="8"   r="2.2" fill="#906737"/>
+      <circle cx="32" cy="18"  r="2.2" fill="#906737"/>
+      <circle cx="28" cy="28"  r="2.2" fill="#906737"/>
+      <circle cx="18" cy="32"  r="2.2" fill="#906737"/>
+      <circle cx="8"  cy="28"  r="2.2" fill="#906737"/>
+      <circle cx="4"  cy="18"  r="2.2" fill="#906737"/>
+      <circle cx="8"  cy="8"   r="2.2" fill="#906737"/>
     </svg>
   ),
   "CCS1": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 40">
-      <circle cx="18" cy="16" r="14" fill="#ede9fe" stroke="#7c3aed" strokeWidth="1.8"/>
-      <circle cx="13" cy="12" r="2"  fill="#7c3aed"/>
-      <circle cx="23" cy="12" r="2"  fill="#7c3aed"/>
-      <circle cx="13" cy="20" r="2"  fill="#7c3aed"/>
-      <circle cx="23" cy="20" r="2"  fill="#7c3aed"/>
-      <rect x="6"  cy="14" x="6"  y="32" width="24" height="7" rx="3.5" fill="#ede9fe" stroke="#7c3aed" strokeWidth="1.8"/>
-      <circle cx="11" cy="35.5" r="2.5" fill="#7c3aed"/>
-      <circle cx="25" cy="35.5" r="2.5" fill="#7c3aed"/>
+      <circle cx="18" cy="16" r="14" fill="#e7e3ee" stroke="#7f59c0" strokeWidth="1.8"/>
+      <circle cx="13" cy="12" r="2"  fill="#7f59c0"/>
+      <circle cx="23" cy="12" r="2"  fill="#7f59c0"/>
+      <circle cx="13" cy="20" r="2"  fill="#7f59c0"/>
+      <circle cx="23" cy="20" r="2"  fill="#7f59c0"/>
+      <rect x="6"  cy="14" x="6"  y="32" width="24" height="7" rx="3.5" fill="#e7e3ee" stroke="#7f59c0" strokeWidth="1.8"/>
+      <circle cx="11" cy="35.5" r="2.5" fill="#7f59c0"/>
+      <circle cx="25" cy="35.5" r="2.5" fill="#7f59c0"/>
     </svg>
   ),
   "Tipo 1": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 36">
-      <circle cx="18" cy="18" r="16" fill="#f0fdf4" stroke="#16a34a" strokeWidth="1.8"/>
-      <circle cx="12" cy="13" r="2.2" fill="#16a34a"/>
-      <circle cx="24" cy="13" r="2.2" fill="#16a34a"/>
-      <circle cx="12" cy="22" r="2.2" fill="#16a34a"/>
-      <circle cx="24" cy="22" r="2.2" fill="#16a34a"/>
-      <rect x="16" y="24" width="4" height="6" rx="2" fill="#16a34a"/>
+      <circle cx="18" cy="18" r="16" fill="#e9efe9" stroke="#2e7a63" strokeWidth="1.8"/>
+      <circle cx="12" cy="13" r="2.2" fill="#2e7a63"/>
+      <circle cx="24" cy="13" r="2.2" fill="#2e7a63"/>
+      <circle cx="12" cy="22" r="2.2" fill="#2e7a63"/>
+      <circle cx="24" cy="22" r="2.2" fill="#2e7a63"/>
+      <rect x="16" y="24" width="4" height="6" rx="2" fill="#2e7a63"/>
     </svg>
   ),
   "Tesla": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 36">
-      <rect width="36" height="36" rx="10" fill="#fee2e2" stroke="#dc2626" strokeWidth="1.5"/>
-      <path d="M9 10 L27 10 L27 12 L20 12 L20 28 L16 28 L16 12 L9 12 Z" fill="#dc2626"/>
-      <path d="M13 10 L23 10 Q27 10 27 10 L18 14 Q9 10 9 10 Z" fill="#dc2626"/>
+      <rect width="36" height="36" rx="10" fill="#eee0dd" stroke="#ba4a4a" strokeWidth="1.5"/>
+      <path d="M9 10 L27 10 L27 12 L20 12 L20 28 L16 28 L16 12 L9 12 Z" fill="#ba4a4a"/>
+      <path d="M13 10 L23 10 Q27 10 27 10 L18 14 Q9 10 9 10 Z" fill="#ba4a4a"/>
     </svg>
   ),
   "Schuko": (s = 36) => (
     <svg width={s} height={s} viewBox="0 0 36 36">
       <circle cx="18" cy="18" r="16" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8"/>
-      <circle cx="12" cy="18" r="3"  fill="#94a3b8"/>
-      <circle cx="24" cy="18" r="3"  fill="#94a3b8"/>
+      <circle cx="12" cy="18" r="3"  fill="#8a978e"/>
+      <circle cx="24" cy="18" r="3"  fill="#8a978e"/>
     </svg>
   ),
 };
@@ -159,7 +159,7 @@ const POSTO_CORES = {
 };
 
 function resolverMarca(nome) {
-  if (!nome) return { cor: "#64748b", logoKey: null };
+  if (!nome) return { cor: "#5f718c", logoKey: null };
   const key = nome.toLowerCase().trim();
   const ALIASES = {
     "intermarché": "intermarche", "intermarche": "intermarche",
@@ -173,7 +173,7 @@ function resolverMarca(nome) {
     || (ALL_KEYS.has(key) ? key : null)
     || [...ALL_KEYS].find(k => key.startsWith(k) || k.startsWith(key.split(" ")[0]))
     || null;
-  const cor = POSTO_CORES[logoKey || key] || "#64748b";
+  const cor = POSTO_CORES[logoKey || key] || "#5f718c";
   return { cor, logoKey };
 }
 const EST = {
@@ -353,7 +353,7 @@ function TendenciaPrecos({ historico }) {
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[13px] font-semibold text-[color:var(--pj-text)] truncate">{tipo}</span>
                   {mexeu && (
-                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)]" : "bg-[#f4e3d8] text-[#cf5a3c]"}`}>
+                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)]" : "bg-[#f4e3d8] text-[color:var(--pj-danger)]"}`}>
                       {desceu ? <TrendingDown size={11} /> : <TrendingUp size={11} />}{cent}
                     </span>
                   )}
@@ -658,7 +658,7 @@ function SubCombustiveis() {
             const isBest = keyMaisBarato && `${c.nome}__${c.preco}` === keyMaisBarato;
             const nome   = c.nome || c.posto || "";
             const marca  = c.marca || c.posto || "";
-            const cor    = POSTO_CORES[marca] || "#64748b";
+            const cor    = POSTO_CORES[marca] || "#5f718c";
             const pct    = Math.max(12, 100 - ((c.preco - min) / (max - min || 1)) * 82);
             const fav    = ehFavorito(c);
             return (
@@ -692,7 +692,7 @@ function SubCombustiveis() {
                       </p>
                     )}
                     {!isBest && (
-                      <p className="text-[10px] text-[#cf5a3c] font-semibold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
+                      <p className="text-[10px] text-[color:var(--pj-danger)] font-semibold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
                     )}
                   </div>
                 </div>
@@ -839,7 +839,7 @@ function SubPostosEV() {
             <div className="grid grid-cols-3 gap-0 divide-x divide-[#eeece4]">
               {[
                 { label: "Disponíveis", value: counts.disponível, color: "text-[var(--pj-brand-ink)]" },
-                { label: "Ocupados",    value: counts.ocupado,    color: "text-[#cf5a3c]" },
+                { label: "Ocupados",    value: counts.ocupado,    color: "text-[color:var(--pj-danger)]" },
                 { label: "Manutenção",  value: counts.manutenção, color: "text-[#b5701f]" },
               ].map(s => (
                 <div key={s.label} className="py-1 text-center">
@@ -1486,7 +1486,7 @@ function SubAvisos() {
                 className="pj-tap press w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: "var(--pj-subtle)" }}
               >
-                <Trash2 size={15} style={{ color: "#a8432f" }} />
+                <Trash2 size={15} style={{ color: "var(--pj-danger)" }} />
               </button>
             </div>
           );

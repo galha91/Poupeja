@@ -238,7 +238,7 @@ export default function ListaPartilhada({ id }) {
           )}
 
           {/* CTA copiar link + abrir app */}
-          <div className="mt-6 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg,#064e3b,#059669)" }}>
+          <div className="mt-6 rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg,var(--pj-brand),var(--pj-brand-ink))" }}>
             <div className="px-4 py-4">
               <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">PoupeJá</p>
               <p className="text-[14px] font-black text-white leading-snug mb-3">

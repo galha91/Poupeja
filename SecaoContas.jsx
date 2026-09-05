@@ -33,14 +33,14 @@ function SubTabBar({ options, value, onChange }) {
 }
 
 const CATS = [
-  { id: "habitacao",  emoji: "🏠", label: "Habitação",   cor: "#059669", bg: "#ecfdf5" },
-  { id: "energia",    emoji: "⚡", label: "Energia",      cor: "#d97706", bg: "#fffbeb" },
-  { id: "internet",   emoji: "📱", label: "Internet/Tel", cor: "#2563eb", bg: "#eff6ff" },
-  { id: "seguro",     emoji: "🛡️", label: "Seguros",      cor: "#7c3aed", bg: "#f5f3ff" },
-  { id: "saude",      emoji: "💊", label: "Saúde",        cor: "#e11d48", bg: "#fff1f2" },
-  { id: "transporte", emoji: "🚗", label: "Transporte",   cor: "#ea580c", bg: "#fff7ed" },
-  { id: "lazer",      emoji: "🎮", label: "Lazer",        cor: "#6d28d9", bg: "#faf5ff" },
-  { id: "outro",      emoji: "📋", label: "Outro",        cor: "#475569", bg: "#f8fafc" },
+  { id: "habitacao",  emoji: "🏠", label: "Habitação",   cor: "var(--pj-cat-verde)", bg: "var(--pj-subtle)" },
+  { id: "energia",    emoji: "⚡", label: "Energia",      cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)" },
+  { id: "internet",   emoji: "📱", label: "Internet/Tel", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)" },
+  { id: "seguro",     emoji: "🛡️", label: "Seguros",      cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)" },
+  { id: "saude",      emoji: "💊", label: "Saúde",        cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)" },
+  { id: "transporte", emoji: "🚗", label: "Transporte",   cor: "var(--pj-cat-terracota)", bg: "var(--pj-subtle)" },
+  { id: "lazer",      emoji: "🎮", label: "Lazer",        cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)" },
+  { id: "outro",      emoji: "📋", label: "Outro",        cor: "var(--pj-cat-cinza)", bg: "var(--pj-subtle)" },
 ];
 
 const PRESETS = [
@@ -284,7 +284,7 @@ function FormConta({ inicial, onGuardar, onCancelar }) {
       </div>
 
       {erro && (
-        <p className="text-xs flex items-center gap-1.5" style={{ fontWeight: 600, color: "#b4472e" }}>
+        <p className="text-xs flex items-center gap-1.5" style={{ fontWeight: 600, color: "var(--pj-danger)" }}>
           <AlertCircle size={12} /> {erro}
         </p>
       )}
@@ -315,8 +315,8 @@ const OPORTUNIDADES = [
     minAnual: 80,
     provider: "ComparaJá",
     url: "https://www.comparaja.pt/?ref=poupeja",
-    cor: "#d97706",
-    bg: "#fffbeb",
+    cor: "var(--pj-cat-ocre)",
+    bg: "var(--pj-subtle)",
   },
   {
     cats: ["internet"],
@@ -326,8 +326,8 @@ const OPORTUNIDADES = [
     minAnual: 60,
     provider: "ComparaJá",
     url: "https://www.comparaja.pt/?ref=poupeja",
-    cor: "#2563eb",
-    bg: "#eff6ff",
+    cor: "var(--pj-cat-azul)",
+    bg: "var(--pj-subtle)",
   },
   {
     cats: ["seguro"],
@@ -337,8 +337,8 @@ const OPORTUNIDADES = [
     minAnual: 80,
     provider: "ComparaJá",
     url: "https://www.comparaja.pt/?ref=poupeja",
-    cor: "#7c3aed",
-    bg: "#f5f3ff",
+    cor: "var(--pj-cat-ameixa)",
+    bg: "var(--pj-subtle)",
   },
   {
     cats: ["habitacao"],
@@ -349,8 +349,8 @@ const OPORTUNIDADES = [
     minMensal: 200,
     provider: "Doutor Finanças",
     url: "https://www.doutorfinancas.pt/?ref=poupeja",
-    cor: "#059669",
-    bg: "#ecfdf5",
+    cor: "var(--pj-cat-verde)",
+    bg: "var(--pj-subtle)",
   },
 ];
 
@@ -643,7 +643,7 @@ function ContasFixasConteudo() {
             {/* Pendente */}
             <div className="rounded-2xl p-3.5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Pendente</p>
-              <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: totalPendente > 0 ? "#b4472e" : "var(--pj-brand-ink)" }}>
+              <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: totalPendente > 0 ? "var(--pj-danger)" : "var(--pj-brand-ink)" }}>
                 €{Math.round(totalPendente).toLocaleString("pt-PT")}
               </p>
               <p className="text-[10px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>
@@ -662,22 +662,22 @@ function ContasFixasConteudo() {
       {(aVencerHoje.length > 0 || aVencerBreve.length > 0) && (
         <div className="px-4 mb-3 anim-up anim-up-1">
           {aVencerHoje.length > 0 && (
-            <div className="rounded-2xl px-4 py-3 flex items-start gap-3 mb-2" style={{ border: "1px solid #ecd9d1", background: "#f7ece8" }}>
-              <AlertCircle size={15} style={{ color: "#b4472e" }} className="flex-shrink-0 mt-0.5" />
+            <div className="rounded-2xl px-4 py-3 flex items-start gap-3 mb-2" style={{ border: "1px solid var(--pj-danger-border)", background: "var(--pj-danger-wash)" }}>
+              <AlertCircle size={15} style={{ color: "var(--pj-danger)" }} className="flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs" style={{ fontWeight: 600, color: "#8f3320" }}>Vence hoje!</p>
-                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#b4472e" }}>
+                <p className="text-xs" style={{ fontWeight: 600, color: "var(--pj-danger-strong)" }}>Vence hoje!</p>
+                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "var(--pj-danger)" }}>
                   {aVencerHoje.map(c => `${c.emoji || catById[c.categoria]?.emoji || "📋"} ${c.nome} — €${fmt(c.valor)}`).join(" · ")}
                 </p>
               </div>
             </div>
           )}
           {aVencerBreve.length > 0 && (
-            <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ border: "1px solid #e8dcc2", background: "#f6efe0" }}>
-              <AlertCircle size={15} style={{ color: "#a86a1f" }} className="flex-shrink-0 mt-0.5" />
+            <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ border: "1px solid var(--pj-warn-border)", background: "var(--pj-warn-wash)" }}>
+              <AlertCircle size={15} style={{ color: "var(--pj-warn)" }} className="flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs" style={{ fontWeight: 600, color: "#8a5616" }}>A vencer em breve</p>
-                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "#a86a1f" }}>
+                <p className="text-xs" style={{ fontWeight: 600, color: "var(--pj-warn)" }}>A vencer em breve</p>
+                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "var(--pj-warn)" }}>
                   {aVencerBreve.map(c => `${c.emoji || catById[c.categoria]?.emoji || "📋"} ${c.nome} (dia ${c.diaVencimento})`).join(" · ")}
                 </p>
               </div>
@@ -825,8 +825,8 @@ function ContasFixasConteudo() {
                         {c.nome}
                       </p>
                       <p className="text-[10px] mt-0.5 flex items-center gap-1 flex-wrap">
-                        {venceHoje  && <span style={{ fontWeight: 600, color: "#b4472e" }}>Vence hoje!</span>}
-                        {venceBreve && <span style={{ fontWeight: 600, color: "#a86a1f" }}>Dia {c.diaVencimento}</span>}
+                        {venceHoje  && <span style={{ fontWeight: 600, color: "var(--pj-danger)" }}>Vence hoje!</span>}
+                        {venceBreve && <span style={{ fontWeight: 600, color: "var(--pj-warn)" }}>Dia {c.diaVencimento}</span>}
                         {!venceHoje && !venceBreve && <span style={{ color: "var(--pj-text-faint)" }}>Dia {c.diaVencimento}</span>}
                         <span style={{ color: "#c4c0b2" }}>·</span>
                         <span style={{ color: cat.cor, fontWeight: 600 }}>{cat.label}</span>
@@ -911,7 +911,7 @@ function ContasFixasConteudo() {
                             <button
                               onClick={() => removerConta(c.id)}
                               className="pj-tap px-3 py-2 rounded-xl"
-                              style={{ background: "#f7ece8", color: "#b4472e", border: "1px solid #ecd9d1" }}
+                              style={{ background: "var(--pj-danger-wash)", color: "var(--pj-danger)", border: "1px solid var(--pj-danger-border)" }}
                             >
                               <Trash2 size={13} />
                             </button>

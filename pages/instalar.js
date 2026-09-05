@@ -226,7 +226,7 @@ function GuiaIos() {
         {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
       </div>
       <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "var(--pj-subtle)" }}>
-        <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "#a8432f" }}>
+        <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--pj-danger)" }}>
           <strong>Tem de ser no Safari.</strong> Se abriste este link no Chrome, Instagram ou noutra app, toca em ⋯ → “Abrir no Safari” primeiro.
         </p>
       </div>

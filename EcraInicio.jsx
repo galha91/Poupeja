@@ -270,7 +270,7 @@ export default function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, o
           <div className="flex items-center" style={{ gap: 16, color: "var(--pj-text)" }}>
             <button onClick={onAbrirAvisos} className="pj-tap relative flex" aria-label="Avisos">
               <Bell size={21} strokeWidth={1.7} />
-              {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "#cf5a3c", border: "1.5px solid #f6f5f0" }} />}
+              {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "var(--pj-danger)", border: "1.5px solid #f6f5f0" }} />}
             </button>
             <button onClick={onAbrirDefinicoes} className="pj-tap flex items-center justify-center" aria-label="Perfil"
               style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--pj-brand)", color: "#f6f5f0", fontSize: 14, fontWeight: 600 }}>

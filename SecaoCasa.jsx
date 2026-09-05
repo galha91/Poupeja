@@ -18,7 +18,7 @@ const C = {
   divSection: "var(--pj-border)",
   divRow:     "var(--pj-subtle)",
   card:       "var(--pj-card)",
-  neg:        "#a8432f",
+  neg:        "var(--pj-danger)",
 };
 const LBL = { fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: C.faint, textTransform: "uppercase" };
 const LBL_SM = { fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: C.faint, textTransform: "uppercase" };

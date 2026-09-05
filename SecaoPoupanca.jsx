@@ -127,8 +127,8 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         </div>
         {dados && dados.totalGeral > 0 && dados.tendencia !== 0 && dados.totalAnterior > 0 && (
           <div className="inline-flex items-center" style={{ gap: 9, marginTop: 20, padding: "10px 14px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
-            {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "var(--pj-brand-ink)" }} /> : <TrendingDown size={16} style={{ color: "#cf5a3c" }} />}
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: dados.tendencia > 0 ? "var(--pj-brand-ink)" : "#cf5a3c" }}>
+            {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "var(--pj-brand-ink)" }} /> : <TrendingDown size={16} style={{ color: "var(--pj-danger)" }} />}
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: dados.tendencia > 0 ? "var(--pj-brand-ink)" : "var(--pj-danger)" }}>
               {dados.tendencia > 0 ? "+" : ""}{dados.tendencia}% vs. o mês passado
             </span>
           </div>
@@ -374,7 +374,7 @@ const LEADS_FINANCEIROS = [
     dominio: "comparaja.pt",
     emoji: "⚡",
     bg: "#fef3c7",
-    cor: "#d97706",
+    cor: "var(--pj-cat-ocre)",
     badge: "Energia & Internet",
     desc: "Compara tarifas de eletricidade, gás, internet e seguros. Poupas centenas por ano sem sair de casa.",
     cta: "Comparar agora",
@@ -386,7 +386,7 @@ const LEADS_FINANCEIROS = [
     dominio: "doutorfinancas.pt",
     emoji: "🏦",
     bg: "#eff6ff",
-    cor: "#2563eb",
+    cor: "var(--pj-cat-azul)",
     badge: "Crédito & Seguros",
     desc: "Simula crédito habitação, pessoal e seguros. Negociação gratuita com os melhores bancos.",
     cta: "Simular grátis",
