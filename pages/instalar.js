@@ -83,7 +83,7 @@ export default function Instalar() {
         <meta name="theme-color" content="#0b6b4f" />
         <meta property="og:title" content="Instalar o PoupeJá" />
         <meta property="og:description" content="A tua carteira digital portuguesa — num toque no ecrã inicial." />
-        <meta property="og:image" content="/og.png" />
+        <meta property="og:image" content="https://xn--poupej-uta.com/og.png?v=2" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
 
