@@ -29,9 +29,9 @@ export default function Apoios({ apoios, categorias, atualizado }) {
         <title>Apoios do Estado {new Date(atualizado).getFullYear()} — {apoios.length} benefícios a que podes ter direito | PoupeJá</title>
         <meta name="description" content={`${apoios.length} apoios e benefícios oficiais em Portugal — tarifa social de eletricidade e gás, passes, habitação e mais. Quem pode pedir e como, com link direto para o Estado.`} />
         <link rel="canonical" href={`${SITE_URL}/apoios`} />
-        <meta property="og:title" content={`Apoios do Estado — ${apoios.length} benefícios a que podes ter direito`} />
-        <meta property="og:description" content="Quem pode pedir e como requerer, com links diretos para os serviços oficiais." />
-        <meta property="og:url" content={`${SITE_URL}/apoios`} />
+        <meta property="og:title" content={`Apoios do Estado — ${apoios.length} benefícios a que podes ter direito`} key="og:title" />
+        <meta property="og:description" content="Quem pode pedir e como requerer, com links diretos para os serviços oficiais." key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/apoios`} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 

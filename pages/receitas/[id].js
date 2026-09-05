@@ -41,10 +41,10 @@ export default function Receita({ receita, outras }) {
         <title>{`${receita.nome} — receita barata para 4 pessoas (${receita.tempoMin} min) | PoupeJá`}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/receitas/${receita.id}`} />
-        <meta property="og:title" content={`${receita.nome} — receita barata para 4 pessoas`} />
-        <meta property="og:description" content={descricao} />
-        <meta property="og:url" content={`${SITE_URL}/receitas/${receita.id}`} />
-        <meta property="og:image" content={ogImage} />
+        <meta property="og:title" content={`${receita.nome} — receita barata para 4 pessoas`} key="og:title" />
+        <meta property="og:description" content={descricao} key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/receitas/${receita.id}`} key="og:url" />
+        <meta property="og:image" content={ogImage} key="og:image" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 

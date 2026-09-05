@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import Head from 'next/head';
+import { URL_SITE } from '../lib/site';
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
@@ -62,7 +64,36 @@ function MyApp({ Component, pageProps }) {
     return () => window.removeEventListener('poupeja:tema', aplicarTema);
   }, []);
 
-  return <Component {...pageProps} />
+  return (
+    <>
+      <Head>
+        {/*
+          Cartão de partilha por omissão. Cada `key` é um ponto de substituição:
+          uma página que ponha <meta property="og:image" key="og:image" …/> no
+          seu próprio <Head> APAGA esta — é assim que o /p e a /lista mostram o
+          cartão personalizado sem o genérico vir atrás. Mexer numa key aqui
+          obriga a mexer na mesma key nas páginas.
+        */}
+        <meta property="og:site_name" content="PoupeJá" key="og:site_name" />
+        <meta property="og:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" key="og:title" />
+        <meta property="og:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." key="og:description" />
+        <meta property="og:type" content="website" key="og:type" />
+        <meta property="og:url" content={URL_SITE} key="og:url" />
+        <meta property="og:image" content={`${URL_SITE}/og.png?v=2`} key="og:image" />
+        <meta property="og:image:width" content="1200" key="og:image:width" />
+        <meta property="og:image:height" content="630" key="og:image:height" />
+        <meta property="og:image:alt" content="PoupeJá — os folhetos de todos os supermercados num só sítio, grátis" key="og:image:alt" />
+        <meta property="og:image:type" content="image/png" key="og:image:type" />
+        <meta property="og:locale" content="pt_PT" key="og:locale" />
+
+        <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+        <meta name="twitter:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" key="twitter:title" />
+        <meta name="twitter:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." key="twitter:description" />
+        <meta name="twitter:image" content={`${URL_SITE}/og.png?v=2`} key="twitter:image" />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  )
 }
 
 export default MyApp

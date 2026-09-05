@@ -51,24 +51,14 @@ gtag('config', 'G-Q3JQG95879');`,
           }}
         />
 
-        {/* Open Graph — otimizado para partilha social */}
-        <meta property="og:site_name" content="PoupeJá" />
-        <meta property="og:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" />
-        <meta property="og:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://xn--poupej-uta.com" />
-        <meta property="og:image" content="https://xn--poupej-uta.com/og.png?v=2" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="PoupeJá — os folhetos de todos os supermercados num só sítio, grátis" />
-        <meta property="og:image:type" content="image/png" />
-        <meta property="og:locale" content="pt_PT" />
-
-        {/* Twitter / X Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" />
-        <meta name="twitter:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." />
-        <meta name="twitter:image" content="https://xn--poupej-uta.com/og.png?v=2" />
+        {/*
+          Os cartões Open Graph / Twitter vivem no _app.js, não aqui: as metas
+          do _document não podem ser substituídas por uma página (o next/head
+          só sabe desduplicar o que passa por ele, por `key`). Estando aqui,
+          cada página emitia o SEU cartão e logo a seguir o genérico — e os
+          leitores que ficam com a última ocorrência (X/Twitter) mostravam
+          sempre o cartão genérico em vez do personalizado.
+        */}
       </Head>
       <body>
         <Main />

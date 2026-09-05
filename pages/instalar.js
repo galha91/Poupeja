@@ -81,9 +81,9 @@ export default function Instalar() {
         <title>Instalar o PoupeJá — grátis, num toque</title>
         <meta name="description" content="Instala o PoupeJá no teu telemóvel: folhetos, poupança e contas sempre à mão. Grátis, sem loja de apps." />
         <meta name="theme-color" content="#0b6b4f" />
-        <meta property="og:title" content="Instalar o PoupeJá" />
-        <meta property="og:description" content="A tua carteira digital portuguesa — num toque no ecrã inicial." />
-        <meta property="og:image" content="https://xn--poupej-uta.com/og.png?v=2" />
+        <meta property="og:title" content="Instalar o PoupeJá" key="og:title" />
+        <meta property="og:description" content="A tua carteira digital portuguesa — num toque no ecrã inicial." key="og:description" />
+        <meta property="og:image" content="https://xn--poupej-uta.com/og.png?v=2" key="og:image" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
 

@@ -36,9 +36,9 @@ export default function Combustiveis({ dados, atualizadoEm, erro }) {
         <title>Preços dos Combustíveis Hoje em Portugal — Gasóleo e Gasolina mais baratos | PoupeJá</title>
         <meta name="description" content={`Preços de hoje por marca (dados oficiais DGEG): gasóleo desde €${porTipo["Gasóleo"]?.preco?.toFixed(3) ?? "—"}, gasolina 95 desde €${porTipo["Gasolina 95"]?.preco?.toFixed(3) ?? "—"}. Vê os postos mais baratos perto de ti, grátis.`} />
         <link rel="canonical" href={`${SITE_URL}/combustiveis`} />
-        <meta property="og:title" content="Preços dos combustíveis hoje em Portugal" />
-        <meta property="og:description" content="Gasóleo e gasolina mais baratos por marca, com dados oficiais da DGEG. Atualizado diariamente." />
-        <meta property="og:url" content={`${SITE_URL}/combustiveis`} />
+        <meta property="og:title" content="Preços dos combustíveis hoje em Portugal" key="og:title" />
+        <meta property="og:description" content="Gasóleo e gasolina mais baratos por marca, com dados oficiais da DGEG. Atualizado diariamente." key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/combustiveis`} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 

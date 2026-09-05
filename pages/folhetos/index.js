@@ -31,9 +31,9 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
         <title>Folhetos dos Supermercados desta Semana — {folhetos.slice(0, 4).map(f => f.loja).join(", ")} e mais | PoupeJá</title>
         <meta name="description" content={`Todos os folhetos e promoções da semana num só sítio: ${lojas}. Links diretos e grátis, com aviso semanal na app PoupeJá.`} />
         <link rel="canonical" href={`${SITE_URL}/folhetos`} />
-        <meta property="og:title" content="Folhetos dos supermercados desta semana" />
-        <meta property="og:description" content={`${lojas} — links diretos para os folhetos oficiais.`} />
-        <meta property="og:url" content={`${SITE_URL}/folhetos`} />
+        <meta property="og:title" content="Folhetos dos supermercados desta semana" key="og:title" />
+        <meta property="og:description" content={`${lojas} — links diretos para os folhetos oficiais.`} key="og:description" />
+        <meta property="og:url" content={`${SITE_URL}/folhetos`} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 

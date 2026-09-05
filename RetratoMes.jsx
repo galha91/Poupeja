@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Share2, Receipt, Flame, Trophy, TrendingUp, TrendingDown } from "lucide-react";
 import { marcarRetratoVisto } from "./lib/retrato";
 import { evento } from "./lib/analytics";
+import { linkPartilha } from "./lib/site";
 
 /*
  * Retrato do mês — modal "Wrapped" com os números reais do mês anterior
@@ -20,9 +21,9 @@ export default function RetratoMes({ retrato, onFechar }) {
 
   async function partilhar() {
     evento("share", { content_type: "retrato" });
-    let ref = "";
-    try { ref = localStorage.getItem("poupeja_uid") || ""; } catch {}
-    const url = `https://poupejá.com/p?v=retrato&mes=${encodeURIComponent(mes.nome)}&total=${total.toFixed(2)}&taloes=${nTaloes}&streak=${streak}${ref ? `&ref=${ref}` : ""}`;
+    const url = linkPartilha("/p", {
+      v: "retrato", mes: mes.nome, total: total.toFixed(2), taloes: nTaloes, streak,
+    });
     const texto = `O meu retrato de ${mes.nome} no PoupeJá 🐷 €${totalFmt} poupados · ${nTaloes} tal${nTaloes !== 1 ? "ões" : "ão"}${streak >= 2 ? ` · ${streak} semanas seguidas` : ""}. Vê o teu:`;
     if (navigator.share) {
       try { await navigator.share({ title: "PoupeJá", text: texto, url }); return; }

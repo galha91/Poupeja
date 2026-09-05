@@ -26,13 +26,14 @@ export default function Partilha({ valor, ref_, variante, mes, taloes, streak })
         <title>{titulo}</title>
         <meta name="description" content="Poupança real, medida talão a talão. Folhetos, combustíveis e apoios — experimenta grátis, sem registo." />
         <meta name="robots" content="noindex" />
-        <meta property="og:title" content={titulo} />
-        <meta property="og:description" content="Poupança real, medida talão a talão. Experimenta grátis — nem precisas de registo." />
-        <meta property="og:image" content={ogImg} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content={ogImg} />
+        <meta property="og:title" content={titulo} key="og:title" />
+        <meta property="og:description" content="Poupança real, medida talão a talão. Experimenta grátis — nem precisas de registo." key="og:description" />
+        <meta property="og:image" content={ogImg} key="og:image" />
+        <meta property="og:image:width" content="1200" key="og:image:width" />
+        <meta property="og:image:height" content="630" key="og:image:height" />
+        <meta property="og:image:alt" content={titulo} key="og:image:alt" />
+        <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+        <meta name="twitter:image" content={ogImg} key="twitter:image" />
       </Head>
       <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: "var(--pj-surface)", color: "var(--pj-text)" }}>
         <img src="/icon-192.png" alt="PoupeJá" width={64} height={64} style={{ borderRadius: 16 }} />

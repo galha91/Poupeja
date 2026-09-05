@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import { ShoppingCart, Check, Plus, X, Minus } from "lucide-react";
+import { URL_SITE } from "../../lib/site";
 
 function gerarId() { return Date.now() + Math.random(); }
 
@@ -93,17 +94,18 @@ export default function ListaPartilhada({ id }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         {/* Pré-visualização (WhatsApp, iMessage, redes sociais) */}
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="PoupeJá" />
-        <meta property="og:title" content="🛒 A nossa lista de compras — PoupeJá" />
-        <meta property="og:description" content="Abre o link e edita a lista comigo, em tempo real. Grátis." />
-        <meta property="og:image" content="https://www.xn--poupej-uta.com/api/og?v=lista" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="🛒 A nossa lista de compras — PoupeJá" />
-        <meta name="twitter:description" content="Abre o link e edita a lista comigo, em tempo real. Grátis." />
-        <meta name="twitter:image" content="https://www.xn--poupej-uta.com/api/og?v=lista" />
+        <meta property="og:type" content="website" key="og:type" />
+        <meta property="og:site_name" content="PoupeJá" key="og:site_name" />
+        <meta property="og:title" content="🛒 A nossa lista de compras — PoupeJá" key="og:title" />
+        <meta property="og:description" content="Abre o link e edita a lista comigo, em tempo real. Grátis." key="og:description" />
+        <meta property="og:image" content={`${URL_SITE}/api/og?v=lista`} key="og:image" />
+        <meta property="og:image:width" content="1200" key="og:image:width" />
+        <meta property="og:image:height" content="630" key="og:image:height" />
+        <meta property="og:image:alt" content="Lista de compras partilhada no PoupeJá" key="og:image:alt" />
+        <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+        <meta name="twitter:title" content="🛒 A nossa lista de compras — PoupeJá" key="twitter:title" />
+        <meta name="twitter:description" content="Abre o link e edita a lista comigo, em tempo real. Grátis." key="twitter:description" />
+        <meta name="twitter:image" content={`${URL_SITE}/api/og?v=lista`} key="twitter:image" />
       </Head>
 
       <div className="min-h-screen bg-slate-50 pb-32">
