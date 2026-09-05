@@ -613,6 +613,89 @@ function LogoFolheto({ loja }) {
   return <LogoLoja loja={loja} size={44} radius={12} bg="#eeece4" />;
 }
 
+/* ─── Herói do Início ───────────────────────────────────────────
+ * A poupança é um indicador atrasado: só existe depois de haver um
+ * talão guardado. Mostrar "€0,00" a 78px faz com que a coisa maior
+ * da app seja um zero — logo para quem acabou de chegar.
+ *
+ * Por isso o herói tem três estados, sempre no mesmo sítio e com o
+ * mesmo tratamento tipográfico (é um componente que evolui, não três
+ * desenhos diferentes):
+ *
+ *   1. nunca guardou nada  → convite, sem número nenhum
+ *   2. já guardou, mas não este mês → o total de sempre, que é real
+ *   3. tem poupança este mês → o número do mês (como sempre foi)
+ * ─────────────────────────────────────────────────────────────── */
+function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak, onGuardarTalao }) {
+  const nuncaGuardou = totalSempre <= 0;
+  const semEsteMes   = totalMes <= 0;
+
+  const Rotulo = ({ children }) => (
+    <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+      {children}
+    </div>
+  );
+
+  // Número grande, no traço da casa — partilhado pelos estados 2 e 3.
+  const Numero = ({ inteiro, decimais }) => (
+    <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 16 }}>
+      <span style={{ fontSize: 38, color: "var(--pj-text-faint)", marginRight: 5, fontWeight: 400 }}>€</span>
+      {inteiro}
+      <span style={{ fontSize: 38, color: "var(--pj-text-faint)", fontWeight: 400 }}>,{decimais}</span>
+    </div>
+  );
+
+  const BotaoTalao = ({ children }) => (
+    <button
+      onClick={onGuardarTalao}
+      className="pj-tap press inline-flex items-center"
+      style={{ gap: 7, marginTop: 18, padding: "10px 16px", borderRadius: 12, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 600 }}
+    >
+      <Receipt size={15} strokeWidth={1.9} /> {children}
+    </button>
+  );
+
+  return (
+    <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
+      <div className="flex items-center justify-between">
+        <Rotulo>{nuncaGuardou || !semEsteMes ? `Poupança de ${mesNome}` : "Poupança total"}</Rotulo>
+        {/* A streak conta visitas, não poupança. Só a mostramos quando já
+            quer dizer alguma coisa — ao 1.º dia era uma medalha sem feito. */}
+        {streak >= 2 && (
+          <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
+            <Flame size={13} /> {streak} dias
+          </div>
+        )}
+      </div>
+
+      {nuncaGuardou ? (
+        /* 1. Ainda não há nada para contar — o herói ensina o ciclo. */
+        <>
+          <p className="font-display" style={{ fontSize: 29, fontWeight: 500, lineHeight: 1.15, letterSpacing: "-0.02em", color: "var(--pj-text)", marginTop: 14 }}>
+            A tua poupança começa<br />no próximo talão.
+          </p>
+          <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.45 }}>
+            Guarda o talão da compra e o PoupeJá faz as contas por ti.
+          </p>
+          <BotaoTalao>Guardar talão</BotaoTalao>
+        </>
+      ) : semEsteMes ? (
+        /* 2. Já poupou antes — mostramos o que é real, não o zero do mês. */
+        <>
+          <Numero inteiro={Math.floor(totalSempre)} decimais={String(Math.round((totalSempre - Math.floor(totalSempre)) * 100)).padStart(2, "0")} />
+          <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 10 }}>
+            Ainda sem talões em {mesNome}.
+          </p>
+          <BotaoTalao>Guardar talão</BotaoTalao>
+        </>
+      ) : (
+        /* 3. Há poupança este mês — o número manda, como sempre. */
+        <Numero inteiro={Math.floor(animMes)} decimais={decMes} />
+      )}
+    </div>
+  );
+}
+
 /* ─── Ecrã Início ─── */
 function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0 }) {
   const [convPendente] = useState(() => {
@@ -715,18 +798,16 @@ function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, onAbrirDefinicoe
           )
         )}
 
-        {/* Poupança do mês */}
-        <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
-          <div className="flex items-center justify-between">
-            <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>Poupança de {mesNome}</div>
-            <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
-              <Flame size={13} /> {Math.max(streak, 1)} {Math.max(streak, 1) === 1 ? "dia" : "dias"}
-            </div>
-          </div>
-          <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 16 }}>
-            <span style={{ fontSize: 38, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>{Math.floor(animMes)}<span style={{ fontSize: 38, color: "#b0b8b0", fontWeight: 400 }}>,{decMes}</span>
-          </div>
-        </div>
+        {/* Poupança — o herói adapta-se ao que há para mostrar */}
+        <HeroPoupanca
+          mesNome={mesNome}
+          totalMes={totalMes}
+          totalSempre={totalSempre}
+          animMes={animMes}
+          decMes={decMes}
+          streak={streak}
+          onGuardarTalao={() => setTab("taloes")}
+        />
 
         <Divisoria />
 
@@ -1679,8 +1760,8 @@ export default function PoupeJa() {
 
             {/* Bottom Nav */}
             <nav
-              className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-100 z-40"
-              style={{ boxShadow: "0 -4px 24px rgba(15,23,42,0.07)", paddingBottom: "env(safe-area-inset-bottom)" }}
+              className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md backdrop-blur-md border-t z-40"
+              style={{ background: "var(--pj-nav)", borderColor: "var(--pj-border)", boxShadow: "0 -4px 24px rgba(20,35,28,0.07)", paddingBottom: "env(safe-area-inset-bottom)" }}
             >
               <div className="flex items-center justify-between px-1 py-1.5">
                 {NAV.map(it => {
@@ -1689,19 +1770,22 @@ export default function PoupeJa() {
                     <button
                       key={it.id}
                       onClick={() => navClick(it.id)}
-                      className={`flex flex-col items-center gap-0.5 px-1.5 py-1.5 rounded-xl transition-colors duration-150 ${active ? "bg-emerald-50" : ""}`}
+                      className="flex flex-col items-center gap-0.5 px-1.5 py-1.5 rounded-xl transition-colors duration-150"
+                      style={{ background: active ? "var(--pj-brand-wash)" : "transparent" }}
                     >
                       <it.icon
                         size={18}
-                        className={`transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"} ${bounce === it.id ? "nav-icon-active" : ""}`}
+                        className={`transition-colors duration-150 ${bounce === it.id ? "nav-icon-active" : ""}`}
+                        style={{ color: active ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}
                         strokeWidth={active ? 2.5 : 1.8}
                       />
-                      <span className={`text-[8px] font-black transition-colors duration-150 ${active ? "text-emerald-600" : "text-slate-400"}`}>
+                      <span className="text-[8px] font-black transition-colors duration-150"
+                        style={{ color: active ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
                         {it.label}
                       </span>
                       <span
-                        className="w-1 h-1 rounded-full bg-emerald-500 transition-all duration-200"
-                        style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(0)" }}
+                        className="w-1 h-1 rounded-full transition-all duration-200"
+                        style={{ background: "var(--pj-brand-ink)", opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(0)" }}
                       />
                     </button>
                   );
