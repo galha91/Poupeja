@@ -139,15 +139,12 @@ export default function SecaoFolhetos() {
                     >
                       <span style={{ fontSize: 10, fontWeight: 600, color: cor }}>{tagline}</span>
                     </div>
-                    {f.validade && (
-                      <p
-                        className="mt-1 flex items-center justify-center gap-1"
-                        style={{ fontSize: 10, color: "var(--pj-text-faint)" }}
-                      >
-                        <Clock size={9} />
-                        {f.validade}
-                      </p>
-                    )}
+                    {/*
+                      Aqui vinha a "validade" do folheto. Era a semana civil
+                      calculada, igual em todos os cartões e sem relação com o
+                      período real de cada cadeia — ver lib/semana-atual.js.
+                      A /api/folhetos deixou de a devolver.
+                    */}
                   </div>
                 </button>
               );

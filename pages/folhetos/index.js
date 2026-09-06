@@ -11,7 +11,7 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * Estática (revalida de hora a hora); alvo: "folheto continente",
  * "folheto lidl esta semana", etc.
  */
-export default function Folhetos({ folhetos, atualizadoEm }) {
+export default function Folhetos({ folhetos, semana, atualizadoEm }) {
   const lojas = folhetos.map(f => f.loja).join(", ");
   const jsonLd = {
     "@context": "https://schema.org",
@@ -39,7 +39,8 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
 
       <div style={{ paddingTop: 24 }}>
         <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-          Atualizado a {new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long" })}
+          {semana ? `Semana de ${semana} · ` : ""}
+          links verificados a {new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long" })}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Folhetos dos supermercados desta semana
@@ -65,7 +66,7 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>Folheto {f.loja}</span>
-                  <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>{f.titulo}{f.validade ? ` · ${f.validade}` : ""}</span>
+                  <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>Ver folheto oficial</span>
                 </span>
               </a>
               <a
@@ -88,10 +89,13 @@ export default function Folhetos({ folhetos, atualizadoEm }) {
 }
 
 export async function getStaticProps() {
-  const { validade, atualizadoEm } = semanaAtual();
+  const { semana, atualizadoEm } = semanaAtual();
   return {
     props: {
-      folhetos: (dadosFolhetos.folhetos || []).map(f => ({ ...f, validade })),
+      // Sem validade por loja — ver lib/semana-atual.js. A do ficheiro é de
+      // junho, fixa e igual para todas; nunca descreveu folheto nenhum.
+      folhetos: (dadosFolhetos.folhetos || []).map(({ validade, ...f }) => f),
+      semana,
       atualizadoEm,
     },
     revalidate: 3600,

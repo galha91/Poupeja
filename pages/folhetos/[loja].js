@@ -11,9 +11,9 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * Estática (revalida de hora a hora); alvo: "folheto continente",
  * "folheto pingo doce esta semana", etc. Interliga com as outras lojas.
  */
-export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
+export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm }) {
   const slug = slugify(folheto.loja);
-  const descricao = `Folheto ${folheto.loja} desta semana${folheto.validade ? ` (${folheto.validade})` : ""}, com link direto para o folheto oficial. Grátis, com aviso semanal na app PoupeJá.`;
+  const descricao = `Folheto ${folheto.loja} desta semana, com link direto para o folheto oficial. Grátis, com aviso semanal na app PoupeJá.`;
 
   return (
     <LayoutPublico>
@@ -27,10 +27,12 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
       </Head>
 
       <div style={{ paddingTop: 24 }}>
+        {/* Semana como contexto, uma vez — não como validade desta loja. */}
         <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+          {semana ? `Semana de ${semana}` : "Folhetos"}
           {atualizadoEm
-            ? `Atualizado a ${new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long" })}`
-            : "Folhetos"}
+            ? ` · link verificado a ${new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long" })}`
+            : ""}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Folheto {folheto.loja} desta semana
@@ -51,7 +53,7 @@ export default function FolhetoLoja({ folheto, outras, atualizadoEm }) {
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontSize: 15.5, fontWeight: 600, color: "var(--pj-text)" }}>{folheto.titulo}</p>
               <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>
-                {folheto.validade ? `Válido ${folheto.validade}` : "Consulta a validade no folheto oficial"}
+                As datas de validade estão no folheto oficial
               </p>
             </div>
           </div>
@@ -119,10 +121,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const folheto = (dadosFolhetos.folhetos || []).find(f => slugify(f.loja) === params.loja);
   if (!folheto) return { notFound: true };
-  const { validade, atualizadoEm } = semanaAtual();
+  const { semana, atualizadoEm } = semanaAtual();
+  const { validade, ...semValidade } = folheto; // a de junho, fixa, nunca foi verdade
   return {
     props: {
-      folheto: { ...folheto, validade },
+      folheto: semValidade,
+      semana,
       outras: LOJAS_SLUGS.filter(l => l.slug !== params.loja),
       atualizadoEm,
     },

@@ -5,11 +5,14 @@ export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
 
-  const { validade, atualizadoEm } = semanaAtual();
+  // Sem `validade` por loja: não temos essa informação. O que se sabe é a
+  // semana em que estamos e quando verificámos os links — e é só isso que sai.
+  const { semana, atualizadoEm } = semanaAtual();
   const resposta = {
     ...dadosBase,
+    semana,
     atualizadoEm,
-    folhetos: dadosBase.folhetos.map(f => ({ ...f, validade })),
+    folhetos: dadosBase.folhetos.map(({ validade, ...f }) => f),
   };
 
   res.status(200).json(resposta);

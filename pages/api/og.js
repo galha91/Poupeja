@@ -46,7 +46,7 @@ export default function handler(req) {
     ? `${statsRetrato ? statsRetrato + " — " : ""}vê o teu retrato em poupejá.com`
     : poupanca
     ? "Folhetos, talões e combustíveis — experimenta grátis, sem registo."
-    : "Folhetos, combustíveis e mais de 50 lojas. Grátis.";
+    : "Folhetos, combustíveis e 50 lojas. Grátis.";
 
   return new ImageResponse(
     (
@@ -221,7 +221,7 @@ export default function handler(req) {
           }}
         >
           {[
-            { valor: "50+",    label: "Lojas" },
+            { valor: "50",     label: "Lojas" },
             { valor: "9",      label: "Supermercados" },
             { valor: "52",     label: "Semanas poupança" },
             { valor: "0 ads",  label: "Sem publicidade" },
