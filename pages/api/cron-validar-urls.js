@@ -31,7 +31,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, partidas: 0, avisos: avisos.length });
   }
 
-  const corrigidas = await autoCorrigirUrls(partidas);
+  // Os folhetos vão junto: é deles que sai o fallback de cada supermercado.
+  const corrigidas = await autoCorrigirUrls(partidas, folhetos);
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
