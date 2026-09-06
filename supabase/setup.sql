@@ -55,3 +55,32 @@ create policy "push - insert"
 create policy "push - delete"
   on public.push_subscriptions for delete
   using (auth.uid() = user_id);
+
+-- ── Preços dos combustíveis (snapshot da DGEG) ──────────────────────────────
+-- Correr no Supabase: Dashboard → SQL Editor → New query → colar → Run
+--
+-- Uma linha só, reescrita de hora a hora pelo /api/cron-precos.
+--
+-- Existe para que a frescura NÃO dependa do tráfego nem de qual instância
+-- serverless apanhou o pedido: cada instância tinha a sua própria cache em
+-- memória, e uma instância fria com a DGEG em baixo não tinha nada para
+-- mostrar, mesmo que os dados estivessem bons cinco minutos antes.
+--
+-- Guarda também a data que a própria DGEG dá aos preços, quando a dá, para
+-- as páginas poderem dizer a que dia os preços se referem em vez de só
+-- dizerem quando é que nós fomos buscá-los.
+
+create table if not exists public.precos_dgeg (
+  id          text primary key default 'dgeg',
+  postos      jsonb       not null,
+  n_postos    integer     not null default 0,
+  obtido_em   timestamptz not null,
+  data_preco  timestamptz,
+  atualizado_em timestamptz not null default now(),
+  constraint precos_dgeg_linha_unica check (id = 'dgeg')
+);
+
+alter table public.precos_dgeg enable row level security;
+
+-- Sem policies de propósito: só a service role (server-side) lê e escreve.
+-- Os preços chegam ao utilizador pelas páginas, nunca por acesso directo.
