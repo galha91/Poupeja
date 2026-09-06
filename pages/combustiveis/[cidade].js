@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { eur } from "../../lib/formato";
+import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { dadosMunicipio } from "../../lib/municipios";
 import { URL_SITE } from "../../lib/site";
@@ -16,11 +17,9 @@ import { URL_SITE } from "../../lib/site";
  * postos concretos — senão são centenas de páginas iguais e o Google
  * trata-as como tal.
  */
-export default function CombustiveisConcelho({ dados, atualizadoEm }) {
-  const { municipio, destaques, amplitude, noConcelho, proximos, vizinhos } = dados;
-  const dataStr = atualizadoEm
-    ? new Date(atualizadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "long", year: "numeric" })
-    : "";
+export default function CombustiveisConcelho({ dados }) {
+  const { municipio, destaques, amplitude, noConcelho, proximos, vizinhos, frescura } = dados;
+  const idade = descreverFrescura(frescura);
 
   const gasoleo  = destaques.find(d => d.tipoLabel === "Gasóleo");
   const gasolina = destaques.find(d => d.tipoLabel === "Gasolina 95");
@@ -46,10 +45,10 @@ export default function CombustiveisConcelho({ dados, atualizadoEm }) {
 
       <div style={{ paddingTop: 24 }}>
         <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-          Dados oficiais DGEG{dataStr ? ` · ${dataStr}` : ""}
+          Dados oficiais DGEG · {idade.rotulo}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
-          Preço dos combustíveis em {municipio.nome} hoje
+          Preço dos combustíveis em {municipio.nome}{idade.deHoje ? " hoje" : ""}
         </h1>
         <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           <strong style={{ color: "var(--pj-text)" }}>{municipio.nPostos} postos</strong> no concelho
@@ -57,6 +56,14 @@ export default function CombustiveisConcelho({ dados, atualizadoEm }) {
           comunicados à Direção-Geral de Energia e Geologia. Na app PoupeJá vês os postos{" "}
           <strong style={{ color: "var(--pj-text)" }}>à tua volta</strong> e crias avisos de preço.
         </p>
+
+        {idade.aviso && (
+          <div className="rounded-2xl p-4 mt-6" style={{ background: "var(--pj-warn-wash)", border: "1px solid var(--pj-warn-border)" }}>
+            <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--pj-warn)", fontWeight: 600 }}>
+              {idade.aviso}
+            </p>
+          </div>
+        )}
 
         {/* Mais barato por tipo, com a diferença para o país */}
         <div className="grid gap-3 mt-8" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
@@ -112,7 +119,8 @@ export default function CombustiveisConcelho({ dados, atualizadoEm }) {
           ))}
         </div>
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
-          Fonte: DGEG — preços comunicados pelos postos. O preço no posto pode variar.
+          Fonte: DGEG — preços comunicados pelos próprios postos. {idade.rotulo}.
+          O preço no posto pode variar.
         </p>
 
         {/* Vale a pena sair do concelho? */}
@@ -182,6 +190,17 @@ export async function getServerSideProps({ res, params }) {
   // do que uma página vazia a dizer que não há preços.
   if (!dados) return { notFound: true };
 
-  res.setHeader("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=3600");
-  return { props: { dados, atualizadoEm: new Date().toISOString() } };
+  /*
+   * Sem stale-while-revalidate, de propósito.
+   *
+   * A data impressa é agora a dos dados, por isso uma página em cache não
+   * mente sobre a idade dos preços. O que fica preso no HTML é o JUÍZO
+   * "isto é de hoje" — o rótulo e o H1 são decididos no servidor, no
+   * momento em que a página é gerada. Com SWR a CDN pode servir a mesma
+   * página até 90 minutos depois; se esse intervalo atravessar a
+   * meia-noite, a página continua a dizer "hoje" sobre preços de ontem.
+   * Com 30 minutos secos, o erro possível é de 30 minutos.
+   */
+  res.setHeader("Cache-Control", "public, s-maxage=1800");
+  return { props: { dados } };
 }

@@ -2,7 +2,7 @@
 // A conversa com a DGEG (fetch, cache, mapeamento de tipos) vive em
 // lib/dgeg.js, porque as páginas públicas por concelho usam o mesmo.
 import {
-  DISTRITOS, haversine, postosDoDistrito, normalizarPosto,
+  DISTRITOS, haversine, juntarDistritos, normalizarPosto,
   postoUtilizavel, distritosPerto,
 } from "../../lib/dgeg";
 
@@ -20,9 +20,21 @@ export default async function handler(req, res) {
       ? distritosPerto(userLat, userLon, raioKm)
       : DISTRITOS.map(d => d.id);
 
-    const lotes  = await Promise.all(ids.map(id => postosDoDistrito(id)));
-    const postos = lotes.flat();
+    const lote   = await juntarDistritos(ids);
+    const postos = lote.postos;
     if (!postos.length) throw new Error("Sem resultados da DGEG");
+
+    /*
+     * A data que sai daqui é a dos DADOS, não a do pedido. Estava a ser
+     * new Date() em cada resposta, o que fazia qualquer consumidor
+     * (páginas incluídas) acreditar que os preços eram sempre de agora.
+     */
+    const datas = postos.map(p => normalizarPosto(p).dataPreco).filter(Boolean);
+    const frescura = {
+      atualizadoEm: new Date(lote.obtidoEm ?? Date.now()).toISOString(),
+      dataPreco: datas.length ? new Date(Math.max(...datas)).toISOString() : null,
+      stale: lote.stale,
+    };
 
     if (userLat && userLon) {
       // ── Modo local: postos individuais ordenados por preço ──
@@ -49,7 +61,7 @@ export default async function handler(req, res) {
         estacoes,
         tipos,
         total: estacoes.length,
-        atualizadoEm: new Date().toISOString(),
+        ...frescura,
         fonte: "DGEG — Direção-Geral de Energia e Geologia",
       });
     }
@@ -81,7 +93,7 @@ export default async function handler(req, res) {
       modo: "nacional",
       dados,
       total: dados.length,
-      atualizadoEm: new Date().toISOString(),
+      ...frescura,
       fonte: "DGEG — Direção-Geral de Energia e Geologia",
     });
 
@@ -91,11 +103,16 @@ export default async function handler(req, res) {
     // Continua a responder 200 com listas vazias — quem chama distingue pelo
     // `success`, e um 502 partia os clientes que só olham para o corpo.
     // A rede de segurança do "último resultado bom" está agora em lib/dgeg.js,
-    // por distrito: se a DGEG falhar, postosDoDistrito devolve a cache anterior.
+    // por distrito, e limitada a IDADE_MAXIMA: passado isso preferimos não
+    // ter preços a servir preços velhos.
     return res.status(200).json({
       success: false,
       dados: [], estacoes: [],
-      atualizadoEm: new Date().toISOString(),
+      // Sem preços não há data de preços. Carimbar "agora" aqui era o mesmo
+      // erro do resto: uma data que não descreve dado nenhum.
+      atualizadoEm: null,
+      dataPreco: null,
+      stale: true,
       erro: error.message,
     });
   }

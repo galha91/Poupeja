@@ -203,13 +203,22 @@ function TabBar({ options, value, onChange }) {
 
 function FonteBadge({ fonte, atualizadoEm }) {
   if (!fonte) return null;
-  const hora = atualizadoEm
-    ? new Date(atualizadoEm).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })
-    : null;
+  /*
+   * Só a hora ("DGEG · 14:32") é enganador quando os dados não são de hoje:
+   * lê-se como "há bocado". Se não for do próprio dia, mostra-se o dia.
+   */
+  let quando = null;
+  if (atualizadoEm) {
+    const d = new Date(atualizadoEm), agora = new Date();
+    const hoje = d.toDateString() === agora.toDateString();
+    quando = hoje
+      ? d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })
+      : d.toLocaleDateString("pt-PT", { day: "numeric", month: "long" });
+  }
   return (
     <div className="mx-4 mt-4 mb-2 flex items-center gap-1.5">
       <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--pj-brand)]" />
-      <p className="text-[10px] text-[color:var(--pj-text-faint)]">{fonte}{hora ? ` · ${hora}` : ""}</p>
+      <p className="text-[10px] text-[color:var(--pj-text-faint)]">{fonte}{quando ? ` · ${quando}` : ""}</p>
     </div>
   );
 }
