@@ -454,14 +454,27 @@ function SubCombustiveis() {
         setAtualizado(json.atualizadoEm);
         setLoading(false);
 
-        // Regista snapshot semanal (preço mais baixo por tipo) para a tendência
-        const precosPorTipo = {};
-        items.forEach(e => {
-          const t = e.tipoLabel || e.tipo;
-          if (!t || typeof e.preco !== "number") return;
-          if (precosPorTipo[t] === undefined || e.preco < precosPorTipo[t]) precosPorTipo[t] = e.preco;
-        });
-        if (Object.keys(precosPorTipo).length) setHistorico(registarSnapshots(precosPorTipo));
+        /*
+         * Snapshot semanal (preço mais baixo por tipo) para a tendência —
+         * só a partir de dados LOCAIS (json.estacoes, com localização).
+         *
+         * O modo nacional (sem localização) é o mínimo por marca em TODO
+         * o país — um único distrito com dados desatualizados pode ganhar
+         * essa comparação sem se notar (era exatamente o que fazia o
+         * cartão da Início mostrar um preço que já não era real). Como só
+         * se grava UM snapshot por semana — o primeiro que aparecer — um
+         * valor assim, uma vez registado, ficava a semana inteira "errado"
+         * na tendência, mesmo depois dos dados reais corrigirem sozinhos.
+         */
+        if (json.modo === "local") {
+          const precosPorTipo = {};
+          items.forEach(e => {
+            const t = e.tipoLabel || e.tipo;
+            if (!t || typeof e.preco !== "number") return;
+            if (precosPorTipo[t] === undefined || e.preco < precosPorTipo[t]) precosPorTipo[t] = e.preco;
+          });
+          if (Object.keys(precosPorTipo).length) setHistorico(registarSnapshots(precosPorTipo));
+        }
       })
       .catch(e => { setErro(e.message); setLoading(false); });
   }
