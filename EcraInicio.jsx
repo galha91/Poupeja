@@ -135,7 +135,9 @@ function CardCombustivelHome({ setTab }) {
 
 
 function LogoFolheto({ loja }) {
-  return <LogoLoja loja={loja} size={44} radius={12} bg="#eeece4" />;
+  // 44 era para uma linha de nome + uma de subtítulo. O subtítulo era a
+  // mesma frase repetida nas 9 lojas e saiu — o logótipo acompanha.
+  return <LogoLoja loja={loja} size={36} radius={10} bg="#eeece4" />;
 }
 
 /* ─── Herói do Início ───────────────────────────────────────────
@@ -386,20 +388,32 @@ export default function EcraInicio({ user, setTab, goGarantias, onAbrirAvisos, o
         {folhetos.length > 0 && (
           <div className="anim-up anim-up-4">
             <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
-              <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos a acabar</span>
+              {/*
+                Chamava-se "Folhetos a acabar" — e não havia lógica de fim
+                nenhuma: é um slice(0,5) por ordem do ficheiro, que calha ser
+                alfabética. Nada aqui sabe que folheto está a acabar, porque
+                não temos as datas reais de nenhum deles.
+              */}
+              <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos desta semana</span>
               <button onClick={() => setTab("mercados")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Ver todos</button>
             </div>
             <div className="flex flex-col">
               {folhetos.slice(0, 5).map((f, i) => (
                 <div key={f.id || i}>
                   {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
-                  <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14, padding: "12px 0" }}>
+                  <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
                     <LogoFolheto loja={f.loja} />
+                    {/*
+                      Eram três colunas e duas não diziam nada: o `titulo` é a
+                      string "Folheto desta semana" gravada igual nas 9 lojas,
+                      e a `validade` era a semana civil, também igual em todas
+                      e inventada. Cinco linhas a repetir o mesmo texto duas
+                      vezes. Fica o que distingue mesmo cada linha: a loja.
+                    */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{f.loja}</div>
-                      <div className="truncate" style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 1 }}>{f.titulo || "Folheto desta semana"}</div>
                     </div>
-                    <div style={{ fontSize: 12.5, color: "var(--pj-text-faint)", fontWeight: 500, flex: "none" }}>{f.validade || ""}</div>
+                    <ChevronRight size={18} style={{ color: "var(--pj-text-faint)", flex: "none" }} />
                   </button>
                 </div>
               ))}

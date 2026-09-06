@@ -20,7 +20,7 @@ const SECOES = [
   },
   {
     titulo: "5. Com quem partilhamos (subprocessadores)",
-    texto: "Não vendemos nem cedemos dados pessoais. Para funcionar, o PoupeJá recorre a fornecedores que tratam dados em nosso nome, sob contrato e em conformidade com o RGPD:\n• Supabase — base de dados e autenticação (servidores na UE).\n• Vercel — alojamento da aplicação.\n• Resend — envio dos emails.\n• Serviços de notificações push dos browsers (Apple, Google, Mozilla) — entrega das notificações, se as ativares.",
+    texto: "Não vendemos nem cedemos dados pessoais. Para funcionar, o PoupeJá recorre a fornecedores que tratam dados em nosso nome, sob contrato e em conformidade com o RGPD:\n• Supabase — base de dados e autenticação (servidores na UE).\n• Vercel — alojamento da aplicação.\n• Resend — envio dos emails.\n• Serviços de notificações push dos browsers (Apple, Google, Mozilla) — entrega das notificações, se as ativares.\n• Google Analytics — medição de utilização do site (páginas vistas, ecrãs, origem da visita). Grava cookies próprios e os dados são tratados pela Google.\n• Awin — rede de afiliados. Quando abres um link para uma loja parceira, regista essa passagem para nos atribuir a comissão. Grava cookies próprios.\nO Google Analytics e o Awin carregam em todas as páginas. Podes bloqueá-los nas definições do browser ou com um bloqueador — a app continua a funcionar na mesma.",
   },
   {
     titulo: "6. Lista de compras partilhada",
@@ -40,7 +40,7 @@ const SECOES = [
   },
   {
     titulo: "10. Cookies e tecnologias semelhantes",
-    texto: "O PoupeJá não utiliza cookies de publicidade nem de rastreamento. Usamos apenas armazenamento local e um token de sessão para te manter com sessão iniciada e guardar as tuas preferências.",
+    texto: "As tuas listas, talões e preferências ficam em armazenamento local no teu dispositivo, e um token de sessão mantém-te com sessão iniciada — nada disso sai daqui.\nAlém desses, o site carrega dois serviços que gravam cookies próprios:\n• Google Analytics — cookies de medição (_ga), para sabermos quantas pessoas usam a app e por onde entram.\n• Awin — cookie de atribuição, para registar que foste tu a abrir um link de uma loja parceira e a comissão nos ser creditada.\nNão usamos cookies para te mostrar anúncios nem para construir perfis comerciais sobre ti. Se preferires, podes bloquear estes dois nas definições do browser ou com um bloqueador: a app funciona na mesma.",
   },
   {
     titulo: "11. Segurança",
