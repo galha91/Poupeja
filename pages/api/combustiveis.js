@@ -103,8 +103,9 @@ export default async function handler(req, res) {
     // Continua a responder 200 com listas vazias — quem chama distingue pelo
     // `success`, e um 502 partia os clientes que só olham para o corpo.
     // A rede de segurança do "último resultado bom" está agora em lib/dgeg.js,
-    // por distrito, e limitada a IDADE_MAXIMA: passado isso preferimos não
-    // ter preços a servir preços velhos.
+    // por distrito, e limitada a IDADE_MAXIMA_CACHE_LIVE (curta, de propósito
+    // — este ecrã não mostra idade nenhuma ao utilizador): passado isso
+    // preferimos não ter preços a servir preços velhos sem ninguém saber.
     return res.status(200).json({
       success: false,
       dados: [], estacoes: [],

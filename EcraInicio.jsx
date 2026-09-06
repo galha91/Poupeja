@@ -109,12 +109,21 @@ function CardCombustivelHome({ setTab }) {
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500 }}>
-          {dados?.perto ? "Gasóleo mais barato perto de ti" : "Gasóleo mais barato"}
+          {/*
+            Antes dizia só "Gasóleo mais barato" nos dois casos. Sem
+            localização, este preço é o mínimo em TODO o país — pode ser
+            uma estação a 300 km. Dizer "perto de ti" ao lado de um preço
+            assim (mesmo como convite para clicar) lia-se como se o
+            preço já fosse local, e não é: é por isso que parecia
+            "errado" ao comparar com o ecrã da Mobilidade, que mostra
+            mesmo a estação e a distância reais.
+          */}
+          {dados?.perto ? "Gasóleo mais barato perto de ti" : "Gasóleo mais barato no país"}
         </div>
         <div className="truncate" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)", marginTop: 3 }}>
           {dados ? (dados.marca || "—") : "Ver postos e preços"}
           {dados?.perto && dados.distancia ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> · {dados.distancia} km</span> : null}
-          {dados && !dados.perto ? <span onClick={pedirLocalizacao} style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}> · {aLocalizar ? "a localizar…" : "perto de ti"}</span> : null}
+          {dados && !dados.perto ? <span onClick={pedirLocalizacao} style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}> · {aLocalizar ? "a localizar…" : "ver perto de ti"}</span> : null}
         </div>
       </div>
       {dados
