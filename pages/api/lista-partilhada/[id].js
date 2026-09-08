@@ -1,6 +1,10 @@
 import { getSupabaseAdmin } from "../../../lib/supabaseAdmin";
+import { excedeuLimite } from "../../../lib/protecao-api";
 
-const ID_RE = /^[a-z0-9]{6,12}$/;
+/* De 6 a 32: os IDs novos têm 12 caracteres criptográficos (ver
+   gerarShareId em SecaoListaCompras.jsx), e os de 8 já emitidos com o
+   gerador antigo continuam a responder. */
+const ID_RE = /^[a-z0-9]{6,32}$/;
 const MAX_ITENS = 200;          // limite de artigos por lista
 const MAX_NOME = 80;            // limite de caracteres do nome de um artigo
 
@@ -25,6 +29,20 @@ export default async function handler(req, res) {
   if (!id || !ID_RE.test(id)) return res.status(400).json({ erro: "ID inválido" });
 
   res.setHeader("Cache-Control", "no-store");
+
+  /*
+   * Sem limite, dava para experimentar IDs em ciclo à velocidade do HTTP,
+   * à procura das listas de outras pessoas — e uma lista aberta lê-se e
+   * escreve-se sem conta nenhuma. O ID novo tem 12 caracteres
+   * criptográficos, o que já torna o palheiro enorme; isto fecha a porta
+   * a quem queira varrê-lo à força.
+   *
+   * 40/min é folgado para o uso real: a lista sincroniza sozinha enquanto
+   * uma família a edita, mas nunca a esse ritmo.
+   */
+  if (excedeuLimite(req, "lista-partilhada", 40)) {
+    return res.status(429).json({ erro: "Demasiados pedidos. Tenta daqui a pouco." });
+  }
 
   // Usa a service role (server-side). A tabela já não tem políticas públicas,
   // por isso o acesso anónimo direto ao Supabase está bloqueado: tudo passa
