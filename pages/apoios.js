@@ -26,7 +26,8 @@ export default function Apoios({ apoios, categorias, atualizado }) {
   return (
     <LayoutPublico>
       <Head>
-        <title>Apoios do Estado {new Date(atualizado).getFullYear()} — {apoios.length} benefícios a que podes ter direito | PoupeJá</title>
+        {/* Template string: ver a nota em folhetos/index.js — aqui saíam quatro comentários no título. */}
+        <title>{`Apoios do Estado ${new Date(atualizado).getFullYear()} — ${apoios.length} benefícios a que podes ter direito | PoupeJá`}</title>
         <meta name="description" content={`${apoios.length} apoios e benefícios oficiais em Portugal — tarifa social de eletricidade e gás, passes, habitação e mais. Quem pode pedir e como, com link direto para o Estado.`} />
         <link rel="canonical" href={`${SITE_URL}/apoios`} />
         <meta property="og:title" content={`Apoios do Estado — ${apoios.length} benefícios a que podes ter direito`} key="og:title" />
