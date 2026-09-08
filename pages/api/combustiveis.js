@@ -5,16 +5,38 @@ import {
   DISTRITOS, haversine, juntarDistritos, normalizarPosto,
   postoUtilizavel, distritosPerto,
 } from "../../lib/dgeg";
+import { excedeuLimite } from "../../lib/protecao-api";
+
+/* Teto do que uma resposta pode trazer. O modo local devolvia todos os
+   postos do raio — com um raio grande, megabytes por pedido. A app mostra
+   uma lista, não o país inteiro. */
+const MAX_ESTACOES = 300;
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=1800, stale-while-revalidate=3600");
+
+  /*
+   * Limite generoso de propósito (60/min por IP).
+   *
+   * Esta rota, ao contrário da /api/ev, também é chamada de dentro — as
+   * páginas de SEO dos concelhos fazem fetch a ela em getServerSideProps.
+   * Essas chamadas partem todas do mesmo IP de saída do Vercel, por isso um
+   * limite apertado travava o próprio site. Com a página em cache 30 min na
+   * CDN, o tráfego real que chega aqui é uma fracção, e 60/min só é atingido
+   * por quem estiver mesmo a martelar.
+   */
+  if (excedeuLimite(req, "combustiveis", 60)) {
+    return res.status(429).json({ erro: "Demasiados pedidos. Tenta daqui a pouco." });
+  }
 
   const { lat, lon, raio = 30, tipo } = req.query;
 
   try {
     const userLat = lat ? parseFloat(lat) : null;
     const userLon = lon ? parseFloat(lon) : null;
-    const raioKm  = parseFloat(raio);
+    // O raio vinha em cru do cliente. Sem teto, um valor absurdo obrigava a
+    // consultar os 18 distritos e a devolver o país inteiro.
+    const raioKm  = Math.min(Math.max(parseFloat(raio) || 30, 1), 100);
 
     const ids = (userLat && userLon)
       ? distritosPerto(userLat, userLon, raioKm)
@@ -53,14 +75,20 @@ export default async function handler(req, res) {
         )
         .sort((a, b) => a.preco - b.preco);
 
+      // Os tipos saem da lista COMPLETA, antes do corte — senão um corte
+      // podia esconder um tipo de combustível dos separadores.
       const tipos = [...new Set(estacoes.map(e => e.tipoLabel))].sort();
+      const maisBaratas = estacoes.slice(0, MAX_ESTACOES);
 
       return res.status(200).json({
         success: true,
         modo: "local",
-        estacoes,
+        estacoes: maisBaratas,
         tipos,
-        total: estacoes.length,
+        total: maisBaratas.length,
+        // Quantas ficaram de fora do corte, para quem chama saber que a
+        // lista não é exaustiva em vez de o descobrir por acidente.
+        totalEncontradas: estacoes.length,
         ...frescura,
         fonte: "DGEG — Direção-Geral de Energia e Geologia",
       });

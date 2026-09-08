@@ -1,5 +1,12 @@
+import { origemValida, excedeuLimite } from "../../lib/protecao-api";
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=86400");
+
+  if (!origemValida(req)) return res.status(403).json({ erro: "Origem não permitida." });
+  if (excedeuLimite(req, "euribor", 30)) {
+    return res.status(429).json({ erro: "Demasiados pedidos. Tenta daqui a pouco." });
+  }
 
   const indexantes = {
     "3M": "EURIBOR3MD_",
