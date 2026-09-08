@@ -13,6 +13,9 @@ const SITE_URL = "https://xn--poupej-uta.com";
  */
 export default function Folhetos({ folhetos, semana, atualizadoEm }) {
   const lojas = folhetos.map(f => f.loja).join(", ");
+  // Só as primeiras no <title>: o Google corta por volta dos 60 caracteres,
+  // e as nove lojas não cabem lá. A lista completa fica na descrição.
+  const lojasTitulo = folhetos.slice(0, 4).map(f => f.loja).join(", ");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -28,7 +31,13 @@ export default function Folhetos({ folhetos, semana, atualizadoEm }) {
   return (
     <LayoutPublico>
       <Head>
-        <title>Folhetos dos Supermercados desta Semana — {folhetos.slice(0, 4).map(f => f.loja).join(", ")} e mais | PoupeJá</title>
+        {/*
+          Uma expressão só, numa template string. Misturar texto literal com
+          {expressões} dentro do <title> faz o React separar os pedaços com
+          nós de comentário, e eles saem no HTML: o Google chegou a indexar
+          "Folhetos dos Supermercados desta Semana — <!-- -->Aldi, Auchan…".
+        */}
+        <title>{`Folhetos dos Supermercados desta Semana — ${lojasTitulo} e mais | PoupeJá`}</title>
         <meta name="description" content={`Todos os folhetos e promoções da semana num só sítio: ${lojas}. Links diretos e grátis, com aviso semanal na app PoupeJá.`} />
         <link rel="canonical" href={`${SITE_URL}/folhetos`} />
         <meta property="og:title" content="Folhetos dos supermercados desta semana" key="og:title" />
