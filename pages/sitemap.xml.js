@@ -7,6 +7,7 @@ const FIXAS = [
   { path: '/combustiveis', changefreq: 'daily',   priority: '0.9' },
   { path: '/folhetos',     changefreq: 'weekly',  priority: '0.9' },
   { path: '/receitas',     changefreq: 'weekly',  priority: '0.9' },
+  { path: '/lista',        changefreq: 'monthly', priority: '0.7' },
   { path: '/apoios',       changefreq: 'monthly', priority: '0.8' },
   { path: '/instalar',     changefreq: 'monthly', priority: '0.8' },
   { path: '/privacidade',  changefreq: 'yearly',  priority: '0.3' },

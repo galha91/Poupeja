@@ -102,6 +102,9 @@ export default function Admin() {
     <div className="min-h-screen bg-slate-50 text-slate-800">
       <Head>
         <title>PoupeJá · Administração</title>
+        {/* O acesso é validado no servidor (/api/admin-stats), mas o URL não
+            tem de andar em índices de pesquisa nem em listas de scanners. */}
+        <meta name="robots" content="noindex, nofollow" />
       </Head>
       <div className="max-w-2xl mx-auto px-4 py-6">
 

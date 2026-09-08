@@ -91,6 +91,9 @@ export default function ListaPartilhada({ id }) {
       <Head>
         <title>Lista de compras partilhada — PoupeJá</title>
         <meta name="description" content="Abre e edita esta lista de compras comigo, em tempo real. Grátis no PoupeJá." />
+        {/* Lista de outra pessoa: fora do índice. Não afeta o cartão de
+            partilha — os leitores de OG não olham para o robots. */}
+        <meta name="robots" content="noindex, nofollow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         {/* Pré-visualização (WhatsApp, iMessage, redes sociais) */}

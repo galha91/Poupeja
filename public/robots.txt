@@ -1,4 +1,12 @@
+# Nota: rotas privadas (/admin, /p, /lista/<id>, /confirmar) NÃO são listadas
+# aqui de propósito. O robots.txt é público — listar o painel de administração
+# nele é dar o endereço a quem anda à procura dele. Ficam fora do índice pela
+# meta robots="noindex" da própria página, que também é o único sinal que o
+# Google respeita para remover um URL já indexado (um Disallow impede-o de
+# voltar lá para LER o noindex).
+
 User-agent: *
 Allow: /
+Disallow: /api/
 
 Sitemap: https://xn--poupej-uta.com/sitemap.xml

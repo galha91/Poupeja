@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Head from "next/head";
 import LayoutPublico, { CtaApp } from "../LayoutPublico";
 import dadosApoios from "../public/apoios.json";
@@ -11,6 +12,13 @@ const SITE_URL = "https://xn--poupej-uta.com";
  */
 export default function Apoios({ apoios, categorias, atualizado }) {
   const nomeCat = Object.fromEntries(categorias.map(c => [c.id, c.nome]));
+  const [cat, setCat] = useState("todos");
+  // Só as categorias que têm mesmo apoios — um separador vazio é uma
+  // promessa falhada a um toque de distância.
+  const catsComApoios = categorias.filter(c => c.id === "todos" || apoios.some(a => a.categoria === c.id));
+  // A lista sai completa do servidor (o filtro começa em "todos"), por isso
+  // o Google continua a ver os 18 apoios e as âncoras de cada um.
+  const visiveis = cat === "todos" ? apoios : apoios.filter(a => a.categoria === cat);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -48,8 +56,30 @@ export default function Apoios({ apoios, categorias, atualizado }) {
           link direto para o serviço do Estado. Sem intermediários, sem custos.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3">
-          {apoios.map(a => (
+        <div className="flex flex-wrap gap-2 mt-7">
+          {catsComApoios.map(c => {
+            const ativa = cat === c.id;
+            return (
+              <button
+                key={c.id}
+                onClick={() => setCat(c.id)}
+                aria-pressed={ativa}
+                className="pj-tap"
+                style={{
+                  fontSize: 13, fontWeight: 600, padding: "8px 14px", borderRadius: 12, cursor: "pointer",
+                  color: ativa ? "#fff" : "var(--pj-brand-ink)",
+                  background: ativa ? "var(--pj-brand)" : "var(--pj-card)",
+                  border: `1px solid ${ativa ? "var(--pj-brand)" : "var(--pj-border)"}`,
+                }}
+              >
+                {c.nome}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3">
+          {visiveis.map(a => (
             <article key={a.id} id={a.id} className="rounded-2xl p-5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
                 {nomeCat[a.categoria] || a.categoria}
@@ -76,7 +106,7 @@ export default function Apoios({ apoios, categorias, atualizado }) {
           ))}
         </div>
 
-        <CtaApp texto="Pesquisa e filtra os apoios na app — grátis" />
+        <CtaApp texto="Guarda os apoios que te interessam na app — grátis" />
       </div>
     </LayoutPublico>
   );

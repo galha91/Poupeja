@@ -68,6 +68,15 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         {/*
+          Título por omissão. A home e a /privacidade não tinham <title>
+          nenhum: o separador do browser mostrava o URL em cru e o Google
+          inventava o título a partir do conteúdo. Vive aqui e não no
+          _document porque o next/head só sabe desduplicar o que lhe passa
+          pelas mãos — uma página que ponha o seu <title> substitui este,
+          por ser renderizada depois.
+        */}
+        <title>PoupeJá — Poupa nas compras do dia a dia</title>
+        {/*
           Cartão de partilha por omissão. Cada `key` é um ponto de substituição:
           uma página que ponha <meta property="og:image" key="og:image" …/> no
           seu próprio <Head> APAGA esta — é assim que o /p e a /lista mostram o

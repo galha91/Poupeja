@@ -62,6 +62,35 @@ gtag('config', 'G-Q3JQG95879');`,
       </Head>
       <body>
         <Main />
+        {/*
+          A home é uma SPA: sem JavaScript o <div id="__next"> fica vazio e a
+          pessoa vê uma página branca, sem sequer saber onde está. Isto dá-lhe
+          o nome do sítio e os caminhos que funcionam mesmo sem JS.
+
+          O `#__next:empty` é o que impede isto de aparecer por cima das
+          páginas públicas (/folhetos, /combustiveis, …): essas vêm com o
+          conteúdo montado do servidor, o contentor não está vazio, e a regra
+          não pega. Sem esse detalhe, quem navega sem JS via este aviso
+          repetido no topo de páginas que estavam a funcionar bem.
+        */}
+        <noscript>
+          <style dangerouslySetInnerHTML={{ __html: `.pj-sem-js{display:none}#__next:empty~.pj-sem-js{display:block}` }} />
+          <div className="pj-sem-js" style={{ maxWidth: 640, margin: "0 auto", padding: "40px 20px", fontFamily: "'DM Sans', system-ui, sans-serif", color: "#1c1917" }}>
+            <h1 style={{ fontSize: 26, fontWeight: 600, margin: 0 }}>PoupeJá</h1>
+            <p style={{ fontSize: 15, lineHeight: 1.6, color: "#57534e", marginTop: 12 }}>
+              A app precisa de JavaScript para funcionar. Ativa-o nas definições do teu browser
+              e recarrega a página — ou segue por aqui, que estas páginas abrem na mesma:
+            </p>
+            <ul style={{ fontSize: 15, lineHeight: 2, paddingLeft: 20, marginTop: 8 }}>
+              <li><a href="/folhetos" style={{ color: "#0b6b4f" }}>Folhetos dos supermercados desta semana</a></li>
+              <li><a href="/combustiveis" style={{ color: "#0b6b4f" }}>Preços dos combustíveis hoje</a></li>
+              <li><a href="/receitas" style={{ color: "#0b6b4f" }}>Receitas baratas para 4 pessoas</a></li>
+              <li><a href="/apoios" style={{ color: "#0b6b4f" }}>Apoios do Estado</a></li>
+              <li><a href="/lista" style={{ color: "#0b6b4f" }}>Lista de compras partilhada</a></li>
+              <li><a href="/instalar" style={{ color: "#0b6b4f" }}>Como instalar a app</a></li>
+            </ul>
+          </div>
+        </noscript>
         <NextScript />
         {/* Awin Publisher MasterTag */}
         <script src="https://www.dwin1.com/pub.2930079.min.js" type="text/javascript" defer="defer"></script>

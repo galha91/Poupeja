@@ -1,4 +1,6 @@
+import { useState } from "react";
 import Head from "next/head";
+import { Search } from "lucide-react";
 import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
@@ -11,7 +13,15 @@ import { URL_SITE as SITE_URL } from "../../lib/site";
  * cacheada 30 min na CDN. Alvo: pesquisas "preço gasóleo hoje",
  * "gasolina mais barata", etc.
  */
+/* Os combustíveis que a maioria das pessoas procura, pela ordem em que os
+   procuram. O resto (aditivados, gasóleo colorido) vai a seguir, por nome. */
+const TIPOS_PRINCIPAIS = ["Gasóleo", "Gasolina 95", "Gasolina 98", "GPL Auto"];
+const MARCAS_POR_TIPO = 8;
+
+const semAcentos = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 export default function Combustiveis({ dados, concelhos, frescura, erro }) {
+  const [procura, setProcura] = useState("");
   const idade = descreverFrescura(frescura);
   // Agrupados por distrito: uma lista corrida de duzentos concelhos não se lê.
   const agrupados = new Map();
@@ -22,13 +32,35 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
   const porDistrito = [...agrupados.entries()]
     .map(([d, l]) => [d, l.slice().sort((a, b) => a.nome.localeCompare(b.nome, "pt"))])
     .sort((a, b) => a[0].localeCompare(b[0], "pt"));
+  // Sem acentos dos dois lados: quem escreve "evora" ou "santarem" à pressa
+  // no telemóvel tem de encontrar Évora e Santarém na mesma.
+  const procuraNormalizada = semAcentos(procura.trim());
+  const porDistritoFiltrado = procuraNormalizada
+    ? porDistrito
+        .map(([d, l]) => [d, l.filter(c => semAcentos(c.nome).includes(procuraNormalizada) || semAcentos(d).includes(procuraNormalizada))])
+        .filter(([, l]) => l.length > 0)
+    : porDistrito;
   const nConcelhos = (concelhos || []).length;
   const totalPostos = (concelhos || []).reduce((s, c) => s + c.nPostos, 0);
   const porTipo = {};
+  // Uma marca por tipo, a mais barata: os dados já vêm ordenados por preço.
+  const marcasPorTipo = {};
   for (const d of dados || []) {
-    if (!porTipo[d.tipo]) porTipo[d.tipo] = d; // dados já vêm ordenados por preço
+    if (!porTipo[d.tipo]) porTipo[d.tipo] = d;
+    (marcasPorTipo[d.tipo] ||= []).push(d);
   }
-  const tiposDestaque = ["Gasóleo", "Gasolina 95", "GPL Auto"].filter(t => porTipo[t]);
+  const tiposDestaque = TIPOS_PRINCIPAIS.filter(t => porTipo[t]);
+  /*
+   * A tabela por marca era um `dados.slice(0, 16)` — e `dados` vem ordenado
+   * por preço com os tipos todos misturados. Como o GPL anda nos €0,84 e o
+   * gasóleo nos €1,85, as dezasseis primeiras linhas eram sempre GPL: a
+   * página prometia "preço mínimo por marca" e nunca mostrava gasóleo nem
+   * gasolina, que é o que a esmagadora maioria das pessoas vem cá ver.
+   */
+  const tiposTabela = [
+    ...TIPOS_PRINCIPAIS.filter(t => marcasPorTipo[t]),
+    ...Object.keys(marcasPorTipo).filter(t => !TIPOS_PRINCIPAIS.includes(t)).sort((a, b) => a.localeCompare(b, "pt")),
+  ];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Dataset",
@@ -88,24 +120,34 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
               ))}
             </div>
 
-            {/* Tabela por marca */}
-            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
+            {/* Tabela por marca, uma secção por combustível */}
+            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 6 }}>
               Preço mínimo por marca
             </h2>
-            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-              {(dados || []).slice(0, 16).map((d, i) => (
-                <div key={`${d.posto}-${d.tipo}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600 }}>{d.posto}</p>
-                    <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{d.tipo} · {d.totalPostos} posto{d.totalPostos !== 1 ? "s" : ""}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(d.preco, 3)}</p>
-                    <p style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>médio €{eur(d.precoMedio, 3)}</p>
-                  </div>
+            <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginBottom: 18 }}>
+              As marcas mais baratas de cada combustível, em todo o país.
+            </p>
+            {tiposTabela.map(tipo => (
+              <div key={tipo} style={{ marginBottom: 20 }}>
+                <h3 style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 9 }}>
+                  {tipo}
+                </h3>
+                <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  {marcasPorTipo[tipo].slice(0, MARCAS_POR_TIPO).map((d, i) => (
+                    <div key={d.posto} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 600 }}>{d.posto}</p>
+                        <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{d.totalPostos} posto{d.totalPostos !== 1 ? "s" : ""}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(d.preco, 3)}</p>
+                        <p style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>médio €{eur(d.precoMedio, 3)}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
             <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
               Fonte: DGEG — preços comunicados pelos próprios postos. {idade.rotulo}.
               O preço no posto pode variar.
@@ -120,10 +162,31 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
             <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 6 }}>
               Preços por concelho
             </h2>
-            <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginBottom: 18 }}>
+            <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginBottom: 14 }}>
               {nConcelhos} concelhos com preços comparados, dos {totalPostos} postos que a DGEG cobre.
             </p>
-            {porDistrito.map(([distrito, lista]) => (
+
+            {/* A lista inteira sai server-rendered (o filtro começa vazio),
+                por isso o Google continua a ver os 239 links. */}
+            <label className="flex items-center gap-2.5 rounded-2xl px-4 mb-5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+              <Search size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
+              <input
+                type="search"
+                value={procura}
+                onChange={e => setProcura(e.target.value)}
+                placeholder="Procura o teu concelho…"
+                aria-label="Procurar concelho"
+                style={{ flex: 1, background: "transparent", border: "none", outline: "none", padding: "12px 0", fontSize: 14.5, color: "var(--pj-text)", minWidth: 0 }}
+              />
+            </label>
+
+            {procuraNormalizada && porDistritoFiltrado.length === 0 && (
+              <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginBottom: 18 }}>
+                Nenhum concelho encontrado para “{procura}”. A DGEG só cobre concelhos com postos que comunicam preços.
+              </p>
+            )}
+
+            {porDistritoFiltrado.map(([distrito, lista]) => (
               <div key={distrito} style={{ marginBottom: 22 }}>
                 <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 9 }}>
                   {distrito}

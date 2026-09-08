@@ -130,7 +130,16 @@ export default function Instalar() {
             )}
             {modo === "ios" && <GuiaIos />}
             {modo === null && (
-              <div className="h-14 rounded-2xl bg-slate-100 animate-pulse" />
+              <>
+                {/* Enquanto o useEffect não corre (um instante), ou para
+                    sempre se o JS estiver desligado — daí o noscript com as
+                    instruções manuais em vez de um placeholder eterno. */}
+                <div className="pj-a-detetar h-14 rounded-2xl bg-slate-100 animate-pulse" />
+                <noscript>
+                  <style dangerouslySetInnerHTML={{ __html: `.pj-a-detetar{display:none}` }} />
+                  <GuiaManual />
+                </noscript>
+              </>
             )}
           </div>
 
@@ -267,6 +276,17 @@ function GuiaDesktop() {
       <p className="text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
         No Chrome ou Edge, clica no ícone de instalar (⊕) na barra de endereço, ou no menu ⋮ → “Instalar PoupeJá”.
       </p>
+    </div>
+  );
+}
+
+/* ─── Sem deteção de plataforma: as duas receitas lado a lado ─── */
+function GuiaManual() {
+  return (
+    <div className="flex flex-col gap-3">
+      <GuiaIos />
+      <GuiaAndroid comBotaoAcima={false} />
+      <GuiaDesktop />
     </div>
   );
 }
