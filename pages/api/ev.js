@@ -1,9 +1,25 @@
+import { origemValida, excedeuLimite } from "../../lib/protecao-api";
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=180, stale-while-revalidate");
 
+  /*
+   * Esta rota gasta quota paga em DUAS APIs (TomTom e OpenChargeMap) e não
+   * tinha proteção nenhuma — qualquer pessoa podia chamá-la em ciclo e
+   * esgotar as quotas. Só é chamada pelo browser da app, por isso a
+   * verificação de origem não trava mais ninguém.
+   */
+  if (!origemValida(req)) return res.status(403).json({ erro: "Origem não permitida." });
+  if (excedeuLimite(req, "ev", 30)) {
+    return res.status(429).json({ erro: "Demasiados pedidos. Tenta daqui a pouco." });
+  }
+
   const { lat = 38.7169, lon = -9.1395, raio = 10 } = req.query;
   const TOMTOM = process.env.TOMTOM_API_KEY;
-  const raioMetros = Math.round(parseFloat(raio) * 1000);
+  // O raio vinha do cliente em cru: um raio absurdo faz uma pesquisa
+  // absurda (e cara) na TomTom. Fica entre 1 e 50 km.
+  const raioKm = Math.min(Math.max(parseFloat(raio) || 10, 1), 50);
+  const raioMetros = Math.round(raioKm * 1000);
 
   // 1ª fonte: TomTom — dados em tempo real (~3 min), cobertura PT excelente
   if (TOMTOM) {

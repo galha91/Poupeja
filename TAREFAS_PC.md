@@ -47,3 +47,33 @@ deves estar em Pro — mas convém confirmar depois do deploy que o
 - Ou abrir `/combustiveis` e ver o rótulo por baixo do título: deve dizer
   "Preços de hoje" ou "Consultado hoje às HH:MM"
 - Se falhar horas seguidas, recebes email em poupeja.portugal@gmail.com
+
+## Correr o projeto localmente (mudou — leitura obrigatória)
+
+O código deixou de ter um fallback para o projeto Supabase de **produção**.
+Antes, correr sem configuração ligava-se à base de dados real e escrevia lá.
+Agora falha com uma mensagem clara, de propósito.
+
+Cria um `.env.local` na raiz (o `.gitignore` já o cobre):
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<o-teu-projeto-de-dev>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<a-anon-key-desse-projeto>
+NEXT_PUBLIC_URL=http://localhost:3000
+```
+
+O ideal é criares um segundo projeto no Supabase só para desenvolvimento
+(o plano gratuito chega) e correres lá o `supabase/setup.sql`. Se preferires
+apontar à produção pontualmente, põe aí as chaves de produção — mas fica
+consciente de que estás a mexer em dados de gente a sério.
+
+### CSP — passar de aviso a bloqueio
+O `next.config.js` tem um Content-Security-Policy em **report-only**: o
+browser não bloqueia nada, só escreve na consola o que teria bloqueado.
+Quando quiseres ligá-lo a sério:
+1. Abre o site com a consola aberta e percorre Início, Mercado, Mobilidade
+   (com o mapa), Lojas e Poupança.
+2. Se não aparecer nenhuma queixa de CSP, muda a chave no `next.config.js`
+   de `Content-Security-Policy-Report-Only` para `Content-Security-Policy`.
+3. Se aparecer alguma, acrescenta o domínio em falta à diretiva certa antes
+   de ligar.

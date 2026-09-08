@@ -17,11 +17,22 @@ export default async function handler(req, res) {
 
   const { imagem } = req.body;
   if (!imagem) return res.status(400).json({ erro: "Imagem em falta" });
+  if (typeof imagem !== "string") return res.status(400).json({ erro: "Formato de imagem inválido" });
 
-  const match = imagem.match(/^data:(.+);base64,(.+)$/);
-  if (!match) return res.status(400).json({ erro: "Formato de imagem inválido" });
+  /*
+   * O regex era /^data:(.+);base64,(.+)$/ — o `.+` aceita QUALQUER coisa
+   * como tipo, e esse valor seguia em cru para a API da Anthropic, que é
+   * paga. Lista fechada: só os formatos que ela aceita e que uma câmara
+   * produz. Nada mais entra.
+   */
+  const match = imagem.match(/^data:(image\/(?:jpeg|jpg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
+  if (!match) {
+    return res.status(400).json({ erro: "Formato de imagem inválido. Usa JPEG, PNG, WebP ou GIF." });
+  }
 
-  const [, mediaType, base64] = match;
+  const [, tipoBruto, base64] = match;
+  // A Anthropic espera image/jpeg — "image/jpg" é comum mas não é válido.
+  const mediaType = tipoBruto === "image/jpg" ? "image/jpeg" : tipoBruto;
 
   try {
     const msg = await client.messages.create({
