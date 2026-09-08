@@ -1,23 +1,73 @@
 {
-  "atualizado": "2026-06-20",
+  "atualizado": "2026-09-08",
   "categorias": [
-    { "id": "todos",       "nome": "Todos" },
-    { "id": "energia",     "nome": "Energia",     "cor": "#059669", "corBg": "#ecfdf5", "corBorda": "#a7f3d0" },
-    { "id": "transportes", "nome": "Transportes", "cor": "#2563eb", "corBg": "#eff6ff", "corBorda": "#bfdbfe" },
-    { "id": "habitacao",   "nome": "Habitação",   "cor": "#d97706", "corBg": "#fffbeb", "corBorda": "#fde68a" },
-    { "id": "familia",     "nome": "Família",     "cor": "#db2777", "corBg": "#fdf2f8", "corBorda": "#fbcfe8" },
-    { "id": "jovens",      "nome": "Jovens",      "cor": "#7c3aed", "corBg": "#f5f3ff", "corBorda": "#ddd6fe" },
-    { "id": "saude",       "nome": "Saúde",       "cor": "#0891b2", "corBg": "#ecfeff", "corBorda": "#a5f3fc" },
-    { "id": "emprego",     "nome": "Emprego",     "cor": "#475569", "corBg": "#f8fafc", "corBorda": "#cbd5e1" }
+    {
+      "id": "todos",
+      "nome": "Todos"
+    },
+    {
+      "id": "energia",
+      "nome": "Energia",
+      "cor": "#059669",
+      "corBg": "#ecfdf5",
+      "corBorda": "#a7f3d0"
+    },
+    {
+      "id": "transportes",
+      "nome": "Transportes",
+      "cor": "#2563eb",
+      "corBg": "#eff6ff",
+      "corBorda": "#bfdbfe"
+    },
+    {
+      "id": "habitacao",
+      "nome": "Habitação",
+      "cor": "#d97706",
+      "corBg": "#fffbeb",
+      "corBorda": "#fde68a"
+    },
+    {
+      "id": "familia",
+      "nome": "Família",
+      "cor": "#db2777",
+      "corBg": "#fdf2f8",
+      "corBorda": "#fbcfe8"
+    },
+    {
+      "id": "jovens",
+      "nome": "Jovens",
+      "cor": "#7c3aed",
+      "corBg": "#f5f3ff",
+      "corBorda": "#ddd6fe"
+    },
+    {
+      "id": "saude",
+      "nome": "Saúde",
+      "cor": "#0891b2",
+      "corBg": "#ecfeff",
+      "corBorda": "#a5f3fc"
+    },
+    {
+      "id": "emprego",
+      "nome": "Emprego",
+      "cor": "#475569",
+      "corBg": "#f8fafc",
+      "corBorda": "#cbd5e1"
+    }
   ],
   "apoios": [
     {
       "id": "tarifa-social-eletricidade",
       "titulo": "Tarifa Social de Eletricidade",
-      "descricao": "Desconto automático na fatura de luz, aplicado ao termo de potência e ao termo de energia. Para 2026 o Governo fixou o desconto em 33,8% sobre as tarifas de acesso às redes. Os beneficiários ficam ainda isentos do Imposto Especial de Consumo (IEC).",
+      "descricao": "Desconto automático na fatura de luz, aplicado ao termo de potência e ao termo de energia. Em 2026 o desconto é de 33,8% sobre as tarifas do mercado regulado, sem IVA nem outros encargos, o que a ERSE traduz em cerca de 13,44€/mês. Os beneficiários ficam ainda isentos do Imposto Especial de Consumo (IEC). É atribuído automaticamente a quem tem direito.",
       "valor": "33,8% de desconto (2026)",
       "categoria": "energia",
-      "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%", "Pensionistas com rendimentos baixos"],
+      "quemPode": [
+        "Beneficiários de RSI, CSI ou Bolsa de Ação Social",
+        "Família numerosa (3+ filhos)",
+        "Deficiência ≥ 60%",
+        "Pensionistas com rendimentos baixos"
+      ],
       "comoRequerer": "O desconto é aplicado automaticamente se já receberes uma prestação social. Caso contrário, pede ao teu comercializador de energia.",
       "link": "https://tarifasocial.dgeg.gov.pt/",
       "novo": false
@@ -25,10 +75,14 @@
     {
       "id": "tarifa-social-gas",
       "titulo": "Tarifa Social de Gás Natural",
-      "descricao": "Desconto na fatura de gás natural para famílias com baixos rendimentos, com condições semelhantes à tarifa social de eletricidade.",
-      "valor": "Até 30,3% de desconto",
+      "descricao": "Desconto na fatura de gás natural para famílias com baixos rendimentos, com as mesmas condições de acesso da tarifa social de eletricidade. Em 2026 o desconto é de 31,2% sobre a tarifa de venda a clientes finais, sem taxas nem impostos. Inclui ainda isenção do imposto sobre os produtos petrolíferos (ISPGN).",
+      "valor": "31,2% de desconto (2026)",
       "categoria": "energia",
-      "quemPode": ["Beneficiários de RSI, CSI ou Bolsa de Ação Social", "Família numerosa (3+ filhos)", "Deficiência ≥ 60%"],
+      "quemPode": [
+        "Beneficiários de RSI, CSI ou Bolsa de Ação Social",
+        "Família numerosa (3+ filhos)",
+        "Deficiência ≥ 60%"
+      ],
       "comoRequerer": "Contacta o teu comercializador de gás ou verifica no Portal ePortugal.gov.pt.",
       "link": "https://tarifasocial.dgeg.gov.pt/",
       "novo": false
@@ -36,10 +90,13 @@
     {
       "id": "apoios-eficiencia-energetica",
       "titulo": "Apoios à Eficiência Energética em Casa",
-      "descricao": "Apoios do Fundo Ambiental para obras que melhorem a eficiência energética da habitação: isolamento, janelas, bombas de calor, painéis solares e ventilação. O Governo está a lançar em 2026 um novo modelo de financiamento através do Banco de Fomento, com bónus do Fundo Ambiental e condições mais favoráveis que o crédito bancário.",
-      "valor": "Comparticipação e financiamento bonificado",
+      "descricao": "Apoios do Fundo Ambiental para obras que melhorem a eficiência energética da habitação: isolamento, janelas, bombas de calor, painéis solares e ventilação. Atenção: o programa E-Lar encerrou candidaturas a 24 de março de 2026 e a nova linha de financiamento bonificado através do Banco de Fomento, anunciada em dezembro de 2025, ainda não tem aviso de abertura publicado. Vale a pena vigiar o site do Fundo Ambiental antes de contar com este apoio.",
+      "valor": "Sem candidaturas abertas para famílias (set. 2026)",
       "categoria": "energia",
-      "quemPode": ["Proprietários de habitação própria permanente", "Obras que melhorem o desempenho energético do imóvel"],
+      "quemPode": [
+        "Proprietários de habitação própria permanente",
+        "Obras que melhorem o desempenho energético do imóvel"
+      ],
       "comoRequerer": "Acompanha a abertura das candidaturas no portal do Fundo Ambiental (fundoambiental.pt). Em geral é necessário: declaração de IRS, caderneta predial, certificado energético e orçamentos de instaladores certificados.",
       "link": "https://www.fundoambiental.pt/",
       "novo": true
@@ -47,22 +104,28 @@
     {
       "id": "passe-sub23",
       "titulo": "Passe Sub-23 Gratuito",
-      "descricao": "Passes de transporte público intermunicipais e metropolitanos completamente gratuitos para jovens até aos 23 anos.",
+      "descricao": "Passes de transporte público municipais, intermunicipais e metropolitanos gratuitos para crianças e jovens dos 4 aos 23 anos (inclusive), estudantes ou não. Em vigor desde 1 de dezembro de 2024. Pede-se ao operador de transportes da tua área.",
       "valor": "Gratuito",
       "categoria": "transportes",
-      "quemPode": ["Jovens com idade até 23 anos (inclusive)"],
+      "quemPode": [
+        "Jovens com idade até 23 anos (inclusive)"
+      ],
       "comoRequerer": "Solicita a gratuidade nos balcões das operadoras de transporte (Metro, CP, Carris) apresentando o Cartão do Cidadão. Podes depois carregar o passe mensalmente nas apps CARRISway/Andante ou nas máquinas nas estações.",
       "link": "https://www.navegante.pt/viajar/descontos",
       "novo": false
     },
     {
       "id": "passe-senior",
-      "titulo": "Passe Sénior Gratuito",
-      "descricao": "Transportes públicos rodoviários, ferroviários e fluviais gratuitos para pessoas a partir dos 65 anos em todo o território nacional.",
-      "valor": "Gratuito",
+      "titulo": "Passe Sénior (65+)",
+      "descricao": "Ao contrário do passe jovem, não existe gratuitidade nacional para os 65+. Há passe gratuito para residentes em Lisboa (desde 2022, garantido até 2029), no Porto e nalgumas comunidades intermunicipais, como a OesteCIM. Fora desses casos aplicam-se descontos: por exemplo, o perfil 3.ª idade dá 60% de desconto no navegante urbano. Confirma sempre com a câmara municipal ou o operador da tua área.",
+      "valor": "Gratuito nalguns municípios · descontos no resto do país",
       "categoria": "transportes",
-      "quemPode": ["Pessoas com 65 ou mais anos de idade"],
-      "comoRequerer": "Apresenta o Cartão do Cidadão ou o Cartão Sénior na bilheteira das operadoras de transporte. Em Lisboa, a gratuidade está garantida até 2029 para residentes.",
+      "quemPode": [
+        "Ter 65 ou mais anos",
+        "Residir num município com passe sénior gratuito (Lisboa, Porto e algumas CIM)",
+        "Fora desses, há descontos de idoso em vez de gratuitidade"
+      ],
+      "comoRequerer": "Confirma na câmara municipal ou no operador de transportes da tua área — as condições mudam de concelho para concelho.",
       "link": "https://www.navegante.pt/viajar/descontos",
       "novo": false
     },
@@ -72,7 +135,9 @@
       "descricao": "Passe mensal de transporte ilimitado nas áreas metropolitanas de Lisboa e Porto por apenas 40€ (ou menos com descontos).",
       "valor": "A partir de 40€/mês",
       "categoria": "transportes",
-      "quemPode": ["Qualquer residente nas áreas metropolitanas de Lisboa e Porto"],
+      "quemPode": [
+        "Qualquer residente nas áreas metropolitanas de Lisboa e Porto"
+      ],
       "comoRequerer": "Carrega o passe no Cartão do Cidadão ou num cartão Navegante/Andante nos balcões das operadoras.",
       "link": "https://www.navegante.pt/viajar/tarifario-navegante",
       "novo": false
@@ -80,21 +145,30 @@
     {
       "id": "porta-65-jovem",
       "titulo": "Porta 65 — Apoio à Renda",
-      "descricao": "Subsídio mensal para jovens arrendatários com rendimentos baixos ou médios. Cobre parte da renda de habitação.",
-      "valor": "Comparticipação parcial da renda",
+      "descricao": "Subsídio mensal para jovens dos 18 aos 35 anos que arrendam casa para residência permanente. O apoio médio subiu para cerca de 275€/mês. Em 2026 caiu o limite de renda como critério de exclusão: mesmo com renda acima da Renda Máxima de Referência do concelho podes candidatar-te (a RMR passa a servir só para calcular o valor). Deixou também de ser obrigatório ter o contrato assinado à data da candidatura. Candidaturas em contínuo.",
+      "valor": "≈ 275€/mês em média",
       "categoria": "habitacao",
-      "quemPode": ["Jovens de 18 a 35 anos (inclusive)", "Rendimento anual bruto dentro do limite definido", "Arrendamento de habitação própria"],
+      "quemPode": [
+        "Jovens de 18 a 35 anos (inclusive)",
+        "Rendimento anual bruto dentro do limite definido",
+        "Arrendamento de habitação própria"
+      ],
       "comoRequerer": "Candidatura anual no Portal da Habitação (portaldahabitacao.pt) durante o período de candidaturas.",
       "link": "https://www.portaldahabitacao.pt/porta-65-jovem",
       "novo": false
     },
     {
       "id": "imt-isenção-jovem",
-      "titulo": "Isenção de IMT e IMI para Jovens",
-      "descricao": "Isenção total do IMT (Imposto Municipal sobre Transmissões) e do Imposto do Selo na compra da 1.ª habitação para jovens até 35 anos. Em 2026 o limite de isenção total subiu para 330.539€, com isenção parcial até 660.982€.",
+      "titulo": "Isenção de IMT para Jovens (IMT Jovem)",
+      "descricao": "Isenção total do IMT (Imposto Municipal sobre Transmissões) e do Imposto do Selo na compra da 1.ª habitação própria e permanente por jovens até aos 35 anos (inclusive). Em 2026 a isenção é total até 330.539€ e parcial entre esse valor e 660.982€ — acima disso não há isenção. Não abrange o IMI, que continua a ser devido.",
       "valor": "Isenção total de IMT e Imposto do Selo",
       "categoria": "habitacao",
-      "quemPode": ["Jovens até 35 anos (inclusive)", "Compra de 1.ª habitação própria e permanente", "Isenção total para imóvel até 330.539€ (2026); isenção parcial até 660.982€", "Não pode ser dependente de IRS nem ter sido proprietário de outro imóvel nos 3 anos anteriores"],
+      "quemPode": [
+        "Jovens até 35 anos (inclusive)",
+        "Compra de 1.ª habitação própria e permanente",
+        "Isenção total para imóvel até 330.539€ (2026); isenção parcial até 660.982€",
+        "Não pode ser dependente de IRS nem ter sido proprietário de outro imóvel nos 3 anos anteriores"
+      ],
       "comoRequerer": "A isenção de IMT é solicitada no Portal das Finanças antes da escritura (Modelo 1 do IMT) ou via e-balcão. A isenção de IMI é automática após o registo da habitação permanente.",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/IMT_Jovem/Pages/default.aspx",
       "novo": false
@@ -102,10 +176,13 @@
     {
       "id": "abono-familia",
       "titulo": "Abono de Família",
-      "descricao": "Prestação mensal para ajudar as famílias com os encargos de educação e sustento de crianças e jovens a cargo.",
-      "valor": "Variável consoante escalão e idade",
+      "descricao": "Prestação mensal para ajudar as famílias com os encargos de criar crianças e jovens. Em 2026 o 1.º escalão paga 190,98€/mês até aos 3 anos e 75,13€/mês a partir dessa idade, descendo conforme o escalão de rendimentos. Em setembro há um valor a dobrar para as crianças em idade escolar.",
+      "valor": "Até 190,98€/mês (2026)",
       "categoria": "familia",
-      "quemPode": ["Crianças e jovens até 24 anos dependentes", "Família com rendimento abaixo do limite do escalão"],
+      "quemPode": [
+        "Crianças e jovens até 24 anos dependentes",
+        "Família com rendimento abaixo do limite do escalão"
+      ],
       "comoRequerer": "Pede na Segurança Social Direta (seg-social.pt) ou num balcão do Centro Distrital de Segurança Social.",
       "link": "https://www.seg-social.pt/abono-de-familia-para-criancas-e-jovens",
       "novo": false
@@ -116,7 +193,11 @@
       "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral. Em 2026 o valor de referência do titular é 247,56€/mês, somando-se 173,29€ por cada adulto adicional e 123,78€ por cada criança. Nota: deverá ser integrado na futura Prestação Social Única (PSU).",
       "valor": "247,56€/mês (titular, 2026)",
       "categoria": "familia",
-      "quemPode": ["Residentes em Portugal há mais de 1 ano", "Rendimento mensal abaixo do valor do RSI", "Situação de comprovada necessidade"],
+      "quemPode": [
+        "Residentes em Portugal há mais de 1 ano",
+        "Rendimento mensal abaixo do valor do RSI",
+        "Situação de comprovada necessidade"
+      ],
       "comoRequerer": "Apresenta candidatura nos serviços de Segurança Social ou no balcão mais próximo.",
       "link": "https://www.seg-social.pt/rendimento-social-de-insercao",
       "novo": false
@@ -124,10 +205,15 @@
     {
       "id": "prestacao-social-unica",
       "titulo": "Prestação Social Única (PSU)",
-      "descricao": "Nova prestação aprovada pelo Governo em maio de 2026 que vai juntar 13 apoios sociais não contributivos numa só prestação, com uma candidatura, uma avaliação e um pagamento mensal. Integra o RSI, o subsídio social de desemprego e outros. Terá como base o valor do RSI (247,56€ em 2026) e prevê uma componente de incentivo ao trabalho. A entrada em vigor está prevista para 2027.",
-      "valor": "Valor unificado (em regulamentação)",
+      "descricao": "Prestação que junta 13 apoios sociais não contributivos numa só, com uma candidatura, uma avaliação e um pagamento mensal. Foi autorizada pela Lei n.º 36/2026, de 27 de julho, e o decreto-lei entrou em vigor em agosto de 2026, mas só começa a ser paga em janeiro de 2027. O valor de referência é 268,60€ — 50% do IAS, acima dos 247,56€ do RSI atual — e o acesso fica dependente de disponibilidade para um plano individual de inserção. O Governo estima alargar de cerca de 140 mil para 245,5 mil beneficiários.",
+      "valor": "268,60€/mês de referência (janeiro de 2027)",
       "categoria": "familia",
-      "quemPode": ["Pessoas com 18 ou mais anos residentes em Portugal", "Rendimento do agregado familiar abaixo do limiar definido", "Pode exigir até 15h/semana de atividades de inserção social", "Ainda em fase de regulamentação"],
+      "quemPode": [
+        "Pessoas com 18 ou mais anos residentes em Portugal",
+        "Rendimento do agregado familiar abaixo do limiar definido",
+        "Pode exigir até 15h/semana de atividades de inserção social",
+        "Ainda em fase de regulamentação"
+      ],
       "comoRequerer": "Ainda em fase de regulamentação. Acompanha as novidades em seg-social.pt. Quem já recebe RSI ou outros apoios abrangidos será migrado automaticamente.",
       "link": "https://portugal.gov.pt/gc25/comunicacao/noticias/prestacao-social-unica-o-que-e-e-como-funciona",
       "novo": true
@@ -135,10 +221,14 @@
     {
       "id": "csi",
       "titulo": "Complemento Solidário para Idosos (CSI)",
-      "descricao": "Apoio mensal a idosos com 66 ou mais anos com rendimentos muito baixos, para cobrir despesas básicas e de saúde. Valor atualizado com o IAS de 2026.",
-      "valor": "Até ≈ 670€/mês (2026)",
+      "descricao": "Apoio mensal a pessoas com 66 ou mais anos e rendimentos baixos, para cobrir despesas básicas e de saúde. Em 2026 o valor de referência é 8.040€/ano, cerca de 670€/mês (mais 40€/mês do que em 2025), fixado pela Portaria n.º 480-D/2025/1. Os rendimentos dos filhos deixaram de ser considerados no cálculo.",
+      "valor": "Até 670€/mês (8.040€/ano, 2026)",
       "categoria": "familia",
-      "quemPode": ["Pensionistas com 66 ou mais anos", "Rendimento mensal abaixo do limiar definido", "Residência legal em Portugal"],
+      "quemPode": [
+        "Pensionistas com 66 ou mais anos",
+        "Rendimento mensal abaixo do limiar definido",
+        "Residência legal em Portugal"
+      ],
       "comoRequerer": "Candidatura na Segurança Social Direta ou num balcão do Centro Distrital.",
       "link": "https://www2.gov.pt/servicos/pedir-o-complemento-solidario-para-idosos",
       "novo": false
@@ -149,29 +239,41 @@
       "descricao": "Isenção parcial de IRS sobre rendimentos do trabalho para jovens. Em 2026 abrange 10 anos e já não exige conclusão de um ciclo de estudos. A isenção aplica-se até 55× o IAS — ou seja, 29.542,15€/ano em 2026.",
       "valor": "100% (1.º ano) · 75% (2.º–4.º) · 50% (5.º–7.º) · 25% (8.º–10.º)",
       "categoria": "jovens",
-      "quemPode": ["Trabalhadores com até 35 anos (inclusive)", "Primeiros rendimentos de categoria A ou B", "Não exige habilitações académicas específicas (alteração 2026)"],
+      "quemPode": [
+        "Trabalhadores com até 35 anos (inclusive)",
+        "Primeiros rendimentos de categoria A ou B",
+        "Não exige habilitações académicas específicas (alteração 2026)"
+      ],
       "comoRequerer": "Podes usar o IRS Automático (novo em 2026) ou declarar manualmente no Modelo 3. O benefício pode ser aplicado no desconto mensal pedindo à entidade empregadora.",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/questoes_frequentes/pages/faqs-00053.aspx",
       "novo": true
     },
     {
       "id": "bolsa-acao-social",
-      "titulo": "Bolsa de Ação Social Escolar",
-      "descricao": "Apoio financeiro direto a estudantes do ensino superior com dificuldades económicas, cobrindo propinas, alojamento e outras despesas.",
-      "valor": "Até ≈ 8.000€/ano",
+      "titulo": "Bolsa de Estudo do Ensino Superior",
+      "descricao": "Apoio financeiro direto a estudantes do ensino superior com dificuldades económicas. O novo Sistema de Ação Social arranca de forma faseada em 2026/2027 (Portaria n.º 331-B/2026/1) e fica completo em 2027/2028: a bolsa mínima mantém-se em 872€, a média sobe de 1.734€ para 2.660€/ano, e um estudante deslocado em Lisboa com alojamento privado pode chegar aos 7.818€. Há ainda uma nova Bolsa de Incentivo de 1.075€ (2 × IAS) no 1.º ano, para quem vinha do escalão A da ação social do secundário.",
+      "valor": "Mínima 872€ · média 2.660€/ano",
       "categoria": "jovens",
-      "quemPode": ["Estudantes matriculados no ensino superior público ou privado", "Rendimento familiar per capita abaixo do limite"],
+      "quemPode": [
+        "Estudantes matriculados no ensino superior público ou privado",
+        "Rendimento familiar per capita abaixo do limite"
+      ],
       "comoRequerer": "Candidatura anual nos Serviços de Ação Social da instituição de ensino, normalmente em setembro/outubro.",
       "link": "https://www.dges.gov.pt/wwwbeon/",
       "novo": false
     },
     {
       "id": "isencao-taxas-moderadoras",
-      "titulo": "Isenção de Taxas Moderadoras",
-      "descricao": "Isenção do pagamento de taxas no SNS (urgências, consultas, análises) para grupos específicos.",
-      "valor": "Isenção total das taxas",
+      "titulo": "Taxas Moderadoras — o que ainda se paga",
+      "descricao": "Desde junho de 2022 as taxas moderadoras foram abolidas nas consultas, exames e análises do SNS — ninguém paga por isso, sem precisar de pedir isenção nenhuma. Sobra apenas a taxa da urgência hospitalar a que se recorre por iniciativa própria, sem referenciação do SNS 24, do centro de saúde ou do INEM, e sem que resulte internamento. Mesmo essa tem isenção para vários grupos, incluindo por insuficiência económica.",
+      "valor": "Só se pagam nas urgências sem referenciação",
       "categoria": "saude",
-      "quemPode": ["Crianças e grávidas", "Pensionistas com baixos rendimentos", "Desempregados", "Beneficiários de RSI ou CSI", "Doenças crónicas e incapacidade ≥ 60%"],
+      "quemPode": [
+        "Insuficiência económica (rendimento do agregado abaixo do limiar)",
+        "Grau de incapacidade igual ou superior a 60%",
+        "Beneficiários de subsídio de desemprego até 1,5 IAS (805,70€ em 2026)",
+        "Grávidas, dadores de sangue, bombeiros, entre outros"
+      ],
       "comoRequerer": "Apresenta documentação comprovativa no ato de atendimento no SNS. Podes também verificar o teu estado no Portal do Utente (mysns.min-saude.pt).",
       "link": "https://www2.gov.pt/servicos/pedir-a-isencao-de-taxas-moderadoras-por-insuficiencia-economica",
       "novo": false
@@ -179,10 +281,13 @@
     {
       "id": "subsidio-doenca",
       "titulo": "Subsídio de Doença",
-      "descricao": "Compensação financeira por incapacidade temporária para o trabalho devido a doença ou acidente, paga pela Segurança Social.",
-      "valor": "55% a 100% do rendimento de referência",
+      "descricao": "Compensação por incapacidade temporária para trabalhar por doença. A percentagem sobe com a duração da baixa: 55% até 30 dias, 60% de 31 a 90, 70% de 91 a 365 e 75% a partir daí. Há um acréscimo de 5% nos dois primeiros escalões se o rendimento de referência for baixo ou o agregado tiver 3 ou mais dependentes. Mínimo garantido de 5,37€/dia (30% do IAS).",
+      "valor": "55% a 75% do rendimento de referência",
       "categoria": "saude",
-      "quemPode": ["Trabalhadores por conta de outrem com baixa médica", "Trabalhadores independentes (com contribuições em dia)"],
+      "quemPode": [
+        "Trabalhadores por conta de outrem com baixa médica",
+        "Trabalhadores independentes (com contribuições em dia)"
+      ],
       "comoRequerer": "O médico emite a declaração de incapacidade (MCDTs) e a entidade empregadora trata do processo automaticamente.",
       "link": "https://www.seg-social.pt/subsidio-de-doenca",
       "novo": false
@@ -190,22 +295,29 @@
     {
       "id": "subsidio-desemprego",
       "titulo": "Subsídio de Desemprego",
-      "descricao": "Apoio financeiro mensal para trabalhadores que ficaram desempregados involuntariamente, com prazo variável conforme a idade e tempo de desconto.",
-      "valor": "65% do salário de referência (mínimo 1 IAS)",
+      "descricao": "Apoio mensal a quem ficou desempregado involuntariamente, com duração conforme a idade e o tempo de descontos. Em 2026 corresponde a 65% da remuneração de referência, com um mínimo de 1 IAS (537,13€) e um máximo de 2,5 IAS (1.342,83€).",
+      "valor": "65% do salário de referência · 537,13€ a 1.342,83€",
       "categoria": "emprego",
-      "quemPode": ["Desempregados involuntários (despedimento, fim de contrato)", "Mínimo de 180 dias de descontos nos últimos 12 meses", "Inscritos no IEFP como candidatos a emprego"],
+      "quemPode": [
+        "Desempregados involuntários (despedimento, fim de contrato)",
+        "Mínimo de 180 dias de descontos nos últimos 12 meses",
+        "Inscritos no IEFP como candidatos a emprego"
+      ],
       "comoRequerer": "Candidatura na Segurança Social Direta ou balcão do IEFP nos 90 dias após a cessação do contrato.",
       "link": "https://www2.gov.pt/servicos/requerer-o-subsidio-de-desemprego",
       "novo": false
     },
     {
       "id": "apoios-emprego-jovem",
-      "titulo": "Estímulo 2025 — Emprego Jovem",
-      "descricao": "Apoios financeiros às empresas que contratem jovens à procura do primeiro emprego ou de nova oportunidade, com isenções de TSU.",
-      "valor": "Isenção parcial ou total da TSU",
+      "titulo": "Apoios à Contratação (+Emprego e Emprego +Talento)",
+      "descricao": "Apoios do IEFP às empresas que contratem sem termo e a tempo completo. A medida +Emprego (Portaria n.º 220/2024/1) paga 6.445,56€ em 2026 — 12 vezes o IAS — e pode ser majorada em 35% em situações como a contratação de jovens à procura do primeiro emprego, desempregados de longa duração ou pessoas com deficiência. A Emprego +Talento é dirigida a desempregados até aos 35 anos com formação superior e chega aos 13.052,26€ com majoração. Nota: quem recebe o apoio é a entidade empregadora, não o trabalhador.",
+      "valor": "6.445,56€ a 13.052,26€ para a entidade empregadora",
       "categoria": "emprego",
-      "quemPode": ["Jovens de 18 a 30 anos à procura de emprego", "Inscritos no IEFP há mais de 3 meses"],
-      "comoRequerer": "O empregador candidata-se ao programa no IEFP. Como candidato a emprego, inscreve-te no Centro de Emprego mais próximo.",
+      "quemPode": [
+        "Jovens de 18 a 30 anos à procura de emprego",
+        "Inscritos no IEFP há mais de 3 meses"
+      ],
+      "comoRequerer": "As candidaturas são submetidas pela entidade empregadora no iefponline, em períodos com data marcada — confirma os prazos em vigor.",
       "link": "https://iefponline.iefp.pt/",
       "novo": false
     }
