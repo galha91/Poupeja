@@ -74,13 +74,18 @@ Estes têm de ser procurados um a um:
 ## Como pesquisar
 
 O proxy de rede bloqueia acesso direto a quase todos os sites do Estado
-(`seg-social.pt`, `iefp.pt`, …), por isso o `WebFetch` falha. Usa a
-`firecrawl_search` — as descrições dos resultados costumam trazer os valores
-sem ser preciso abrir a página.
+(`seg-social.pt`, `iefp.pt`, `apcmc.pt`, …), por isso o `WebFetch` falha nesses
+com `EGRESS_BLOCKED`. Não percas tempo a insistir: passa à pesquisa.
+
+Usa a `firecrawl_search` se estiver disponível — as descrições dos resultados
+costumam trazer os valores sem ser preciso abrir a página. **Numa execução
+agendada ela pode não existir**, porque as sessões disparadas por rotina correm
+sem ferramentas de conectores MCP; nesse caso usa a `WebSearch`, que é
+integrada e está sempre lá. O trabalho é o mesmo, só muda a ferramenta.
 
 Escreve sempre "Portugal" ou o nome da lei na pesquisa: sem isso vêm resultados
 brasileiros sobre "Estatuto do Idoso" e "Carteira da Pessoa Idosa", que não têm
-nada que ver. Se acontecer, repete com `excludeDomains: ["gov.br", ...]`.
+nada que ver. Se acontecer, repete a pesquisa a excluir os domínios `.br`.
 
 Prefere, por esta ordem: Diário da República > site do regulador ou do
 organismo (ERSE, DGEG, IEFP, DGES, Segurança Social) > portugal.gov.pt >
