@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         to: "poupeja.portugal@gmail.com",
         subject: `PoupeJá — preços da DGEG sem actualizar há ${idadeH ?? "?"}h`,
         text:
-          `A actualização horária dos preços falhou.\n\n` +
+          `A actualização diária dos preços falhou.\n\n` +
           `Motivo: ${r.motivo}\n` +
           `Idade do último snapshot bom: ${idadeH ?? "não existe nenhum"}h\n` +
           `Postos guardados: ${idade?.nPostos ?? 0}\n\n` +
