@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import CARROS_EV from "./data/carrosEV";
+import { Preco } from "./Preco";
+import { eur } from "./lib/formato";
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   Bell, Plus, Trash2,
@@ -342,7 +344,7 @@ function TendenciaPrecos({ historico }) {
     <div className="mx-4 mb-4 card p-4">
       <div className="flex items-center gap-2 mb-3">
         <div className="w-7 h-7 rounded-lg bg-[color:var(--pj-subtle)] flex items-center justify-center">
-          <Calendar size={14} className="text-[#b5701f]" />
+          <Calendar size={14} className="text-[color:var(--pj-accent)]" />
         </div>
         <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)]">Tendência de preços</p>
       </div>
@@ -362,13 +364,13 @@ function TendenciaPrecos({ historico }) {
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[13px] font-semibold text-[color:var(--pj-text)] truncate">{tipo}</span>
                   {mexeu && (
-                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)]" : "bg-[#f4e3d8] text-[color:var(--pj-danger)]"}`}>
+                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)]" : "bg-[color:var(--pj-danger-wash)] text-[color:var(--pj-danger)]"}`}>
                       {desceu ? <TrendingDown size={11} /> : <TrendingUp size={11} />}{cent}
                     </span>
                   )}
                 </div>
                 {typeof preco === "number" && (
-                  <span className="font-display text-[15px] font-semibold text-[color:var(--pj-text)] flex-shrink-0">{preco.toFixed(3)} €</span>
+                  <span className="flex-shrink-0"><Preco valor={preco} casas={3} tamanho={16} cor="var(--pj-text)" /></span>
                 )}
               </div>
             );
@@ -516,7 +518,17 @@ function SubCombustiveis() {
   }, null);
   const keyMaisProximo = maisProximo ? `${maisProximo.nome}__${maisProximo.distancia}` : null;
   const keyMaisBarato  = maisBarato  ? `${maisBarato.nome}__${maisBarato.preco}` : null;
-  const melhor      = maisProximo;
+  /*
+   * O cartão diz "Melhor preço" e estava ligado ao posto MAIS PRÓXIMO —
+   * que pode perfeitamente ser o mais caro da lista. E sem localização
+   * autorizada, `maisProximo` é sempre null (todas as distâncias ficam a
+   * 9999 e o reduce nunca escolhe nenhuma), pelo que o cartão escrevia
+   * "Sem preços para mostrar de momento" mesmo com a lista cheia de
+   * preços logo por baixo. O que o rótulo promete é o mais barato — com
+   * localização, o mais barato dentro do raio, que é o que `doTipo` já
+   * traz filtrado.
+   */
+  const melhor      = maisBarato;
   const min         = maisBarato?.preco || 0;
   const max         = doTipo.reduce((m, e) => Math.max(m, e.preco), 0);
 
@@ -528,7 +540,7 @@ function SubCombustiveis() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[color:var(--pj-subtle)] flex items-center justify-center">
-                <Fuel size={15} className="text-[#b5701f]" />
+                <Fuel size={15} className="text-[color:var(--pj-accent)]" />
               </div>
               <span className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em]">
                 {locNome ? `Melhor preço · ${raio} km` : "Melhor preço · DGEG"}
@@ -541,17 +553,26 @@ function SubCombustiveis() {
 
           {loading ? (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-5 h-5 rounded-full border-2 border-[color:var(--pj-border)] border-t-[#b5701f] animate-spin" />
+              <div className="w-5 h-5 rounded-full border-2 border-[color:var(--pj-border)] border-t-[color:var(--pj-accent)] animate-spin" />
               <span className="text-xs font-semibold text-[color:var(--pj-text-faint)]">A obter preços…</span>
             </div>
           ) : melhor ? (
             <>
               <p className="text-[12px] font-semibold text-[color:var(--pj-text-muted)]">{tipoAtivo}</p>
-              <p className="font-display text-[34px] leading-none font-semibold text-[color:var(--pj-text)] mt-1">
-                {melhor.preco.toFixed(3)} <span className="text-sm font-semibold text-[color:var(--pj-text-faint)]">€/litro</span>
+              <p className="mt-1">
+                <Preco valor={melhor.preco} casas={3} tamanho={34} cor="var(--pj-text)" />
+                <span className="text-sm font-semibold text-[color:var(--pj-text-faint)] ml-1">por litro</span>
               </p>
+              {/*
+                Sem localização isto não é um posto — é a marca com o
+                preço mais baixo do país. O pino de mapa ao lado de
+                "Galp" dava a entender que havia ali uma morada.
+              */}
               <p className="text-[12px] text-[color:var(--pj-text-muted)] mt-2 flex items-center gap-1">
-                <MapPin size={11} className="text-[color:var(--pj-text-faint)]" /> {melhor.nome || melhor.posto}
+                {locNome
+                  ? <MapPin size={11} className="text-[color:var(--pj-text-faint)]" />
+                  : <Fuel size={11} className="text-[color:var(--pj-text-faint)]" />}
+                {melhor.nome || melhor.posto}
                 {melhor.distancia && <span className="text-[color:var(--pj-text-faint)]">· {melhor.distancia} km</span>}
               </p>
             </>
@@ -582,7 +603,7 @@ function SubCombustiveis() {
         <div className="mx-4 mb-4 card p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)] flex items-center gap-1.5">
-              <MapPin size={13} className="text-[#b5701f]" /> Raio de pesquisa
+              <MapPin size={13} className="text-[color:var(--pj-accent)]" /> Raio de pesquisa
             </p>
             <span className="font-display text-lg font-semibold text-[color:var(--pj-text)]">{raio} km</span>
           </div>
@@ -591,7 +612,7 @@ function SubCombustiveis() {
             onChange={e => setRaio(parseInt(e.target.value))}
             onMouseUp={() => carregar(loc.lat, loc.lon, raio)}
             onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
-            className="w-full mb-3" style={{ accentColor: "#b5701f" }}
+            className="w-full mb-3" style={{ accentColor: "var(--pj-accent)" }}
           />
           <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
             <span>5 km</span><span>15 km</span><span>30 km</span>
@@ -600,7 +621,7 @@ function SubCombustiveis() {
             onClick={obterLocalizacao}
             className="press w-full py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-xs font-semibold flex items-center justify-center gap-1.5"
           >
-            <MapPin size={13} className="text-[#b5701f]" /> Atualizar localização
+            <MapPin size={13} className="text-[color:var(--pj-accent)]" /> Atualizar localização
           </button>
         </div>
       )}
@@ -637,7 +658,7 @@ function SubCombustiveis() {
         <div className="px-4 mb-4">
           <MapaPostos postos={doTipo} userLoc={loc} min={min} onNavegar={(lat, lon) => navegarPara({ lat, lon })} />
           <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 text-center">
-            Toca num pino para ver o preço e navegar · <span className="text-[#b5701f] font-semibold">laranja = mais barato</span>
+            Toca num pino para ver o preço e navegar · <span className="text-[color:var(--pj-accent)] font-semibold">laranja = mais barato</span>
           </p>
         </div>
       )}
@@ -658,9 +679,9 @@ function SubCombustiveis() {
           </div>
           <button
             onClick={() => setSoFavoritos(v => !v)}
-            className={`press px-3 py-2 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-[color:var(--pj-subtle)] text-[#b5701f] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
+            className={`press px-3 py-2 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-accent)] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
           >
-            <Star size={13} className={soFavoritos ? "fill-[#b5701f] text-[#b5701f]" : ""} />
+            <Star size={13} className={soFavoritos ? "fill-[color:var(--pj-accent)] text-[color:var(--pj-accent)]" : ""} />
             {favoritos.length || ""}
           </button>
         </div>
@@ -681,11 +702,26 @@ function SubCombustiveis() {
             const nome   = c.nome || c.posto || "";
             const marca  = c.marca || c.posto || "";
             const cor    = POSTO_CORES[marca] || "#5f718c";
-            const pct    = Math.max(12, 100 - ((c.preco - min) / (max - min || 1)) * 82);
+            /*
+              A barra dizia o contrário do número ao lado. Enchia para o
+              mais barato (100%) e encolhia para o mais caro (18%) — mas
+              a etiqueta por baixo diz "+4c" ao mais caro. Na mesma linha,
+              barra comprida e "+1c"; barra curta e "+4c". Uma das duas
+              estava a mentir.
+              Agora é a mesma leitura das páginas de concelho: a barra é a
+              DISTÂNCIA ao mais barato. Vazia = é este. Cheia = é o mais
+              caro da lista. Cresce com o número, em vez de o contrariar.
+            */
+            // Barra e etiqueta contam a MESMA coisa, por isso aparecem e
+            // desaparecem juntas: abaixo de um cêntimo não há distância
+            // que valha a pena desenhar nem número que valha a pena dizer.
+            const difCent = Math.round((c.preco - min) * 100);
+            const acima   = (c.preco - min) / (max - min || 1);
+            const pct     = difCent >= 1 ? Math.max(4, acima * 100) : 0;
             const fav    = ehFavorito(c);
             return (
               <div key={c.id || `${nome}-${i}`}
-                className={`card p-4 ${isBest ? "border-[#b5701f]" : ""}`}
+                className={`card p-4 ${isBest ? "border-[color:var(--pj-accent)]" : ""}`}
               >
                 <div className="flex items-center gap-3">
                   <LogoPosto posto={marca} size={44} />
@@ -696,25 +732,39 @@ function SubCombustiveis() {
                         <span className="text-[9px] font-semibold bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
                       {isBest && (
-                        <span className="text-[9px] font-semibold bg-[#f4e3d8] text-[#b5701f] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
+                        <span className="text-[9px] font-semibold bg-[color:var(--pj-accent-wash)] text-[color:var(--pj-accent)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
                     {c.municipio && <p className="text-[10px] text-[color:var(--pj-text-faint)] mb-1">{c.municipio}</p>}
                     <div className="h-1.5 bg-[color:var(--pj-subtle)] rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: isBest ? "#b5701f" : cor + "99" }} />
+                        style={{ width: `${pct}%`, backgroundColor: "var(--pj-text-muted)", opacity: 0.42 }} />
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="font-display text-xl font-semibold text-[color:var(--pj-text)]">{c.preco.toFixed(3)}</p>
-                    <p className="text-[9px] text-[color:var(--pj-text-faint)]">€ / litro</p>
+                    {/*
+                      toFixed(3) escrevia "1.661" — ponto decimal. Em
+                      português isso lê-se mil seiscentos e sessenta e um.
+                      Passa pelo componente de preço, que compõe €1,661.
+                    */}
+                    <Preco valor={c.preco} casas={3} tamanho={20} cor="var(--pj-text)" />
+                    <p className="text-[9px] text-[color:var(--pj-text-faint)] mt-0.5">por litro</p>
                     {c.distancia && (
                       <p className="text-[10px] text-[color:var(--pj-text-faint)] flex items-center gap-0.5 justify-end mt-0.5">
                         <MapPin size={9} /> {c.distancia} km
                       </p>
                     )}
-                    {!isBest && (
-                      <p className="text-[10px] text-[color:var(--pj-danger)] font-semibold mt-0.5">+{(c.preco - min).toFixed(3)} €</p>
+                    {/*
+                      Era "+0.001 €" a vermelho de perigo. Um décimo de
+                      cêntimo não é um alarme — e a vermelho parecia um
+                      erro na app, não uma diferença de preço. Fica em
+                      cêntimos inteiros, discreto, e desaparece quando
+                      não chega a um cêntimo.
+                    */}
+                    {!isBest && difCent >= 1 && (
+                      <p className="pj-num text-[10px] text-[color:var(--pj-text-faint)] font-semibold mt-0.5">
+                        +{difCent}c
+                      </p>
                     )}
                   </div>
                 </div>
@@ -729,9 +779,9 @@ function SubCombustiveis() {
                   </button>
                   <button
                     onClick={() => toggleFavorito(c)}
-                    className={`press px-3 py-2 rounded-xl text-[11px] font-semibold border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-[color:var(--pj-subtle)] text-[#b5701f] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
+                    className={`press px-3 py-2 rounded-xl text-[11px] font-semibold border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-accent)] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
                   >
-                    <Star size={13} className={fav ? "fill-[#b5701f] text-[#b5701f]" : ""} /> {fav ? "Guardado" : "Favorito"}
+                    <Star size={13} className={fav ? "fill-[color:var(--pj-accent)] text-[color:var(--pj-accent)]" : ""} /> {fav ? "Guardado" : "Favorito"}
                   </button>
                 </div>
               </div>
@@ -862,7 +912,7 @@ function SubPostosEV() {
               {[
                 { label: "Disponíveis", value: counts.disponível, color: "text-[var(--pj-brand-ink)]" },
                 { label: "Ocupados",    value: counts.ocupado,    color: "text-[color:var(--pj-danger)]" },
-                { label: "Manutenção",  value: counts.manutenção, color: "text-[#b5701f]" },
+                { label: "Manutenção",  value: counts.manutenção, color: "text-[color:var(--pj-accent)]" },
               ].map(s => (
                 <div key={s.label} className="py-1 text-center">
                   <p className={`font-display text-2xl font-semibold ${s.color}`}>{s.value}</p>
@@ -877,7 +927,7 @@ function SubPostosEV() {
       {/* Localização negada */}
       {locDenied && (
         <div className="mx-4 mb-4 card p-5 text-center">
-          <MapPin size={28} className="text-[#b5701f] mx-auto mb-2" />
+          <MapPin size={28} className="text-[color:var(--pj-accent)] mx-auto mb-2" />
           <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)] mb-1">Localização não disponível</p>
           <p className="text-xs text-[color:var(--pj-text-muted)] mb-4">Ativa a localização no browser ou usa Lisboa como ponto de partida</p>
           <div className="flex gap-2">
@@ -1330,7 +1380,7 @@ function SubAvisos() {
         if (a.tipo === "combustivel") {
           const best = comb.filter(c => c.tipo === a.combTipo).sort((x, y) => x.preco - y.preco)[0];
           if (best && best.preco <= a.precoAlvo)
-            novos.push({ id: a.id, texto: `${a.combTipo} a ${best.preco.toFixed(3)}€ no ${best.posto}` });
+            novos.push({ id: a.id, texto: `${a.combTipo} a €${eur(best.preco, 3)} no ${best.posto}` });
         } else {
           const livres = postos.filter(p => p.estado === "disponível" && parseFloat(p.distancia || 99) <= a.distAlvo);
           if (livres.length)
@@ -1489,7 +1539,7 @@ function SubAvisos() {
                 {a.tipo === "combustivel" ? (
                   <>
                     <p className="font-semibold text-sm" style={{ color: "var(--pj-text)" }}>{a.combTipo}</p>
-                    <p className="text-xs" style={{ color: "var(--pj-text-faint)" }}>Avisar abaixo de {a.precoAlvo?.toFixed(3)} €/litro</p>
+                    <p className="text-xs" style={{ color: "var(--pj-text-faint)" }}>Avisar abaixo de {a.precoAlvo != null ? `€${eur(a.precoAlvo, 3)}` : "—"} por litro</p>
                   </>
                 ) : (
                   <>

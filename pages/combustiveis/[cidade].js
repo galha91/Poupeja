@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
+import { Preco, LinhaPreco } from "../../Preco";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { dadosMunicipio } from "../../lib/municipios";
 import { URL_SITE } from "../../lib/site";
@@ -20,6 +21,29 @@ import { URL_SITE } from "../../lib/site";
 export default function CombustiveisConcelho({ dados }) {
   const { municipio, destaques, amplitude, noConcelho, proximos, vizinhos, frescura } = dados;
   const idade = descreverFrescura(frescura);
+
+  /*
+   * A lista vinha com gasóleo e gasolina MISTURADOS e ordenada por preço,
+   * o que punha €1,494 de gasóleo por cima de €1,679 de gasolina como se
+   * fossem comparáveis. Não são: são dois produtos diferentes. Agrupados
+   * por combustível, a ordenação passa a querer dizer alguma coisa — e a
+   * amplitude de cada lista também.
+   */
+  const porCombustivel = [];
+  for (const p of noConcelho) {
+    let grupo = porCombustivel.find(g => g.tipo === p.tipoLabel);
+    if (!grupo) { grupo = { tipo: p.tipoLabel, postos: [] }; porCombustivel.push(grupo); }
+    grupo.postos.push(p);
+  }
+  for (const g of porCombustivel) {
+    const precos = g.postos.map(p => p.preco);
+    g.min = Math.min(...precos);
+    g.max = Math.max(...precos);
+  }
+
+  const precosProximos = proximos.map(p => p.preco);
+  const minProximos = precosProximos.length ? Math.min(...precosProximos) : null;
+  const maxProximos = precosProximos.length ? Math.max(...precosProximos) : null;
 
   const gasoleo  = destaques.find(d => d.tipoLabel === "Gasóleo");
   const gasolina = destaques.find(d => d.tipoLabel === "Gasolina 95");
@@ -72,8 +96,8 @@ export default function CombustiveisConcelho({ dados }) {
               <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
                 {d.tipoLabel} mais barato
               </p>
-              <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 6 }}>
-                €{eur(d.preco, 3)}
+              <p style={{ marginTop: 8 }}>
+                <Preco valor={d.preco} casas={3} tamanho={30} />
               </p>
               <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>{d.nome}</p>
               {d.mediaConcelho != null && (
@@ -103,21 +127,33 @@ export default function CombustiveisConcelho({ dados }) {
           </div>
         )}
 
-        {/* Postos do concelho */}
-        <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
-          Postos em {municipio.nome}
-        </h2>
-        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-          {noConcelho.map((e, i) => (
-            <div key={`${e.id}-${e.tipoLabel}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
-              <div style={{ minWidth: 0, paddingRight: 12 }}>
-                <p style={{ fontSize: 14, fontWeight: 600 }}>{e.nome || e.marca}</p>
-                <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{e.tipoLabel}</p>
-              </div>
-              <p className="font-display flex-shrink-0" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(e.preco, 3)}</p>
+        {/* Postos do concelho — uma lista por combustível */}
+        {porCombustivel.map(grupo => (
+          <section key={grupo.tipo}>
+            <div className="flex items-baseline justify-between" style={{ marginTop: 36, marginBottom: 12 }}>
+              <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600 }}>
+                {grupo.tipo} em {municipio.nome}
+              </h2>
+              <span className="pj-num" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>
+                {grupo.postos.length} posto{grupo.postos.length !== 1 ? "s" : ""}
+              </span>
             </div>
-          ))}
-        </div>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+              {grupo.postos.map((e, i) => (
+                <LinhaPreco
+                  key={`${e.id}-${e.tipoLabel}`}
+                  nome={e.nome || e.marca}
+                  contexto={e.marca && !(e.nome || "").toLowerCase().includes(e.marca.toLowerCase()) ? e.marca : null}
+                  valor={e.preco}
+                  min={grupo.min}
+                  max={grupo.max}
+                  destaque={i === 0}
+                  primeira={i === 0}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
           Fonte: DGEG — preços comunicados pelos próprios postos. {idade.rotulo}.
           O preço no posto pode variar.
@@ -134,13 +170,16 @@ export default function CombustiveisConcelho({ dados }) {
             </p>
             <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               {proximos.map((e, i) => (
-                <div key={`${e.id}-prox`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
-                  <div style={{ minWidth: 0, paddingRight: 12 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600 }}>{e.nome || e.marca}</p>
-                    <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{e.municipio} · a {e.distancia} km</p>
-                  </div>
-                  <p className="font-display flex-shrink-0" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(e.preco, 3)}</p>
-                </div>
+                <LinhaPreco
+                  key={`${e.id}-prox`}
+                  nome={e.nome || e.marca}
+                  contexto={`${e.municipio} · a ${e.distancia} km`}
+                  valor={e.preco}
+                  min={minProximos}
+                  max={maxProximos}
+                  destaque={i === 0}
+                  primeira={i === 0}
+                />
               ))}
             </div>
           </>
@@ -165,9 +204,7 @@ export default function CombustiveisConcelho({ dados }) {
                     <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>a {v.dist} km</p>
                   </div>
                   {v.gasoleo != null && (
-                    <p className="font-display flex-shrink-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-                      €{eur(v.gasoleo, 3)}
-                    </p>
+                    <span className="flex-shrink-0"><Preco valor={v.gasoleo} casas={3} tamanho={16} /></span>
                   )}
                 </a>
               ))}
