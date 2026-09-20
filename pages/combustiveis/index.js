@@ -2,6 +2,7 @@ import Head from "next/head";
 import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
+import { Preco, LinhaPreco } from "../../Preco";
 import { listarMunicipios, frescuraDosPrecos } from "../../lib/municipios";
 import { URL_SITE as SITE_URL } from "../../lib/site";
 
@@ -13,6 +14,27 @@ import { URL_SITE as SITE_URL } from "../../lib/site";
  */
 export default function Combustiveis({ dados, concelhos, frescura, erro }) {
   const idade = descreverFrescura(frescura);
+  /*
+   * Uma lista por combustível. Ordenar preços de produtos diferentes na
+   * mesma coluna não compara nada — cada combustível tem a sua escala.
+   */
+  const porCombustivel = (() => {
+    const mapa = new Map();
+    for (const d of dados || []) {
+      if (!mapa.has(d.tipo)) mapa.set(d.tipo, []);
+      mapa.get(d.tipo).push(d);
+    }
+    return [...mapa.entries()].map(([tipo, marcas]) => {
+      const ordenadas = marcas.slice().sort((a, b) => a.preco - b.preco);
+      return {
+        tipo,
+        marcas: ordenadas,
+        min: ordenadas[0]?.preco,
+        max: ordenadas[ordenadas.length - 1]?.preco,
+      };
+    }).sort((a, b) => a.tipo.localeCompare(b.tipo, "pt"));
+  })();
+
   // Agrupados por distrito: uma lista corrida de duzentos concelhos não se lê.
   const agrupados = new Map();
   for (const c of concelhos || []) {
@@ -80,32 +102,49 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
               {tiposDestaque.map(t => (
                 <div key={t} className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
                   <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>{t} mais barato</p>
-                  <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 6 }}>
-                    €{eur(porTipo[t].preco, 3)}
+                  <p style={{ marginTop: 6 }}>
+                    <Preco valor={porTipo[t].preco} casas={3} tamanho={30} />
                   </p>
                   <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>{porTipo[t].posto}</p>
                 </div>
               ))}
             </div>
 
-            {/* Tabela por marca */}
-            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
-              Preço mínimo por marca
-            </h2>
-            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-              {(dados || []).slice(0, 16).map((d, i) => (
-                <div key={`${d.posto}-${d.tipo}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600 }}>{d.posto}</p>
-                    <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{d.tipo} · {d.totalPostos} posto{d.totalPostos !== 1 ? "s" : ""}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(d.preco, 3)}</p>
-                    <p style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>médio €{eur(d.precoMedio, 3)}</p>
-                  </div>
+            {/*
+              Era uma lista só, ordenada por preço, com os três
+              combustíveis misturados: GPL a €0,810 por cima de gasóleo a
+              €1,489 por cima de gasolina a €1,661, como se fossem
+              comparáveis. Quem passasse os olhos lia "Repsol é o mais
+              barato" — de um produto diferente. Agora é uma lista por
+              combustível, e dentro de cada uma a barra mostra a distância
+              ao mais barato daquele combustível.
+            */}
+            {porCombustivel.map(grupo => (
+              <div key={grupo.tipo} style={{ marginTop: 36 }}>
+                <div className="flex items-baseline justify-between" style={{ marginBottom: 14 }}>
+                  <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600 }}>
+                    {grupo.tipo} — preço mínimo por marca
+                  </h2>
+                  <span style={{ fontSize: 13, color: "var(--pj-text-faint)" }}>
+                    {grupo.marcas.length} marca{grupo.marcas.length !== 1 ? "s" : ""}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  {grupo.marcas.map((d, i) => (
+                    <LinhaPreco
+                      key={`${d.posto}-${d.tipo}`}
+                      nome={d.posto}
+                      contexto={`${d.totalPostos} posto${d.totalPostos !== 1 ? "s" : ""} · médio €${eur(d.precoMedio, 3)}`}
+                      valor={d.preco}
+                      min={grupo.min}
+                      max={grupo.max}
+                      destaque={i === 0}
+                      primeira={i === 0}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
             <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
               Fonte: DGEG — preços comunicados pelos próprios postos. {idade.rotulo}.
               O preço no posto pode variar.

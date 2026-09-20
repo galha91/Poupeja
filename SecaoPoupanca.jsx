@@ -1,12 +1,23 @@
 import { useState, useEffect } from "react";
 import {
   ChevronRight, Zap, BarChart, TrendingUp, Plus, ListChecks,
-  Share2, TrendingDown, Lightbulb,
+  Share2, TrendingDown, Lightbulb, Gift,
 } from "lucide-react";
 import DesafiosMensais from "./DesafiosMensais";
 import MetaPoupanca from "./MetaPoupanca";
 import Divisoria from "./Divisoria";
 import { partilharPoupanca } from "./lib/partilhar";
+import { eur } from "./lib/formato";
+
+/*
+ * Maiúscula só na primeira letra. O CSS `capitalize` punha maiúscula em
+ * TODAS as palavras e os meses saíam "Setembro De 2026" — em português
+ * escreve-se "Setembro de 2026".
+ */
+function cap(texto) {
+  if (!texto) return texto;
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
 
 function SectionLabel({ children, icon: Icon, className = "" }) {
   return (
@@ -95,12 +106,19 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
       const mesesComValor = meses12.filter(m => m.v > 0);
       const melhorMes   = mesesComValor.length ? mesesComValor.reduce((a, b) => b.v > a.v ? b : a) : null;
       const mediaMensal = mesesComValor.length ? totalGeral / mesesComValor.length : 0;
-      const tendencia   = totalAnterior > 0
-        ? Math.round(((totalMes - totalAnterior) / totalAnterior) * 100)
-        : totalMes > 0 ? 100 : 0;
+      /*
+       * Dizia "+343% vs. o mês passado" — de €5,10 para €22,60. A conta
+       * está certa e não diz nada: uma percentagem sobre uma base de dois
+       * talões dispara para números absurdos, e a poupança já é uma
+       * razão, pelo que isto era uma razão de razões. O Início passou a
+       * dizer "+€17,50 face a agosto"; a mesma comparação escrevia-se
+       * aqui de outra maneira. A unidade nativa deste produto é o euro.
+       */
+      const tendencia   = totalMes - totalAnterior;
+      const nomeMesAnterior = new Date(mesAnterior + "-01").toLocaleDateString("pt-PT", { month: "long" });
       const maxBar = Math.max(...meses12.map(m => m.v), 0.01);
 
-      setDados({ meses12, totalMes, totalGeral, count: compras.length, maxBar, melhorMes, mediaMensal, tendencia, totalAnterior });
+      setDados({ meses12, totalMes, totalGeral, count: compras.length, maxBar, melhorMes, mediaMensal, tendencia, totalAnterior, nomeMesAnterior });
     } catch {}
   }, []);
 
@@ -125,11 +143,11 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
             ? <>Poupança real somada em <span style={{ color: "var(--pj-text)", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.</>
             : <>Guarda talões com o valor poupado para veres a tua poupança a crescer aqui.</>}
         </div>
-        {dados && dados.totalGeral > 0 && dados.tendencia !== 0 && dados.totalAnterior > 0 && (
+        {dados && dados.totalGeral > 0 && Math.abs(dados.tendencia) >= 0.01 && dados.totalAnterior > 0 && (
           <div className="inline-flex items-center" style={{ gap: 9, marginTop: 20, padding: "10px 14px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
             {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "var(--pj-brand-ink)" }} /> : <TrendingDown size={16} style={{ color: "var(--pj-danger)" }} />}
             <span style={{ fontSize: 12.5, fontWeight: 600, color: dados.tendencia > 0 ? "var(--pj-brand-ink)" : "var(--pj-danger)" }}>
-              {dados.tendencia > 0 ? "+" : ""}{dados.tendencia}% vs. o mês passado
+              {dados.tendencia > 0 ? "+" : "−"}€{eur(Math.abs(dados.tendencia), 2)} face a {dados.nomeMesAnterior}
             </span>
           </div>
         )}
@@ -144,7 +162,7 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
           )}
           {retrato && (
             <button onClick={onAbrirRetrato} className="press inline-flex items-center" style={{ gap: 6, background: "var(--pj-subtle)", color: "var(--pj-brand-ink)", fontSize: 12.5, fontWeight: 700, padding: "9px 14px", borderRadius: 12 }}>
-              🎁 Retrato de {retrato.mes.nome}
+              <Gift size={13} /> Retrato de {retrato.mes.nome}
             </button>
           )}
         </div>
@@ -162,15 +180,15 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
             <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Melhor mês</p>
               <p className="font-display text-xl font-semibold mt-1" style={{ color: "var(--pj-text)" }}>
-                €{dados.melhorMes ? dados.melhorMes.v.toFixed(2) : "0.00"}
+                €{eur(dados.melhorMes ? dados.melhorMes.v : 0, 2)}
               </p>
-              <p className="text-[11px] capitalize mt-0.5" style={{ color: "var(--pj-text-faint)" }}>
-                {dados.melhorMes ? dados.melhorMes.labelLong : "—"}
+              <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>
+                {dados.melhorMes ? cap(dados.melhorMes.labelLong) : "—"}
               </p>
             </div>
             <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               <p className="text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-text-faint)" }}>Média mensal</p>
-              <p className="font-display text-xl font-semibold mt-1" style={{ color: "var(--pj-text)" }}>€{dados.mediaMensal.toFixed(2)}</p>
+              <p className="font-display text-xl font-semibold mt-1" style={{ color: "var(--pj-text)" }}>€{eur(dados.mediaMensal, 2)}</p>
               <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>nos meses com dados</p>
             </div>
           </div>
@@ -192,8 +210,8 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
           {/* Tooltip da barra selecionada */}
           {barSelecionada && (
             <div className="mb-3 mx-auto text-center rounded-2xl py-2.5 px-4" style={{ background: "var(--pj-brand-wash)" }}>
-              <p className="text-[11px] font-semibold capitalize" style={{ color: "var(--pj-text-faint)" }}>{barSelecionada.labelLong}</p>
-              <p className="font-display text-lg font-semibold" style={{ color: "var(--pj-brand-ink)" }}>€{barSelecionada.v.toFixed(2)}</p>
+              <p className="text-[11px] font-semibold" style={{ color: "var(--pj-text-faint)" }}>{cap(barSelecionada.labelLong)}</p>
+              <p className="font-display text-lg font-semibold" style={{ color: "var(--pj-brand-ink)" }}>€{eur(barSelecionada.v, 2)}</p>
             </div>
           )}
 
@@ -254,14 +272,14 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
               return (
                 <div key={m.k} className="flex items-center gap-3 px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
-                    <span className="text-[10px] font-semibold capitalize" style={{ color: "var(--pj-brand-ink)" }}>{m.label}</span>
+                    <span className="text-[10px] font-semibold" style={{ color: "var(--pj-brand-ink)" }}>{cap(m.label)}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-semibold capitalize" style={{ color: "var(--pj-text)" }}>
-                        {m.labelLong} {isAtual && <span className="text-[10px] font-semibold ml-1" style={{ color: "var(--pj-brand-ink)" }}>• atual</span>}
+                      <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>
+                        {cap(m.labelLong)} {isAtual && <span className="text-[10px] font-semibold ml-1" style={{ color: "var(--pj-brand-ink)" }}>• atual</span>}
                       </p>
-                      <p className="font-display text-sm font-semibold" style={{ color: "var(--pj-brand-ink)" }}>€{m.v.toFixed(2)}</p>
+                      <p className="font-display text-sm font-semibold" style={{ color: "var(--pj-brand-ink)" }}>€{eur(m.v, 2)}</p>
                     </div>
                     <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "var(--pj-subtle)" }}>
                       <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--pj-brand)" }} />
