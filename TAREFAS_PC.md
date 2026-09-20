@@ -53,6 +53,23 @@ pode ter até 24h — e é a data real dos preços, não uma inventada.
 Se um dia passares a Pro, basta pôr `0 * * * *` de volta no `vercel.json` e
 descer o `IDADE_PREOCUPANTE` (em `lib/precosSnapshot.js`) para as 6h.
 
+### ⚠️ Confirma as env vars do Supabase no Vercel
+
+O `NEXT_PUBLIC_SUPABASE_URL` e o `NEXT_PUBLIC_SUPABASE_ANON_KEY` têm de
+estar definidos no Vercel → Settings → Environment Variables, **marcados
+para Production e para Preview**.
+
+Isto não é opcional nem é só para os previews: variáveis `NEXT_PUBLIC_*`
+são coladas ao código durante o build, não lidas em tempo de execução. Se
+faltarem no build, o site que fica publicado não tem Supabase nenhum —
+sem login, sem sincronização, sem listas partilhadas.
+
+Até 8 de setembro havia no código um fallback para as chaves de produção,
+que tapava isto: mesmo sem env vars nenhumas, a app ligava-se à base de
+dados real. Esse fallback saiu (era o que fazia um preview mal configurado
+escrever na base de dados de gente a sério), por isso a configuração
+passou a ser mesmo necessária.
+
 ### Como confirmar que está a funcionar
 - Vercel → Logs, filtrar por `cron-precos`: deve dizer `OK — N preços`
 - Ou abrir `/combustiveis` e ver o rótulo por baixo do título: deve dizer
