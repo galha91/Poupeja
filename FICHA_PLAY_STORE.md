@@ -2,10 +2,9 @@
 
 Tudo o que o Play Console vai pedir, já escrito. Copia daqui.
 
-> **Antes de submeter, lê a secção [Segurança dos dados](#segurança-dos-dados-data-safety).**
-> Há uma divergência entre o que a app faz e o que a política de privacidade
-> diz. A declaração de Data Safety tem de corresponder ao comportamento real,
-> e neste momento não corresponderia.
+> A declaração de Data Safety foi levantada do código, não de memória, e os
+> textos da app foram corrigidos para dizerem o mesmo. Se mexeres no que a
+> app recolhe, volta a esta secção antes de submeter.
 
 ---
 
@@ -113,8 +112,8 @@ de remoção posterior.
 |---|---|---|
 | **Email** | conta e autenticação | `lib/supabase.js` |
 | **Localização aproximada** | só quando pedes postos perto de ti; não é guardada | `SecaoMobilidade.jsx`, `EcraInicio.jsx` |
-| **Fotografia do talão** | **enviada** para `/api/ler-talao`, que a reencaminha para a **API da Anthropic** para extrair loja, data, total e poupança | `SecaoTaloes.jsx:48`, `pages/api/ler-talao.js` |
-| **Talões guardados (com a imagem)** | ficam em `localStorage` **e**, com sessão iniciada, são sincronizados para o Supabase (`dados_utilizador`) | `SecaoTaloes.jsx:15`, `lib/sync.js:16` |
+| **Fotografia do talão** | **enviada uma vez** para `/api/ler-talao`, que a reencaminha para a **API da Anthropic** para extrair loja, data, total e poupança. Depois fica só no dispositivo — **não é sincronizada** | `SecaoTaloes.jsx`, `pages/api/ler-talao.js`, `lib/sync.js` (`TRANSFORMA.poupeja_taloes`) |
+| **Talões guardados (sem a imagem)** | `localStorage` e, com sessão iniciada, sincronizados para o Supabase (`dados_utilizador`) | `lib/sync.js` |
 | **Utilização do site** | Google Analytics em todas as páginas | `pages/_document.js` |
 | **Passagem para lojas parceiras** | Awin, para atribuição de comissão | `pages/_document.js:67` |
 | **Anúncios** | **nenhuns** — não há AdMob nem adsbygoogle no projeto | verificado |
@@ -132,32 +131,55 @@ de remoção posterior.
 |---|---|---|---|
 | Email | Sim | Não | Gestão de conta |
 | Localização aproximada | Sim | Não | Funcionalidade da app |
-| Fotografias | **Sim** | **Sim** — Anthropic (leitura do talão) | Funcionalidade da app |
+| Fotografias | **Sim** | ver nota | Funcionalidade da app |
 | Compras (valores dos talões) | Sim | Não | Funcionalidade da app |
 | Interacções na app | Sim | Sim — Google Analytics | Análise |
 
-### ⚠️ O que tem de ser corrigido antes de submeter
+#### A nota sobre as fotografias
 
-Três textos da app dizem hoje o contrário do que o código faz:
+A fotografia **sai do dispositivo** — vai à API da Anthropic para ser lida.
+Declara-a como **recolhida: Sim**. Há uma isenção no formulário para dados
+tratados de forma efémera (em memória, só o tempo do pedido), mas depende da
+política de retenção do fornecedor, e declarar a mais nunca fez rejeitar uma
+app — declarar a menos, sim.
 
-1. **`SecaoTaloes.jsx:149`** — *"A foto fica guardada em segurança no teu
-   dispositivo."* A fotografia é enviada para a API da Anthropic para ser
-   lida. A frase é verdadeira quanto ao **armazenamento**, mas quem a lê
-   conclui que a foto não sai do telemóvel.
+Para **partilhada**, existe a isenção de *service provider*: quem trata os
+dados por tua conta, sob contrato, não conta como partilha. A Anthropic
+encaixa aí. Se preferires não depender dessa leitura, declara **Sim** e
+explica a finalidade — não há penalização por ser transparente.
 
-2. **`pages/privacidade.jsx`** — *"As tuas listas, talões e preferências
-   ficam em armazenamento local no teu dispositivo (...) nada disso sai
-   daqui."* Com sessão iniciada, `lib/sync.js` envia `poupeja_taloes`
-   — imagem incluída — para o Supabase.
+Se quiseres fechar a questão de vez, vê nas definições da tua conta Anthropic
+se tens retenção zero activa para a API. Com isso, a isenção de tratamento
+efémero fica sem margem para dúvida.
 
-3. **`pages/privacidade.jsx`** — a lista de subcontratantes tem Supabase,
-   Vercel, Resend, serviços de push, Google Analytics e Awin. **A Anthropic
-   não está lá**, e recebe as fotografias dos talões.
+#### As imagens que já lá estão
 
-Nenhum destes pontos se resolve mudando a declaração de Data Safety: a
-declaração tem de dizer a verdade, e os textos da app têm de dizer a mesma
-verdade. O RGPD exige a divulgação dos subcontratantes que tratam dados
-pessoais — e um talão de supermercado é um dado pessoal.
+A app deixou de enviar fotografias, mas as que foram sincronizadas antes
+continuam nas linhas `poupeja_taloes` do Supabase. Vão-se embora sozinhas
+assim que essa pessoa adicionar ou apagar um talão — a escrita seguinte
+substitui a linha pela versão sem imagem. Quem nunca mais mexer nos talões
+fica com as antigas lá.
+
+Para as limpar já, no SQL Editor do Supabase:
+
+```sql
+-- Confirma primeiro quantas linhas têm imagens
+select count(*) from dados_utilizador
+where chave = 'poupeja_taloes' and valor::text like '%data:image%';
+
+-- Tira o campo "imagem" de cada talão, deixando o resto intacto
+update dados_utilizador
+set valor = (
+  select jsonb_agg(talao - 'imagem')
+  from jsonb_array_elements(valor) as talao
+)
+where chave = 'poupeja_taloes'
+  and jsonb_typeof(valor) = 'array'
+  and valor::text like '%data:image%';
+```
+
+Não corri isto — são dados de produção e de pessoas, e a decisão é tua.
+Corre o `select` primeiro.
 
 ---
 

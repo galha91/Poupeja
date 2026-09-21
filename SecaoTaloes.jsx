@@ -146,7 +146,18 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
                 <Upload size={20} style={{ color: "var(--pj-text-muted)" }} /> Escolher da galeria
               </button>
             </div>
-            <p className="text-[11px] text-center mt-4" style={{ color: "var(--pj-text-faint)" }}>A foto fica guardada em segurança no teu dispositivo.</p>
+            {/*
+              Dizia só "A foto fica guardada em segurança no teu
+              dispositivo." Era verdade quanto ao sítio onde a foto fica,
+              mas quem lia concluía que ela não saía do telemóvel — e sai:
+              passa uma vez por um serviço que lê os valores. Dizer as
+              duas coisas custa uma linha e evita prometer o que não se
+              cumpre.
+            */}
+            <p className="text-[11px] text-center mt-4 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
+              A foto é lida uma vez para tirar os valores e depois fica guardada
+              só neste dispositivo — não é enviada para a tua conta.
+            </p>
           </>
         )}
 
@@ -301,11 +312,20 @@ function CardTalao({ talao, onApagar }) {
       >
         <Trash2 size={12} className="text-white" />
       </button>
+      {/*
+        Sem imagem quer dizer, quase sempre, que este talão foi criado
+        noutro dispositivo: a fotografia não é sincronizada, fica onde foi
+        tirada. Sem uma palavra a explicar, o marcador de posição lê-se
+        como uma foto que se perdeu.
+      */}
       {talao.imagem ? (
         <img src={talao.imagem} alt="talão" className="w-full h-28 object-cover" />
       ) : (
-        <div className="w-full h-28 flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
-          <Image size={28} style={{ color: "var(--pj-text-faint)" }} />
+        <div className="w-full h-28 flex flex-col gap-1 items-center justify-center px-2" style={{ background: "var(--pj-subtle)" }}>
+          <Image size={24} style={{ color: "var(--pj-text-faint)" }} />
+          <span className="text-[10px] text-center leading-tight" style={{ color: "var(--pj-text-faint)" }}>
+            Foto no dispositivo onde foi tirada
+          </span>
         </div>
       )}
       <div className="p-3" style={{ borderTop: "1px solid var(--pj-subtle)" }}>
