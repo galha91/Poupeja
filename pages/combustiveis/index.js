@@ -3,7 +3,7 @@ import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { Preco, LinhaPreco } from "../../Preco";
-import { listarMunicipios, frescuraDosPrecos } from "../../lib/municipios";
+import { listarMunicipios, frescuraDosPrecos, precosPorMarca } from "../../lib/municipios";
 import { URL_SITE as SITE_URL } from "../../lib/site";
 
 /*
@@ -190,7 +190,7 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
   );
 }
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps({ res }) {
   // Sem stale-while-revalidate: ver a explicação em [cidade].js — o juízo
   // "isto é de hoje" fica preso no HTML gerado.
   res.setHeader("Cache-Control", "public, s-maxage=1800");
@@ -206,12 +206,26 @@ export async function getServerSideProps({ req, res }) {
     frescura = await frescuraDosPrecos();
   } catch {}
 
+  /*
+   * Isto fazia fetch HTTP ao seu PRÓPRIO site: https://{host}/api/combustiveis.
+   *
+   * Duas razões para sair. A primeira vi-a no preview: com a Deployment
+   * Protection da Vercel ligada, o pedido do servidor a si mesmo bate na
+   * parede do SSO e recebe a página de login em HTML, não JSON — pelo que
+   * `j.dados` vinha indefinido e a página escrevia "Os dados não estão
+   * disponíveis neste momento" com a lista de concelhos logo por baixo,
+   * essa sim cheia, dos mesmos dados. As duas metades da página vinham de
+   * caminhos diferentes e só uma sobrevivia.
+   *
+   * A segunda é que a volta não servia para nada: uma função a sair para a
+   * rede, atravessar a CDN e voltar a entrar em si própria, para chegar a
+   * uma conta que está a um import de distância. Agora chama a biblioteca,
+   * como a linha das concelhos aqui em cima sempre fez.
+   */
   try {
-    const proto = req.headers.host?.startsWith("localhost") ? "http" : "https";
-    const r = await fetch(`${proto}://${req.headers.host}/api/combustiveis`);
-    const j = await r.json();
-    if (!j.dados?.length) throw new Error("sem dados");
-    return { props: { dados: j.dados, concelhos, frescura, erro: false } };
+    const { dados, frescura: frescuraPrecos } = await precosPorMarca();
+    if (!dados.length) throw new Error("sem dados");
+    return { props: { dados, concelhos, frescura: frescura || frescuraPrecos, erro: false } };
   } catch {
     return { props: { dados: [], concelhos, frescura, erro: true } };
   }
