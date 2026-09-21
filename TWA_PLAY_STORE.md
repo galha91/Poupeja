@@ -23,71 +23,106 @@ usa geolocalização e ficheiros, que o browser já dá.
 
 | | |
 |---|---|
-| `public/.well-known/assetlinks.json` | criado, servido em `/.well-known/assetlinks.json` (verificado: 200, `application/json`) |
+| `public/.well-known/assetlinks.json` | criado, servido em `/.well-known/assetlinks.json` (verificado em produção: 200, `application/json`) |
 | `public/manifest.json` | ícones 192/512 maskable, `display: standalone`, `start_url`, **4 screenshots** |
 | `public/screenshots/` | 780×1688, geradas dos ecrãs reais |
 | `/privacidade` | existe — a Play Store exige uma política pública |
-| `assets/icon-only.png`, `assets/splash.png` | prontos para gerar os recursos nativos |
+| `assets/icon-only.png`, `assets/splash.png` | prontos, se um dia precisares de gerar recursos à mão |
 
 **Falta uma coisa no assetlinks.json:** a impressão digital SHA-256. Não dá para a
-inventar — vem do Play Console depois do primeiro envio (ver passo 4).
+inventar — só existe depois de a app ser assinada (ver Opção A ou B abaixo).
 
-## Passos
+## Opção A — PWABuilder (sem instalar nada, dá para fazer do telemóvel)
 
-### 1. Instalar o Bubblewrap
+É o caminho recomendado aqui: nada para instalar, corre no browser, e no fim já
+devolve o `assetlinks.json` pronto com a impressão digital lá dentro — poupa o
+passo de ir ao Play Console buscá-la à mão.
+
+### 1. Gerar o pacote
+
+1. Abre **[pwabuilder.com](https://www.pwabuilder.com)** no telemóvel.
+2. Mete o endereço do site: `https://poupejá.com` (ou `https://xn--poupej-uta.com`,
+   é o mesmo). Ele vai buscar o `manifest.json` e o service worker sozinho.
+3. Espera pela análise — mostra uma pontuação para Manifest, Service Worker e
+   Segurança. Não precisa de ser 100% para gerar o pacote Android.
+4. Toca em **Package for stores**.
+5. Escolhe **Android**.
+6. Confirma/ajusta os campos (os valores por omissão já vêm certos, mas confirma):
+   - **Package ID**: `com.poupeja.app` — tem de ser exactamente este, é o mesmo
+     que já está no `capacitor.config.json`.
+   - **App name / Launcher name**: PoupeJá
+   - **Display mode**: standalone
+   - **Theme color / Nav color**: `#0b6b4f`
+   - **Signing key**: escolhe **"Create new"** (deixa o PWABuilder gerar a chave).
+     Não escolhas "None" — essa opção usa o Google Play App Signing e obriga a
+     voltar ao passo de ir buscar a impressão digital ao Play Console à mão,
+     que é exactamente o que este caminho evita.
+7. Toca em **Generate** e descarrega o `.zip`.
+
+### 2. Guardar o que não pode perder
+
+O `.zip` traz:
+
+- `app-release-bundle.aab` — é o que sobe ao Play Console.
+- um ficheiro de chave (`.keystore` ou `.jks`) e um `signing-key-info.txt` com a
+  palavra-passe.
+- `assetlinks.json` — **já com a impressão digital certa**.
+
+> **Guarda o ficheiro de chave e a palavra-passe num gestor de palavras-passe, já.**
+> Sem eles nunca mais consegues publicar uma actualização desta app — a Google não
+> tem como repor uma chave perdida. Não os apagues do telemóvel até teres a certeza
+> de que estão guardados noutro sítio.
+
+### 3. Pôr o assetlinks.json a valer
+
+O `assetlinks.json` do `.zip` tem de substituir o que já está no repositório
+(`public/.well-known/assetlinks.json`, que ainda tem um marcador por preencher).
+
+O conteúdo não é sensível — é feito para ser público, o Android lê-o directamente
+do site. Podes:
+
+- abrir o ficheiro no telemóvel, copiar o texto e mandar aqui para eu o pôr no
+  repositório e publicar, **ou**
+- editá-lo directamente no GitHub, no telemóvel (github.com → o repositório →
+  `public/.well-known/assetlinks.json` → ícone de lápis).
+
+Depois de publicado, confirma-se assim:
+
+```
+https://xn--poupej-uta.com/.well-known/assetlinks.json
+```
+
+Sem isto a app abre **com a barra do Chrome à vista** — o aspecto de wrapper que
+queremos evitar.
+
+### 4. Play Console
+
+1. Cria a app em [play.google.com/console](https://play.google.com/console)
+   (precisa da conta de developer, 25 USD uma vez só, se ainda não a tiveres).
+2. Envia o `app-release-bundle.aab` para um **teste interno**.
+3. Preenche a ficha da loja (ver secção abaixo).
+
+## Opção B — Bubblewrap (linha de comandos, precisa de computador)
+
+Faz o mesmo que o PWABuilder, mas por linha de comandos. Só compensa se um dia
+quiseres automatizar o build ou já tiveres o ambiente Android configurado.
 
 ```bash
 npm i -g @bubblewrap/cli
-```
-
-Precisa de JDK 17 e do Android SDK; o Bubblewrap propõe instalá-los na primeira
-execução.
-
-### 2. Gerar o projeto
-
-```bash
 bubblewrap init --manifest https://xn--poupej-uta.com/manifest.json
-```
-
-Responde:
-
-- **Package name**: `com.poupeja.app` — o mesmo que está no `capacitor.config.json`
-  e no `assetlinks.json`. Se mudares aqui, muda nos dois sítios.
-- **Domain**: `xn--poupej-uta.com` (a forma punycode de poupejá.com; é assim que
-  tem de ficar)
-- **Launcher name**: PoupeJá
-- **Status bar color**: `#0b6b4f`
-
-### 3. Construir e assinar
-
-```bash
 bubblewrap build
 ```
 
-Gera um `app-release-bundle.aab` e, na primeira vez, uma keystore.
+Precisa de JDK 17 e do Android SDK; o Bubblewrap propõe instalá-los na primeira
+execução. Pede as mesmas respostas da Opção A (Package ID `com.poupeja.app`,
+domínio `xn--poupej-uta.com`, cor `#0b6b4f`).
 
-> **Guarda a keystore e a palavra-passe.** Sem elas não consegues publicar
-> actualizações desta app — nunca. Não vivem no repositório: põe-nas num gestor de
-> palavras-passe.
+Aqui **não** vem `assetlinks.json` pronto: depois de enviar o `.aab` ao Play
+Console, vai a **Setup → App integrity → App signing**, copia a
+**SHA-256 certificate fingerprint** e mete-a no
+`public/.well-known/assetlinks.json`, no lugar do marcador.
 
-### 4. Play Console — e fechar o Digital Asset Links
-
-1. Cria a app no [Play Console](https://play.google.com/console) e envia o `.aab`
-   para um teste interno.
-2. Vai a **Setup → App integrity → App signing** e copia a
-   **SHA-256 certificate fingerprint**.
-3. Mete essa impressão digital no `public/.well-known/assetlinks.json`, no lugar de
-   `SUBSTITUIR_PELA_IMPRESSAO_DIGITAL_DO_PLAY_CONSOLE`.
-4. Faz deploy do site.
-5. Confirma que está a servir:
-   ```bash
-   curl https://xn--poupej-uta.com/.well-known/assetlinks.json
-   ```
-
-Sem este passo a app abre **com a barra do Chrome à vista** — que é precisamente o
-aspecto de wrapper que queremos evitar. É o passo que mais vezes fica por fazer.
-
-### 5. Ficha da loja
+## Ficha da loja
 
 - **Screenshots**: as de `public/screenshots/` servem para começar. Para a ficha
   pública talvez prefiras capturas com uma conta já com dados, em vez do estado de
