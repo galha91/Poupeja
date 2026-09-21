@@ -32,7 +32,36 @@
     "finance",
     "utilities"
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/screenshots/inicio.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "A tua poupança do mês, a partir dos talões que guardas"
+    },
+    {
+      "src": "/screenshots/folhetos.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Os folhetos de todos os supermercados num só sítio"
+    },
+    {
+      "src": "/screenshots/combustiveis.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Os postos mais baratos perto de ti, com preços da DGEG"
+    },
+    {
+      "src": "/screenshots/poupanca.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Quanto já poupaste, mês a mês"
+    }
+  ],
   "id": "/",
   "shortcuts": [
     {
