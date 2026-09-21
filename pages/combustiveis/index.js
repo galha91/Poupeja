@@ -3,7 +3,10 @@ import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { Preco, LinhaPreco } from "../../Preco";
-import { listarMunicipios, frescuraDosPrecos, precosPorMarca } from "../../lib/municipios";
+import { listarMunicipios, frescuraDosPrecos, precosPorMarca, TIPOS_DESTAQUE } from "../../lib/municipios";
+
+/* Quantas marcas por combustível. Ver a explicação em porCombustivel. */
+const MARCAS_VISIVEIS = 12;
 import { URL_SITE as SITE_URL } from "../../lib/site";
 
 /*
@@ -17,22 +20,41 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
   /*
    * Uma lista por combustível. Ordenar preços de produtos diferentes na
    * mesma coluna não compara nada — cada combustível tem a sua escala.
+   *
+   * Com dois tetos, que a primeira versão desta página não tinha e o
+   * deploy mostrou: a DGEG traz 7 tipos e 52 marcas, o que dava 255
+   * linhas de preço numa página que antes mostrava 16.
+   *
+   *  - Tipos: os mesmos três que os cartões do topo já destacam. As
+   *    variantes aditivadas e a 98 são produtos de nicho; quem procura
+   *    "gasóleo mais barato" não está à procura de gasóleo aditivado.
+   *  - Marcas: as MARCAS_VISIVEIS mais baratas de cada tipo. A cauda são
+   *    marcas regionais com 4 postos, que não ajudam a decidir nada.
+   *
+   * A escala da barra é a das marcas MOSTRADAS: se fosse a das 52, a
+   * amplitude vinha esticada por uma marca que nem está na lista, e os
+   * traços deixavam de dizer respeito ao que se vê.
    */
   const porCombustivel = (() => {
     const mapa = new Map();
     for (const d of dados || []) {
+      if (!TIPOS_DESTAQUE.includes(d.tipo)) continue;
       if (!mapa.has(d.tipo)) mapa.set(d.tipo, []);
       mapa.get(d.tipo).push(d);
     }
-    return [...mapa.entries()].map(([tipo, marcas]) => {
-      const ordenadas = marcas.slice().sort((a, b) => a.preco - b.preco);
-      return {
-        tipo,
-        marcas: ordenadas,
-        min: ordenadas[0]?.preco,
-        max: ordenadas[ordenadas.length - 1]?.preco,
-      };
-    }).sort((a, b) => a.tipo.localeCompare(b.tipo, "pt"));
+    return TIPOS_DESTAQUE
+      .filter(tipo => mapa.has(tipo))
+      .map(tipo => {
+        const todas    = mapa.get(tipo).slice().sort((a, b) => a.preco - b.preco);
+        const marcas   = todas.slice(0, MARCAS_VISIVEIS);
+        return {
+          tipo,
+          marcas,
+          total: todas.length,
+          min: marcas[0]?.preco,
+          max: marcas[marcas.length - 1]?.preco,
+        };
+      });
   })();
 
   // Agrupados por distrito: uma lista corrida de duzentos concelhos não se lê.
@@ -126,7 +148,9 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
                     {grupo.tipo} — preço mínimo por marca
                   </h2>
                   <span style={{ fontSize: 13, color: "var(--pj-text-faint)" }}>
-                    {grupo.marcas.length} marca{grupo.marcas.length !== 1 ? "s" : ""}
+                    {grupo.total > grupo.marcas.length
+                      ? `${grupo.marcas.length} mais baratas de ${grupo.total}`
+                      : `${grupo.marcas.length} marca${grupo.marcas.length !== 1 ? "s" : ""}`}
                   </span>
                 </div>
                 <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
