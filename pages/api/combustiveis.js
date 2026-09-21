@@ -3,7 +3,7 @@
 // lib/dgeg.js, porque as páginas públicas por concelho usam o mesmo.
 import {
   DISTRITOS, haversine, juntarDistritos, normalizarPosto,
-  postoUtilizavel, distritosPerto, minimoPorMarca,
+  postoUtilizavel, distritosPerto, minimoPorMarca, semPrecosAbsurdos,
 } from "../../lib/dgeg";
 import { excedeuLimite } from "../../lib/protecao-api";
 
@@ -42,16 +42,30 @@ export default async function handler(req, res) {
       ? distritosPerto(userLat, userLon, raioKm)
       : DISTRITOS.map(d => d.id);
 
-    const lote   = await juntarDistritos(ids);
-    const postos = lote.postos;
-    if (!postos.length) throw new Error("Sem resultados da DGEG");
+    const lote = await juntarDistritos(ids);
+    if (!lote.postos.length) throw new Error("Sem resultados da DGEG");
+
+    /*
+     * Fora os preços impossíveis antes de qualquer conta. Um posto com
+     * gasóleo a €1,343 quando a mediana são €2,20 não é uma pechincha,
+     * é um erro de digitação de quem comunicou à DGEG — e sem isto
+     * aparecia em primeiro lugar, marcado "melhor".
+     */
+    const normalizados = lote.postos.map(normalizarPosto).filter(postoUtilizavel);
+    const { postos, removidos } = semPrecosAbsurdos(normalizados);
+    if (removidos.length) {
+      // Nunca em silêncio: se um dia isto começar a comer dados bons,
+      // tem de haver rasto nos logs para se dar por isso.
+      console.warn(`combustiveis: ${removidos.length} preço(s) fora do plausível ignorados —`,
+        removidos.slice(0, 5).map(r => `${r.tipoLabel} €${r.preco} (${(r.preco / r.medianaTipo * 100).toFixed(0)}% da mediana) ${r.nome || r.marca}`).join("; "));
+    }
 
     /*
      * A data que sai daqui é a dos DADOS, não a do pedido. Estava a ser
      * new Date() em cada resposta, o que fazia qualquer consumidor
      * (páginas incluídas) acreditar que os preços eram sempre de agora.
      */
-    const datas = postos.map(p => normalizarPosto(p).dataPreco).filter(Boolean);
+    const datas = postos.map(p => p.dataPreco).filter(Boolean);
     const frescura = {
       atualizadoEm: new Date(lote.obtidoEm ?? Date.now()).toISOString(),
       dataPreco: datas.length ? new Date(Math.max(...datas)).toISOString() : null,
@@ -61,15 +75,13 @@ export default async function handler(req, res) {
     if (userLat && userLon) {
       // ── Modo local: postos individuais ordenados por preço ──
       const estacoes = postos
-        .map(p => {
-          const n = normalizarPosto(p);
+        .map(n => {
           const distancia = (n.lat && n.lon)
             ? parseFloat(haversine(userLat, userLon, n.lat, n.lon).toFixed(1))
             : null;
           return { ...n, distancia };
         })
         .filter(p =>
-          postoUtilizavel(p) &&
           (!p.distancia || p.distancia <= raioKm) &&
           (!tipo || p.tipoLabel === tipo)
         )
@@ -97,7 +109,7 @@ export default async function handler(req, res) {
     // ── Modo nacional: mínimo por marca ──
     // A conta vive em lib/dgeg.js porque a página pública também precisa
     // dela — e precisava sem ter de fazer HTTP a esta rota.
-    const dados = minimoPorMarca(postos.map(normalizarPosto).filter(postoUtilizavel));
+    const dados = minimoPorMarca(postos);
 
     if (!dados.length) throw new Error("Sem dados após filtragem");
 
