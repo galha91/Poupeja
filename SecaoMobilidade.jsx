@@ -3,6 +3,14 @@ import dynamic from "next/dynamic";
 import CARROS_EV from "./data/carrosEV";
 import { Preco } from "./Preco";
 import { eur } from "./lib/formato";
+
+/* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
+   que já tínhamos corrigido nos preços andava aqui à solta. */
+function km(v) {
+  const n = typeof v === "number" ? v : parseFloat(v);
+  if (!Number.isFinite(n)) return "";
+  return `${n.toLocaleString("pt-PT", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km`;
+}
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   Bell, Plus, Trash2,
@@ -327,18 +335,49 @@ function calcularTendencia(snapshots) {
   return { atual, anterior, diffCent, dir };
 }
 
-/* ─── card de tendência de preços ─── */
-function TendenciaPrecos({ historico }) {
+/* ─── card de tendência de preços ─────────────────────────────────
+ *
+ * Mostrava os 7 combustíveis que a DGEG publica, cada um com um chip
+ * vermelho de "subiu". Sete linhas e seis alarmes vermelhos antes de se
+ * ver um único posto — e quando tudo é alarme, nada é alarme.
+ *
+ * Duas mudanças:
+ *
+ *  - Começa pelo combustível que a pessoa está mesmo a ver, e mostra
+ *    três. Os outros ficam atrás de um toque. Quem põe gasóleo no carro
+ *    não precisa da gasolina 98 aditivada à frente dos olhos.
+ *
+ *  - Uma subida de preço não é um erro da app. O vermelho é para coisas
+ *    que correram mal; um preço que sobe é uma notícia chata, não uma
+ *    avaria. Descer fica verde (é boa notícia e vale destacar), subir
+ *    fica discreto.
+ * ─────────────────────────────────────────────────────────────────── */
+const TENDENCIAS_VISIVEIS = 3;
+
+function TendenciaPrecos({ historico, tipoAtivo }) {
+  const [verTodos, setVerTodos] = useState(false);
   const tipos = Object.keys(historico || {}).filter(t => (historico[t] || []).length > 0);
   if (tipos.length === 0) return null;
 
-  const linhas = tipos.map(tipo => {
+  // O que a pessoa está a ver primeiro, depois os correntes, depois o resto.
+  const PRIORIDADE = [tipoAtivo, "Gasóleo", "Gasolina 95", "GPL Auto"].filter(Boolean);
+  const ordenados = tipos.slice().sort((a, b) => {
+    const ia = PRIORIDADE.indexOf(a), ib = PRIORIDADE.indexOf(b);
+    if (ia !== ib) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    return a.localeCompare(b, "pt");
+  });
+
+  const linhas = ordenados.map(tipo => {
     const snaps = historico[tipo];
     const atual = snaps[snaps.length - 1];
     return { tipo, preco: atual?.preco, tendencia: calcularTendencia(snaps) };
   });
 
   const temTendencia = linhas.some(l => l.tendencia);
+  const mostradas = verTodos ? linhas : linhas.slice(0, TENDENCIAS_VISIVEIS);
+  const escondidas = linhas.length - mostradas.length;
+  // A dica de abastecer só vale se for o combustível DESTA pessoa a descer.
+  const oMeuDesceu = linhas.find(l => l.tipo === tipoAtivo)?.tendencia?.dir === "desceu";
 
   return (
     <div className="mx-4 mb-4 card p-4">
@@ -354,8 +393,8 @@ function TendenciaPrecos({ historico }) {
           Estamos a recolher o histórico de preços. A tendência aparece a partir da próxima semana.
         </p>
       ) : (
-        <div className="flex flex-col divide-y divide-[#eeece4]">
-          {linhas.map(({ tipo, preco, tendencia }) => {
+        <div className="flex flex-col divide-y divide-[color:var(--pj-subtle)]">
+          {mostradas.map(({ tipo, preco, tendencia }) => {
             const mexeu = tendencia && (tendencia.dir === "subiu" || tendencia.dir === "desceu");
             const desceu = tendencia?.dir === "desceu";
             const cent = tendencia ? Math.abs(tendencia.diffCent).toFixed(1).replace(".", ",") : null;
@@ -364,7 +403,12 @@ function TendenciaPrecos({ historico }) {
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[13px] font-semibold text-[color:var(--pj-text)] truncate">{tipo}</span>
                   {mexeu && (
-                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 ${desceu ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)]" : "bg-[color:var(--pj-danger-wash)] text-[color:var(--pj-danger)]"}`}>
+                    <span
+                      className="pj-num inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0"
+                      style={desceu
+                        ? { background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }
+                        : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
+                    >
                       {desceu ? <TrendingDown size={11} /> : <TrendingUp size={11} />}{cent}
                     </span>
                   )}
@@ -375,9 +419,20 @@ function TendenciaPrecos({ historico }) {
               </div>
             );
           })}
-          {linhas.some(l => l.tendencia?.dir === "desceu") && (
+
+          {escondidas > 0 && (
+            <button
+              onClick={() => setVerTodos(true)}
+              className="press pj-tap text-[11px] font-semibold pt-2.5 text-left"
+              style={{ color: "var(--pj-brand-ink)" }}
+            >
+              Ver os outros {escondidas} combustíveis
+            </button>
+          )}
+
+          {oMeuDesceu && (
             <p className="text-[11px] font-semibold text-[color:var(--pj-brand-ink)] pt-2.5 flex items-center gap-1">
-              <TrendingDown size={12} /> Preços em queda — boa altura para abastecer
+              <TrendingDown size={12} /> {tipoAtivo} em queda — boa altura para abastecer
             </p>
           )}
         </div>
@@ -399,6 +454,7 @@ function SubCombustiveis() {
   const [locNome, setLocNome]       = useState(null);
   const [locPedido, setLocPedido]   = useState(false);
   const [raio, setRaio]             = useState(10);
+  const [verRaio, setVerRaio]       = useState(false); // slider do raio: escondido por omissão
   const [historico, setHistorico]   = useState({});
   const [ordenar, setOrdenar]       = useState("preco");   // "preco" | "distancia"
   const [favoritos, setFavoritos]   = useState([]);
@@ -573,7 +629,7 @@ function SubCombustiveis() {
                   ? <MapPin size={11} className="text-[color:var(--pj-text-faint)]" />
                   : <Fuel size={11} className="text-[color:var(--pj-text-faint)]" />}
                 {melhor.nome || melhor.posto}
-                {melhor.distancia && <span className="text-[color:var(--pj-text-faint)]">· {melhor.distancia} km</span>}
+                {melhor.distancia && <span className="pj-num text-[color:var(--pj-text-faint)]">· {km(melhor.distancia)}</span>}
               </p>
             </>
           ) : erro ? null : (
@@ -596,33 +652,63 @@ function SubCombustiveis() {
       </div>
 
       {/* Tendência de preços */}
-      <TendenciaPrecos historico={historico} />
+      <TendenciaPrecos historico={historico} tipoAtivo={tipoAtivo} />
 
-      {/* Controlos */}
+      {/*
+        O raio ocupava um cartão inteiro — rótulo, slider, três marcas de
+        escala e um botão — entre a pessoa e a lista de postos. E o valor
+        já estava escrito no cartão de cima ("Melhor preço · 10 km").
+        Passa a uma linha; quem quiser mexer toca em "ajustar" e o slider
+        aparece. Mexe-se uma vez e esquece-se; não tem de estar sempre à
+        frente de quem só quer ver os preços.
+      */}
       {loc && (
-        <div className="mx-4 mb-4 card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)] flex items-center gap-1.5">
-              <MapPin size={13} className="text-[color:var(--pj-accent)]" /> Raio de pesquisa
-            </p>
-            <span className="font-display text-lg font-semibold text-[color:var(--pj-text)]">{raio} km</span>
-          </div>
-          <input
-            type="range" min="5" max="30" step="5" value={raio}
-            onChange={e => setRaio(parseInt(e.target.value))}
-            onMouseUp={() => carregar(loc.lat, loc.lon, raio)}
-            onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
-            className="w-full mb-3" style={{ accentColor: "var(--pj-accent)" }}
-          />
-          <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
-            <span>5 km</span><span>15 km</span><span>30 km</span>
-          </div>
-          <button
-            onClick={obterLocalizacao}
-            className="press w-full py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-xs font-semibold flex items-center justify-center gap-1.5"
-          >
-            <MapPin size={13} className="text-[color:var(--pj-accent)]" /> Atualizar localização
-          </button>
+        <div className="mx-4 mb-4">
+          {!verRaio ? (
+            <button
+              onClick={() => setVerRaio(true)}
+              className="press pj-tap w-full flex items-center gap-1.5 text-[12px]"
+              style={{ color: "var(--pj-text-muted)", padding: "2px 2px" }}
+            >
+              <MapPin size={13} style={{ color: "var(--pj-text-faint)" }} />
+              <span>Postos a menos de <strong style={{ color: "var(--pj-text)" }}>{raio} km</strong></span>
+              <span style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>ajustar</span>
+            </button>
+          ) : (
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)] flex items-center gap-1.5">
+                  <MapPin size={13} className="text-[color:var(--pj-accent)]" /> Raio de pesquisa
+                </p>
+                <span className="font-display pj-num text-lg font-semibold text-[color:var(--pj-text)]">{raio} km</span>
+              </div>
+              <input
+                type="range" min="5" max="30" step="5" value={raio}
+                onChange={e => setRaio(parseInt(e.target.value))}
+                onMouseUp={() => carregar(loc.lat, loc.lon, raio)}
+                onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
+                className="w-full mb-3" style={{ accentColor: "var(--pj-accent)" }}
+              />
+              <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
+                <span>5 km</span><span>15 km</span><span>30 km</span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={obterLocalizacao}
+                  className="press flex-1 py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-xs font-semibold flex items-center justify-center gap-1.5"
+                >
+                  <MapPin size={13} className="text-[color:var(--pj-accent)]" /> Atualizar localização
+                </button>
+                <button
+                  onClick={() => setVerRaio(false)}
+                  className="press px-4 py-2.5 rounded-xl text-xs font-semibold"
+                  style={{ background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -726,8 +812,15 @@ function SubCombustiveis() {
                 <div className="flex items-center gap-3">
                   <LogoPosto posto={marca} size={44} />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="font-semibold text-[color:var(--pj-text)] text-sm truncate max-w-[150px]">{nome}</p>
+                    {/*
+                      Sem flex-wrap: com ele, um nome comprido empurrava o
+                      chip ("Mais barato") para uma segunda linha e o cartão
+                      crescia — e só nos cartões que TÊM chip, o que
+                      desalinhava a lista toda. O nome encolhe com
+                      reticências quando é preciso; o chip fica onde está.
+                    */}
+                    <div className="flex items-center gap-2 mb-0.5 min-w-0">
+                      <p className="font-semibold text-[color:var(--pj-text)] text-sm truncate min-w-0">{nome}</p>
                       {`${c.nome}__${c.distancia}` === keyMaisProximo && (
                         <span className="text-[9px] font-semibold bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
@@ -751,7 +844,7 @@ function SubCombustiveis() {
                     <p className="text-[9px] text-[color:var(--pj-text-faint)] mt-0.5">por litro</p>
                     {c.distancia && (
                       <p className="text-[10px] text-[color:var(--pj-text-faint)] flex items-center gap-0.5 justify-end mt-0.5">
-                        <MapPin size={9} /> {c.distancia} km
+                        <MapPin size={9} /> <span className="pj-num">{km(c.distancia)}</span>
                       </p>
                     )}
                     {/*
@@ -769,19 +862,36 @@ function SubCombustiveis() {
                   </div>
                 </div>
 
-                {/* Ações: navegar + favorito */}
-                <div className="flex gap-2 mt-3 pt-3 border-t border-[color:var(--pj-subtle)]">
-                  <button
-                    onClick={() => navegarPara(c)}
-                    className="press flex-1 py-2 rounded-xl text-[11px] font-semibold bg-[color:var(--pj-brand)] text-white flex items-center justify-center gap-1.5"
-                  >
-                    <Navigation size={12} /> Navegar
-                  </button>
+                {/*
+                  Cada posto trazia um botão verde cheio, de largura
+                  inteira, a dizer "Navegar". Numa lista de oito postos
+                  eram oito paredes de verde empilhadas — e a navegação
+                  só interessa ao posto que se escolhe, não aos oito.
+                  O verde cheio é o peso mais forte da paleta; gastá-lo
+                  oito vezes seguidas faz com que deixe de significar
+                  alguma coisa, e empurra os preços (que são o conteúdo)
+                  para longe uns dos outros.
+
+                  Fica uma linha discreta, alinhada à direita: a estrela
+                  como ícone e "Navegar" como acção de texto. Continuam
+                  a ser alvos de toque com tamanho suficiente.
+                */}
+                <div className="flex items-center justify-end gap-1 mt-2.5 pt-2.5 border-t border-[color:var(--pj-subtle)]">
                   <button
                     onClick={() => toggleFavorito(c)}
-                    className={`press px-3 py-2 rounded-xl text-[11px] font-semibold border flex items-center justify-center gap-1.5 transition-all ${fav ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-accent)] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
+                    aria-label={fav ? "Remover dos favoritos" : "Guardar nos favoritos"}
+                    aria-pressed={fav}
+                    className="press pj-tap flex items-center justify-center rounded-lg"
+                    style={{ width: 36, height: 32, color: fav ? "var(--pj-accent)" : "var(--pj-text-faint)" }}
                   >
-                    <Star size={13} className={fav ? "fill-[color:var(--pj-accent)] text-[color:var(--pj-accent)]" : ""} /> {fav ? "Guardado" : "Favorito"}
+                    <Star size={16} className={fav ? "fill-[color:var(--pj-accent)]" : ""} />
+                  </button>
+                  <button
+                    onClick={() => navegarPara(c)}
+                    className="press pj-tap flex items-center gap-1.5 rounded-lg text-[12px] font-semibold"
+                    style={{ color: "var(--pj-brand-ink)", padding: "7px 10px" }}
+                  >
+                    <Navigation size={13} /> Navegar
                   </button>
                 </div>
               </div>
@@ -1180,7 +1290,7 @@ function SubPostosEV() {
                     )}
                     {posto.distancia && (
                       <span className="text-[10px] text-slate-500 font-bold flex items-center gap-0.5">
-                        <MapPin size={9} /> {posto.distancia} km
+                        <MapPin size={9} /> <span className="pj-num">{km(posto.distancia)}</span>
                       </span>
                     )}
                   </div>
