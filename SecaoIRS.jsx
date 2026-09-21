@@ -357,7 +357,7 @@ export default function SecaoIRS() {
                 { label: "Coleta", valor: fmt(calc.coleta) },
                 { label: "Total deduções", valor: "− " + fmt(calc.totalDeducoes) },
                 { label: "IRS final", valor: fmt(calc.irsFinal), forte: true },
-                { label: "Taxa efetiva", valor: calc.taxaEfetiva.toFixed(1) + "%" },
+                { label: "Taxa efetiva", valor: calc.taxaEfetiva.toLocaleString("pt-PT", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%" },
               ].map((r, i, arr) => (
                 <div
                   key={r.label}

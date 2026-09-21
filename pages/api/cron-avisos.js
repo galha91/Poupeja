@@ -2,6 +2,7 @@ import webpush from "web-push";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { DESAFIOS_MENSAIS } from "../../lib/desafios";
+import { eur } from "../../lib/formato";
 
 /*
  * Avisos personalizados por utilizador — cron diário (Vercel, 18:00 UTC).
@@ -121,8 +122,8 @@ export default async function handler(req, res) {
       const ultima = notificados[`comb_${a.id}`];
       if (ultima && diasAte(hoje.iso, ultima) < SUPRESSAO_COMBUSTIVEL_DIAS) continue;
       notifs.push({
-        title: `⛽ ${a.combTipo} a €${best.preco.toFixed(3)}`,
-        body: `No ${best.posto} — abaixo do teu alvo de €${Number(a.precoAlvo).toFixed(3)}/litro. Abre para ver perto de ti.`,
+        title: `⛽ ${a.combTipo} a €${eur(best.preco, 3)}`,
+        body: `No ${best.posto} — abaixo do teu alvo de €${eur(Number(a.precoAlvo), 3)}/litro. Abre para ver perto de ti.`,
         url: "/",
       });
       notificados[`comb_${a.id}`] = hoje.iso;
@@ -152,7 +153,7 @@ export default async function handler(req, res) {
       if (c.diaVencimento !== diaAmanha || pagos[c.id]) continue;
       notifs.push({
         title: `📅 ${c.nome} vence amanhã`,
-        body: `€${Number(c.valor || 0).toFixed(2)} — dia ${diaAmanha}. Marca como paga quando tratares disto.`,
+        body: `€${eur(Number(c.valor || 0), 2)} — dia ${diaAmanha}. Marca como paga quando tratares disto.`,
         url: "/",
       });
     }
@@ -201,8 +202,8 @@ export default async function handler(req, res) {
         if (totalMes >= desafio.meta * 0.8 && totalMes < desafio.meta) {
           const falta = desafio.meta - totalMes;
           notifs.push({
-            title: `🎯 Faltam €${falta.toFixed(2)} para completares "${desafio.nome}"`,
-            body: `Já poupaste €${totalMes.toFixed(2)} este mês. A meta de €${desafio.meta} está mesmo aí.`,
+            title: `🎯 Faltam €${eur(falta, 2)} para completares "${desafio.nome}"`,
+            body: `Já poupaste €${eur(totalMes, 2)} este mês. A meta de €${desafio.meta} está mesmo aí.`,
             url: "/",
           });
           notificados[`desafio_${mesAtual}`] = hoje.iso;

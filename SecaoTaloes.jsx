@@ -5,6 +5,7 @@ import {
   Camera, Upload, Receipt, ShieldCheck, ShoppingCart,
   X, TrendingUp, Package, Check, Trash2, Image, ChevronRight, Loader2, Euro,
 } from "lucide-react";
+import { eur } from "./lib/formato";
 
 const STORAGE_KEY = "poupeja_taloes";
 
@@ -312,7 +313,7 @@ function CardTalao({ talao, onApagar }) {
         <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>{talao.dataCompra ? new Date(talao.dataCompra).toLocaleDateString("pt-PT") : talao.data}</p>
         {talao.valorPoupado != null && (
           <div className="mt-2 px-2 py-1 rounded-lg inline-flex" style={{ background: "var(--pj-subtle)" }}>
-            <p className="text-[11px] font-semibold" style={{ color: "var(--pj-brand-ink)" }}>Poupou €{talao.valorPoupado.toFixed(2)}</p>
+            <p className="text-[11px] font-semibold" style={{ color: "var(--pj-brand-ink)" }}>Poupou €{eur(talao.valorPoupado, 2)}</p>
           </div>
         )}
         {label && (
@@ -403,7 +404,7 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
               return totalPoupado > 0 ? (
                 <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--pj-subtle)" }}>
                   <p className="uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Total poupado</p>
-                  <p className="font-display mt-1" style={{ fontSize: "22px", fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{totalPoupado.toFixed(2)}</p>
+                  <p className="font-display mt-1" style={{ fontSize: "22px", fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(totalPoupado, 2)}</p>
                 </div>
               ) : null;
             })()}
