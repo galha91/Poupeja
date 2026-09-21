@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { eur } from "./lib/formato";
 
 /*
  * Mapa interativo de postos (combustível) usando Leaflet + OpenStreetMap.
@@ -37,10 +38,10 @@ function configPino(p, variante, min) {
   const barato = min && Math.abs(p.preco - min) < 0.001;
   return {
     cor: barato ? "#f97316" : "#1e293b",
-    label: `${p.preco.toFixed(3)}€`,
+    label: `€${eur(p.preco, 3)}`,
     titulo: p.nome || p.posto || "",
     sub: `${esc(p.municipio || "")}${p.distancia != null ? ` · ${p.distancia} km` : ""}`,
-    destaque: `${p.preco.toFixed(3)} €/litro`,
+    destaque: `€${eur(p.preco, 3)} por litro`,
   };
 }
 

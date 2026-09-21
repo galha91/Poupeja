@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Trophy, Flame, Share2, Swords, Lock, Sparkles, ChevronDown, ChevronUp, Check } from "lucide-react";
+import { Trophy, Flame, Share2, Swords, Lock, Sparkles, ChevronDown, ChevronUp, Check, Lightbulb } from "lucide-react";
+import { eur } from "./lib/formato";
 import {
   calcularEstado, calcularConquistas, nivelAtual,
   partilharDesafio, desafiarAmigo, partilharConquista,
@@ -41,12 +42,6 @@ export default function DesafiosMensais({ setTab }) {
 
       {/* ── Desafio do mês ── */}
       <div className="card p-5 relative overflow-hidden mb-3">
-        <div
-          className="absolute right-3 bottom-2 text-6xl opacity-[0.07] pointer-events-none select-none"
-        >
-          {desafio.emoji}
-        </div>
-
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
             <p className="text-[11px] uppercase flex items-center gap-1.5" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
@@ -64,24 +59,24 @@ export default function DesafiosMensais({ setTab }) {
           </p>
           <p className="text-[12px] mt-1" style={{ color: "var(--pj-text-muted)" }}>
             {completo
-              ? `Conseguiste! Poupaste €${totalMes.toFixed(2)} este mês 🎉`
+              ? `Conseguiste! Poupaste €${eur(totalMes, 2)} este mês.`
               : `Poupa €${desafio.meta} nas compras até ao fim do mês`}
           </p>
 
           {/* Barra de progresso */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="font-display text-[13px]" style={{ fontWeight: 600, color: "var(--pj-text)" }}>€{totalMes.toFixed(2)}</span>
+              <span className="font-display text-[13px]" style={{ fontWeight: 600, color: "var(--pj-text)" }}>€{eur(totalMes, 2)}</span>
               <span className="text-[11px]" style={{ fontWeight: 600, color: "var(--pj-text-faint)" }}>€{desafio.meta}</span>
             </div>
             <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "var(--pj-border)" }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${Math.max(pct, 3)}%`, background: completo ? "var(--pj-brand)" : desafio.cor }}
+                style={{ width: `${Math.max(pct, 3)}%`, background: "var(--pj-brand)" }}
               />
             </div>
             <p className="text-[10px] mt-1.5" style={{ fontWeight: 600, color: "var(--pj-text-faint)" }}>
-              {completo ? "🏆 Desafio completo — partilha a tua vitória!" : `${pct}% — ${semTaloes ? "guarda o primeiro talão para começar" : "continua, estás no bom caminho!"}`}
+              {completo ? "Desafio completo — partilha a tua vitória!" : `${pct}% — ${semTaloes ? "guarda o primeiro talão para começar" : "continua, estás no bom caminho!"}`}
             </p>
           </div>
 
@@ -91,7 +86,7 @@ export default function DesafiosMensais({ setTab }) {
               <button
                 onClick={() => setTab("taloes")}
                 className="press pj-tap inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-xl"
-                style={{ fontWeight: 600, background: desafio.cor, color: "#fff" }}
+                style={{ fontWeight: 600, background: "var(--pj-brand)", color: "#fff" }}
               >
                 <Sparkles size={12} /> Começar agora
               </button>
@@ -99,7 +94,7 @@ export default function DesafiosMensais({ setTab }) {
               <button
                 onClick={() => comFeedback(partilharDesafio, estado)}
                 className="press pj-tap inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-xl"
-                style={{ fontWeight: 600, background: desafio.cor, color: "#fff" }}
+                style={{ fontWeight: 600, background: "var(--pj-brand)", color: "#fff" }}
               >
                 <Share2 size={12} /> {feedback || (completo ? "Partilhar vitória" : "Partilhar progresso")}
               </button>
@@ -114,7 +109,7 @@ export default function DesafiosMensais({ setTab }) {
           </div>
 
           {/* Dica */}
-          <p className="text-[10px] mt-3 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>💡 {desafio.dica}</p>
+          <p className="text-[10px] mt-3 leading-relaxed flex items-start gap-1.5" style={{ color: "var(--pj-text-faint)" }}><Lightbulb size={11} className="flex-none mt-px" /> <span>{desafio.dica}</span></p>
         </div>
       </div>
 

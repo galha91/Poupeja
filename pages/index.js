@@ -74,8 +74,8 @@ const TITULOS = {
 
 
 /* ─── Wrapper Mercados ─── */
-function SecaoMercados({ setTab }) {
-  const [sub, setSub] = useState("folhetos");
+function SecaoMercados({ setTab, inicioAba = "folhetos" }) {
+  const [sub, setSub] = useState(inicioAba);
   return (
     <div className="pb-28 pt-4">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
@@ -120,6 +120,7 @@ export default function PoupeJa() {
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
   const [subTabTaloes, setSubTabTaloes] = useState("compras");
+  const [subTabMercados, setSubTabMercados] = useState("folhetos");
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
@@ -373,6 +374,7 @@ export default function PoupeJa() {
   function go(newTab) {
     if (newTab === tab) return;
     if (newTab === "taloes") setSubTabTaloes("compras");
+    if (newTab === "mercados") setSubTabMercados("folhetos");
     if (tab === "taloes") calcGarantiasAviso();
     const pi = NAV_IDS.indexOf(tab);
     const ni = NAV_IDS.indexOf(newTab);
@@ -386,6 +388,14 @@ export default function PoupeJa() {
     setSubTabTaloes("garantias");
     setDir("up");
     setTabRaw("taloes");
+  }
+
+  // "Ementas económicas" no Início abria os Supermercados em Folhetos —
+  // o separador certo só se alcançava com mais um toque, às cegas.
+  function goEmentas() {
+    setSubTabMercados("ementas");
+    setDir("up");
+    setTabRaw("mercados");
   }
 
   function navClick(id) {
@@ -534,8 +544,8 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main style={{ overflowX: "hidden" }}>
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
-                {tab === "mercados"   && <SecaoMercados setTab={go} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
+                {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}

@@ -2,7 +2,11 @@ import Head from "next/head";
 import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
-import { listarMunicipios, frescuraDosPrecos } from "../../lib/municipios";
+import { Preco, LinhaPreco } from "../../Preco";
+import { listarMunicipios, frescuraDosPrecos, precosPorMarca, TIPOS_DESTAQUE } from "../../lib/municipios";
+
+/* Quantas marcas por combustível. Ver a explicação em porCombustivel. */
+const MARCAS_VISIVEIS = 12;
 import { URL_SITE as SITE_URL } from "../../lib/site";
 
 /*
@@ -13,6 +17,46 @@ import { URL_SITE as SITE_URL } from "../../lib/site";
  */
 export default function Combustiveis({ dados, concelhos, frescura, erro }) {
   const idade = descreverFrescura(frescura);
+  /*
+   * Uma lista por combustível. Ordenar preços de produtos diferentes na
+   * mesma coluna não compara nada — cada combustível tem a sua escala.
+   *
+   * Com dois tetos, que a primeira versão desta página não tinha e o
+   * deploy mostrou: a DGEG traz 7 tipos e 52 marcas, o que dava 255
+   * linhas de preço numa página que antes mostrava 16.
+   *
+   *  - Tipos: os mesmos três que os cartões do topo já destacam. As
+   *    variantes aditivadas e a 98 são produtos de nicho; quem procura
+   *    "gasóleo mais barato" não está à procura de gasóleo aditivado.
+   *  - Marcas: as MARCAS_VISIVEIS mais baratas de cada tipo. A cauda são
+   *    marcas regionais com 4 postos, que não ajudam a decidir nada.
+   *
+   * A escala da barra é a das marcas MOSTRADAS: se fosse a das 52, a
+   * amplitude vinha esticada por uma marca que nem está na lista, e os
+   * traços deixavam de dizer respeito ao que se vê.
+   */
+  const porCombustivel = (() => {
+    const mapa = new Map();
+    for (const d of dados || []) {
+      if (!TIPOS_DESTAQUE.includes(d.tipo)) continue;
+      if (!mapa.has(d.tipo)) mapa.set(d.tipo, []);
+      mapa.get(d.tipo).push(d);
+    }
+    return TIPOS_DESTAQUE
+      .filter(tipo => mapa.has(tipo))
+      .map(tipo => {
+        const todas    = mapa.get(tipo).slice().sort((a, b) => a.preco - b.preco);
+        const marcas   = todas.slice(0, MARCAS_VISIVEIS);
+        return {
+          tipo,
+          marcas,
+          total: todas.length,
+          min: marcas[0]?.preco,
+          max: marcas[marcas.length - 1]?.preco,
+        };
+      });
+  })();
+
   // Agrupados por distrito: uma lista corrida de duzentos concelhos não se lê.
   const agrupados = new Map();
   for (const c of concelhos || []) {
@@ -80,32 +124,51 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
               {tiposDestaque.map(t => (
                 <div key={t} className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
                   <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>{t} mais barato</p>
-                  <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 6 }}>
-                    €{eur(porTipo[t].preco, 3)}
+                  <p style={{ marginTop: 6 }}>
+                    <Preco valor={porTipo[t].preco} casas={3} tamanho={30} />
                   </p>
                   <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>{porTipo[t].posto}</p>
                 </div>
               ))}
             </div>
 
-            {/* Tabela por marca */}
-            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
-              Preço mínimo por marca
-            </h2>
-            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-              {(dados || []).slice(0, 16).map((d, i) => (
-                <div key={`${d.posto}-${d.tipo}`} className="flex items-center justify-between px-4 py-3" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600 }}>{d.posto}</p>
-                    <p style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>{d.tipo} · {d.totalPostos} posto{d.totalPostos !== 1 ? "s" : ""}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-brand-ink)" }}>€{eur(d.preco, 3)}</p>
-                    <p style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>médio €{eur(d.precoMedio, 3)}</p>
-                  </div>
+            {/*
+              Era uma lista só, ordenada por preço, com os três
+              combustíveis misturados: GPL a €0,810 por cima de gasóleo a
+              €1,489 por cima de gasolina a €1,661, como se fossem
+              comparáveis. Quem passasse os olhos lia "Repsol é o mais
+              barato" — de um produto diferente. Agora é uma lista por
+              combustível, e dentro de cada uma a barra mostra a distância
+              ao mais barato daquele combustível.
+            */}
+            {porCombustivel.map(grupo => (
+              <div key={grupo.tipo} style={{ marginTop: 36 }}>
+                <div className="flex items-baseline justify-between" style={{ marginBottom: 14 }}>
+                  <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600 }}>
+                    {grupo.tipo} — preço mínimo por marca
+                  </h2>
+                  <span style={{ fontSize: 13, color: "var(--pj-text-faint)" }}>
+                    {grupo.total > grupo.marcas.length
+                      ? `${grupo.marcas.length} mais baratas de ${grupo.total}`
+                      : `${grupo.marcas.length} marca${grupo.marcas.length !== 1 ? "s" : ""}`}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  {grupo.marcas.map((d, i) => (
+                    <LinhaPreco
+                      key={`${d.posto}-${d.tipo}`}
+                      nome={d.posto}
+                      contexto={`${d.totalPostos} posto${d.totalPostos !== 1 ? "s" : ""} · médio €${eur(d.precoMedio, 3)}`}
+                      valor={d.preco}
+                      min={grupo.min}
+                      max={grupo.max}
+                      destaque={i === 0}
+                      primeira={i === 0}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
             <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
               Fonte: DGEG — preços comunicados pelos próprios postos. {idade.rotulo}.
               O preço no posto pode variar.
@@ -151,7 +214,7 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
   );
 }
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps({ res }) {
   // Sem stale-while-revalidate: ver a explicação em [cidade].js — o juízo
   // "isto é de hoje" fica preso no HTML gerado.
   res.setHeader("Cache-Control", "public, s-maxage=1800");
@@ -167,12 +230,26 @@ export async function getServerSideProps({ req, res }) {
     frescura = await frescuraDosPrecos();
   } catch {}
 
+  /*
+   * Isto fazia fetch HTTP ao seu PRÓPRIO site: https://{host}/api/combustiveis.
+   *
+   * Duas razões para sair. A primeira vi-a no preview: com a Deployment
+   * Protection da Vercel ligada, o pedido do servidor a si mesmo bate na
+   * parede do SSO e recebe a página de login em HTML, não JSON — pelo que
+   * `j.dados` vinha indefinido e a página escrevia "Os dados não estão
+   * disponíveis neste momento" com a lista de concelhos logo por baixo,
+   * essa sim cheia, dos mesmos dados. As duas metades da página vinham de
+   * caminhos diferentes e só uma sobrevivia.
+   *
+   * A segunda é que a volta não servia para nada: uma função a sair para a
+   * rede, atravessar a CDN e voltar a entrar em si própria, para chegar a
+   * uma conta que está a um import de distância. Agora chama a biblioteca,
+   * como a linha das concelhos aqui em cima sempre fez.
+   */
   try {
-    const proto = req.headers.host?.startsWith("localhost") ? "http" : "https";
-    const r = await fetch(`${proto}://${req.headers.host}/api/combustiveis`);
-    const j = await r.json();
-    if (!j.dados?.length) throw new Error("sem dados");
-    return { props: { dados: j.dados, concelhos, frescura, erro: false } };
+    const { dados, frescura: frescuraPrecos } = await precosPorMarca();
+    if (!dados.length) throw new Error("sem dados");
+    return { props: { dados, concelhos, frescura: frescura || frescuraPrecos, erro: false } };
   } catch {
     return { props: { dados: [], concelhos, frescura, erro: true } };
   }

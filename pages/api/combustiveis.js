@@ -3,7 +3,7 @@
 // lib/dgeg.js, porque as páginas públicas por concelho usam o mesmo.
 import {
   DISTRITOS, haversine, juntarDistritos, normalizarPosto,
-  postoUtilizavel, distritosPerto,
+  postoUtilizavel, distritosPerto, minimoPorMarca,
 } from "../../lib/dgeg";
 import { excedeuLimite } from "../../lib/protecao-api";
 
@@ -95,24 +95,9 @@ export default async function handler(req, res) {
     }
 
     // ── Modo nacional: mínimo por marca ──
-    const mapa = {};
-    postos.forEach(p => {
-      const n = normalizarPosto(p);
-      if (!postoUtilizavel(n)) return;
-      const chave = `${n.marca}__${n.tipoLabel}`;
-      if (!mapa[chave]) mapa[chave] = { marca: n.marca, tipo: n.tipoLabel, precos: [], totalPostos: 0 };
-      mapa[chave].precos.push(n.preco);
-      mapa[chave].totalPostos++;
-    });
-
-    const dados = Object.values(mapa)
-      .map(item => ({
-        posto: item.marca, tipo: item.tipo,
-        preco: parseFloat(Math.min(...item.precos).toFixed(3)),
-        precoMedio: parseFloat((item.precos.reduce((a, b) => a + b, 0) / item.precos.length).toFixed(3)),
-        totalPostos: item.totalPostos,
-      }))
-      .sort((a, b) => a.preco - b.preco);
+    // A conta vive em lib/dgeg.js porque a página pública também precisa
+    // dela — e precisava sem ter de fazer HTTP a esta rota.
+    const dados = minimoPorMarca(postos.map(normalizarPosto).filter(postoUtilizavel));
 
     if (!dados.length) throw new Error("Sem dados após filtragem");
 

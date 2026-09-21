@@ -55,6 +55,15 @@
   --pj-warn-wash:     #f6efe0;
   --pj-warn-border:   #e8dcc2;
 
+  /* Âmbar de destaque — "este é o mais barato", "este é teu favorito".
+     Não é aviso: é marcação. Andava cravado como #b5701f em 14 sítios da
+     Mobilidade, sem par escuro (no tema escuro ficava castanho sobre
+     castanho) e a 3,96:1 sobre branco — reprovado, e ainda por cima em
+     rótulos de 9px. Este tom mantém o laranja e passa 4,5:1 sobre os
+     três fundos claros: cartão (5,46), superfície (4,93) e chips (4,53). */
+  --pj-accent:        #9a5a14;
+  --pj-accent-wash:   #f6ece0;
+
   /* Categorias (contas e lista de compras). A cor aqui CODIFICA — serve
      para varrer a lista com os olhos —, por isso não desapareceu; foi
      afinada. Cada tom deriva do original: mantém o matiz, corta a
@@ -197,6 +206,23 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── Home redesign (handoff) ── */
 .font-display { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; }
+
+/* ── Números ────────────────────────────────────────────────────────
+   Neste produto os números SÃO o conteúdo: preços ao cêntimo, totais
+   poupados, diferenças. Por omissão os algarismos são proporcionais —
+   o 1 é estreito, o 8 é largo — e numa lista de preços isso faz a
+   vírgula dançar de linha para linha, o que impede a leitura em coluna.
+
+   Tabular-nums dá a todos os algarismos a mesma largura. É assim que
+   os talões, as etiquetas de prateleira e os mostradores das bombas
+   compõem números, e é a diferença entre uma lista que se lê e uma
+   lista que se soletra.
+
+   Aplica-se a tudo o que é dinheiro — nunca a texto corrido. */
+.pj-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
 @keyframes pjBar   { from { width: 0; } }
 @keyframes pjSheen { 0% { transform: translateX(-160%) skewX(-18deg); } 55%, 100% { transform: translateX(320%) skewX(-18deg); } }
 .pj-bar   { animation: pjBar 1.1s cubic-bezier(0.22,1,0.36,1) both; }
@@ -272,6 +298,9 @@ html.dark {
   --pj-warn:          #c99a4e;
   --pj-warn-wash:     #2a2116;
   --pj-warn-border:   #4a3a23;
+
+  --pj-accent:        #d9a05c;
+  --pj-accent-wash:   #2c2116;
 
   --pj-cat-verde:     #3fa686;
   --pj-cat-ocre:      #a6763f;
