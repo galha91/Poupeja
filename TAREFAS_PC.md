@@ -37,10 +37,38 @@ Sem esta tabela o site **não parte**: as páginas passam a ir directamente à
 DGEG, como faziam antes. O que se perde é a rede de segurança — uma
 instância fria com a DGEG em baixo fica sem preços para mostrar.
 
-Nota: o cron horário (`0 * * * *`) precisa do plano **Pro** do Vercel; no
-Hobby os crons só correm uma vez por dia. Como já tens 4 crons configurados,
-deves estar em Pro — mas convém confirmar depois do deploy que o
-`/api/cron-precos` aparece em Vercel → Settings → Cron Jobs e que corre.
+Nota: o cron dos preços corre **uma vez por dia** (`0 6 * * *`, 06:00 UTC).
+
+Ficou horário à primeira, e esta nota dizia "deves estar em Pro" — era um
+palpite e estava errado. A conta está no plano Hobby, que só aceita crons
+diários, e o Vercel recusa a configuração inteira antes sequer de construir:
+entre 6 e 20 de setembro **nenhum deploy passou**, e sete PRs ficaram na
+`main` sem nunca chegar a produção. Daí a passagem a diário.
+
+O site continua a mostrar preços verdadeiros entre actualizações: quando o
+snapshot passa das 3h (`IDADE_MAXIMA_CACHE_LIVE`), o `/api/combustiveis` vai
+à DGEG ao vivo. O que fica mais velha é a data mostrada nas páginas SEO, que
+pode ter até 24h — e é a data real dos preços, não uma inventada.
+
+Se um dia passares a Pro, basta pôr `0 * * * *` de volta no `vercel.json` e
+descer o `IDADE_PREOCUPANTE` (em `lib/precosSnapshot.js`) para as 6h.
+
+### ⚠️ Confirma as env vars do Supabase no Vercel
+
+O `NEXT_PUBLIC_SUPABASE_URL` e o `NEXT_PUBLIC_SUPABASE_ANON_KEY` têm de
+estar definidos no Vercel → Settings → Environment Variables, **marcados
+para Production e para Preview**.
+
+Isto não é opcional nem é só para os previews: variáveis `NEXT_PUBLIC_*`
+são coladas ao código durante o build, não lidas em tempo de execução. Se
+faltarem no build, o site que fica publicado não tem Supabase nenhum —
+sem login, sem sincronização, sem listas partilhadas.
+
+Até 8 de setembro havia no código um fallback para as chaves de produção,
+que tapava isto: mesmo sem env vars nenhumas, a app ligava-se à base de
+dados real. Esse fallback saiu (era o que fazia um preview mal configurado
+escrever na base de dados de gente a sério), por isso a configuração
+passou a ser mesmo necessária.
 
 ### Como confirmar que está a funcionar
 - Vercel → Logs, filtrar por `cron-precos`: deve dizer `OK — N preços`

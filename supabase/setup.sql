@@ -59,7 +59,7 @@ create policy "push - delete"
 -- ── Preços dos combustíveis (snapshot da DGEG) ──────────────────────────────
 -- Correr no Supabase: Dashboard → SQL Editor → New query → colar → Run
 --
--- Uma linha só, reescrita de hora a hora pelo /api/cron-precos.
+-- Uma linha só, reescrita uma vez por dia pelo /api/cron-precos.
 --
 -- Existe para que a frescura NÃO dependa do tráfego nem de qual instância
 -- serverless apanhou o pedido: cada instância tinha a sua própria cache em

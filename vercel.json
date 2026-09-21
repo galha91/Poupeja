@@ -38,7 +38,7 @@
     },
     {
       "path": "/api/cron-precos",
-      "schedule": "0 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
