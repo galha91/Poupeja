@@ -7,6 +7,7 @@ import {
   SlidersHorizontal, ExternalLink, Flame, Building2,
   Home, Zap, Wifi, ShieldCheck, Pill, Car, Gamepad2, FileText,
 } from "lucide-react";
+import { eur } from "./lib/formato";
 
 // Crédito Habitação / Renda — sub-secção irmã, carregada só quando aberta
 const SecaoCasaConteudo = dynamic(() => import("./SecaoCasa"), {
@@ -578,7 +579,7 @@ function ContasFixasConteudo() {
                   <p className="text-[11px] mt-1.5 flex items-center gap-1.5 flex-wrap" style={{ color: "var(--pj-text-faint)" }}>
                     <span style={{ fontWeight: 600, color: "var(--pj-text-muted)" }}>€{Math.round(totalAnual).toLocaleString("pt-PT")}/ano</span>
                     <span style={{ color: "#c4c0b2" }}>·</span>
-                    <span>€{totalDiario.toFixed(2)}/dia</span>
+                    <span>€{eur(totalDiario, 2)}/dia</span>
                   </p>
                   <p className="text-[11px] mt-1" style={{ color: "var(--pj-text-muted)" }}>
                     {nPagas}/{contas.length} conta{contas.length !== 1 ? "s" : ""} pagas
@@ -627,7 +628,7 @@ function ContasFixasConteudo() {
             <div className="rounded-2xl p-3.5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
               <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Anual</p>
               <p className="font-display mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: "var(--pj-text)" }}>€{Math.round(totalAnual).toLocaleString("pt-PT")}</p>
-              <p className="text-[10px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>€{totalDiario.toFixed(2)}/dia</p>
+              <p className="text-[10px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>€{eur(totalDiario, 2)}/dia</p>
             </div>
 
             {/* Pagas este mês */}
@@ -884,7 +885,7 @@ function ContasFixasConteudo() {
                             </div>
                             <div className="rounded-xl p-2.5 text-center" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
                               <p className="text-[9px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Por dia</p>
-                              <p className="text-sm mt-0.5" style={{ fontWeight: 600, color: "var(--pj-text)" }}>€{(c.valor / 30.44).toFixed(2)}</p>
+                              <p className="text-sm mt-0.5" style={{ fontWeight: 600, color: "var(--pj-text)" }}>€{eur(c.valor / 30.44, 2)}</p>
                             </div>
                           </div>
 

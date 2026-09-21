@@ -38,7 +38,19 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
-  "upgrade-insecure-requests",
+  /*
+   * Sem "upgrade-insecure-requests": a política está em Report-Only, e
+   * nesse modo o browser ignora esta directiva — e diz isso na consola,
+   * em TODAS as páginas:
+   *
+   *   The Content Security Policy directive 'upgrade-insecure-requests'
+   *   is ignored when delivered in a report-only policy.
+   *
+   * Ou seja, não fazia nada e só enchia a consola de ruído. Quando a
+   * política passar a ser aplicada a sério (header sem o -Report-Only),
+   * volta a fazer sentido acrescentá-la aqui. Entretanto o site já força
+   * HTTPS pelo Strict-Transport-Security mais abaixo.
+   */
 ].join("; ");
 
 const securityHeaders = [

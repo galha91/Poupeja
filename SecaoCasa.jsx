@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Building2, Plus, Pencil, TrendingUp, TrendingDown, Calendar, X, Home } from "lucide-react";
+import { eur } from "./lib/formato";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
@@ -112,7 +113,7 @@ function BlocoEuribor({ euribor, carregando }) {
           return (
             <div key={p} className="rounded-xl p-2.5 text-center" style={{ background: C.chip }}>
               <p style={{ ...LBL_SM, fontSize: 10 }}>{p}</p>
-              <p className="font-display mt-0.5" style={{ fontSize: 18, fontWeight: 600, color: C.text }}>{d.valor.toFixed(3)}%</p>
+              <p className="font-display mt-0.5" style={{ fontSize: 18, fontWeight: 600, color: C.text }}>{eur(d.valor, 3)}%</p>
               <div className="flex items-center justify-center gap-0.5 mt-1" style={{ color: subiu ? C.neg : C.green }}>
                 {subiu ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
                 <span style={{ fontSize: 9, fontWeight: 600 }}>vs Jan 2022</span>
