@@ -86,7 +86,7 @@ export default function Privacidade() {
             <h1 className="text-2xl font-black text-white">Política de Privacidade</h1>
           </div>
         </div>
-        <p className="text-white/60 text-[12px] mt-2">Última atualização: 27 de junho de 2026</p>
+        <p className="text-white/60 text-[12px] mt-2">Última atualização: 22 de setembro de 2026</p>
       </div>
 
       {/* Content */}
