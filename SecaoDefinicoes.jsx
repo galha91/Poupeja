@@ -635,7 +635,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               </button>
             </div>
             <div className="text-sm leading-relaxed space-y-4" style={{ color: "var(--pj-text-muted)" }}>
-              <p><strong style={{ color: "var(--pj-text)" }}>Última atualização:</strong> junho 2026</p>
+              <p><strong style={{ color: "var(--pj-text)" }}>Última atualização:</strong> setembro 2026</p>
               <p><strong style={{ color: "var(--pj-text)" }}>O que guardamos</strong><br/>Os dados da tua conta (nome e e-mail) são guardados em segurança na Supabase. As tuas listas de compras, talões e preferências ficam no teu dispositivo e, se tiveres sessão iniciada, acompanham a tua conta para os teres em qualquer lado. A fotografia do talão é a excepção: fica só no dispositivo onde a tiraste.</p>
               <p><strong style={{ color: "var(--pj-text)" }}>Para que usamos os dados</strong><br/>Para te mostrar os teus próprios dados dentro da app. Não vendemos dados a ninguém e não te mostramos anúncios. Há dois serviços que recebem dados de navegação: o Google Analytics, para percebermos como a app é usada, e o Awin, que regista as compras feitas através dos links para lojas parceiras (é assim que o PoupeJá se paga). Quando fotografas um talão, a imagem é enviada uma vez para a Anthropic, que lê a loja, a data e o valor poupado — é o que faz o talão aparecer preenchido sozinho.</p>
               <p><strong style={{ color: "var(--pj-text)" }}>Cookies</strong><br/>O cookie da sessão de autenticação é essencial. Além desse, o Google Analytics e o Awin gravam cookies próprios — de medição e de atribuição de compras. Podes bloqueá-los nas definições do teu browser sem perder nada da app.</p>
