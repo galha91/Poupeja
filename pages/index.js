@@ -612,7 +612,6 @@ export default function PoupeJa() {
                     <SecaoIRS />
                   </div>
                 )}
-                {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">

@@ -58,7 +58,7 @@ const LOJAS = {
     { nome: "JD Sports",    dominio: "jdsports.pt",     cor: "#000000", url: "https://www.jdsports.pt/" },
     { nome: "New Balance",  dominio: "newbalance.pt",   cor: "#cf0a2c", url: "https://www.newbalance.pt/" },
     { nome: "Nike",         dominio: "nike.com",        cor: "#000000", url: "https://www.nike.com/pt/" },
-    { nome: "Puma",         dominio: "puma.com",        cor: "#000000", url: "https://eu.puma.com/pt/pt" },
+    { nome: "Puma",         dominio: "puma.com",        cor: "#000000", url: "https://eu.puma.com/pt/en" },
     { nome: "Reebok",       dominio: "reebok.com",      cor: "#e21836", url: "https://www.reebok.eu/" },
     { nome: "Sport Zone",   dominio: "sprintersports.com", cor: "#e2001a", url: "https://www.sprintersports.com/pt" },
     { nome: "Sportsdirect", dominio: "sportsdirect.com",cor: "#003f87", url: "https://www.sportsdirect.pt/" },
