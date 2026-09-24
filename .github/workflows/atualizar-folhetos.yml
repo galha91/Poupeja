@@ -1,4 +1,4 @@
-name: Testar links dos folhetos
+name: Testar links
 
 on:
   schedule:
@@ -16,47 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Testar links dos folhetos
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Todos os links que o utilizador vê — apoios, folhetos, lojas,
+      # promoções e parceiros —, com GET e detecção de "página não
+      # encontrada" servida com 200. O resultado fica no resumo da execução.
+      - name: Testar links
         id: teste_links
-        run: |
-          node -e "
-          const fs = require('fs');
-
-          async function testar(loja, url) {
-            try {
-              const r = await fetch(url, {
-                method: 'HEAD',
-                headers: {
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                  'Accept': 'text/html,application/xhtml+xml,*/*;q=0.9',
-                  'Accept-Language': 'pt-PT,pt;q=0.9',
-                },
-                redirect: 'follow',
-                signal: AbortSignal.timeout(10000),
-              });
-              const ok = r.status < 400 || r.status === 403 || r.status === 429;
-              console.log((ok ? '✅' : '❌') + ' ' + loja + ' [' + r.status + ']');
-              return { loja, url, status: r.status, ok };
-            } catch (e) {
-              console.log('❌ ' + loja + ' [TIMEOUT/ERRO] ' + e.message);
-              return { loja, url, status: 0, ok: false };
-            }
-          }
-
-          // Node 22+ recusa require() + await no topo (ERR_AMBIGUOUS_MODULE_SYNTAX).
-          // Envolver a execução numa função async resolve — sem top-level await.
-          (async () => {
-            const data = JSON.parse(fs.readFileSync('public/folhetos.json', 'utf8'));
-            const resultados = await Promise.all(data.folhetos.map(f => testar(f.loja, f.url)));
-            const quebrados = resultados.filter(r => !r.ok);
-            if (quebrados.length > 0) {
-              fs.appendFileSync(process.env.GITHUB_OUTPUT || '/dev/null',
-                'quebrados=' + quebrados.map(r => r.loja + ' (' + r.status + ')').join(', ') + '\n');
-            } else {
-              console.log('✅ Todos os links OK');
-            }
-          })();
-          "
+        run: node scripts/verificar-links.mjs
 
       - name: Alertar sobre links quebrados
         if: steps.teste_links.outputs.quebrados != ''
@@ -74,6 +43,6 @@ jobs:
             -d "{
               \"from\": \"PoupeJá <noreply@xn--poupej-uta.com>\",
               \"to\": [\"ricardogalha1@hotmail.com\"],
-              \"subject\": \"⚠️ PoupeJá — links quebrados nos folhetos\",
+              \"subject\": \"⚠️ PoupeJá — links quebrados\",
               \"html\": \"<p>Links quebrados: <strong>$QUEBRADOS</strong></p><p><a href='https://xn--poupej-uta.com/admin'>Abrir painel admin</a></p>\"
             }"
