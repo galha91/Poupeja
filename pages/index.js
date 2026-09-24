@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import Router from "next/router";
 
 // Cada separador só descarrega o seu código quando é aberto (code-splitting).
 // Reduz fortemente o JavaScript inicial da home.
@@ -34,6 +35,7 @@ import {
   Tag, ArrowLeft, Landmark, CalendarClock,
 } from "lucide-react";
 import { evento, ecra } from "../lib/analytics";
+import { modoExecucao } from "../lib/plataforma";
 
 /* ─── nav config ─── */
 /* A barra de baixo leva 5 separadores. Com 7 sobravam ~55px cada num
@@ -183,8 +185,10 @@ export default function PoupeJa() {
   useEffect(() => {
     if (!user?.id) return;
     try {
-      const isPwa = window.matchMedia("(display-mode: standalone)").matches ||
-                    window.navigator.standalone === true;
+      // `pwa` mantém o significado de "instalado" para não partir o painel
+      // de admin; `modo` separa a app da Play Store da PWA.
+      const modo = modoExecucao();
+      const isPwa = modo !== "browser";
       const ua = navigator.userAgent;
       const platform = /iphone|ipad|ipod/i.test(ua) ? "ios"
                      : /android/i.test(ua)           ? "android"
@@ -192,7 +196,7 @@ export default function PoupeJa() {
       supabase.from("dados_utilizador").upsert({
         user_id: user.id,
         chave: "poupeja_dispositivo",
-        valor: { pwa: isPwa, platform, atualizado: new Date().toISOString() },
+        valor: { pwa: isPwa, modo, platform, atualizado: new Date().toISOString() },
         atualizado_em: new Date().toISOString(),
       }, { onConflict: "user_id,chave" }).then(() => {});
     } catch {}
@@ -384,6 +388,55 @@ export default function PoupeJa() {
     ecra(newTab);
   }
 
+  /*
+   * Botão "voltar" do Android.
+   *
+   * Os separadores são estado React, não URLs — o histórico do browser não
+   * sabia que existiam. Dentro da app Android, "voltar" num separador
+   * qualquer fechava a app de uma vez. Na PWA e no browser, saía do site.
+   *
+   * Agora, sair do Início empilha UMA entrada. "Voltar" consome-a e regressa
+   * ao Início (fechando Definições ou Avisos se estiverem abertos); o
+   * "voltar" seguinte sai, como em qualquer app Android. Uma só entrada, e
+   * não uma por separador: dez toques na barra de baixo não podem obrigar a
+   * dez "voltar" para sair.
+   *
+   * O Next ignora esta entrada (não tem a marca __N dele); o beforePopState
+   * garante que também não reage ao regressar à entrada dele na mesma página.
+   */
+  const naPilha = useRef(false);
+  const foraDoInicio = tab !== "inicio" || verDefs || verAvisos;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (foraDoInicio && !naPilha.current) {
+      window.history.pushState({ pj: "nav" }, "");
+      naPilha.current = true;
+    } else if (!foraDoInicio && naPilha.current) {
+      // Voltou ao Início por um toque, não pelo "voltar": gasta a entrada,
+      // senão o próximo "voltar" não fazia nada visível.
+      naPilha.current = false;
+      if (window.history.state?.pj === "nav") window.history.back();
+    }
+  }, [foraDoInicio]);
+
+  useEffect(() => {
+    const aoVoltar = () => {
+      if (!naPilha.current) return; // o back() acima, já tratado
+      naPilha.current = false;
+      setVerDefs(false);
+      setVerAvisos(false);
+      setDir("fade");
+      setTabRaw("inicio");
+    };
+    window.addEventListener("popstate", aoVoltar);
+    Router.beforePopState((estado) => estado?.as !== Router.asPath);
+    return () => {
+      window.removeEventListener("popstate", aoVoltar);
+      Router.beforePopState(() => true);
+    };
+  }, []);
+
   function goGarantias() {
     setSubTabTaloes("garantias");
     setDir("up");
@@ -559,7 +612,6 @@ export default function PoupeJa() {
                     <SecaoIRS />
                   </div>
                 )}
-                {tab === "lista"      && <SecaoListaCompras />}
                 {tab === "taloes"     && (
                   <div className="pt-4">
                     <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">

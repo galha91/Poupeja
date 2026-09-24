@@ -1,9 +1,19 @@
 import { useEffect } from 'react';
 import Head from 'next/head';
 import { URL_SITE } from '../lib/site';
+import { modoExecucao } from '../lib/plataforma';
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
+  // Tem de correr no primeiro carregamento: é o único momento em que o
+  // referrer da app Android está disponível (ver lib/plataforma.js).
+  // Aproveita-se para dizer ao GA de onde vem a sessão — sem isto, as
+  // visitas da app e do site ficavam misturadas nos relatórios.
+  useEffect(() => {
+    const modo = modoExecucao();
+    try { window.gtag?.('set', 'user_properties', { modo_app: modo }); } catch (_) {}
+  }, []);
+
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
 

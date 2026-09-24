@@ -4,6 +4,7 @@ import {
   Download, Share, Plus, Check, CheckCircle2, Bell, Zap,
   WifiOff, Home, Smartphone, Monitor, ArrowRight, MoreVertical,
 } from "lucide-react";
+import { instalado } from "../lib/plataforma";
 
 /*
  * Página dedicada de instalação — poupejá.com/instalar
@@ -29,11 +30,8 @@ export default function Instalar() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Já está instalada / a correr em modo standalone
-    const jaInstalada = () =>
-      window.matchMedia("(display-mode: standalone)").matches ||
-      window.navigator.standalone === true;
-    if (jaInstalada()) { setModo("instalado"); return; }
+    // Já está instalada — PWA ou app Android da Play Store
+    if (instalado()) { setModo("instalado"); return; }
 
     const ua = navigator.userAgent || "";
     const isIos = /iphone|ipad|ipod/i.test(ua) ||
