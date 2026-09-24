@@ -1,4 +1,22 @@
+import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
+import { instalado } from "./lib/plataforma";
+
+/*
+ * Estas páginas também abrem dentro da app Android e da PWA — e aí um
+ * convite a "Instalar a app" é ruído. Só se sabe onde se está depois de
+ * montar, por isso o servidor renderiza sempre o convite (o Google vê-o) e
+ * o cliente esconde-o quando já está instalado.
+ */
+export function useInstalado() {
+  const [sim, setSim] = useState(false);
+  useEffect(() => { setSim(instalado()); }, []);
+  return sim;
+}
+
+export function SoForaDaApp({ children }) {
+  return useInstalado() ? null : children;
+}
 
 /*
  * Layout das páginas públicas de SEO (/combustiveis, /folhetos, /apoios).
@@ -28,7 +46,9 @@ export default function LayoutPublico({ children }) {
         <div style={{ height: 1, background: "var(--pj-border)", marginBottom: 20 }} />
         <nav className="flex flex-wrap gap-x-5 gap-y-2" style={{ fontSize: 13, fontWeight: 500 }}>
           <a href="/" style={{ color: "var(--pj-brand-ink)" }}>Abrir o PoupeJá</a>
-          <a href="/instalar" style={{ color: "var(--pj-text-muted)" }}>Instalar a app</a>
+          <SoForaDaApp>
+            <a href="/instalar" style={{ color: "var(--pj-text-muted)" }}>Instalar a app</a>
+          </SoForaDaApp>
           <a href="/combustiveis" style={{ color: "var(--pj-text-muted)" }}>Combustíveis</a>
           <a href="/folhetos" style={{ color: "var(--pj-text-muted)" }}>Folhetos</a>
           <a href="/receitas" style={{ color: "var(--pj-text-muted)" }}>Receitas baratas</a>
@@ -36,7 +56,7 @@ export default function LayoutPublico({ children }) {
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
         </nav>
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 14 }}>
-          PoupeJá — a app de poupança portuguesa. 100% grátis, sem loja de apps.
+          PoupeJá — a app de poupança portuguesa. 100% grátis.
         </p>
       </footer>
     </div>
@@ -44,9 +64,12 @@ export default function LayoutPublico({ children }) {
 }
 
 export function CtaApp({ texto = "Vê isto e muito mais na app — grátis" }) {
+  // Dentro da app, o mesmo botão leva ao ecrã principal em vez de à
+  // página de instalação.
+  const naApp = useInstalado();
   return (
     <a
-      href="/instalar"
+      href={naApp ? "/" : "/instalar"}
       className="pj-tap flex items-center justify-between no-underline mt-8 rounded-2xl px-5 py-4"
       style={{ background: "var(--pj-brand)", color: "#fff" }}
     >

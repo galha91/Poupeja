@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Download, Smartphone } from "lucide-react";
+import { instalado, appAndroidInstalada } from "./lib/plataforma";
 
 // inline=true → card integrado no layout (para a landing screen, sem fixed)
 // inline=false (default) → banner flutuante fixed no fundo do ecrã
@@ -11,8 +12,8 @@ export default function BannerInstalar({ inline = false }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
-    if (window.navigator.standalone) return;
+    // Inclui a app Android: dentro dela, "Instala o PoupeJá" não faz sentido.
+    if (instalado()) return;
 
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
     setIsIOS(ios);
@@ -20,8 +21,10 @@ export default function BannerInstalar({ inline = false }) {
     if (ios) {
       setTimeout(() => setVisivel(true), inline ? 0 : 1500);
     } else {
-      const handler = (e) => {
+      const handler = async (e) => {
         e.preventDefault();
+        // No Chrome de quem já tem a app da Play Store, não oferecer a PWA.
+        if (await appAndroidInstalada()) return;
         setDeferred(e);
         setVisivel(true);
       };

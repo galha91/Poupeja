@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Home, Bell, Smartphone, WifiOff, Download, Zap, X } from "lucide-react";
+import { instalado, appAndroidInstalada } from "./lib/plataforma";
 
 /* ─── Convite a instalar — leva à página /instalar (ou instala já no Android) ─── */
 export function ModalInstalar({ modo, onFechar, onInstalarAndroid }) {
@@ -99,15 +100,18 @@ export function useInstallDetect() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
+    // Inclui a app Android (TWA), onde o display-mode pode não dizer standalone.
+    if (instalado()) {
       setModo("instalado");
       return;
     }
     const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
     if (isIos) { setModo("ios"); return; }
 
-    const handler = (e) => {
+    const handler = async (e) => {
       e.preventDefault();
+      // Quem já tem a app da Play Store não precisa da PWA.
+      if (await appAndroidInstalada()) { setModo("instalado"); return; }
       setPrompt(e);
       setModo("android");
     };

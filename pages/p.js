@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { ArrowRight } from "lucide-react";
+import { SoForaDaApp } from "../LayoutPublico";
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -52,9 +53,11 @@ export default function Partilha({ valor, ref_, variante, mes, taloes, streak })
         <a href={destino} className="pj-tap inline-flex items-center gap-2 no-underline mt-7 rounded-2xl px-7 py-4 text-white font-semibold" style={{ background: "var(--pj-brand)", fontSize: 15 }}>
           Experimentar grátis <ArrowRight size={17} />
         </a>
-        <a href="/instalar" className="mt-4 no-underline" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-          Ou instala a app no telemóvel →
-        </a>
+        <SoForaDaApp>
+          <a href="/instalar" className="mt-4 no-underline" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+            Ou instala a app no telemóvel →
+          </a>
+        </SoForaDaApp>
       </main>
     </>
   );
