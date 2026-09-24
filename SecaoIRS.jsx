@@ -4,21 +4,47 @@ import {
   Heart, GraduationCap, Home, Building2, ShoppingCart, Wallet,
 } from "lucide-react";
 
-// IRS 2025 (Continente) — rendimento coletável anual
-// [limite_superior, taxa, parcela_a_abater]
-const ESCALOES_IRS_2025 = [
-  { ate: 8059,     taxa: 0.13,  abater: 0 },
-  { ate: 12160,    taxa: 0.165, abater: 282.07 },
-  { ate: 17233,    taxa: 0.22,  abater: 950.91 },
-  { ate: 22306,    taxa: 0.25,  abater: 1467.91 },
-  { ate: 28400,    taxa: 0.32,  abater: 3028.38 },
-  { ate: 41629,    taxa: 0.355, abater: 4022.43 },
-  { ate: 44987,    taxa: 0.435, abater: 7353.76 },
-  { ate: 83696,    taxa: 0.45,  abater: 8028.38 },
-  { ate: Infinity, taxa: 0.48,  abater: 10539.00 },
+/*
+ * IRS 2026 (Continente) — rendimentos de 2026, declarados em 2027.
+ *
+ * Tabela do art. 68.º do CIRS na redação da Lei 73-A/2025 (OE 2026),
+ * copiada do Portal das Finanças em 24/09/2026.
+ *
+ * A que aqui estava dizia "2025" mas era a tabela ORIGINAL de 2025 (Lei
+ * 45-A/2024): já tinha sido revista em Julho de 2025 (Lei 55-A/2025) e
+ * outra vez pelo OE 2026. Duas actualizações atrás.
+ *
+ * Só se guardam limites e taxas, que é o que a lei publica. A parcela a
+ * abater calcula-se — é o que garante a continuidade entre escalões — e
+ * assim não há um terceiro número por escalão para se desalinhar.
+ */
+const TABELA_ART68_2026 = [
+  { ate: 8342,     taxa: 0.125 },
+  { ate: 12587,    taxa: 0.157 },
+  { ate: 17838,    taxa: 0.212 },
+  { ate: 23089,    taxa: 0.241 },
+  { ate: 29397,    taxa: 0.311 },
+  { ate: 43090,    taxa: 0.349 },
+  { ate: 46566,    taxa: 0.431 },
+  { ate: 86634,    taxa: 0.446 },
+  { ate: Infinity, taxa: 0.48  },
 ];
 
-const DEDUCAO_ESPECIFICA = 4104;
+export const ESCALOES_IRS = TABELA_ART68_2026.reduce((acc, e, i) => {
+  const ant = acc[i - 1];
+  const abater = ant ? ant.abater + ant.ate * (e.taxa - ant.taxa) : 0;
+  acc.push({ ...e, abater });
+  return acc;
+}, []);
+
+// Art. 25.º, n.º 1, a): 8,54 × IAS. IAS 2026 = 537,13 € (Portaria 480-A/2025/1).
+const IAS_2026 = 537.13;
+const DEDUCAO_ESPECIFICA = Math.round(8.54 * IAS_2026 * 100) / 100; // 4587,09 €
+
+// Art. 78.º-E: limite da dedução com rendas em 2026 — 900 € pela norma
+// transitória do DL 97/2026 (1000 € a partir de 2027). Rendimentos baixos
+// podem ter limite maior (n.º 4); o simulador fica pelo geral.
+const LIMITE_RENDAS = 900;
 
 const fmt = (v) =>
   (Number.isFinite(v) ? v : 0).toLocaleString("pt-PT", {
@@ -76,15 +102,15 @@ export default function SecaoIRS() {
 
     const base = rendimentoColetavel / quociente;
     const escalao =
-      ESCALOES_IRS_2025.find((e) => base <= e.ate) ||
-      ESCALOES_IRS_2025[ESCALOES_IRS_2025.length - 1];
+      ESCALOES_IRS.find((e) => base <= e.ate) ||
+      ESCALOES_IRS[ESCALOES_IRS.length - 1];
     const coleta = Math.max(0, (base * escalao.taxa - escalao.abater) * quociente);
 
     const multTitular = conjunta ? 2 : 1;
     const dGerais = Math.min(num(form.despGerais) * 0.35, 250 * multTitular);
     const dSaude = Math.min(num(form.saude) * 0.15, 1000);
     const dEducacao = Math.min(num(form.educacao) * 0.30, 800);
-    const dHabitacao = Math.min(num(form.habitacao) * 0.15, 600);
+    const dHabitacao = Math.min(num(form.habitacao) * 0.15, LIMITE_RENDAS);
     const dLares = Math.min(num(form.lares) * 0.25, 403.75);
     const dDependentes = deps * 600;
 
@@ -144,7 +170,7 @@ export default function SecaoIRS() {
               Simulador de IRS
             </p>
             <p style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>
-              Estima o teu IRS antes da hora
+              Rendimentos de 2026, a declarar em 2027
             </p>
           </div>
         </div>

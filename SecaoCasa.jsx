@@ -4,7 +4,30 @@ import { eur } from "./lib/formato";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
-const COEF_RENDAS = { 2023: 5.43, 2024: 2.16, 2025: 2.77 };
+/*
+ * Coeficiente de actualização das rendas (NRAU), em %, por ano em que se
+ * aplica. Publicado pelo INE em Setembro do ano anterior.
+ *
+ * A tabela estava desalinhada: tinha 2,16 em 2024 (é o de 2025) e 2,77 em
+ * 2025 (não corresponde a ano nenhum), e acabava em 2025 — em 2026 a app
+ * aplicava 2,77% a toda a gente.
+ *
+ *   2023: 2,00 — o INE calculou 5,43, mas a Lei 19/2022 limitou-o a 2%
+ *   2024: 6,94 · 2025: 2,16 · 2026: 2,24 (Aviso INE 23174/2025/2)
+ *   2027: 2,56 — apurado pelo INE a 10/09/2026; o aviso no DR sai até 30/10
+ *
+ * Acrescentar o ano seguinte todos os Setembros.
+ */
+const COEF_RENDAS = { 2023: 2.00, 2024: 6.94, 2025: 2.16, 2026: 2.24, 2027: 2.56 };
+const ANOS_COEF = Object.keys(COEF_RENDAS).map(Number).sort((a, b) => a - b);
+
+/** Coeficiente para o ano em que a revisão acontece — não o ano de hoje. */
+function coefRendaPara(ano) {
+  if (COEF_RENDAS[ano] != null) return { coef: COEF_RENDAS[ano], ano, estimado: false };
+  // Ano ainda sem coeficiente publicado: usa o último conhecido e di-lo.
+  const ultimo = ANOS_COEF[ANOS_COEF.length - 1];
+  return { coef: COEF_RENDAS[ultimo], ano: ultimo, estimado: true };
+}
 const CHAVE = "poupeja_casa";
 
 // --- Editorial flat design tokens ---
@@ -102,9 +125,14 @@ function BlocoEuribor({ euribor, carregando }) {
     </div>
   );
   if (!euribor) return null;
+  // A série é a média mensal ("2026-08"), não o valor do dia.
+  const periodo = Object.values(euribor).find(d => d?.periodo)?.periodo;
+  const mesRef = /^\d{4}-\d{2}$/.test(periodo || "")
+    ? new Date(`${periodo}-01T12:00:00`).toLocaleDateString("pt-PT", { month: "long", year: "numeric" })
+    : null;
   return (
     <div className="mx-4 mb-4 rounded-2xl p-4" style={CARD}>
-      <p className="mb-3" style={LBL}>Euribor hoje</p>
+      <p className="mb-3" style={LBL}>{mesRef ? `Euribor · média de ${mesRef}` : "Euribor"}</p>
       <div className="grid grid-cols-3 gap-2">
         {["3M","6M","12M"].map(p => {
           const d = euribor[p];
@@ -242,12 +270,13 @@ function BlocoRenda({ dados, onEditar }) {
     </div>
   );
 
-  const anoAtual = new Date().getFullYear();
-  const coef = COEF_RENDAS[anoAtual] || COEF_RENDAS[anoAtual - 1];
-  const aumentoMensal = r.valor * coef / 100;
-  const novaRenda = r.valor + aumentoMensal;
   const proxRevisao = proximoMesRevisaoRenda(r.mesRevisao || 1);
   const dias = diasAte(proxRevisao);
+  // Uma renda revista em Fevereiro, vista em Setembro, sobe em Fevereiro do
+  // ano seguinte — com o coeficiente desse ano, não o de agora.
+  const { coef, ano: anoCoef, estimado } = coefRendaPara(Number(proxRevisao.slice(0, 4)));
+  const aumentoMensal = r.valor * coef / 100;
+  const novaRenda = r.valor + aumentoMensal;
 
   return (
     <div className="mx-4 mb-4 rounded-2xl overflow-hidden" style={CARD}>
@@ -271,7 +300,9 @@ function BlocoRenda({ dados, onEditar }) {
           </div>
           <div className="text-right px-2.5 py-1.5 rounded-xl" style={{ background: C.chip }}>
             <p className="text-xs" style={{ fontWeight: 600, color: C.neg }}>+{fmtEur(aumentoMensal)}/mês</p>
-            <p style={{ fontSize: 9, fontWeight: 600, color: C.faint }}>coef. {coef}%</p>
+            <p style={{ fontSize: 9, fontWeight: 600, color: C.faint }}>
+              coef. {eur(coef, 2)}% · {estimado ? `estimado (${anoCoef})` : anoCoef}
+            </p>
           </div>
         </div>
 
