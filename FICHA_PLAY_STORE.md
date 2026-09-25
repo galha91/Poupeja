@@ -89,9 +89,8 @@ em folheto esta semana.
 
 —
 
-Feito em Portugal, para preços portugueses. Funciona no browser e como
-app. Podes usar sem criar conta; com conta, os teus dados acompanham-te
-entre dispositivos.
+Feito em Portugal, para preços portugueses. Entras com a conta Google ou
+com email, e os teus dados acompanham-te de telemóvel para telemóvel.
 
 Os preços de combustível são os publicados pela DGEG. O PoupeJá não tem
 qualquer ligação às cadeias de supermercados nem às marcas de
@@ -126,10 +125,18 @@ de remoção posterior.
 | Contém anúncios? | **Não** |
 | Os dados são encriptados em trânsito? | **Sim** (HTTPS em tudo) |
 | O utilizador pode pedir a eliminação dos dados? | **Sim** |
+| Link para pedir a eliminação da conta | `https://xn--poupej-uta.com/apagar-conta` |
+
+A app exige conta, por isso a Google obriga a duas coisas, e as duas existem:
+apagar a conta **dentro da app** (Definições → Conta → Apagar conta) e uma
+**página web** para o pedir sem a app instalada (`/apagar-conta`). As duas
+apagam a conta e, em cascata, todos os dados dela no Supabase.
 
 | tipo de dados | recolhido | partilhado | finalidade |
 |---|---|---|---|
 | Email | Sim | Não | Gestão de conta |
+| Nome | Sim | Não | Gestão de conta |
+| IDs de utilizador | Sim | Não | Gestão de conta |
 | Localização aproximada | Sim | Não | Funcionalidade da app |
 | Fotografias | **Sim** | ver nota | Funcionalidade da app |
 | Compras (valores dos talões) | Sim | Não | Funcionalidade da app |
@@ -198,9 +205,21 @@ regras das Famílias, que são mais exigentes e não trazem nada a esta app.
 
 ## Acesso à app (App access)
 
-O Play Console pergunta se há partes da app atrás de login. Resposta:
-**a app é utilizável sem credenciais** — o modo convidado dá acesso a
-folhetos, combustíveis, apoios e receitas. Só a sincronização entre
-dispositivos exige conta. Vale a pena escrever exactamente isto na caixa de
-instruções, para o revisor não ficar bloqueado à procura de uma conta de
-teste.
+Na app Android **é preciso conta** — não há modo convidado (no site
+continua a haver). Por isso, no Play Console:
+
+1. Escolhe **"Todas ou algumas funcionalidades estão restritas"**.
+2. **Adiciona instruções** com uma conta de teste que funcione sempre,
+   para o revisor da Google entrar:
+   - Nome: `Conta de teste`
+   - Utilizador: o email da conta de teste (ver abaixo)
+   - Palavra-passe: a dessa conta
+   - Instruções: `Abrir a app, tocar em "Já tenho conta", entrar com este
+     email e palavra-passe. Não é preciso mais nenhum passo.`
+
+**Criar a conta de teste:** no site, "Criar conta" com um email teu com
+`+` — por exemplo `poupeja.portugal+revisor@gmail.com` (o Gmail entrega em
+`poupeja.portugal@gmail.com`). Confirma o email, entra uma vez, e mete
+lá um talão e uma lista de compras para o revisor ver a app com conteúdo.
+Não uses "Continuar com Google" para esta conta: o revisor precisa de
+email e palavra-passe.

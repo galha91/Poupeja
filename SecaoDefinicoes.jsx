@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import {
   Fuel, MapPin, Bell, ShieldCheck, Info,
   ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
-  PiggyBank, LogOut, BellRing, BellOff, Moon, Share2,
+  PiggyBank, LogOut, BellRing, BellOff, Moon, Share2, Trash2,
 } from "lucide-react";
+import { apagarConta } from "./lib/apagarConta";
 import { supabase } from "./lib/supabase";
 import { partilharApp } from "./lib/partilhar";
 
@@ -77,6 +78,60 @@ function Row({ border = true, children }) {
   );
 }
 
+/*
+ * Apagar a conta — exigido pela Play Store a quem deixa criar conta.
+ * Dois passos: o primeiro toque só abre a confirmação, que diz o que se
+ * perde; apagar mesmo é o segundo botão.
+ */
+function ApagarConta({ onApagada }) {
+  const [aberto, setAberto]   = useState(false);
+  const [aApagar, setAApagar] = useState(false);
+  const [erro, setErro]       = useState("");
+
+  async function confirmar() {
+    setErro("");
+    setAApagar(true);
+    try {
+      await apagarConta();
+      onApagada?.();
+    } catch (e) {
+      setErro(e.message || "Não foi possível apagar a conta agora.");
+      setAApagar(false);
+    }
+  }
+
+  if (!aberto) {
+    return (
+      <button onClick={() => setAberto(true)} className="press pj-tap w-full flex items-center justify-between" style={{ color: "#a2432a" }}>
+        <div className="flex items-center gap-2.5">
+          <Trash2 size={17} />
+          <p className="text-sm font-semibold">Apagar conta</p>
+        </div>
+        <ChevronRight size={15} style={{ color: "#c8b5ac" }} />
+      </button>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl p-4" style={{ background: "var(--pj-subtle)" }}>
+      <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Apagar a conta para sempre?</p>
+      <p className="text-[12.5px] leading-relaxed mt-1.5" style={{ color: "var(--pj-text-muted)" }}>
+        Apagamos a conta e tudo o que está nela: talões, listas, contas da casa, poupança e preferências.
+        Não dá para recuperar depois.
+      </p>
+      {erro && <p className="text-[12px] font-semibold mt-2" style={{ color: "var(--pj-danger)" }}>{erro}</p>}
+      <div className="flex gap-2 mt-3">
+        <button onClick={() => setAberto(false)} disabled={aApagar} className="press pj-tap flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ background: "var(--pj-card)", color: "var(--pj-text)" }}>
+          Cancelar
+        </button>
+        <button onClick={confirmar} disabled={aApagar} className="press pj-tap flex-1 py-2.5 rounded-xl text-sm font-semibold text-white" style={{ background: "#a2432a", opacity: aApagar ? 0.6 : 1 }}>
+          {aApagar ? "A apagar…" : "Apagar conta"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function IconChip({ active = false, children }) {
   return (
     <div
@@ -88,7 +143,7 @@ function IconChip({ active = false, children }) {
   );
 }
 
-export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta }) {
+export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta, onContaApagada }) {
   const [prefs, setPrefs]   = useState(lerPrefs);
   const [saved, setSaved]   = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -277,7 +332,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
 
       {/* Conta */}
       <Section label="Conta">
-        <Row border={false}>
+        <Row border={!user?.convidado}>
           <button
             onClick={onLogout}
             className="press pj-tap w-full flex items-center justify-between"
@@ -290,6 +345,11 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
             <ChevronRight size={15} style={{ color: "#c8b5ac" }} />
           </button>
         </Row>
+        {!user?.convidado && (
+          <Row border={false}>
+            <ApagarConta onApagada={onContaApagada} />
+          </Row>
+        )}
       </Section>
 
       {/* Preferências */}

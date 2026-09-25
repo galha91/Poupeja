@@ -35,7 +35,7 @@ import {
   Tag, ArrowLeft, Landmark, CalendarClock,
 } from "lucide-react";
 import { evento, ecra } from "../lib/analytics";
-import { modoExecucao } from "../lib/plataforma";
+import { modoExecucao, emAppAndroid } from "../lib/plataforma";
 
 /* ─── nav config ─── */
 /* A barra de baixo leva 5 separadores. Com 7 sobravam ~55px cada num
@@ -365,6 +365,15 @@ export default function PoupeJa() {
     setVerDefs(false);
   }
 
+  // A conta e os dados locais já foram apagados (lib/apagarConta); falta
+  // parar a sincronização e voltar ao ecrã de entrar.
+  function handleContaApagada() {
+    pararSync();
+    setUser(null);
+    setTabRaw("inicio");
+    setVerDefs(false);
+  }
+
   async function instalarAndroid() {
     if (!installPrompt) return;
     setModalInstalarAberto(false);
@@ -466,8 +475,11 @@ export default function PoupeJa() {
     return <DefinirNovaPass onConcluido={() => setRecovery(false)} />;
   }
 
-  /* Utilizador não autenticado → ecrã de auth */
-  if (!user) {
+  /* Utilizador não autenticado → ecrã de auth.
+     Na app Android não há modo convidado: quem já o usava vê o ecrã de
+     entrar. Não perde nada — os dados de convidado estão no localStorage e
+     o pull() do lib/sync sobe-os para a conta no primeiro login. */
+  if (!user || (user.convidado && emAppAndroid())) {
     return <EcraAuth onAuth={handleAuth} />;
   }
 
@@ -541,6 +553,7 @@ export default function PoupeJa() {
             onVoltar={() => { setDir("fade"); setTabRaw("inicio"); setVerDefs(false); }}
             onLogout={handleLogout}
             onCriarConta={() => setModalConta(true)}
+            onContaApagada={handleContaApagada}
           />
         ) : (
           <>

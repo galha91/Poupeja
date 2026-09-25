@@ -32,11 +32,11 @@ const SECOES = [
   },
   {
     titulo: "8. Os teus direitos (RGPD)",
-    texto: "Ao abrigo do Regulamento Geral sobre a Proteção de Dados (RGPD), tens direito a:\n• Aceder aos teus dados pessoais\n• Corrigir dados incorretos\n• Apagar a tua conta e todos os dados associados\n• Receber os teus dados num formato portável\n• Opor-te ao tratamento e retirar o consentimento\nPara exercer qualquer destes direitos, contacta-nos por poupeja.portugal@gmail.com. Tens também o direito de apresentar reclamação à autoridade de controlo nacional (CNPD — Comissão Nacional de Proteção de Dados).",
+    texto: "Ao abrigo do Regulamento Geral sobre a Proteção de Dados (RGPD), tens direito a:\n• Aceder aos teus dados pessoais\n• Corrigir dados incorretos\n• Apagar a tua conta e todos os dados associados\n• Receber os teus dados num formato portável\n• Opor-te ao tratamento e retirar o consentimento\nPara apagar a conta podes fazê-lo tu mesmo, na app, em Definições → Conta → Apagar conta, ou na página poupejá.com/apagar-conta. Para os restantes direitos, contacta-nos por poupeja.portugal@gmail.com. Tens também o direito de apresentar reclamação à autoridade de controlo nacional (CNPD — Comissão Nacional de Proteção de Dados).",
   },
   {
     titulo: "9. Durante quanto tempo guardamos os dados",
-    texto: "Guardamos os teus dados enquanto a tua conta estiver ativa. Se pedires a eliminação da conta, os dados associados são apagados. Os dados guardados localmente no dispositivo podem ser removidos por ti a qualquer momento, limpando os dados do site no browser.",
+    texto: "Guardamos os teus dados enquanto a tua conta estiver ativa. Quando apagas a conta, ela e todos os dados guardados na nossa base de dados são apagados de imediato, e os dados guardados no dispositivo onde a apagaste também. Se nos pedires a eliminação por email, fazemo-lo no prazo máximo de 30 dias. Os dados guardados localmente no dispositivo podem ser removidos por ti a qualquer momento, limpando os dados do site no browser.",
   },
   {
     titulo: "10. Cookies e tecnologias semelhantes",
