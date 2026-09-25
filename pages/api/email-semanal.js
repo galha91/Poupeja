@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { enviarEmail } from "../../lib/enviarEmail";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
 
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
   const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base });
 
   try {
-    await resend.emails.send({
+    await enviarEmail(resend, {
       from: "PoupeJá <noreply@xn--poupej-uta.com>",
       to: email,
       replyTo: "ricardogalha1@hotmail.com",

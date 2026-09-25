@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { enviarEmail } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { atualizarSnapshot, idadeSnapshot, IDADE_PREOCUPANTE } from "../../lib/precosSnapshot";
 
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
   const preocupante = !idade || idade.idadeMs > IDADE_PREOCUPANTE;
   if (preocupante && process.env.RESEND_API_KEY) {
     try {
-      await new Resend(process.env.RESEND_API_KEY).emails.send({
+      await enviarEmail(new Resend(process.env.RESEND_API_KEY), {
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: "poupeja.portugal@gmail.com",
         subject: `PoupeJá — preços da DGEG sem actualizar há ${idadeH ?? "?"}h`,
