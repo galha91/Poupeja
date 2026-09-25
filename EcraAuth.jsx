@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import { evento } from "./lib/analytics";
+import { emAppAndroid } from "./lib/plataforma";
 import BannerInstalar from "./BannerInstalar";
 import Onboarding from "./Onboarding";
 
@@ -78,7 +79,7 @@ async function entrarComGoogle() {
 }
 
 /* ── Ecrã Landing ── */
-function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidadoErro }) {
+function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidadoErro, comConvidado = true }) {
   return (
     <div className="min-h-dvh flex flex-col" style={{ background: "var(--pj-surface)" }}>
       {/* Hero */}
@@ -128,19 +129,27 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
         >
           <IconGoogle /> Continuar com Google
         </button>
-        <button
-          onClick={onConvidado}
-          disabled={convidadoLoading}
-          className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[14px]"
-          style={{ background: "var(--pj-card)", color: "var(--pj-brand-ink)", border: "1.5px dashed var(--pj-brand-soft)", opacity: convidadoLoading ? 0.6 : 1 }}
-        >
-          {convidadoLoading ? "A preparar a tua conta…" : "Espreitar como convidado — sem registo"}
-        </button>
-        <p className="text-center text-[11px] font-medium -mt-1" style={{ color: "var(--pj-text-faint)" }}>
-          Conhece a app primeiro · regista-te quando quiseres
-        </p>
-        {convidadoErro && (
-          <p className="text-center text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{convidadoErro}</p>
+        {comConvidado ? (
+          <>
+            <button
+              onClick={onConvidado}
+              disabled={convidadoLoading}
+              className="press pj-tap w-full py-4 rounded-2xl font-semibold text-[14px]"
+              style={{ background: "var(--pj-card)", color: "var(--pj-brand-ink)", border: "1.5px dashed var(--pj-brand-soft)", opacity: convidadoLoading ? 0.6 : 1 }}
+            >
+              {convidadoLoading ? "A preparar a tua conta…" : "Espreitar como convidado — sem registo"}
+            </button>
+            <p className="text-center text-[11px] font-medium -mt-1" style={{ color: "var(--pj-text-faint)" }}>
+              Conhece a app primeiro · regista-te quando quiseres
+            </p>
+            {convidadoErro && (
+              <p className="text-center text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{convidadoErro}</p>
+            )}
+          </>
+        ) : (
+          <p className="text-center text-[12px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
+            Os teus talões, listas e poupança ficam guardados na conta — trocas de telemóvel e está tudo lá.
+          </p>
         )}
         <p className="text-center text-[12.5px] font-medium mt-1.5" style={{ color: "var(--pj-text-faint)" }}>
           Preferes email?{" "}
@@ -612,6 +621,7 @@ export default function EcraAuth({ onAuth }) {
       onConvidado={entrarConvidado}
       convidadoLoading={convidadoLoading}
       convidadoErro={convidadoErro}
+      comConvidado={!emAppAndroid()}
     />
   );
 }
