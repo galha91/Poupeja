@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { enviarEmail } from "../../lib/enviarEmail";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos, calcularResumoUtilizador } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
@@ -87,7 +88,7 @@ export default async function handler(req, res) {
       const resumo = calcularResumoUtilizador(taloesPorUser.get(u.id));
       const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl, resumo });
       try {
-        await resend.emails.send({
+        await enviarEmail(resend, {
           from: "PoupeJá <noreply@xn--poupej-uta.com>",
           to: u.email,
           replyTo: "ricardogalha1@hotmail.com",
@@ -125,7 +126,7 @@ export default async function handler(req, res) {
     if (partidas.length > 0 || avisos.length > 0) {
       const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
       const { subject, html } = construirEmailAlerta({ partidas, avisos, corrigidas, base });
-      await resend.emails.send({
+      await enviarEmail(resend, {
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: adminEmail,
         subject,
