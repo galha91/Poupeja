@@ -14,7 +14,7 @@ Tudo o que o Play Console vai pedir, já escrito. Copia daqui.
 |---|---|
 | Ícone 512×512 | `public/icon-512.png` ✅ |
 | **Feature graphic 1024×500** | `assets/play/feature-graphic.png` ✅ *(era obrigatório e faltava)* |
-| Screenshots de telemóvel | `public/screenshots/` — 4 × 780×1688 ⚠️ ver nota |
+| Screenshots de telemóvel | `public/screenshots/` — 4 × 780×1688 ✅ |
 | Política de privacidade | `https://xn--poupej-uta.com/privacidade` ✅ |
 
 O feature graphic é gerado de `assets/play/feature-graphic.html`, que é
@@ -31,11 +31,10 @@ await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(600);
 await p.screenshot({path:'assets/play/feature-graphic.png'}); await b.close();})()"
 ```
 
-> **Nota sobre os screenshots.** O `inicio.png` mostra o cabeçalho
-> *"Boa tarde, Convidado"* e o cartão *"A usar como convidado — cria conta
-> grátis"*. É o estado verdadeiro da app sem sessão iniciada, mas numa ficha
-> de loja anuncia que quem está a ver não tem conta. Vale a pena recapturar
-> esse ecrã com sessão iniciada. Os outros três não têm esse problema.
+> **Capturas.** `inicio.png` e `combustiveis.png` foram refeitas: a de
+> Início mostrava "Convidado" (modo que já não existe na app) e a de
+> Combustíveis mostrava o ecrã de erro "Preços indisponíveis". As novas usam
+> uma conta de exemplo ("Ana") e os preços reais da DGEG de 26/09/2026.
 
 ---
 
