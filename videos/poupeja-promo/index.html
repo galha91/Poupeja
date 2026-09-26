@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Fraunces";
+        src: url("fonts/fraunces-latin-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Fraunces";
+        src: url("fonts/fraunces-latin-600-italic.woff2") format("woff2");
+        font-weight: 600;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        src: url("fonts/dm-sans-latin-500-normal.woff2") format("woff2");
+        font-weight: 500;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        src: url("fonts/dm-sans-latin-700-normal.woff2") format("woff2");
+        font-weight: 700;
+      }
+
+      :root {
+        --green: #0b6b4f;
+        --green-dark: #084c39;
+        --green-deep: #052e23;
+        --green-night: #03201a;
+        --green-soft: #3f9070;
+        --cream: #f6f5f0;
+        --ink: #14231c;
+        --muted: #46534b;
+        --gold: #fbbf24;
+        --gold-deep: #d99a0b;
+        --alert: #e5372b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--green-night);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "DM Sans", sans-serif;
+        color: var(--cream);
+      }
+      #main {
+        position: absolute;
+        inset: 0;
+      }
+      .bg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, var(--green-dark) 0%, var(--green-deep) 55%, var(--green-night) 100%);
+      }
+      .glow {
+        position: absolute;
+        left: 90px;
+        top: 360px;
+        width: 900px;
+        height: 900px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(63, 144, 112, 0.55) 0%, rgba(63, 144, 112, 0) 65%);
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .display {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.02;
+        text-align: center;
+      }
+      .gold-it {
+        color: var(--gold);
+        font-style: italic;
+      }
+      .block {
+        display: block;
+      }
+
+      /* ── Cena 1 · gancho ── */
+      #hook {
+        padding: 250px 80px 0;
+      }
+      .hook-a {
+        font-size: 92px;
+      }
+      .hook-b {
+        font-size: 128px;
+      }
+      #tiles {
+        position: absolute;
+        left: 140px;
+        top: 820px;
+        display: grid;
+        grid-template-columns: repeat(3, 240px);
+        grid-template-rows: repeat(2, 240px);
+        gap: 40px;
+      }
+      .tile {
+        position: relative;
+        width: 240px;
+        height: 240px;
+        border-radius: 56px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 2px 0 rgba(255, 255, 255, 0.6) inset,
+          0 30px 60px rgba(0, 0, 0, 0.4);
+      }
+      .tile img {
+        display: block;
+        width: 150px;
+        height: 150px;
+      }
+      .notif {
+        position: absolute;
+        right: -18px;
+        top: -18px;
+        min-width: 76px;
+        height: 76px;
+        padding: 0 18px;
+        border-radius: 38px;
+        background: var(--alert);
+        color: #ffffff;
+        font-size: 40px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 6px solid var(--green-deep);
+      }
+
+      /* moedas que substituem as apps */
+      .coin {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #ffe08a 0%, var(--gold) 45%, var(--gold-deep) 100%);
+        box-shadow:
+          0 0 0 6px rgba(217, 154, 11, 0.6) inset,
+          0 16px 30px rgba(0, 0, 0, 0.35);
+        color: #7a5200;
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── Cena 2 · uma só ── */
+      #pig {
+        position: absolute;
+        left: 360px;
+        top: 500px;
+        width: 360px;
+        height: 360px;
+      }
+      .pig-inner {
+        width: 360px;
+        height: 360px;
+        border-radius: 84px;
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.12),
+          0 40px 90px rgba(0, 0, 0, 0.5);
+      }
+      .pig-inner img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #punch-text {
+        padding: 1000px 80px 0;
+      }
+      .punch-a {
+        font-size: 100px;
+      }
+      .punch-b {
+        font-size: 150px;
+      }
+
+      /* ── Cena 3 · o que faz ── */
+      #build {
+        padding: 160px 80px 0;
+        gap: 60px;
+      }
+      .features {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        width: 100%;
+      }
+      .feat {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        font-size: 50px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .check {
+        flex: 0 0 auto;
+        width: 66px;
+        height: 66px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--green-deep);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        font-weight: 700;
+      }
+      .feat em {
+        font-style: normal;
+        color: var(--gold);
+      }
+      .phone-wrap {
+        position: relative;
+        width: 620px;
+        height: 1340px;
+      }
+      .phone {
+        width: 620px;
+        height: 1340px;
+        border-radius: 80px;
+        background: #0d1712;
+        padding: 20px;
+        box-shadow:
+          0 0 0 3px rgba(255, 255, 255, 0.14),
+          0 60px 120px rgba(0, 0, 0, 0.6);
+      }
+      .screen {
+        position: relative;
+        width: 580px;
+        height: 1300px;
+        border-radius: 62px;
+        overflow: hidden;
+        background: var(--cream);
+      }
+      .screen img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+      }
+      .sheen {
+        position: absolute;
+        top: -200px;
+        left: 0;
+        width: 260px;
+        height: 1700px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 100%);
+      }
+      .badge {
+        position: absolute;
+        left: -70px;
+        top: 130px;
+        padding: 24px 36px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--green-deep);
+        font-size: 46px;
+        font-weight: 700;
+        white-space: nowrap;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      /* ── Cena 4 · chamada para a ação ── */
+      #cream {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(120% 80% at 50% 40%, #ffffff 0%, var(--cream) 60%);
+      }
+      #resolve {
+        justify-content: center;
+        gap: 44px;
+        padding: 0 80px 380px;
+        color: var(--ink);
+      }
+      .end-icon {
+        width: 260px;
+        height: 260px;
+        border-radius: 62px;
+        box-shadow: 0 30px 70px rgba(8, 76, 57, 0.35);
+      }
+      .end-icon img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .wordmark {
+        font-size: 156px;
+      }
+      .wordmark span {
+        color: var(--green);
+      }
+      .tagline {
+        font-size: 46px;
+        font-weight: 500;
+        text-align: center;
+        color: var(--muted);
+        line-height: 1.25;
+      }
+      .cta {
+        position: relative;
+        overflow: hidden;
+        margin-top: 16px;
+        padding: 42px 82px;
+        border-radius: 999px;
+        background: var(--green);
+        color: #ffffff;
+        font-size: 62px;
+        font-weight: 700;
+        box-shadow: 0 26px 60px rgba(11, 107, 79, 0.45);
+      }
+      .cta-shine {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 160px;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+      }
+      .url {
+        font-size: 44px;
+        font-weight: 700;
+        color: var(--green);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="main" class="clip" data-start="0" data-duration="10" data-track-index="0">
+        <div class="bg"></div>
+        <div id="glow" class="glow"></div>
+
+        <!-- Cena 1 · uma app para cada supermercado -->
+        <div id="hook" class="scene">
+          <div id="hook-title" class="display">
+            <span id="hook-a" class="block hook-a">Uma app para</span>
+            <span id="hook-b" class="block hook-b"><span class="gold-it">cada</span> supermercado?</span>
+          </div>
+        </div>
+        <div id="tiles" data-layout-allow-overlap="true">
+          <div class="tile"><img src="assets/logos/continente.svg" alt="Continente" /><div class="notif">3</div></div>
+          <div class="tile"><img src="assets/logos/lidl.svg" alt="Lidl" /><div class="notif">12</div></div>
+          <div class="tile"><img src="assets/logos/aldisud.svg" alt="Aldi" /><div class="notif">5</div></div>
+          <div class="tile"><img src="assets/logos/auchan.svg" alt="Auchan" /><div class="notif">8</div></div>
+          <div class="tile"><img src="assets/logos/intermarche.svg" alt="Intermarché" /><div class="notif">2</div></div>
+          <div class="tile"><img src="assets/logos/edotleclerc.svg" alt="E.Leclerc" /><div class="notif">7</div></div>
+        </div>
+
+        <!-- Cena 2 · as apps viram moedas e caem no porquinho -->
+        <div id="pig"><div id="pig-inner" class="pig-inner"><img src="assets/icon.svg" alt="PoupeJá" /></div></div>
+        <div class="coin" style="left: 200px; top: 880px">€</div>
+        <div class="coin" style="left: 480px; top: 880px">€</div>
+        <div class="coin" style="left: 760px; top: 880px">€</div>
+        <div class="coin" style="left: 200px; top: 1160px">€</div>
+        <div class="coin" style="left: 480px; top: 1160px">€</div>
+        <div class="coin" style="left: 760px; top: 1160px">€</div>
+        <div id="punch-text" class="scene">
+          <div class="display">
+            <span id="punch-a" class="block punch-a">Junta tudo</span>
+            <span id="punch-b" class="block punch-b gold-it">numa só.</span>
+          </div>
+        </div>
+
+        <!-- Cena 3 · o que faz -->
+        <div id="build" class="scene">
+          <div class="features">
+            <div id="f1" class="feat"><div class="check">✓</div><div>Folhetos de <em>todos</em> os supermercados</div></div>
+            <div id="f2" class="feat"><div class="check">✓</div><div>Combustível <em>mais barato</em> perto de ti</div></div>
+            <div id="f3" class="feat"><div class="check">✓</div><div>A tua poupança <em>real</em>, dos talões</div></div>
+          </div>
+          <div id="phone" class="phone-wrap" data-layout-allow-overflow="true">
+            <div class="phone">
+              <div class="screen">
+                <img id="scr-a" src="assets/folhetos.png" alt="" />
+                <img id="scr-b" src="assets/poupanca.png" alt="" />
+                <div id="sheen" class="sheen"></div>
+              </div>
+            </div>
+            <div id="badge" class="badge">+€<span id="count">0,00</span> este mês</div>
+          </div>
+        </div>
+
+        <!-- Cena 4 · chamada para a ação -->
+        <div id="cream"></div>
+        <div id="resolve" class="scene">
+          <div id="end-icon" class="end-icon"><img src="assets/icon.svg" alt="" /></div>
+          <div id="wordmark" class="wordmark display">Poupe<span>Já</span></div>
+          <div id="tagline" class="tagline">
+            <span class="block">Folhetos, combustível e poupança.</span>
+            <span class="block">Numa só app, feita em Portugal.</span>
+          </div>
+          <div id="cta" class="cta">Cria conta grátis →<div id="cta-shine" class="cta-shine"></div></div>
+          <div id="url" class="url">poupejá.com</div>
+        </div>
+
+        <div class="vignette"></div>
+      </div>
+
+      <!-- Som -->
+      <audio id="sfx-riser" src="assets/sfx/riser.mp3" data-start="0.2" data-duration="2.1" data-track-index="9" data-volume="0.22"></audio>
+      <audio id="sfx-notif-1" src="assets/sfx/notification.mp3" data-start="1.3" data-duration="1.2" data-track-index="10" data-volume="0.45"></audio>
+      <audio id="sfx-notif-2" src="assets/sfx/notification.mp3" data-start="1.62" data-duration="1.2" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-swoosh-1" src="assets/sfx/whoosh-short.mp3" data-start="2.3" data-duration="0.57" data-track-index="12" data-volume="0.6"></audio>
+      <audio id="sfx-coin-1" src="assets/sfx/ping.mp3" data-start="2.95" data-duration="1.0" data-track-index="13" data-volume="0.5"></audio>
+      <audio id="sfx-coin-2" src="assets/sfx/ping.mp3" data-start="3.2" data-duration="1.0" data-track-index="14" data-volume="0.45"></audio>
+      <audio id="sfx-impact" src="assets/sfx/impact-bass-1.mp3" data-start="3.45" data-duration="2.0" data-track-index="15" data-volume="0.7"></audio>
+      <audio id="sfx-swoosh-2" src="assets/sfx/whoosh.mp3" data-start="3.85" data-duration="0.57" data-track-index="16" data-volume="0.5"></audio>
+      <audio id="sfx-pop-1" src="assets/sfx/pop.mp3" data-start="4.3" data-duration="0.7" data-track-index="17" data-volume="0.45"></audio>
+      <audio id="sfx-pop-2" src="assets/sfx/pop.mp3" data-start="5.0" data-duration="0.7" data-track-index="18" data-volume="0.45"></audio>
+      <audio id="sfx-pop-3" src="assets/sfx/pop.mp3" data-start="5.7" data-duration="0.7" data-track-index="19" data-volume="0.45"></audio>
+      <audio id="sfx-sparkle" src="assets/sfx/sparkle.mp3" data-start="6.15" data-duration="0.8" data-track-index="20" data-volume="0.5"></audio>
+      <audio id="sfx-swoosh-3" src="assets/sfx/whoosh.mp3" data-start="7.05" data-duration="0.57" data-track-index="21" data-volume="0.55"></audio>
+      <audio id="sfx-chime" src="assets/sfx/chime.mp3" data-start="7.95" data-duration="2.0" data-track-index="22" data-volume="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const tiles = gsap.utils.toArray(".tile");
+      const notifs = gsap.utils.toArray(".notif");
+      const coins = gsap.utils.toArray(".coin");
+      // centro de cada moeda (= centro de cada app) e ranhura do porquinho
+      const CENTERS = [
+        [260, 940], [540, 940], [820, 940],
+        [260, 1220], [540, 1220], [820, 1220],
+      ];
+      const SLOT = [537, 620];
+
+      // Estados iniciais (fora da timeline)
+      gsap.set(["#pig", "#punch-text", "#build", "#resolve", "#cream"], { autoAlpha: 0 });
+      gsap.set(coins, { autoAlpha: 0, scale: 0 });
+      gsap.set(notifs, { autoAlpha: 0, scale: 0 });
+
+      // Luz ambiente a deslizar durante todo o anúncio
+      tl.fromTo("#glow", { x: -120, y: -60 }, { x: 120, y: 220, duration: 10, ease: "sine.inOut" }, 0);
+
+      // ── Cena 1 · gancho (0 – 2.3s)
+      tl.fromTo("#hook-a", { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.05);
+      tl.fromTo("#hook-b", { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.2);
+      tl.fromTo(
+        tiles,
+        { autoAlpha: 0, scale: 0.4, y: 80, rotation: (i) => [-14, 9, -6, 12, -10, 7][i] },
+        { autoAlpha: 1, scale: 1, y: 0, rotation: (i) => [-4, 3, -2, 4, -3, 2][i], duration: 0.55, ease: "back.out(1.9)", stagger: 0.08 },
+        0.35
+      );
+      // notificações a acumular (ordem fixa, determinística)
+      tl.to(notifs, { autoAlpha: 1, scale: 1, duration: 0.25, ease: "back.out(3)", stagger: 0.07 }, 1.3);
+      tl.to("#tiles", { keyframes: [{ x: -10 }, { x: 10 }, { x: -7 }, { x: 7 }, { x: 0 }], duration: 0.35, ease: "none" }, 1.8);
+
+      // ── Cena 2 · apps viram moedas e caem no porquinho (2.3 – 3.8s)
+      tl.to("#hook-title", { autoAlpha: 0, y: -80, duration: 0.3, ease: "power2.in" }, 2.2);
+      tl.to(tiles, { scale: 0.45, autoAlpha: 0, rotation: 0, duration: 0.16, ease: "power2.in", stagger: 0.02 }, 2.28);
+      tl.to(coins, { autoAlpha: 1, scale: 1, duration: 0.2, ease: "back.out(2.5)", stagger: 0.02 }, 2.34);
+      tl.fromTo("#pig", { autoAlpha: 0, scale: 0.3, y: -40 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, 2.58);
+      coins.forEach((coin, i) => {
+        const [cx, cy] = CENTERS[i];
+        const dx = SLOT[0] - cx;
+        const dy = SLOT[1] - cy;
+        const t0 = 2.78 + i * 0.08;
+        tl.to(coin, { x: dx, duration: 0.45, ease: "power1.inOut" }, t0);
+        tl.to(coin, { keyframes: [{ y: Math.min(dy, 0) - 260, duration: 0.22, ease: "power2.out" }, { y: dy, duration: 0.23, ease: "power2.in" }] }, t0);
+        tl.to(coin, { scaleX: 0.9, scaleY: 0.15, autoAlpha: 0, duration: 0.1, ease: "power1.in" }, t0 + 0.42);
+      });
+      // o porquinho "engole" as moedas
+      tl.fromTo("#pig-inner", { scale: 1 }, { scale: 1.1, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1 }, 3.5);
+      tl.fromTo("#punch-text", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 3.3);
+      tl.fromTo("#punch-a", { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out" }, 3.3);
+      tl.fromTo("#punch-b", { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(2.2)" }, 3.45);
+
+      // ── Cena 3 · o que faz (3.9 – 7.1s)
+      tl.to(["#pig", "#punch-text"], { autoAlpha: 0, y: -140, duration: 0.3, ease: "power2.in" }, 3.8);
+      tl.fromTo("#build", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 3.9);
+      tl.fromTo(
+        "#phone",
+        { y: 1000, rotationY: -22, rotationX: 10, transformPerspective: 1800 },
+        { y: 0, rotationY: -8, rotationX: 4, transformPerspective: 1800, duration: 0.8, ease: "power4.out" },
+        3.9
+      );
+      tl.to("#phone", { rotationY: 6, rotationX: 2, transformPerspective: 1800, duration: 2.4, ease: "sine.inOut" }, 4.7);
+      ["#f1", "#f2", "#f3"].forEach((id, i) => {
+        tl.fromTo(id, { autoAlpha: 0, x: -80 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: "power3.out" }, 4.25 + i * 0.7);
+      });
+      tl.fromTo("#sheen", { x: -300 }, { x: 700, duration: 0.8, ease: "power2.inOut" }, 4.5);
+      tl.fromTo("#scr-b", { xPercent: 100 }, { xPercent: 0, duration: 0.5, ease: "power3.inOut" }, 5.5);
+      tl.fromTo("#badge", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(2.4)" }, 6.0);
+      const counter = { v: 0 };
+      const countEl = document.getElementById("count");
+      tl.fromTo(
+        counter,
+        { v: 0 },
+        {
+          v: 17.5,
+          duration: 0.8,
+          ease: "power2.out",
+          onUpdate: () => {
+            countEl.textContent = counter.v.toFixed(2).replace(".", ",");
+          },
+        },
+        6.1
+      );
+
+      // ── Cena 4 · chamada para a ação (7.1 – 10s)
+      tl.fromTo(
+        "#cream",
+        { autoAlpha: 1, clipPath: "circle(0% at 50% 58%)" },
+        { autoAlpha: 1, clipPath: "circle(120% at 50% 58%)", duration: 0.6, ease: "power3.inOut" },
+        7.05
+      );
+      tl.to("#build", { autoAlpha: 0, duration: 0.2 }, 7.5);
+      tl.fromTo("#resolve", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 7.4);
+      tl.fromTo("#end-icon", { autoAlpha: 0, scale: 0.4, rotation: -12 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.2)" }, 7.4);
+      tl.fromTo("#wordmark", { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "power3.out" }, 7.55);
+      tl.fromTo("#tagline", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "power3.out" }, 7.7);
+      tl.fromTo("#cta", { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 7.9);
+      tl.fromTo("#url", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.out" }, 8.15);
+      tl.fromTo("#cta-shine", { x: -200 }, { x: 760, duration: 0.7, ease: "power2.inOut" }, 8.4);
+      tl.to("#cta", { scale: 1.07, duration: 0.28, ease: "sine.inOut", yoyo: true, repeat: 3 }, 8.9);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

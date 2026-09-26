@@ -1,0 +1,20 @@
+{
+  "category": "kinetic-type",
+  "duration_s": 10,
+  "fps": 30,
+  "canvas": { "w": 1080, "h": 1920, "aspect": "9:16" },
+  "style": "editorial calmo da app, mas com ritmo de anúncio: fundo verde profundo, texto creme, dourado como acento",
+  "palette": ["#0b6b4f", "#084c39", "#052e23", "#f6f5f0", "#fbbf24", "#3f9070"],
+  "font": "Fraunces 600 + DM Sans 500/700 (local woff2)",
+  "beats": [0.3, 2.5, 3.7, 7.3, 8.4],
+  "export": "mp4",
+  "asset_needs": [],
+  "content": {
+    "scenes": [
+      { "id": "hook", "start": 0, "end": 2.5, "text": "Ainda abres 9 apps para ver promoções?", "emphasis_words": ["9 apps"], "emotion": "irritação reconhecível", "motion": "logos dos supermercados entram em cascata (scale_punch, stagger), abanam ligeiramente", "beats": [0.3] },
+      { "id": "punch", "start": 2.5, "end": 3.7, "text": "Junta tudo numa só.", "emphasis_words": ["numa só"], "emotion": "alívio", "motion": "logos são sugados para o centro e dão lugar ao porquinho (scale_punch)", "beats": [2.5] },
+      { "id": "build", "start": 3.7, "end": 7.3, "text": "Folhetos de todos os supermercados · Combustível mais barato perto de ti · A tua poupança real, dos talões", "emphasis_words": ["todos", "mais barato", "real"], "emotion": "confiança", "motion": "telemóvel sobe com ecrãs reais; ecrã troca de folhetos para poupança; três linhas com visto entram uma a uma; contador €27,70", "beats": [3.7, 4.9, 6.1] },
+      { "id": "resolve", "start": 7.3, "end": 10, "text": "PoupeJá · Cria conta grátis · poupejá.com", "emphasis_words": ["grátis"], "emotion": "convite", "motion": "fundo passa a creme, logo + botão CTA com scale_pulse, hold ≥1.5 s", "beats": [7.3, 8.4] }
+    ]
+  }
+}
