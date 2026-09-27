@@ -4,6 +4,9 @@ import LogoLoja from "./LogoLoja";
 import { Preco } from "./Preco";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
+import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
+import CompararLista from "./CompararLista";
+import { NOMES_ARTIGOS } from "./SecaoListaCompras";
 
 /*
  * "Onde está mais barato?" — escreve-se o artigo, a app pergunta aos
@@ -20,10 +23,31 @@ const LOJAS_COMPARADAS = [
   { nome: "Continente", cobertura: "Todos os produtos" },
   { nome: "Pingo Doce", cobertura: "Todos os produtos" },
   { nome: "Auchan", cobertura: "Todos os produtos" },
+  { nome: "Aldi", cobertura: "Todos os produtos · preço de loja" },
   { nome: "Lidl", cobertura: "Só promoções da semana", parcial: true },
 ];
 
+// Nota ao lado do nome da loja, onde o preço não é o da loja online.
+const NOTA_LOJA = { lidl: "só promoções em loja", aldi: "preço de loja" };
+
 const normalizar = (q) => String(q || "").toLowerCase().replace(/\s+/g, " ").trim().slice(0, 60);
+const semAcentos = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+// Sugestões enquanto se escreve: o catálogo da lista de compras (~250
+// artigos com nomes que as lojas reconhecem). Primeiro os que começam
+// pelo que se escreveu, depois os que o contêm.
+const CATALOGO = [...new Set(NOMES_ARTIGOS.map(termoDePesquisa))].filter(Boolean);
+function sugerir(texto) {
+  const t = semAcentos(texto.trim());
+  if (t.length < 2) return [];
+  const comeca = CATALOGO.filter((n) => semAcentos(n).startsWith(t));
+  const contem = CATALOGO.filter((n) => !semAcentos(n).startsWith(t) && semAcentos(n).includes(t));
+  return [...comeca, ...contem].slice(0, 6);
+}
+
+function lerListaPendente() {
+  try { return JSON.parse(localStorage.getItem(LS_LISTA) || "[]").filter((i) => !i.feito && i.nome); } catch { return []; }
+}
 
 function lerRecentes() {
   try { return JSON.parse(localStorage.getItem(LS_RECENTES) || "[]"); } catch { return []; }
@@ -56,7 +80,6 @@ function juntarALista(nome) {
  * - o resto: o preço por kg / L / ovo / rolo / lavagem, com o da embalagem ao lado.
  * A comparação usa sempre o mesmo número que aparece em grande.
  */
-const valorComparacao = (p, modo) => (modo === "embalagem" ? p.preco : p.precoUnidade);
 
 function comoMostrar(p, modo) {
   const porUnid = `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`;
@@ -195,7 +218,7 @@ function PorLoja({ lojas, melhores, modo, min, empate = false }) {
             <LogoLoja loja={l.nome} size={34} radius={9} />
             <span className="min-w-0 flex-1">
               <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
-                {l.nome}{l.id === "lidl" && <span style={{ fontSize: 11, fontWeight: 500, color: "var(--pj-text-faint)" }}> · só promoções em loja</span>}
+                {l.nome}{NOTA_LOJA[l.id] && <span style={{ fontSize: 11, fontWeight: 500, color: "var(--pj-text-faint)" }}> · {NOTA_LOJA[l.id]}</span>}
               </span>
               <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {!l.ok ? "Não respondeu agora" : p ? [p.nome, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ") : "Não tem este artigo"}
@@ -273,7 +296,10 @@ export default function SecaoComparar() {
   const [naLista, setNaLista] = useState(false);
   const pedido = useRef(0);
 
-  useEffect(() => { setRecentes(lerRecentes()); }, []);
+  const [listaCompras, setListaCompras] = useState([]);
+  const [focado, setFocado] = useState(false);
+  useEffect(() => { setRecentes(lerRecentes()); setListaCompras(lerListaPendente()); }, []);
+  const sugestoes = focado && normalizar(texto) !== pesquisa ? sugerir(texto) : [];
 
   async function procurar(termo) {
     const q = normalizar(termo);
@@ -304,15 +330,8 @@ export default function SecaoComparar() {
 
   const vista = useMemo(() => {
     if (!dados) return null;
-    const principais = dados.produtos.filter((p) => p.relevancia === 2);
-    const base = principais.length ? principais : dados.produtos;
-    const modo = dados.modo || "unidade";
-    const unidade = base[0]?.unidade;
     // Não se compara €/kg com €/un; ao molho (ervas) compara-se a embalagem.
-    const comparaveis = modo === "embalagem" ? base : base.filter((p) => p.unidade === unidade);
-    const melhores = {};
-    for (const p of comparaveis) if (!melhores[p.loja]) melhores[p.loja] = p;
-    const ranking = Object.values(melhores).sort((a, b) => valorComparacao(a, modo) - valorComparacao(b, modo));
+    const { modo, principais, melhores, ranking } = melhoresPorLoja(dados);
     const lista = filtro ? dados.produtos.filter((p) => p.loja === filtro) : dados.produtos;
     const minimo = ranking[0] ? valorComparacao(ranking[0], modo) : null;
     return {
@@ -347,6 +366,9 @@ export default function SecaoComparar() {
             <input
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
+              onFocus={() => setFocado(true)}
+              // Atraso: deixa o toque numa sugestão chegar antes de a lista fechar.
+              onBlur={() => setTimeout(() => setFocado(false), 150)}
               placeholder="Ex.: laranjas, leite, azeite…"
               enterKeyHint="search"
               autoComplete="off"
@@ -360,6 +382,18 @@ export default function SecaoComparar() {
           </button>
         </form>
 
+        {sugestoes.length > 0 && (
+          <div className="mt-2" role="listbox" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 14, overflow: "hidden" }}>
+            {sugestoes.map((s, i) => (
+              <button key={s} role="option" onMouseDown={(e) => e.preventDefault()} onClick={() => { setFocado(false); procurar(s); }}
+                className="pj-tap w-full text-left flex items-center gap-2"
+                style={{ padding: "10px 14px", fontSize: 14, color: "var(--pj-text)", background: "transparent", border: 0, borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
+                <Search size={14} style={{ color: "var(--pj-text-faint)" }} /> {s}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar" style={{ marginRight: -16, paddingRight: 16 }}>
           {(recentes.length ? recentes : SUGESTOES).map((s) => (
             <button key={s} onClick={() => procurar(s)} className="pj-tap press flex-none"
@@ -370,6 +404,12 @@ export default function SecaoComparar() {
           ))}
         </div>
       </div>
+
+      {estado === "inicio" && listaCompras.length >= 2 && (
+        <div className="px-4 mt-5">
+          <CompararLista itens={listaCompras} />
+        </div>
+      )}
 
       {estado === "inicio" && (
         <div className="px-4 mt-5">
@@ -389,7 +429,7 @@ export default function SecaoComparar() {
 
       {estado === "a-carregar" && (
         <>
-          <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>A ver os preços de «{pesquisa}» em 4 supermercados…</p>
+          <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>A ver os preços de «{pesquisa}» em {LOJAS_COMPARADAS.length} supermercados…</p>
           <Esqueleto />
         </>
       )}
@@ -464,8 +504,8 @@ export default function SecaoComparar() {
             <p className="flex gap-1.5" style={{ fontSize: 11.5, color: "var(--pj-text-faint)", lineHeight: 1.5, margin: "0 2px" }}>
               <Info size={13} style={{ flexShrink: 0, marginTop: 1 }} />
               <span>
-                Preços das lojas online, verificados {tempoDesde(dados.obtidoEm)}. Nas lojas físicas podem ser diferentes.
-                No Lidl só aparecem os artigos em promoção esta semana ou na próxima.
+                Preços verificados {tempoDesde(dados.obtidoEm)}. Continente, Pingo Doce e Auchan: preços da loja online
+                (na loja física podem ser diferentes). Aldi e Lidl: preços de loja; no Lidl só aparecem as promoções desta semana e da próxima.
               </span>
             </p>
           </div>

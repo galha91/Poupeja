@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ShoppingCart, Plus, X, Check, Search, ChevronLeft, Minus, Share2, Link } from "lucide-react";
+import CompararLista from "./CompararLista";
 
 const LS_KEY = "poupeja_lista_compras";
 
@@ -230,6 +231,9 @@ function IconeArtigo({ emoji, nome, cor = "#0b6b4f", size = 30, className = "" }
     </span>
   );
 }
+
+// Nomes do catálogo da lista — o "Comparar preços" usa-os como sugestões.
+export const NOMES_ARTIGOS = Object.values(CATS).flatMap((c) => c.items.map((i) => i.nome));
 
 function lerItens() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; }
@@ -634,6 +638,13 @@ export default function SecaoListaCompras() {
         )}
       </div>
       <div className="mx-4 mb-5" style={{ borderTop: "1px solid var(--pj-border)" }} />
+
+      {/* Onde fica mais barata — com 2 ou mais artigos por comprar */}
+      {pendentes.length >= 2 && (
+        <div className="px-4 mb-5 anim-up">
+          <CompararLista itens={pendentes} />
+        </div>
+      )}
 
       {/* Botão adicionar */}
       <div className="px-4 mb-5 anim-up anim-up-1">
