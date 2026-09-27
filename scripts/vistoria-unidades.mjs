@@ -45,7 +45,8 @@ for (const q of TERMOS) {
   const v = (p) => (r.modo === "embalagem" ? p.preco : p.precoUnidade);
   const melhores = {};
   for (const p of comp) if (!melhores[p.loja]) melhores[p.loja] = p;
-  const falhas = r.lojas.filter((l) => !l.ok).map((l) => l.id);
+  const falhas = r.lojas.filter((l) => !l.ok).map((l) => `${l.id}(${l.erro})`);
+  await new Promise((ok) => setTimeout(ok, 1500));
   console.log(`\n### ${q}  [modo=${r.modo} un=${r.nomeUnidade} rel2=${principais.length}/${r.produtos.length}${falhas.length ? " FALHA:" + falhas : ""}]`);
   for (const l of r.lojas) {
     const p = melhores[l.id];
