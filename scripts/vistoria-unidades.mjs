@@ -8,7 +8,8 @@ export async function resolve(s, c, n) { try { return await n(s, c); } catch (e)
 const { LOJAS, palavras, relevancia } = await import("../lib/supermercados/index.js");
 const { completarUnidade } = await import("../lib/supermercados/comum.js");
 
-const TERMOS = [
+const TERMOS_NOMES = ["frango", "esparguete", "coca-cola", "ananás", "compota", "chocolate", "queijo fatiado", "ração cão", "massa", "iogurte natural", "pão", "leite", "laranja", "salsa", "atum"];
+const TERMOS = TERMOS_NOMES.length ? [] : [
   // fruta e legumes
   "laranja", "maçã", "banana", "pera", "uvas", "morangos", "limão", "abacate", "melancia", "ananás",
   "batata", "cebola", "alho", "tomate", "cenoura", "alface", "couve", "brócolos", "salsa", "coentros",
@@ -34,6 +35,17 @@ const TERMOS = [
 ];
 
 const corta = (s, n) => String(s ?? "").replace(/\s+/g, " ").slice(0, n);
+
+for (const q of TERMOS_NOMES) {
+  const termos = palavras(q);
+  console.log(`\n### ${q}`);
+  const res = await Promise.allSettled(LOJAS.slice(0, 3).map((l) => l.pesquisar(q)));
+  res.forEach((r, i) => {
+    if (r.status === "rejected") return;
+    console.log(`  ${LOJAS[i].nome}:`);
+    for (const p of r.value.slice(0, 12)) console.log(`    ${relevancia(p.nome, termos)} ${corta(p.nome, 60)} | ${corta(p.categoria, 40)}`);
+  });
+}
 
 for (const q of TERMOS) {
   const termos = palavras(q);
