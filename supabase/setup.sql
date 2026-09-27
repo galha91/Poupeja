@@ -84,3 +84,23 @@ alter table public.precos_dgeg enable row level security;
 
 -- Sem policies de propósito: só a service role (server-side) lê e escreve.
 -- Os preços chegam ao utilizador pelas páginas, nunca por acesso directo.
+
+-- ─────────────────────────────────────────────────────────────
+-- Histórico do "Comparar preços": melhor preço por pesquisa, loja e dia.
+-- Só o servidor escreve e lê (service role); sem políticas públicas.
+-- (Aplicada em produção como migração criar_precos_supermercado_historico.)
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.precos_supermercado_historico (
+  q        text        not null,
+  dia      date        not null,
+  loja     text        not null,
+  modo     text        not null default 'unidade',
+  unidade  text,
+  valor    numeric(10,2) not null,
+  preco    numeric(10,2),
+  produto  text,
+  atualizado_em timestamptz not null default now(),
+  primary key (q, dia, loja)
+);
+alter table public.precos_supermercado_historico enable row level security;
+create index if not exists precos_supermercado_historico_q_dia on public.precos_supermercado_historico (q, dia desc);

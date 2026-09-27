@@ -20,6 +20,9 @@
     },
     "pages/api/cron-saude-precos.js": {
       "maxDuration": 60
+    },
+    "pages/api/cron-historico-precos.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -46,6 +49,10 @@
     {
       "path": "/api/cron-saude-precos",
       "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron-historico-precos",
+      "schedule": "15 7 * * *"
     }
   ]
 }

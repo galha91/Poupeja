@@ -1,5 +1,9 @@
 import { pesquisarTudo } from "../../lib/supermercados";
 import { excedeuLimite } from "../../lib/protecao-api";
+import { registar, resumo } from "../../lib/supermercados/historico";
+
+// O histórico é um extra: nunca pode atrasar a resposta mais do que isto.
+const comPrazo = (p, ms) => Promise.race([p, new Promise((ok) => setTimeout(() => ok(null), ms))]).catch(() => null);
 
 /*
  * GET /api/precos-supermercado?q=laranjas
@@ -43,7 +47,12 @@ export default async function handler(req, res) {
   const falhas = r.lojas.filter((l) => !l.ok);
   if (falhas.length) console.warn("precos-supermercado:", q, falhas.map((f) => `${f.id}: ${f.erro}`).join("; "));
 
-  const dados = { ...r, obtidoEm: new Date().toISOString() };
+  let historico = null;
+  if (falhas.length < r.lojas.length) {
+    await comPrazo(registar(r), 1500);
+    historico = await comPrazo(resumo(q, r.modo === "embalagem" ? "embalagem" : r.nomeUnidade), 1500);
+  }
+  const dados = { ...r, historico, obtidoEm: new Date().toISOString() };
 
   if (falhas.length === r.lojas.length) {
     // Tudo em baixo: nunca guardar isto em cache.
