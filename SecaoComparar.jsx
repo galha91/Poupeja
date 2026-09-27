@@ -179,7 +179,7 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista }) {
 
 /* Uma linha por supermercado: o melhor que cada um tem. É a resposta
    directa a "em que loja compro isto?". */
-function PorLoja({ lojas, melhores, modo, min }) {
+function PorLoja({ lojas, melhores, modo, min, empate = false }) {
   return (
     <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
       {lojas.map((l, i) => {
@@ -206,7 +206,7 @@ function PorLoja({ lojas, melhores, modo, min }) {
                 <Preco valor={m.valor} casas={2} tamanho={18} cor={diff === 0 ? "var(--pj-brand-ink)" : "var(--pj-text)"} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: "var(--pj-text-faint)", marginLeft: 2 }}>{m.sufixo}</span>
                 <span style={{ display: "block", fontSize: 11, fontWeight: 600, color: diff === 0 ? "var(--pj-brand)" : "var(--pj-text-faint)", marginTop: 2 }}>
-                  {diff === 0 ? "o mais barato" : `+${eur(diff / 100, 2)} €${m.sufixo}`}
+                  {diff === 0 ? (empate ? "mesmo preço" : "o mais barato") : `+${eur(diff / 100, 2)} €${m.sufixo}`}
                 </span>
               </span>
             ) : (
@@ -422,7 +422,7 @@ export default function SecaoComparar() {
               <h3 style={{ fontSize: 13, fontWeight: 700, color: "var(--pj-text-muted)", margin: "0 2px 8px" }}>
                 O melhor preço em cada supermercado
               </h3>
-              <PorLoja lojas={dados.lojas} melhores={vista.melhores} modo={vista.modo} min={vista.min} />
+              <PorLoja lojas={dados.lojas} melhores={vista.melhores} modo={vista.modo} min={vista.min} empate={vista.empatados.length > 1} />
             </section>
 
             <section>
