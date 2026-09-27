@@ -33,7 +33,9 @@ export default async function handler(req, res) {
     return res.status(200).json(guardado.dados);
   }
 
-  if (excedeuLimite(req, "precos-supermercado", 20)) {
+  // 40/min: comparar uma lista de compras faz uma pesquisa por artigo.
+  // (As que vêm da cache nem chegam aqui.)
+  if (excedeuLimite(req, "precos-supermercado", 40)) {
     return res.status(429).json({ erro: "Demasiadas pesquisas seguidas. Tenta daqui a um minuto." });
   }
 
