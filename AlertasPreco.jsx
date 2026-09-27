@@ -27,14 +27,14 @@ export function alertaDe(q) {
 }
 
 const sufixo = (unidade) => (unidade === "embalagem" ? "" : `/${unidade}`);
-const dataCurta = (iso) => { const [, m, d] = String(iso).split("-"); return `${d}/${m}`; };
+const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const dataCurta = (iso) => { const [, m, d] = String(iso).split("-"); return `${Number(d)} ${MESES[Number(m) - 1]}`; };
 
 /* ── Histórico: uma linha, logo abaixo do preço ── */
 export function LinhaHistorico({ historico, valorAtual, unidade }) {
   if (!historico?.minimo || valorAtual == null) return null;
   const min = historico.minimo.valor;
   const noMinimo = valorAtual <= min + 0.005;
-  const acima = Math.round((valorAtual / min - 1) * 100);
   return (
     <div className="flex items-center gap-2 mt-3" style={{ padding: "8px 10px", borderRadius: 10, background: noMinimo ? "var(--pj-brand-wash)" : "var(--pj-surface)" }}>
       {noMinimo
@@ -43,7 +43,7 @@ export function LinhaHistorico({ historico, valorAtual, unidade }) {
       <span style={{ fontSize: 12.5, lineHeight: 1.4, color: noMinimo ? "var(--pj-brand-ink)" : "var(--pj-text-muted)", fontWeight: noMinimo ? 600 : 500 }}>
         {noMinimo
           ? `O preço mais baixo dos últimos ${historico.dias} dias`
-          : <>Mais baixo em 30 dias: <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(min, 2)} €{sufixo(unidade)}</strong> a {dataCurta(historico.minimo.dia)}{acima >= 1 ? ` · hoje +${acima}%` : ""}</>}
+          : <>Nos últimos 30 dias já esteve a <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(min, 2)} €{sufixo(unidade)}</strong> ({dataCurta(historico.minimo.dia)})</>}
       </span>
     </div>
   );
