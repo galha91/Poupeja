@@ -7,7 +7,7 @@ export async function resolve(s, c, n) { try { return await n(s, c); } catch (e)
 
 const { pesquisarTudo } = await import("../lib/supermercados/index.js");
 
-const TERMOS = [
+const TERMOS = process.env.CURTO ? ["alho", "tomate", "bacalhau", "carne picada", "salsa", "laranja", "ovos", "detergente roupa"] : [
   // fruta e legumes
   "laranja", "maçã", "banana", "pera", "uvas", "morangos", "limão", "abacate", "melancia", "ananás",
   "batata", "cebola", "alho", "tomate", "cenoura", "alface", "couve", "brócolos", "salsa", "coentros",

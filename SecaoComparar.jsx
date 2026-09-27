@@ -114,7 +114,7 @@ function Etiqueta({ children, tom = "brand" }) {
   );
 }
 
-function Vencedor({ p, segundo, modo, onLista, naLista }) {
+function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista }) {
   const v = valorComparacao(p, modo);
   const v2 = segundo ? valorComparacao(segundo, modo) : null;
   const poupanca = segundo && (modo === "embalagem" || segundo.unidade === p.unidade) && v2 > v
@@ -125,7 +125,10 @@ function Vencedor({ p, segundo, modo, onLista, naLista }) {
   return (
     <div className="anim-up" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 20, overflow: "hidden" }}>
       <div style={{ background: "var(--pj-brand)", color: "#fff", padding: "8px 16px", fontSize: 12, fontWeight: 700, letterSpacing: "0.02em" }}>
-        Mais barato hoje · {p.lojaNome}
+        {/* Mesmo preço em várias lojas: dizer isso, não coroar a primeira. */}
+        {empatados.length > 1
+          ? `Mesmo preço no ${empatados.map((e) => e.lojaNome).join(", ").replace(/, ([^,]*)$/, " e no $1")}`
+          : `Mais barato hoje · ${p.lojaNome}`}
       </div>
       <div style={{ padding: 16 }}>
         <div className="flex items-start gap-3">
@@ -149,7 +152,7 @@ function Vencedor({ p, segundo, modo, onLista, naLista }) {
             {m.sufixo && <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", marginLeft: 4 }}>{m.sufixo}</span>}
             {m.detalhe && <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 4 }}>{m.detalhe}</p>}
           </div>
-          {poupanca >= 3 && (
+          {poupanca >= 3 && empatados.length <= 1 && (
             <p className="text-right" style={{ fontSize: 12.5, color: "var(--pj-brand-ink)", fontWeight: 600, lineHeight: 1.35 }}>
               {poupanca}% mais barato<br />que no {segundo.lojaNome}
             </p>
@@ -311,8 +314,10 @@ export default function SecaoComparar() {
     for (const p of comparaveis) if (!melhores[p.loja]) melhores[p.loja] = p;
     const ranking = Object.values(melhores).sort((a, b) => valorComparacao(a, modo) - valorComparacao(b, modo));
     const lista = filtro ? dados.produtos.filter((p) => p.loja === filtro) : dados.produtos;
+    const minimo = ranking[0] ? valorComparacao(ranking[0], modo) : null;
     return {
       vencedor: ranking[0] || null,
+      empatados: ranking.filter((p) => Math.abs(valorComparacao(p, modo) - minimo) < 0.005),
       segundo: ranking.find((p) => p.loja !== ranking[0]?.loja) || null,
       melhores,
       modo,
@@ -407,6 +412,7 @@ export default function SecaoComparar() {
             <Vencedor
               p={vista.vencedor}
               segundo={vista.segundo}
+              empatados={vista.empatados}
               modo={vista.modo}
               naLista={naLista}
               onLista={() => { if (juntarALista(pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1))) { setNaLista(true); evento("comparar_para_lista"); } }}
