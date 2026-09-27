@@ -16,7 +16,6 @@ import { evento } from "./lib/analytics";
 const LS_RECENTES = "poupeja_pesquisas_precos";
 const LS_LISTA = "poupeja_lista_compras";
 const SUGESTOES = ["laranjas", "leite meio gordo", "ovos", "arroz agulha", "azeite", "bananas", "frango", "café moído"];
-const UNIDADE = { kg: "kg", l: "L", un: "un" };
 const LOJAS_COMPARADAS = [
   { nome: "Continente", cobertura: "Todos os produtos" },
   { nome: "Pingo Doce", cobertura: "Todos os produtos" },
@@ -50,8 +49,30 @@ function juntarALista(nome) {
   } catch { return false; }
 }
 
-function porUnidade(p) {
-  return `${eur(p.precoUnidade, 2)} €/${UNIDADE[p.unidade] || p.unidade}`;
+/*
+ * O número que interessa a quem compra, conforme o produto:
+ * - ervas frescas (modo "embalagem"): o preço do molho, com o €/kg ao lado;
+ * - vendido ao peso: o preço do kg — é o que está na etiqueta da loja;
+ * - o resto: o preço por kg / L / ovo / rolo / lavagem, com o da embalagem ao lado.
+ * A comparação usa sempre o mesmo número que aparece em grande.
+ */
+const valorComparacao = (p, modo) => (modo === "embalagem" ? p.preco : p.precoUnidade);
+
+function comoMostrar(p, modo) {
+  const porUnid = `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`;
+  if (modo === "embalagem") {
+    return { valor: p.preco, sufixo: "", detalhe: [p.quantidade, porUnid].filter(Boolean).join(" · ") };
+  }
+  if (p.aoPeso) {
+    return { valor: p.precoUnidade, sufixo: "/kg", detalhe: p.precoPeca ? `Ao peso · ≈ ${eur(p.precoPeca, 2)} € cada` : "Vendido ao peso" };
+  }
+  const embalagem = p.precoUnidade !== p.preco ? `${eur(p.preco, 2)} €` : null;
+  return { valor: p.precoUnidade, sufixo: `/${p.nomeUnidade || p.unidade}`, detalhe: [embalagem, p.quantidade].filter(Boolean).join(" · ") };
+}
+
+function textoPreco(p, modo) {
+  const m = comoMostrar(p, modo);
+  return `${eur(m.valor, 2)} €${m.sufixo}`;
 }
 
 function descontoPct(p) {
@@ -93,10 +114,13 @@ function Etiqueta({ children, tom = "brand" }) {
   );
 }
 
-function Vencedor({ p, segundo, onLista, naLista }) {
-  const poupanca = segundo && segundo.unidade === p.unidade && segundo.precoUnidade > p.precoUnidade
-    ? Math.round((1 - p.precoUnidade / segundo.precoUnidade) * 100)
+function Vencedor({ p, segundo, modo, onLista, naLista }) {
+  const v = valorComparacao(p, modo);
+  const v2 = segundo ? valorComparacao(segundo, modo) : null;
+  const poupanca = segundo && (modo === "embalagem" || segundo.unidade === p.unidade) && v2 > v
+    ? Math.round((1 - v / v2) * 100)
     : null;
+  const m = comoMostrar(p, modo);
   const desc = descontoPct(p);
   return (
     <div className="anim-up" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 20, overflow: "hidden" }}>
@@ -109,7 +133,7 @@ function Vencedor({ p, segundo, onLista, naLista }) {
           <div className="min-w-0 flex-1">
             <p style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.3 }}>{p.nome}</p>
             <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 3 }}>
-              {[p.marca, p.quantidade].filter(Boolean).join(" · ")}
+              {p.marca}
             </p>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {desc ? <Etiqueta tom="promo">−{desc}%</Etiqueta> : null}
@@ -121,11 +145,9 @@ function Vencedor({ p, segundo, onLista, naLista }) {
 
         <div className="flex items-end justify-between mt-4 gap-3">
           <div>
-            <Preco valor={p.precoUnidade} casas={2} tamanho={34} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", marginLeft: 4 }}>/{UNIDADE[p.unidade]}</span>
-            <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 4 }}>
-              {p.precoUnidade !== p.preco ? `${eur(p.preco, 2)} €${p.quantidade ? ` · ${p.quantidade}` : ""}` : p.unidade === "kg" ? "Vendido ao peso" : p.quantidade}
-            </p>
+            <Preco valor={m.valor} casas={2} tamanho={34} />
+            {m.sufixo && <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", marginLeft: 4 }}>{m.sufixo}</span>}
+            {m.detalhe && <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 4 }}>{m.detalhe}</p>}
           </div>
           {poupanca >= 3 && (
             <p className="text-right" style={{ fontSize: 12.5, color: "var(--pj-brand-ink)", fontWeight: 600, lineHeight: 1.35 }}>
@@ -154,12 +176,13 @@ function Vencedor({ p, segundo, onLista, naLista }) {
 
 /* Uma linha por supermercado: o melhor que cada um tem. É a resposta
    directa a "em que loja compro isto?". */
-function PorLoja({ lojas, melhores, unidade, min }) {
+function PorLoja({ lojas, melhores, modo, min }) {
   return (
     <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
       {lojas.map((l, i) => {
         const p = melhores[l.id];
-        const diff = p && min != null ? Math.round((p.precoUnidade - min) * 100) : 0;
+        const diff = p && min != null ? Math.round((valorComparacao(p, modo) - min) * 100) : 0;
+        const m = p ? comoMostrar(p, modo) : null;
         return (
           <a key={l.id} href={p?.url || undefined} target="_blank" rel="noopener noreferrer"
             className="pj-tap no-underline flex items-center gap-3"
@@ -172,14 +195,15 @@ function PorLoja({ lojas, melhores, unidade, min }) {
                 {l.nome}{l.id === "lidl" && <span style={{ fontSize: 11, fontWeight: 500, color: "var(--pj-text-faint)" }}> · só promoções em loja</span>}
               </span>
               <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {!l.ok ? "Não respondeu agora" : p ? [p.nome, p.quantidade].filter(Boolean).join(" · ") : "Não tem este artigo"}
+                {!l.ok ? "Não respondeu agora" : p ? [p.nome, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ") : "Não tem este artigo"}
               </span>
             </span>
             {p ? (
               <span className="text-right flex-none">
-                <Preco valor={p.precoUnidade} casas={2} tamanho={18} cor={diff === 0 ? "var(--pj-brand-ink)" : "var(--pj-text)"} />
+                <Preco valor={m.valor} casas={2} tamanho={18} cor={diff === 0 ? "var(--pj-brand-ink)" : "var(--pj-text)"} />
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--pj-text-faint)", marginLeft: 2 }}>{m.sufixo}</span>
                 <span style={{ display: "block", fontSize: 11, fontWeight: 600, color: diff === 0 ? "var(--pj-brand)" : "var(--pj-text-faint)", marginTop: 2 }}>
-                  {diff === 0 ? "o mais barato" : `+${eur(diff / 100, 2)} €/${UNIDADE[unidade]}`}
+                  {diff === 0 ? "o mais barato" : `+${eur(diff / 100, 2)} €${m.sufixo}`}
                 </span>
               </span>
             ) : (
@@ -192,7 +216,7 @@ function PorLoja({ lojas, melhores, unidade, min }) {
   );
 }
 
-function LinhaProduto({ p, primeira }) {
+function LinhaProduto({ p, primeira, modo }) {
   const desc = descontoPct(p);
   return (
     <a href={p.url || undefined} target="_blank" rel="noopener noreferrer"
@@ -205,14 +229,19 @@ function LinhaProduto({ p, primeira }) {
         </span>
         <span className="flex flex-wrap items-center gap-1.5" style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 3 }}>
           <strong style={{ color: "var(--pj-text-muted)", fontWeight: 600 }}>{p.lojaNome}</strong>
-          {[p.marca, p.quantidade].filter(Boolean).map((t) => <span key={t}>· {t}</span>)}
+          {[p.marca, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).map((t) => <span key={t}>· {t}</span>)}
           {desc ? <Etiqueta tom="promo">−{desc}%</Etiqueta> : null}
           {p.onde === "loja" ? <Etiqueta tom="loja">Na loja</Etiqueta> : null}
         </span>
       </span>
       <span className="text-right flex-none">
-        <span className="pj-num" style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--pj-text)" }}>{porUnidade(p)}</span>
-        <span className="pj-num" style={{ display: "block", fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 2 }}>{eur(p.preco, 2)} €</span>
+        <span className="pj-num" style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--pj-text)" }}>{textoPreco(p, modo)}</span>
+        <span className="pj-num" style={{ display: "block", fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 2 }}>
+          {modo === "embalagem"
+            ? `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`
+            : p.aoPeso ? (p.precoPeca ? `≈ ${eur(p.precoPeca, 2)} € cada` : "")
+            : p.precoUnidade !== p.preco ? `${eur(p.preco, 2)} €` : ""}
+        </span>
       </span>
     </a>
   );
@@ -274,18 +303,20 @@ export default function SecaoComparar() {
     if (!dados) return null;
     const principais = dados.produtos.filter((p) => p.relevancia === 2);
     const base = principais.length ? principais : dados.produtos;
+    const modo = dados.modo || "unidade";
     const unidade = base[0]?.unidade;
-    const comparaveis = base.filter((p) => p.unidade === unidade);
+    // Não se compara €/kg com €/un; ao molho (ervas) compara-se a embalagem.
+    const comparaveis = modo === "embalagem" ? base : base.filter((p) => p.unidade === unidade);
     const melhores = {};
     for (const p of comparaveis) if (!melhores[p.loja]) melhores[p.loja] = p;
-    const ranking = Object.values(melhores).sort((a, b) => a.precoUnidade - b.precoUnidade);
+    const ranking = Object.values(melhores).sort((a, b) => valorComparacao(a, modo) - valorComparacao(b, modo));
     const lista = filtro ? dados.produtos.filter((p) => p.loja === filtro) : dados.produtos;
     return {
       vencedor: ranking[0] || null,
       segundo: ranking.find((p) => p.loja !== ranking[0]?.loja) || null,
       melhores,
-      unidade,
-      min: ranking[0]?.precoUnidade ?? null,
+      modo,
+      min: ranking[0] ? valorComparacao(ranking[0], modo) : null,
       principais: lista.filter((p) => (principais.length ? p.relevancia === 2 : true)),
       outros: principais.length ? lista.filter((p) => p.relevancia !== 2) : [],
     };
@@ -302,7 +333,7 @@ export default function SecaoComparar() {
           Onde está mais barato?
         </h2>
         <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 4 }}>
-          Escreve um produto e comparamos o preço por kg, litro ou unidade.
+          Escreve um produto e comparamos o preço da forma como ele se compra: ao kg, ao litro, à unidade ou ao molho.
         </p>
 
         <form onSubmit={(e) => { e.preventDefault(); procurar(texto); }} className="mt-4 flex gap-2">
@@ -376,6 +407,7 @@ export default function SecaoComparar() {
             <Vencedor
               p={vista.vencedor}
               segundo={vista.segundo}
+              modo={vista.modo}
               naLista={naLista}
               onLista={() => { if (juntarALista(pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1))) { setNaLista(true); evento("comparar_para_lista"); } }}
             />
@@ -384,7 +416,7 @@ export default function SecaoComparar() {
               <h3 style={{ fontSize: 13, fontWeight: 700, color: "var(--pj-text-muted)", margin: "0 2px 8px" }}>
                 O melhor preço em cada supermercado
               </h3>
-              <PorLoja lojas={dados.lojas} melhores={vista.melhores} unidade={vista.unidade} min={vista.min} />
+              <PorLoja lojas={dados.lojas} melhores={vista.melhores} modo={vista.modo} min={vista.min} />
             </section>
 
             <section>
@@ -401,7 +433,7 @@ export default function SecaoComparar() {
                 ))}
               </div>
               <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
-                {vista.principais.map((p, i) => <LinhaProduto key={`${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} />)}
+                {vista.principais.map((p, i) => <LinhaProduto key={`${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} />)}
                 {!vista.principais.length && (
                   <p style={{ padding: 14, fontSize: 13, color: "var(--pj-text-faint)" }}>Sem resultados diretos nesta loja.</p>
                 )}
@@ -416,7 +448,7 @@ export default function SecaoComparar() {
                   </button>
                   {verOutros && (
                     <div className="mt-2" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
-                      {vista.outros.map((p, i) => <LinhaProduto key={`o-${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} />)}
+                      {vista.outros.map((p, i) => <LinhaProduto key={`o-${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} />)}
                     </div>
                   )}
                 </>
