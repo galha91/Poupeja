@@ -17,6 +17,12 @@ const LS_RECENTES = "poupeja_pesquisas_precos";
 const LS_LISTA = "poupeja_lista_compras";
 const SUGESTOES = ["laranjas", "leite meio gordo", "ovos", "arroz agulha", "azeite", "bananas", "frango", "café moído"];
 const UNIDADE = { kg: "kg", l: "L", un: "un" };
+const LOJAS_COMPARADAS = [
+  { nome: "Continente", cobertura: "Todos os produtos" },
+  { nome: "Pingo Doce", cobertura: "Todos os produtos" },
+  { nome: "Auchan", cobertura: "Todos os produtos" },
+  { nome: "Lidl", cobertura: "Só promoções da semana", parcial: true },
+];
 
 const normalizar = (q) => String(q || "").toLowerCase().replace(/\s+/g, " ").trim().slice(0, 60);
 
@@ -331,13 +337,19 @@ export default function SecaoComparar() {
 
       {estado === "inicio" && (
         <div className="px-4 mt-5">
-          <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, padding: 16 }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Onde vamos procurar</p>
-            <div className="flex items-center gap-2 mt-3">
-              {["Continente", "Pingo Doce", "Auchan", "Lidl"].map((l) => <LogoLoja key={l} loja={l} size={40} radius={10} />)}
-            </div>
-            <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 12, lineHeight: 1.55 }}>
-              Preços das lojas online do Continente, Pingo Doce e Auchan, e as promoções da semana nas lojas Lidl.
+          {/* Dizer à partida o que se compara, e o que não: o Lidl só traz
+              promoções, e há cadeias que não têm preços públicos online. */}
+          <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)", padding: "14px 16px 6px" }}>Supermercados que comparamos</p>
+            {LOJAS_COMPARADAS.map((l) => (
+              <div key={l.nome} className="flex items-center gap-3" style={{ padding: "9px 16px", borderTop: "1px solid var(--pj-subtle)" }}>
+                <LogoLoja loja={l.nome} size={32} radius={8} />
+                <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: l.parcial ? "var(--pj-warn)" : "var(--pj-brand-ink)" }}>{l.cobertura}</span>
+              </div>
+            ))}
+            <p style={{ fontSize: 12, color: "var(--pj-text-faint)", lineHeight: 1.5, padding: "10px 16px 14px", borderTop: "1px solid var(--pj-subtle)" }}>
+              Ainda não comparamos Mercadona e Aldi (não vendem online), nem Intermarché e El Corte Inglés.
             </p>
           </div>
         </div>
