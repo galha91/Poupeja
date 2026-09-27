@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
-  Flame, ShieldCheck, ListChecks, Landmark, Calculator,
+  Flame, ShieldCheck, ListChecks, Landmark, Calculator, Search,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import { Preco } from "./Preco";
@@ -417,6 +417,17 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           onGuardarTalao={() => setTab("taloes")}
         />
 
+        {/* Comparar preços — a pergunta que traz as pessoas de volta */}
+        <button onClick={() => setTab("mercados", "comparar")} className="pj-tap w-full text-left flex items-center anim-up anim-up-2"
+          style={{ gap: 12, marginTop: 20, padding: "13px 14px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+          <Search size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Onde está mais barato?</span>
+            <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Compara laranjas, leite, azeite… em 4 supermercados</span>
+          </span>
+          <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
+        </button>
+
         <Divisoria />
 
         {/* Desafio do mês (anel) — dados reais do desafio de € */}
@@ -457,13 +468,13 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
                 não temos as datas reais de nenhum deles.
               */}
               <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos desta semana</span>
-              <button onClick={() => setTab("mercados")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Ver todos</button>
+              <button onClick={() => setTab("mercados", "folhetos")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Ver todos</button>
             </div>
             <div className="flex flex-col">
               {folhetos.slice(0, 5).map((f, i) => (
                 <div key={f.id || i}>
                   {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
-                  <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
+                  <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
                     <LogoFolheto loja={f.loja} />
                     {/*
                       Eram três colunas e duas não diziam nada: o `titulo` é a
