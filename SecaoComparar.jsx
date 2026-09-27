@@ -6,6 +6,7 @@ import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
+import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
 import { NOMES_ARTIGOS } from "./SecaoListaCompras";
 
 /*
@@ -137,7 +138,10 @@ function Etiqueta({ children, tom = "brand" }) {
   );
 }
 
-function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista }) {
+function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, historico }) {
+  const [alertaAberto, setAlertaAberto] = useState(false);
+  const [alerta, setAlerta] = useState(() => alertaDe(q));
+  const [avisoAlerta, setAvisoAlerta] = useState("");
   const v = valorComparacao(p, modo);
   const v2 = segundo ? valorComparacao(segundo, modo) : null;
   const poupanca = segundo && (modo === "embalagem" || segundo.unidade === p.unidade) && v2 > v
@@ -182,6 +186,8 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista }) {
           )}
         </div>
 
+        <LinhaHistorico historico={historico} valorAtual={v} unidade={modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade} />
+
         <div className="flex gap-2 mt-4">
           {p.url && (
             <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={() => evento("comparar_abrir_loja", { loja: p.loja })}
@@ -194,7 +200,28 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista }) {
             style={{ background: "var(--pj-subtle)", color: "var(--pj-text)", fontSize: 13.5, fontWeight: 600, padding: "11px 14px", borderRadius: 12, border: 0 }}>
             {naLista ? <><Check size={14} /> Na lista</> : <><Plus size={14} /> Lista</>}
           </button>
+          <BotaoAlerta ativo={!!alerta} aberto={alertaAberto} onClick={() => { setAlertaAberto((a) => !a); setAvisoAlerta(""); }} />
         </div>
+
+        {alertaAberto && (
+          <CriarAlerta
+            q={q}
+            valorAtual={v}
+            unidade={modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade}
+            modo={modo}
+            onFechar={() => setAlertaAberto(false)}
+            onGuardado={(novo, estadoPush) => {
+              setAlerta(novo);
+              setAlertaAberto(false);
+              setAvisoAlerta(!novo ? "Alerta apagado."
+                : estadoPush === "ativo" ? `Alerta criado. Avisamos quando baixar de ${eur(novo.alvo, 2)} €.`
+                : "Alerta guardado — ativa as notificações para receberes o aviso.");
+            }}
+          />
+        )}
+        {avisoAlerta && !alertaAberto && (
+          <p role="status" style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 10 }}>{avisoAlerta}</p>
+        )}
       </div>
     </div>
   );
@@ -292,6 +319,7 @@ export default function SecaoComparar() {
   const [erro, setErro] = useState("");
   const [recentes, setRecentes] = useState([]);
   const [filtro, setFiltro] = useState(null); // id da loja ou null
+  const [marca, setMarca] = useState("todas"); // todas | propria | outras
   const [verOutros, setVerOutros] = useState(false);
   const [naLista, setNaLista] = useState(false);
   const pedido = useRef(0);
@@ -299,6 +327,21 @@ export default function SecaoComparar() {
   const [listaCompras, setListaCompras] = useState([]);
   const [focado, setFocado] = useState(false);
   useEffect(() => { setRecentes(lerRecentes()); setListaCompras(lerListaPendente()); }, []);
+
+  // Aberto por uma notificação de alerta (/?atalho=mercados&q=azeite):
+  // mostra logo essa pesquisa e limpa o q do endereço.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q");
+      if (!q) return;
+      params.delete("q");
+      const resto = params.toString();
+      window.history.replaceState({}, "", window.location.pathname + (resto ? `?${resto}` : ""));
+      procurar(q);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const sugestoes = focado && normalizar(texto) !== pesquisa ? sugerir(texto) : [];
 
   async function procurar(termo) {
@@ -331,8 +374,12 @@ export default function SecaoComparar() {
   const vista = useMemo(() => {
     if (!dados) return null;
     // Não se compara €/kg com €/un; ao molho (ervas) compara-se a embalagem.
-    const { modo, principais, melhores, ranking } = melhoresPorLoja(dados);
-    const lista = filtro ? dados.produtos.filter((p) => p.loja === filtro) : dados.produtos;
+    // O filtro de marca vale para tudo — o "mais barato" passa a ser o mais
+    // barato de marca própria (ou de outras marcas).
+    const produtos = marca === "todas" ? dados.produtos
+      : dados.produtos.filter((p) => (marca === "propria" ? p.marcaPropria : !p.marcaPropria));
+    const { modo, principais, melhores, ranking } = melhoresPorLoja({ ...dados, produtos });
+    const lista = filtro ? produtos.filter((p) => p.loja === filtro) : produtos;
     const minimo = ranking[0] ? valorComparacao(ranking[0], modo) : null;
     return {
       vencedor: ranking[0] || null,
@@ -344,7 +391,7 @@ export default function SecaoComparar() {
       principais: lista.filter((p) => (principais.length ? p.relevancia === 2 : true)),
       outros: principais.length ? lista.filter((p) => p.relevancia !== 2) : [],
     };
-  }, [dados, filtro]);
+  }, [dados, filtro, marca]);
 
   return (
     <div className="pb-6" style={{ background: "var(--pj-surface)" }}>
@@ -405,6 +452,12 @@ export default function SecaoComparar() {
         </div>
       </div>
 
+      {estado === "inicio" && (
+        <div className="px-4 mt-5 empty:hidden">
+          <ListaAlertas onAbrir={(q) => procurar(q)} />
+        </div>
+      )}
+
       {estado === "inicio" && listaCompras.length >= 2 && (
         <div className="px-4 mt-5">
           <CompararLista itens={listaCompras} />
@@ -446,14 +499,33 @@ export default function SecaoComparar() {
         </div>
       )}
 
+      {estado === "pronto" && vista && dados.produtos.some((p) => p.marcaPropria) && dados.produtos.some((p) => !p.marcaPropria) && (
+        <div className="px-4 mt-4">
+          {/* Marca própria (a "marca branca") vs. as outras — muda também o vencedor. */}
+          <div className="flex gap-1 p-1 rounded-xl" role="radiogroup" aria-label="Marca" style={{ background: "var(--pj-subtle)" }}>
+            {[["todas", "Todas"], ["propria", "Marca própria"], ["outras", "Outras marcas"]].map(([id, rotulo]) => (
+              <button key={id} role="radio" aria-checked={marca === id} onClick={() => { setMarca(id); evento("comparar_marca", { marca: id }); }}
+                className="pj-tap press flex-1" style={{ padding: "8px 0", borderRadius: 9, border: 0, fontSize: 12.5, fontWeight: 600,
+                  background: marca === id ? "var(--pj-card)" : "transparent", color: marca === id ? "var(--pj-text)" : "var(--pj-text-faint)",
+                  boxShadow: marca === id ? "0 1px 3px rgba(20,35,28,0.08)" : "none" }}>
+                {rotulo}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {estado === "pronto" && vista && (
         vista.vencedor ? (
           <div className="px-4 mt-4 flex flex-col gap-4">
             <Vencedor
+              key={pesquisa}
               p={vista.vencedor}
               segundo={vista.segundo}
               empatados={vista.empatados}
               modo={vista.modo}
+              q={pesquisa}
+              historico={marca === "todas" ? dados.historico : null}
               naLista={naLista}
               onLista={() => { if (juntarALista(pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1))) { setNaLista(true); evento("comparar_para_lista"); } }}
             />
@@ -512,10 +584,21 @@ export default function SecaoComparar() {
         ) : (
           <div className="px-4 mt-5">
             <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, padding: 16 }}>
+              {marca !== "todas" ? (
+                <>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
+                    Sem resultados de {marca === "propria" ? "marca própria" : "outras marcas"} para «{pesquisa}».
+                  </p>
+                  <button onClick={() => setMarca("todas")} className="pj-tap mt-2" style={{ background: "transparent", border: 0, padding: 0, fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                    Ver todas as marcas
+                  </button>
+                </>
+              ) : <>
               <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Não encontrámos «{pesquisa}».</p>
               <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.5 }}>
                 Experimenta uma palavra mais simples, como «arroz» em vez de «arroz agulha extra longo».
               </p>
+              </>}
             </div>
           </div>
         )

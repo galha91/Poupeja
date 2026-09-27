@@ -3,6 +3,9 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { DESAFIOS_MENSAIS } from "../../lib/desafios";
 import { eur } from "../../lib/formato";
+import { pesquisarTudo } from "../../lib/supermercados";
+import { registar } from "../../lib/supermercados/historico";
+import { melhoresPorLoja, valorComparacao } from "../../lib/comparacao";
 
 /*
  * Avisos personalizados por utilizador — cron diário (Vercel, 18:00 UTC).
@@ -11,6 +14,8 @@ import { eur } from "../../lib/formato";
  * de CADA utilizador (já sincronizados na tabela dados_utilizador pelo
  * lib/sync.js) e envia push só a quem tem algo relevante:
  *
+ *   🛒 Preços       — poupeja_alertas_precos: o mais barato de uma pesquisa
+ *                     do "Comparar preços" ≤ alvo (supressão de 3 dias)
  *   ⛽ Combustível  — poupeja_avisos: preço nacional mais barato ≤ precoAlvo
  *                     (com supressão de 6 dias para não repetir todos os dias)
  *   🛡️ Garantias    — poupeja_taloes: garantia a expirar em 30, 7 ou 1 dia(s)
@@ -25,9 +30,36 @@ import { eur } from "../../lib/formato";
  * Requer: VAPID_*, SUPABASE_SERVICE_ROLE_KEY, CRON_SECRET.
  */
 
-const CHAVES = ["poupeja_avisos", "poupeja_taloes", "poupeja_contas", "poupeja_contas_pago", "poupeja_meta", "poupeja_avisos_notificados"];
+const CHAVES = ["poupeja_alertas_precos", "poupeja_avisos", "poupeja_taloes", "poupeja_contas", "poupeja_contas_pago", "poupeja_meta", "poupeja_avisos_notificados"];
 const MAX_POR_USER = 3;
 const SUPRESSAO_COMBUSTIVEL_DIAS = 6;
+const SUPRESSAO_PRECO_DIAS = 3;
+const MAX_PESQUISAS_ALERTAS = 30;
+
+/*
+ * O mais barato de cada pesquisa com alertas — uma vez por pesquisa, por
+ * muitos utilizadores que a tenham. Duas de cada vez, com pausa: em
+ * rajada, o Continente recusa pedidos.
+ */
+async function precosDosAlertas(qs) {
+  const lista = [...qs].slice(0, MAX_PESQUISAS_ALERTAS);
+  const out = {};
+  let i = 0;
+  await Promise.all([0, 1].map(async () => {
+    while (i < lista.length) {
+      const q = lista[i++];
+      try {
+        const r = await pesquisarTudo(q);
+        await registar(r).catch(() => {});
+        const { modo, ranking } = melhoresPorLoja(r);
+        const p = ranking[0];
+        if (p) out[q] = { valor: valorComparacao(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade, loja: p.lojaNome, nome: p.nome };
+      } catch (_) {}
+      await new Promise((ok) => setTimeout(ok, 600));
+    }
+  }));
+  return out;
+}
 
 function hojeLisboa() {
   const s = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" }); // YYYY-MM-DD
@@ -83,7 +115,14 @@ export default async function handler(req, res) {
     (dadosPorUser[l.user_id] ||= {})[l.chave] = l.valor;
   }
 
-  // 3. Preços de combustível nacionais (uma vez para todos)
+  // 3a. Preços das pesquisas com alertas (uma vez para todos)
+  const qsAlertas = new Set();
+  for (const d of Object.values(dadosPorUser)) {
+    for (const a of Array.isArray(d.poupeja_alertas_precos) ? d.poupeja_alertas_precos : []) if (a?.q) qsAlertas.add(a.q);
+  }
+  const precosAlertas = qsAlertas.size ? await precosDosAlertas(qsAlertas) : {};
+
+  // 3b. Preços de combustível nacionais (uma vez para todos)
   let precos = [];
   try {
     const host = req.headers.host;
@@ -112,6 +151,23 @@ export default async function handler(req, res) {
     const notifs = [];
     const notificados = d.poupeja_avisos_notificados || {};
     let notificadosMudou = false;
+
+    // 🛒 Preço de supermercado abaixo do alvo (supressão de 3 dias por alerta)
+    const alertasPreco = Array.isArray(d.poupeja_alertas_precos) ? d.poupeja_alertas_precos : [];
+    for (const a of alertasPreco) {
+      const atual = precosAlertas[a.q];
+      if (!atual || !(a.alvo > 0) || atual.unidade !== a.unidade || atual.valor > a.alvo) continue;
+      const ultima = notificados[`preco_${a.id}`];
+      if (ultima && diasAte(hoje.iso, ultima) < SUPRESSAO_PRECO_DIAS) continue;
+      const porUnid = atual.unidade === "embalagem" ? "" : `/${atual.unidade}`;
+      notifs.push({
+        title: `🛒 ${a.q.charAt(0).toUpperCase() + a.q.slice(1)} a €${eur(atual.valor, 2)}${porUnid}`,
+        body: `No ${atual.loja} — abaixo do teu alvo de €${eur(a.alvo, 2)}${porUnid}. ${atual.nome}.`,
+        url: `/?atalho=mercados&q=${encodeURIComponent(a.q)}`,
+      });
+      notificados[`preco_${a.id}`] = hoje.iso;
+      notificadosMudou = true;
+    }
 
     // ⛽ Combustível abaixo do alvo (com supressão de 6 dias)
     const avisos = Array.isArray(d.poupeja_avisos) ? d.poupeja_avisos : [];
