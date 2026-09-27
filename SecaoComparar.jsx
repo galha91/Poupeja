@@ -337,8 +337,7 @@ export default function SecaoComparar() {
 
       {estado === "inicio" && (
         <div className="px-4 mt-5">
-          {/* Dizer à partida o que se compara, e o que não: o Lidl só traz
-              promoções, e há cadeias que não têm preços públicos online. */}
+          {/* Dizer à partida o que se compara — e que o Lidl só traz promoções. */}
           <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
             <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)", padding: "14px 16px 6px" }}>Supermercados que comparamos</p>
             {LOJAS_COMPARADAS.map((l) => (
@@ -348,9 +347,6 @@ export default function SecaoComparar() {
                 <span style={{ fontSize: 12, fontWeight: 600, color: l.parcial ? "var(--pj-warn)" : "var(--pj-brand-ink)" }}>{l.cobertura}</span>
               </div>
             ))}
-            <p style={{ fontSize: 12, color: "var(--pj-text-faint)", lineHeight: 1.5, padding: "10px 16px 14px", borderTop: "1px solid var(--pj-subtle)" }}>
-              Ainda não comparamos Mercadona e Aldi (não vendem online), nem Intermarché e El Corte Inglés.
-            </p>
           </div>
         </div>
       )}
