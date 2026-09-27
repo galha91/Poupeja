@@ -1,0 +1,17 @@
+# TEMPORÁRIO — investigação de fontes de preços. Remover antes do merge.
+name: Sonda lojas
+on:
+  push:
+    branches: [claude/mais-lojas]
+    paths: [scripts/sonda-lojas.mjs, .github/workflows/sonda-lojas.yml]
+permissions:
+  contents: read
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --no-warnings scripts/sonda-lojas.mjs
