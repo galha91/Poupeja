@@ -1,28 +1,22 @@
-// TEMPORÁRIO — Aldi: consultar o índice Algolia público.
-const APP = "EO5090GA91";
-const KEYS = ["10266a4d1d421a7befa6fbf8fb92eb8f", "2a471c92a397d1ebd939311b20e555e0"];
-const INDICES = ["an_prd_pt_pt_products2", "an_prd_pt_pt_products", "an_prd_pt_products2", "an_prd_pt_products"];
-for (const key of KEYS) for (const indexName of INDICES) {
-  const r = await fetch(`https://${APP}-dsn.algolia.net/1/indexes/*/queries`, {
-    method: "POST",
-    headers: { "x-algolia-application-id": APP, "x-algolia-api-key": key, "content-type": "application/json", Referer: "https://www.aldi.pt/", Origin: "https://www.aldi.pt" },
-    body: JSON.stringify({ requests: [{ indexName, params: "query=leite&hitsPerPage=3" }] }),
-  });
-  const t = await r.text();
-  console.log(`\n== ${key.slice(0, 6)} ${indexName} → ${r.status}`);
-  if (r.ok) {
-    const j = JSON.parse(t).results[0];
-    console.log("nbHits", j.nbHits);
-    console.log(JSON.stringify(j.hits.slice(0, 2), null, 1).slice(0, 4000));
-  } else console.log(t.slice(0, 200));
+// TEMPORÁRIO — teste do motor com o Aldi e da verificação diária.
+import { register } from "node:module";
+register("data:text/javascript," + encodeURIComponent(`
+export async function resolve(s, c, n) { try { return await n(s, c); } catch (e) { if (s.startsWith(".")) return n(s + ".js", c); throw e; } }
+`), import.meta.url);
+const { pesquisarTudo } = await import("../lib/supermercados/index.js");
+const { melhoresPorLoja, custoPorLoja } = await import("../lib/comparacao.js");
+const { verificarLojas } = await import("../lib/supermercados/saude.js");
+const f = (n) => (n == null ? "—" : n.toFixed(2).replace(".", ","));
+for (const q of ["laranjas", "leite meio gordo", "ovos", "azeite", "arroz", "salsa", "papel higiénico", "detergente roupa", "frango", "bolachas", "café", "iogurte natural", "pão de forma", "manteiga", "atum"]) {
+  const r = await pesquisarTudo(q);
+  const { modo, melhores } = melhoresPorLoja(r);
+  const { custos, referencia } = custoPorLoja(r);
+  console.log(`\n### ${q} [${modo}, ${r.nomeUnidade}, ref=${JSON.stringify(referencia)}] ${r.lojas.map((l) => `${l.id}:${l.ok ? l.total : "FALHA " + l.erro}`).join(" ")}`);
+  for (const l of r.lojas) {
+    const p = melhores[l.id];
+    console.log(`  ${l.nome.padEnd(10)} ${p ? `${f(modo === "embalagem" ? p.preco : p.precoUnidade)} ${modo === "embalagem" ? "€" : "€/" + p.nomeUnidade} | ${p.nome.slice(0, 44)} | ${p.quantidade || ""} | pago ${f(p.preco)} | cesto ${f(custos[l.id]?.custo)}${p.onde === "loja" ? " [loja]" : ""}` : "—"}`);
+  }
+  await new Promise((ok) => setTimeout(ok, 1200));
 }
-for (const q of ["laranja", "salsa", "ovos", "papel higiénico"]) {
-  const r = await fetch(`https://${APP}-dsn.algolia.net/1/indexes/*/queries`, {
-    method: "POST",
-    headers: { "x-algolia-application-id": APP, "x-algolia-api-key": KEYS[0], "content-type": "application/json", Referer: "https://www.aldi.pt/", Origin: "https://www.aldi.pt" },
-    body: JSON.stringify({ requests: [{ indexName: "an_prd_pt_pt_products2", params: `query=${encodeURIComponent(q)}&hitsPerPage=5` }] }),
-  });
-  const j = r.ok ? (await r.json()).results[0] : null;
-  console.log(`\n## ${q}: ${r.status} nbHits=${j?.nbHits}`);
-  for (const h of j?.hits || []) console.log("  -", JSON.stringify(h).slice(0, 700));
-}
+console.log("\n### VERIFICAÇÃO DIÁRIA");
+for (const r of await verificarLojas()) console.log(r.ok ? `  ✓ ${r.nome}: ${r.detalhes.join(" · ")}` : `  ✗ ${r.nome}: ${r.erro}`);

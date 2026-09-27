@@ -23,8 +23,12 @@ const LOJAS_COMPARADAS = [
   { nome: "Continente", cobertura: "Todos os produtos" },
   { nome: "Pingo Doce", cobertura: "Todos os produtos" },
   { nome: "Auchan", cobertura: "Todos os produtos" },
+  { nome: "Aldi", cobertura: "Todos os produtos · preço de loja" },
   { nome: "Lidl", cobertura: "Só promoções da semana", parcial: true },
 ];
+
+// Nota ao lado do nome da loja, onde o preço não é o da loja online.
+const NOTA_LOJA = { lidl: "só promoções em loja", aldi: "preço de loja" };
 
 const normalizar = (q) => String(q || "").toLowerCase().replace(/\s+/g, " ").trim().slice(0, 60);
 const semAcentos = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -214,7 +218,7 @@ function PorLoja({ lojas, melhores, modo, min, empate = false }) {
             <LogoLoja loja={l.nome} size={34} radius={9} />
             <span className="min-w-0 flex-1">
               <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
-                {l.nome}{l.id === "lidl" && <span style={{ fontSize: 11, fontWeight: 500, color: "var(--pj-text-faint)" }}> · só promoções em loja</span>}
+                {l.nome}{NOTA_LOJA[l.id] && <span style={{ fontSize: 11, fontWeight: 500, color: "var(--pj-text-faint)" }}> · {NOTA_LOJA[l.id]}</span>}
               </span>
               <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {!l.ok ? "Não respondeu agora" : p ? [p.nome, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ") : "Não tem este artigo"}
@@ -425,7 +429,7 @@ export default function SecaoComparar() {
 
       {estado === "a-carregar" && (
         <>
-          <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>A ver os preços de «{pesquisa}» em 4 supermercados…</p>
+          <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>A ver os preços de «{pesquisa}» em {LOJAS_COMPARADAS.length} supermercados…</p>
           <Esqueleto />
         </>
       )}
@@ -500,8 +504,8 @@ export default function SecaoComparar() {
             <p className="flex gap-1.5" style={{ fontSize: 11.5, color: "var(--pj-text-faint)", lineHeight: 1.5, margin: "0 2px" }}>
               <Info size={13} style={{ flexShrink: 0, marginTop: 1 }} />
               <span>
-                Preços das lojas online, verificados {tempoDesde(dados.obtidoEm)}. Nas lojas físicas podem ser diferentes.
-                No Lidl só aparecem os artigos em promoção esta semana ou na próxima.
+                Preços verificados {tempoDesde(dados.obtidoEm)}. Continente, Pingo Doce e Auchan: preços da loja online
+                (na loja física podem ser diferentes). Aldi e Lidl: preços de loja; no Lidl só aparecem as promoções desta semana e da próxima.
               </span>
             </p>
           </div>

@@ -18,7 +18,7 @@ function construirEmail(resultados, base) {
   const falhas = resultados.filter((r) => !r.ok);
   const subject = falhas.length
     ? `⚠️ Comparar preços: ${falhas.map((f) => f.nome).join(", ")} ${falhas.length === 1 ? "deixou" : "deixaram"} de funcionar`
-    : "✅ Comparar preços: as 4 lojas estão a funcionar";
+    : `✅ Comparar preços: as ${resultados.length} lojas estão a funcionar`;
   const linhas = resultados.map((r) => `
     <tr><td style="padding:12px 0;border-top:1px solid #eee;">
       <div style="font-size:15px;font-weight:600;color:${r.ok ? "#0b6b4f" : "#b4472e"};">${r.ok ? "✓" : "✗"} ${esc(r.nome)}</div>

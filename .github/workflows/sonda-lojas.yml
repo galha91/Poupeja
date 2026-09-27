@@ -3,7 +3,7 @@ name: Sonda lojas
 on:
   push:
     branches: [claude/mais-lojas]
-    paths: [scripts/sonda-lojas.mjs, .github/workflows/sonda-lojas.yml]
+    paths: [scripts/sonda-lojas.mjs, .github/workflows/sonda-lojas.yml, lib/**]
 permissions:
   contents: read
 jobs:
@@ -14,4 +14,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: node --no-warnings scripts/sonda-lojas.mjs
