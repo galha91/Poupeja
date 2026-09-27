@@ -31,7 +31,8 @@ const csp = [
   "font-src 'self' data: https://fonts.gstatic.com",
   // Logótipos das lojas (Clearbit e o serviço de favicons da Google),
   // tiles do mapa (OpenStreetMap) e as imagens dos talões em base64/blob.
-  "img-src 'self' data: blob: https://logo.clearbit.com https://www.google.com https://*.tile.openstreetmap.org",
+  // As fotos dos produtos em "Comparar preços" vêm dos próprios supermercados.
+  "img-src 'self' data: blob: https://logo.clearbit.com https://www.google.com https://*.tile.openstreetmap.org https://www.continente.pt https://static.pingodoce.pt https://www.pingodoce.pt https://www.auchan.pt https://www.lidl.pt",
   // Supabase (dados e auth) e os beacons do GA.
   "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
   "frame-ancestors 'self'",

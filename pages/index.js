@@ -10,6 +10,7 @@ const carregandoSeccao = () => (
     <span className="text-xs font-bold">A carregar…</span>
   </div>
 );
+const SecaoComparar    = dynamic(() => import("../SecaoComparar"), { loading: carregandoSeccao });
 const SecaoFolhetos    = dynamic(() => import("../SecaoFolhetos"), { loading: carregandoSeccao });
 const SecaoEmentas     = dynamic(() => import("../SecaoEmentas"), { loading: carregandoSeccao });
 const SecaoLojas       = dynamic(() => import("../SecaoLojas"), { loading: carregandoSeccao });
@@ -32,7 +33,7 @@ import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
   Home, ShoppingCart, Store, Fuel, PiggyBank, Bell, Users, ChefHat,
-  Tag, ArrowLeft, Landmark, CalendarClock,
+  Tag, ArrowLeft, Landmark, CalendarClock, Scale,
 } from "lucide-react";
 import { evento, ecra } from "../lib/analytics";
 import { modoExecucao, emAppAndroid } from "../lib/plataforma";
@@ -62,7 +63,7 @@ const NAV_IDS = ["inicio","poupanca","mercados","contas","mobilidade","apoios","
 
 const TITULOS = {
   inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
-  mercados:   { t: "Supermercados",                     s: "Folhetos e ementas económicas da semana" },
+  mercados:   { t: "Supermercados",                     s: "Preços, folhetos e ementas da semana" },
   lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
@@ -76,12 +77,13 @@ const TITULOS = {
 
 
 /* ─── Wrapper Mercados ─── */
-function SecaoMercados({ setTab, inicioAba = "folhetos" }) {
+function SecaoMercados({ setTab, inicioAba = "comparar" }) {
   const [sub, setSub] = useState(inicioAba);
   return (
     <div className="pb-28 pt-4">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
         {[
+          { id: "comparar", icon: Scale, label: "Preços" },
           { id: "folhetos", icon: Tag, label: "Folhetos" },
           { id: "ementas", icon: ChefHat, label: "Ementas" },
         ].map(o => (
@@ -95,6 +97,7 @@ function SecaoMercados({ setTab, inicioAba = "folhetos" }) {
           </button>
         ))}
       </div>
+      {sub === "comparar" && <SecaoComparar />}
       {sub === "folhetos" && <SecaoFolhetos />}
       {sub === "ementas" && <SecaoEmentas setTab={setTab} />}
     </div>
@@ -122,7 +125,7 @@ export default function PoupeJa() {
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
   const [subTabTaloes, setSubTabTaloes] = useState("compras");
-  const [subTabMercados, setSubTabMercados] = useState("folhetos");
+  const [subTabMercados, setSubTabMercados] = useState("comparar");
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
@@ -384,10 +387,12 @@ export default function PoupeJa() {
     }
   }
 
-  function go(newTab) {
+  // `sub` escolhe o separador interno do Mercado (o Início abre os
+  // folhetos directamente; por defeito o Mercado abre na comparação).
+  function go(newTab, sub) {
     if (newTab === tab) return;
     if (newTab === "taloes") setSubTabTaloes("compras");
-    if (newTab === "mercados") setSubTabMercados("folhetos");
+    if (newTab === "mercados") setSubTabMercados(sub || "comparar");
     if (tab === "taloes") calcGarantiasAviso();
     const pi = NAV_IDS.indexOf(tab);
     const ni = NAV_IDS.indexOf(newTab);
