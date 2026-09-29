@@ -104,7 +104,7 @@ export function CriarAlerta({ q, valorAtual, unidade, modo, onFechar, onGuardado
         </button>
       </div>
       <p style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 8, lineHeight: 1.5 }}>
-        Hoje está a {eur(valorAtual, 2)} €{sufixo(unidade)}. Verificamos todos os dias nos 6 supermercados e mandamos uma notificação quando baixar.
+        Hoje está a {eur(valorAtual, 2)} €{sufixo(unidade)}. Verificamos todos os dias nos 5 supermercados e mandamos uma notificação quando baixar.
         {push === "bloqueado" && " As notificações estão bloqueadas neste telemóvel — ativa-as nas definições do sistema para receberes o aviso."}
         {push === "sem-suporte" && " Este browser não recebe notificações; instala a app para receberes o aviso."}
       </p>

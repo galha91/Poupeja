@@ -25,7 +25,6 @@ const DOMINIO = {
   "E.Leclerc":       "e-leclerc.pt",
   "El Corte Inglés": "elcorteingles.pt",
   "Froiz":           "froiz.pt",
-  "Apolónia":        "apolonia.com",
 };
 
 /* O fundo do chip fica claro nos dois temas, de propósito: os logótipos dos
