@@ -25,7 +25,6 @@ const LOJAS_COMPARADAS = [
   { nome: "Pingo Doce", cobertura: "Todos os produtos" },
   { nome: "Auchan", cobertura: "Todos os produtos" },
   { nome: "Aldi", cobertura: "Todos os produtos · preço de loja" },
-  { nome: "Apolónia", cobertura: "Todos os produtos" },
   { nome: "Lidl", cobertura: "Só promoções da semana", parcial: true },
 ];
 
