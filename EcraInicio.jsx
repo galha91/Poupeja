@@ -423,7 +423,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           <Search size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Onde está mais barato?</span>
-            <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Compara laranjas, leite, azeite… em 5 supermercados</span>
+            <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Compara laranjas, leite, azeite… em 6 supermercados</span>
           </span>
           <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
         </button>
