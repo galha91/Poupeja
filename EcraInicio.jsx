@@ -463,15 +463,14 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
               {/*
                 Chamava-se "Folhetos a acabar" — e não havia lógica de fim
-                nenhuma: é um slice(0,5) por ordem do ficheiro, que calha ser
-                alfabética. Nada aqui sabe que folheto está a acabar, porque
-                não temos as datas reais de nenhum deles.
+                nenhuma: é a lista do ficheiro, por ordem alfabética. Nada
+                aqui sabe que folheto está a acabar, porque não temos as datas
+                reais de nenhum deles. Saem todas as lojas, sem "Ver todos".
               */}
               <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos desta semana</span>
-              <button onClick={() => setTab("mercados", "folhetos")} className="pj-tap" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Ver todos</button>
             </div>
             <div className="flex flex-col">
-              {folhetos.slice(0, 5).map((f, i) => (
+              {folhetos.map((f, i) => (
                 <div key={f.id || i}>
                   {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
                   <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
