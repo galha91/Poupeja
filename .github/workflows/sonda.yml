@@ -2,7 +2,7 @@ name: sonda (temporário)
 on:
   push:
     branches: [claude/loading-display-timing-okdgfz]
-    paths: ["sonda/**", ".github/workflows/sonda.yml"]
+    paths: ["sonda/**", "lib/supermercados/**", ".github/workflows/sonda.yml"]
 jobs:
   sonda:
     runs-on: ubuntu-latest
@@ -10,5 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: node sonda/sonda.mjs novas3
+        with: { node-version: 20, cache: npm }
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node --import ./sonda/reg.mjs sonda/motor.mjs
