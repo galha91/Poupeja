@@ -91,3 +91,25 @@ if (secao === "tudo" || secao === "novas2") {
   const sp = await get("https://www.spar.pt/");
   log("\nspar links:", [...new Set([...sp.txt.matchAll(/href="([^"#]+)"/g)].map((m) => m[1]))].slice(0, 40).join(" "));
 }
+
+if (secao === "novas3") {
+  log("\n===== FROIZ API =====");
+  const F = "https://serviciospt.froiz.com";
+  const hh = { Accept: "application/json, text/plain, */*", Origin: "https://loja.froiz.com", Referer: "https://loja.froiz.com/" };
+  for (const u of [
+    "/api/products/slug/59477-filete-de-atum-gallo-em-azeite-virgem-extra-120-g",
+    "/api/products/search?q=leite", "/api/products/search?query=leite", "/api/products/search?search=leite", "/api/products/search/leite",
+    "/api/products?search=leite", "/api/products?q=leite", "/api/search?q=leite", "/api/search/products?q=leite", "/api/products/find?q=leite",
+    "/api/products/autocomplete?q=leite", "/api/categories", "/api/offers",
+  ]) {
+    const r = await get(F + u, { headers: hh });
+    log(`  ${u} → ${r.status} ${r.ct} ${r.txt.length}b ::`, r.txt.slice(0, 700).replace(/\s+/g, " "));
+  }
+  log("\n===== APOLONIA / SPAR =====");
+  for (const u of ["https://www.apolonia.com/pt/procurar/?q=leite", "https://www.apolonia.com/pt/pesquisa/?q=leite", "https://www.spar.pt/produtos/resumo", "https://www.spar.pt/b2b-shopping-artigos/0/", "https://www.spar.pt/loja/resumo"]) {
+    const r = await get(u);
+    log(`\n## ${u} → ${r.status} ${r.url} ${r.txt.length}b`);
+    log("  precos:", trecho(r.txt, "€", 6, 100).join(" ¦ "));
+    log("  links:", [...new Set([...r.txt.matchAll(/href="([^"#]+)"/g)].map((m) => m[1]))].filter((x) => /produto|product|artigo|pesquis|procur|search/i.test(x)).slice(0, 25).join(" "));
+  }
+}
