@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { ArrowLeft, ExternalLink, AlertCircle } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 
@@ -60,11 +61,13 @@ export default function FolhetoViewer({ folheto, onFechar }) {
   const atual = lista?.[ativo];
   const abrirNoSite = () => window.open(folheto.url || atual?.url, "_blank", "noopener");
 
-  return (
+  // No <body>: os ecrãs da app têm animações com transform, e dentro de um
+  // ancestral assim o "position: fixed" deixa de ser relativo ao ecrã.
+  return createPortal(
     <div
       role="dialog"
       aria-label={`Folheto ${folheto.loja}`}
-      style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", flexDirection: "column", background: "var(--pj-surface)" }}
+      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", flexDirection: "column", background: "var(--pj-surface)" }}
     >
       {/* Cabeçalho */}
       <div style={{ background: "var(--pj-card)", borderBottom: "1px solid var(--pj-border)", paddingTop: "env(safe-area-inset-top)" }}>
@@ -134,7 +137,8 @@ export default function FolhetoViewer({ folheto, onFechar }) {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

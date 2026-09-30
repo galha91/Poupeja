@@ -157,7 +157,7 @@ export default function SecaoFolhetos() {
       {/* Nota rodapé */}
       {!loading && !erro && (
         <p className="text-center mt-5 px-4" style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>
-          Aldi, Pingo Doce, Intermarché, E.Leclerc e Froiz abrem aqui na app; as outras, no site oficial da loja. Sempre atualizados.
+          Aldi, Pingo Doce e Intermarché abrem aqui na app; as outras, no site oficial da loja. Sempre atualizados.
         </p>
       )}
 

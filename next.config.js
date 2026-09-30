@@ -36,7 +36,7 @@ const csp = [
   // Supabase (dados e auth) e os beacons do GA.
   "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
   // Folhetos que se abrem dentro da app (ver lib/folhetos-embed).
-  "frame-src https://folhetos.aldi.pt https://folhetos.pingodoce.pt https://folhetos.intermarche.pt https://www.e-leclerc.pt https://e-leclerc.pt https://www.froiz.pt",
+  "frame-src https://folhetos.aldi.pt https://folhetos.pingodoce.pt https://folhetos.intermarche.pt",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
