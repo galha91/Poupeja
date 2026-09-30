@@ -76,6 +76,13 @@ export default function Apoios({ apoios, categorias, atualizado }) {
           ))}
         </div>
 
+        <p style={{ fontSize: 12.5, color: "var(--pj-text-faint)", lineHeight: 1.6, marginTop: 20 }}>
+          Informação baseada em fontes oficiais: <a href="https://www.gov.pt/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>gov.pt</a>,{" "}
+          <a href="https://www.seg-social.pt/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>Segurança Social</a> e{" "}
+          <a href="https://www.erse.pt/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>ERSE</a>.
+          O PoupeJá é independente e não é um serviço do Estado — <a href="/fontes" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>ver todas as fontes</a>.
+        </p>
+
         <CtaApp texto="Pesquisa e filtra os apoios na app — grátis" />
       </div>
     </LayoutPublico>

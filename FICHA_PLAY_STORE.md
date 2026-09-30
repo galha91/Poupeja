@@ -94,6 +94,17 @@ com email, e os teus dados acompanham-te de telemóvel para telemóvel.
 Os preços de combustível são os publicados pela DGEG. O PoupeJá não tem
 qualquer ligação às cadeias de supermercados nem às marcas de
 combustível mencionadas.
+
+FONTES OFICIAIS
+O PoupeJá é uma aplicação independente: não é um serviço do Estado nem
+está associada a nenhuma entidade pública. A informação oficial que
+mostra vem de fontes públicas, e cada valor traz na app o link para o
+original:
+• Combustíveis — DGEG: https://precoscombustiveis.dgeg.gov.pt
+• IRS — Portal das Finanças: https://info.portaldasfinancas.gov.pt
+• Euribor — Banco de Portugal: https://bpstat.bportugal.pt
+• Apoios — gov.pt e Segurança Social: https://www.gov.pt e https://www.seg-social.pt
+Lista completa: https://xn--poupej-uta.com/fontes
 ```
 
 ---

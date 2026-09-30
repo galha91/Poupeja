@@ -4,6 +4,7 @@ import {
   Flame, ShieldCheck, ListChecks, Landmark, Calculator, Search,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
+import FonteOficial from "./FonteOficial";
 import { Preco } from "./Preco";
 import Divisoria from "./Divisoria";
 import { calcularEstado } from "./lib/desafios";
@@ -104,6 +105,7 @@ function CardCombustivelHome({ setTab }) {
   }
 
   return (
+    <div>
     <button onClick={() => setTab("mobilidade")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14 }}>
       <div className="flex items-center justify-center flex-none" style={{ width: 40, height: 40, borderRadius: 12, background: "var(--pj-subtle)", color: "var(--pj-text-strong)" }}>
         <Fuel size={19} strokeWidth={1.8} />
@@ -137,6 +139,9 @@ function CardCombustivelHome({ setTab }) {
         ? <span className="flex-none"><Preco valor={dados.preco} casas={3} tamanho={22} /></span>
         : <ChevronRight size={20} className="flex-none" style={{ color: "var(--pj-text-faint)" }} />}
     </button>
+    {/* Preço oficial: o link para a origem fica à vista, fora do botão (não se aninham links em botões). */}
+    <FonteOficial fontes="dgeg" style={{ marginTop: 6, paddingLeft: 54 }} />
+    </div>
   );
 }
 

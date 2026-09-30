@@ -8,6 +8,7 @@ const FIXAS = [
   { path: '/folhetos',     changefreq: 'weekly',  priority: '0.9' },
   { path: '/receitas',     changefreq: 'weekly',  priority: '0.9' },
   { path: '/apoios',       changefreq: 'monthly', priority: '0.8' },
+  { path: '/fontes',       changefreq: 'yearly',  priority: '0.4' },
   { path: '/instalar',     changefreq: 'monthly', priority: '0.8' },
   { path: '/privacidade',  changefreq: 'yearly',  priority: '0.3' },
   ...LOJAS_SLUGS.map(l   => ({ path: `/folhetos/${l.slug}`,  changefreq: 'weekly',  priority: '0.8' })),

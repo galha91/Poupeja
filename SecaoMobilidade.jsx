@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import CARROS_EV from "./data/carrosEV";
 import { Preco } from "./Preco";
 import { eur } from "./lib/formato";
+import { FONTES } from "./lib/fontes";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -211,7 +212,7 @@ function TabBar({ options, value, onChange }) {
   );
 }
 
-function FonteBadge({ fonte, atualizadoEm }) {
+function FonteBadge({ fonte, atualizadoEm, href }) {
   if (!fonte) return null;
   /*
    * Só a hora ("DGEG · 14:32") é enganador quando os dados não são de hoje:
@@ -228,7 +229,12 @@ function FonteBadge({ fonte, atualizadoEm }) {
   return (
     <div className="mx-4 mt-4 mb-2 flex items-center gap-1.5">
       <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--pj-brand)]" />
-      <p className="text-[10px] text-[color:var(--pj-text-faint)]">{fonte}{quando ? ` · ${quando}` : ""}</p>
+      <p className="text-[10px] text-[color:var(--pj-text-faint)]">
+        {href
+          ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--pj-brand-ink)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 2 }}>{fonte}</a>
+          : fonte}
+        {quando ? ` · ${quando}` : ""}
+      </p>
     </div>
   );
 }
@@ -900,7 +906,7 @@ function SubCombustiveis() {
         </div>
       )}
 
-      <FonteBadge fonte={fonte} atualizadoEm={atualizado} />
+      <FonteBadge fonte={fonte || FONTES.dgeg.nome} atualizadoEm={atualizado} href={FONTES.dgeg.href} />
     </div>
   );
 }

@@ -53,6 +53,7 @@ export default function LayoutPublico({ children }) {
           <a href="/folhetos" style={{ color: "var(--pj-text-muted)" }}>Folhetos</a>
           <a href="/receitas" style={{ color: "var(--pj-text-muted)" }}>Receitas baratas</a>
           <a href="/apoios" style={{ color: "var(--pj-text-muted)" }}>Apoios do Estado</a>
+          <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
         </nav>
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 14 }}>

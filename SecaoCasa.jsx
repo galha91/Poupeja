@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Building2, Plus, Pencil, TrendingUp, TrendingDown, Calendar, X, Home } from "lucide-react";
 import { eur } from "./lib/formato";
+import FonteOficial from "./FonteOficial";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
@@ -150,6 +151,7 @@ function BlocoEuribor({ euribor, carregando }) {
           );
         })}
       </div>
+      <FonteOficial fontes="euribor" className="mt-3" />
     </div>
   );
 }
@@ -318,6 +320,7 @@ function BlocoRenda({ dados, onEditar }) {
             </p>
           </div>
         </div>
+        <FonteOficial fontes={["rendas", "ine"]} prefixo="Coeficiente" className="mt-3" />
       </div>
     </div>
   );
