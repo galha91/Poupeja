@@ -8,6 +8,7 @@ import { listarMunicipios, frescuraDosPrecos, precosPorMarca, TIPOS_DESTAQUE } f
 /* Quantas marcas por combustível. Ver a explicação em porCombustivel. */
 const MARCAS_VISIVEIS = 12;
 import { URL_SITE as SITE_URL } from "../../lib/site";
+import { FONTES } from "../../lib/fontes";
 
 /*
  * Página pública SEO — preços dos combustíveis hoje em Portugal.
@@ -98,7 +99,9 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
 
       <div style={{ paddingTop: 24 }}>
         <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-          Dados oficiais DGEG · {idade.rotulo}
+          Dados oficiais{" "}
+          <a href={FONTES.dgeg.href} target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 2 }}>DGEG</a>
+          {" "}· {idade.rotulo}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
           Preços dos combustíveis hoje em Portugal
@@ -170,7 +173,7 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
               </div>
             ))}
             <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 10 }}>
-              Fonte: DGEG — preços comunicados pelos próprios postos. {idade.rotulo}.
+              Fonte: <a href={FONTES.dgeg.href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--pj-brand-ink)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 2 }}>DGEG — Direção-Geral de Energia e Geologia</a> — preços comunicados pelos próprios postos. {idade.rotulo}.
               O preço no posto pode variar.
             </p>
           </>

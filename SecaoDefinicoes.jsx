@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Fuel, MapPin, Bell, ShieldCheck, Info,
-  ChevronRight, Check, ArrowLeft, Heart, FileText, Mail,
-  PiggyBank, LogOut, BellRing, BellOff, Moon, Share2, Trash2,
-} from "lucide-react";
+import { Fuel, MapPin, Bell, ShieldCheck, Info, ChevronRight, Check, ArrowLeft, Heart, FileText, Mail, PiggyBank, LogOut, BellRing, BellOff, Moon, Share2, Trash2, Landmark } from "lucide-react";
 import { apagarConta } from "./lib/apagarConta";
 import { supabase } from "./lib/supabase";
 import { partilharApp } from "./lib/partilhar";
@@ -603,6 +599,15 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
             </div>
             <ChevronRight size={15} style={{ color: "#c9cec7" }} />
           </button>
+        </Row>
+        <Row>
+          <a href="/fontes" target="_blank" rel="noopener noreferrer" className="press pj-tap w-full flex items-center justify-between no-underline">
+            <div className="flex items-center gap-2.5">
+              <Landmark size={17} style={{ color: "var(--pj-text-faint)" }} />
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Fontes oficiais</p>
+            </div>
+            <ChevronRight size={15} style={{ color: "#c9cec7" }} />
+          </a>
         </Row>
         <Row border={false}>
           <button onClick={() => window.location.href = "mailto:poupeja.portugal@gmail.com"} className="press pj-tap w-full flex items-center justify-between">

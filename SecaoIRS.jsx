@@ -3,6 +3,7 @@ import {
   Calculator, TrendingUp, TrendingDown, Info, Users,
   Heart, GraduationCap, Home, Building2, ShoppingCart, Wallet,
 } from "lucide-react";
+import FonteOficial from "./FonteOficial";
 
 /*
  * IRS 2026 (Continente) — rendimentos de 2026, declarados em 2027.
@@ -430,6 +431,7 @@ export default function SecaoIRS() {
           depende de outros fatores. Confirma sempre no Portal das Finanças.
         </p>
       </div>
+      <FonteOficial fontes={["irs68", "cirs", "ias"]} prefixo="Fontes oficiais" className="mx-4 mb-4" />
     </div>
   );
 }

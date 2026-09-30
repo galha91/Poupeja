@@ -4,6 +4,8 @@ import {
   Zap, Bus, Home, Users, GraduationCap, Heart, Briefcase, Search,
 } from "lucide-react";
 import dadosRaw from "./public/apoios.json";
+import FonteOficial from "./FonteOficial";
+import { dominioDe } from "./lib/fontes";
 
 const ICONES_CAT = {
   energia:     Zap,
@@ -166,6 +168,15 @@ export default function SecaoApoios() {
                   </div>
                 </button>
 
+                {/* A fonte fica sempre à vista — não só quando o cartão abre. */}
+                {apoio.link && (
+                  <FonteOficial
+                    fontes={{ curto: dominioDe(apoio.link), href: apoio.link }}
+                    className="px-4 pb-3"
+                    style={{ marginTop: -6, paddingLeft: 64 }}
+                  />
+                )}
+
                 {/* Detalhe expandido */}
                 {expandido && (
                   <div className="px-4 pb-4 pt-0" style={{ borderTop: `1px solid ${C.divRow}` }}>
@@ -209,9 +220,10 @@ export default function SecaoApoios() {
 
       {/* Rodapé */}
       <div className="px-4 mt-6 mb-4">
-        <p className="text-center text-[10px] leading-relaxed" style={{ color: C.faint }}>
-          Informação baseada em fontes oficiais (ePortugal.gov.pt, Segurança Social, ERSE).<br />
-          Para detalhes e valores atualizados, consulta sempre o site oficial.
+        <FonteOficial fontes={["gov", "segsocial", "erse"]} prefixo="Informação baseada em fontes oficiais" className="text-center" />
+        <p className="text-center text-[10px] leading-relaxed mt-1" style={{ color: C.faint }}>
+          O PoupeJá é independente e não é um serviço do Estado. Para detalhes e valores atualizados, consulta sempre o site oficial.{" "}
+          <a href="/fontes" style={{ color: "var(--pj-brand-ink)", fontWeight: 600, textDecoration: "underline" }}>Todas as fontes</a>
         </p>
       </div>
     </div>
