@@ -1,0 +1,23 @@
+name: sonda (temporário)
+on:
+  push:
+    branches: [claude/loading-display-timing-okdgfz]
+    paths: ["sonda/**", ".github/workflows/sonda.yml"]
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://projeto-dev-falso.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: falso
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - run: npx next build
+      - run: npm i --no-save playwright && npx playwright install --with-deps chromium
+      - run: |
+          (npx next start -p 3055 > srv.log 2>&1 &)
+          sleep 8
+          node sonda/e2e.mjs
