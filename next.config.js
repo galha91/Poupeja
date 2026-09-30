@@ -35,6 +35,8 @@ const csp = [
   "img-src 'self' data: blob: https://logo.clearbit.com https://www.google.com https://*.tile.openstreetmap.org https://www.continente.pt https://static.pingodoce.pt https://www.pingodoce.pt https://www.auchan.pt https://www.lidl.pt https://prd.an-pcm.com",
   // Supabase (dados e auth) e os beacons do GA.
   "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
+  // Folhetos que se abrem dentro da app (ver lib/folhetos-embed).
+  "frame-src https://folhetos.aldi.pt https://folhetos.pingodoce.pt https://folhetos.intermarche.pt",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",

@@ -5,6 +5,8 @@ import {
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
+import FolhetoViewer from "./FolhetoViewer";
+import { embutivel } from "./lib/folhetos-embed";
 import { Preco } from "./Preco";
 import Divisoria from "./Divisoria";
 import { calcularEstado } from "./lib/desafios";
@@ -278,6 +280,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
     try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
   });
   const primeiroNome = user?.nome?.split(" ")[0] || "aí";
+  const [folhetoAberto, setFolhetoAberto] = useState(null); // folheto aberto dentro da app
 
   const [totalMes, setTotalMes]       = useState(0);
   const [totalSempre, setTotalSempre] = useState(0);
@@ -478,7 +481,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
               {folhetos.map((f, i) => (
                 <div key={f.id || i}>
                   {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
-                  <button onClick={() => f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
+                  <button onClick={() => embutivel(f.loja) ? setFolhetoAberto(f) : f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
                     <LogoFolheto loja={f.loja} />
                     {/*
                       Eram três colunas e duas não diziam nada: o `titulo` é a
@@ -530,6 +533,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         </div>
 
       </div>
+      {folhetoAberto && <FolhetoViewer folheto={folhetoAberto} onFechar={() => setFolhetoAberto(null)} />}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { RefreshCw, AlertCircle, Tag, ShoppingCart, Clock } from "lucide-react";
 import LogoLoja from "./LogoLoja";
+import FolhetoViewer from "./FolhetoViewer";
+import { embutivel } from "./lib/folhetos-embed";
 
 const LOJA_CORES = {
   Continente: "#e63329", "Pingo Doce": "#009a3e",
@@ -34,6 +36,7 @@ function CardSkeleton() {
 }
 
 export default function SecaoFolhetos() {
+  const [aberto, setAberto] = useState(null); // folheto aberto dentro da app
   const [folhetos, setFolhetos] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [erro, setErro]         = useState(false);
@@ -120,7 +123,7 @@ export default function SecaoFolhetos() {
               return (
                 <button
                   key={f.id}
-                  onClick={() => window.open(f.url, "_blank")}
+                  onClick={() => (embutivel(f.loja) ? setAberto(f) : window.open(f.url, "_blank"))}
                   className="pj-tap p-4 flex flex-col items-center gap-3 relative overflow-hidden anim-up text-left"
                   style={{ background: "var(--pj-card)", borderRadius: 16, border: "1px solid var(--pj-border)", boxShadow: "0 1px 2px rgba(20,35,28,0.04)" }}
                 >
@@ -154,9 +157,11 @@ export default function SecaoFolhetos() {
       {/* Nota rodapé */}
       {!loading && !erro && (
         <p className="text-center mt-5 px-4" style={{ fontSize: 11, color: "var(--pj-text-faint)" }}>
-          Os folhetos abrem no site oficial de cada supermercado, sempre atualizados.
+          Aldi, Pingo Doce e Intermarché abrem aqui na app; as outras, no site oficial da loja. Sempre atualizados.
         </p>
       )}
+
+      {aberto && <FolhetoViewer folheto={aberto} onFechar={() => setAberto(null)} />}
     </div>
   );
 }
