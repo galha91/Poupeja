@@ -579,7 +579,7 @@ export default function EcraAuth({ onAuth }) {
     setConvidadoLoading(true);
     try {
       const { data, error } = await supabase.auth.signInAnonymously({
-        options: { data: { nome: "Convidado" } },
+        options: { data: { nome: "Convidado", entrou_como_convidado: true } },
       });
       if (error) throw error;
       evento("login", { method: "convidado" });

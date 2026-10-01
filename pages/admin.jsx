@@ -205,6 +205,25 @@ export default function Admin() {
               <Cartao rotulo="30 dias" valor={stats.ativos30 ?? "—"} cor="text-blue-600" />
             </div>
 
+            {/* Entradas no modo convidado (site) — inclui quem já converteu */}
+            {stats.entradasConvidado && (
+              <>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1">
+                  Entraram como convidado · {stats.entradasConvidado.total} no total
+                </p>
+                <div className="grid grid-cols-3 gap-3 mb-1.5">
+                  <Cartao rotulo="Hoje" valor={stats.entradasConvidado.hoje} cor="text-amber-600" />
+                  <Cartao rotulo="7 dias" valor={stats.entradasConvidado.ultimos7} cor="text-amber-600" />
+                  <Cartao rotulo="30 dias" valor={stats.entradasConvidado.ultimos30} cor="text-amber-600" />
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium mb-3 px-1">
+                  {stats.entradasConvidado.converteram} criaram conta depois
+                  {stats.entradasConvidado.total > 0 ? ` (${Math.round(stats.entradasConvidado.converteram / stats.entradasConvidado.total * 100)}%)` : ""}
+                  {" "}· {stats.convidados ?? 0} ainda por converter
+                </p>
+              </>
+            )}
+
             {/* Contas convidadas / nunca voltaram */}
             <div className="grid grid-cols-2 gap-3 mb-3">
               <Cartao rotulo="Contas convidadas" valor={stats.convidados ?? 0} cor="text-amber-600" />
