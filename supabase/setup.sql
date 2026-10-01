@@ -104,3 +104,28 @@ create table if not exists public.precos_supermercado_historico (
 );
 alter table public.precos_supermercado_historico enable row level security;
 create index if not exists precos_supermercado_historico_q_dia on public.precos_supermercado_historico (q, dia desc);
+
+-- ── Convidados do site ──────────────────────────────────────────────────────
+-- Uma linha por browser que entrou no modo convidado (id aleatório guardado
+-- no localStorage). Só a API (service role) escreve/lê — sem policies.
+create table if not exists public.convidados_site (
+  id           uuid primary key,
+  primeira_em  timestamptz not null default now(),
+  ultima_em    timestamptz not null default now(),
+  aberturas    integer not null default 1,
+  converteu_em timestamptz
+);
+
+alter table public.convidados_site enable row level security;
+
+create or replace function public.registar_convidado(p_id uuid, p_converteu boolean default false)
+returns void language sql security definer set search_path = public as $$
+  insert into public.convidados_site (id, converteu_em)
+  values (p_id, case when p_converteu then now() end)
+  on conflict (id) do update set
+    ultima_em    = now(),
+    aberturas    = convidados_site.aberturas + case when p_converteu then 0 else 1 end,
+    converteu_em = coalesce(convidados_site.converteu_em, case when p_converteu then now() end);
+$$;
+
+revoke all on function public.registar_convidado(uuid, boolean) from public, anon, authenticated;

@@ -60,6 +60,32 @@ export default async function handler(req, res) {
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
     const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
 
+    // Modo convidado do site: uma linha por browser (tabela convidados_site,
+    // alimentada por /api/convidado). Começou a contar a 2026-10-01 — antes
+    // disso os convidados só ficaram no Google Analytics.
+    let entradasConvidado = null;
+    try {
+      const { data: conv, error: convErr } = await admin
+        .from("convidados_site")
+        .select("primeira_em, ultima_em, aberturas, converteu_em")
+        .limit(100000);
+      if (convErr) throw convErr;
+      const linhas = conv || [];
+      const desde = (campo, ms) => linhas.filter(c => c[campo] && agora - new Date(c[campo]).getTime() < ms).length;
+      const deHoje = campo => linhas.filter(c => c[campo] && new Date(c[campo]) >= inicioHoje).length;
+      entradasConvidado = {
+        total: linhas.length,
+        novosHoje: deHoje("primeira_em"),
+        novos7: desde("primeira_em", 7 * DIA),
+        novos30: desde("primeira_em", 30 * DIA),
+        abriramHoje: deHoje("ultima_em"),
+        abriram7: desde("ultima_em", 7 * DIA),
+        abriram30: desde("ultima_em", 30 * DIA),
+        aberturas: linhas.reduce((n, c) => n + (c.aberturas || 0), 0),
+        converteram: linhas.filter(c => c.converteu_em).length,
+      };
+    } catch {}
+
     // Método de login das contas não-anónimas — para medir a adoção do
     // "Continuar com Google" (inclui quem começou como convidado e ligou
     // a conta Google depois, via linkIdentity).
@@ -167,6 +193,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       total,
       convidados,
+      entradasConvidado,
       porMetodo,
       hoje,
       ultimos7,
