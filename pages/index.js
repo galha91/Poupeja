@@ -36,7 +36,8 @@ import {
   Tag, ArrowLeft, Landmark, CalendarClock, Scale,
 } from "lucide-react";
 import { evento, ecra } from "../lib/analytics";
-import { modoExecucao, emAppAndroid } from "../lib/plataforma";
+import { modoExecucao, emAppNativa } from "../lib/plataforma";
+import { registarAberturaConvidado, registarConversaoConvidado } from "../lib/convidado";
 
 /* ─── nav config ─── */
 /* A barra de baixo leva 5 separadores. Com 7 sobravam ~55px cada num
@@ -151,11 +152,21 @@ export default function PoupeJa() {
     } catch {}
   }
 
+  /* Convidado local que passou a ter sessão: conta como conversão */
+  function largarConvidadoLocal() {
+    let era = false;
+    try {
+      era = !!localStorage.getItem("poupeja_convidado_local");
+      localStorage.removeItem("poupeja_convidado_local");
+    } catch {}
+    if (era) registarConversaoConvidado();
+  }
+
   /* Lê a sessão Supabase e fica a ouvir alterações (login, logout, recuperação) */
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        try { localStorage.removeItem("poupeja_convidado_local"); } catch {}
+        largarConvidadoLocal();
         setUser(sessionParaUser(session));
       } else {
         let convidadoLocal = false;
@@ -169,7 +180,7 @@ export default function PoupeJa() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") setRecovery(true);
       if (session) {
-        try { localStorage.removeItem("poupeja_convidado_local"); } catch {}
+        largarConvidadoLocal();
         setUser(sessionParaUser(session));
       } else if (event === "SIGNED_OUT") {
         setUser(null);
@@ -178,6 +189,11 @@ export default function PoupeJa() {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  /* Conta quem abre o site em modo convidado (estatísticas do /admin) */
+  useEffect(() => {
+    if (user?.convidado) registarAberturaConvidado();
+  }, [user?.convidado]);
 
   /* Sincroniza dados locais com a conta (talões, lista, prefs…) */
   useEffect(() => {
@@ -484,7 +500,7 @@ export default function PoupeJa() {
      Na app Android não há modo convidado: quem já o usava vê o ecrã de
      entrar. Não perde nada — os dados de convidado estão no localStorage e
      o pull() do lib/sync sobe-os para a conta no primeiro login. */
-  if (!user || (user.convidado && emAppAndroid())) {
+  if (!user || (user.convidado && emAppNativa())) {
     return <EcraAuth onAuth={handleAuth} />;
   }
 

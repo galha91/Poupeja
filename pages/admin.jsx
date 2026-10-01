@@ -205,23 +205,27 @@ export default function Admin() {
               <Cartao rotulo="30 dias" valor={stats.ativos30 ?? "—"} cor="text-blue-600" />
             </div>
 
-            {/* Entradas no modo convidado (site) — inclui quem já converteu */}
+            {/* Modo convidado do site — pessoas (browsers) que entraram sem conta */}
             {stats.entradasConvidado && (
-              <>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1">
-                  Entraram como convidado · {stats.entradasConvidado.total} no total
-                </p>
-                <div className="grid grid-cols-3 gap-3 mb-1.5">
-                  <Cartao rotulo="Hoje" valor={stats.entradasConvidado.hoje} cor="text-amber-600" />
-                  <Cartao rotulo="7 dias" valor={stats.entradasConvidado.ultimos7} cor="text-amber-600" />
-                  <Cartao rotulo="30 dias" valor={stats.entradasConvidado.ultimos30} cor="text-amber-600" />
-                </div>
-                <p className="text-[11px] text-slate-400 font-medium mb-3 px-1">
-                  {stats.entradasConvidado.converteram} criaram conta depois
+              <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Modo convidado (site)</p>
+                <p className="text-3xl font-black text-amber-600 mt-1.5">{stats.entradasConvidado.total}</p>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                  pessoas já entraram como convidado · {stats.entradasConvidado.aberturas} aberturas ·{" "}
+                  {stats.entradasConvidado.converteram} criaram conta
                   {stats.entradasConvidado.total > 0 ? ` (${Math.round(stats.entradasConvidado.converteram / stats.entradasConvidado.total * 100)}%)` : ""}
-                  {" "}· {stats.convidados ?? 0} ainda por converter
                 </p>
-              </>
+                <div className="grid grid-cols-3 gap-2 mt-3 text-center">
+                  {[["Hoje", "novosHoje", "abriramHoje"], ["7 dias", "novos7", "abriram7"], ["30 dias", "novos30", "abriram30"]].map(([rot, novos, abriram]) => (
+                    <div key={rot} className="bg-amber-50 rounded-xl py-2">
+                      <div className="text-[10px] font-black text-slate-400 uppercase">{rot}</div>
+                      <div className="text-lg font-black text-amber-600">{stats.entradasConvidado[abriram]}</div>
+                      <div className="text-[10px] text-slate-500 font-semibold">abriram · {stats.entradasConvidado[novos]} novos</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2">Contagem desde 1 out 2026. Antes disso: Google Analytics, evento login · method convidado_local.</p>
+              </div>
             )}
 
             {/* Contas convidadas / nunca voltaram */}

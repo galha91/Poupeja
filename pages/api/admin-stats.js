@@ -60,27 +60,31 @@ export default async function handler(req, res) {
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
     const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
 
-    // Quem entrou pelo "Espreitar como convidado" (só existe no site — a app
-    // Android não mostra o botão). Inclui quem depois converteu a conta:
-    //  - marca entrou_como_convidado no user_metadata (contas novas);
-    //  - contas antigas: a conta anónima nasce sem identidade, e a de email/
-    //    Google só é criada na conversão — bem depois do created_at da conta.
-    const entrouComoConvidado = u => {
-      if (u.is_anonymous || u.user_metadata?.entrou_como_convidado) return true;
-      const ids = u.identities || [];
-      if (!ids.length || !u.created_at) return false;
-      const criado = new Date(u.created_at).getTime();
-      const primeiraId = Math.min(...ids.map(i => new Date(i.created_at || u.created_at).getTime()));
-      return primeiraId - criado > 60 * 1000;
-    };
-    const exConvidados = todos.filter(entrouComoConvidado);
-    const entradasConvidado = {
-      total: exConvidados.length,
-      hoje: exConvidados.filter(u => new Date(u.created_at) >= inicioHoje).length,
-      ultimos7: exConvidados.filter(u => agora - new Date(u.created_at).getTime() < 7 * DIA).length,
-      ultimos30: exConvidados.filter(u => agora - new Date(u.created_at).getTime() < 30 * DIA).length,
-      converteram: exConvidados.filter(u => !u.is_anonymous).length,
-    };
+    // Modo convidado do site: uma linha por browser (tabela convidados_site,
+    // alimentada por /api/convidado). Começou a contar a 2026-10-01 — antes
+    // disso os convidados só ficaram no Google Analytics.
+    let entradasConvidado = null;
+    try {
+      const { data: conv, error: convErr } = await admin
+        .from("convidados_site")
+        .select("primeira_em, ultima_em, aberturas, converteu_em")
+        .limit(100000);
+      if (convErr) throw convErr;
+      const linhas = conv || [];
+      const desde = (campo, ms) => linhas.filter(c => c[campo] && agora - new Date(c[campo]).getTime() < ms).length;
+      const deHoje = campo => linhas.filter(c => c[campo] && new Date(c[campo]) >= inicioHoje).length;
+      entradasConvidado = {
+        total: linhas.length,
+        novosHoje: deHoje("primeira_em"),
+        novos7: desde("primeira_em", 7 * DIA),
+        novos30: desde("primeira_em", 30 * DIA),
+        abriramHoje: deHoje("ultima_em"),
+        abriram7: desde("ultima_em", 7 * DIA),
+        abriram30: desde("ultima_em", 30 * DIA),
+        aberturas: linhas.reduce((n, c) => n + (c.aberturas || 0), 0),
+        converteram: linhas.filter(c => c.converteu_em).length,
+      };
+    } catch {}
 
     // Método de login das contas não-anónimas — para medir a adoção do
     // "Continuar com Google" (inclui quem começou como convidado e ligou

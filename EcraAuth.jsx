@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import { evento } from "./lib/analytics";
-import { emAppAndroid } from "./lib/plataforma";
+import { emAppNativa } from "./lib/plataforma";
 import BannerInstalar from "./BannerInstalar";
 import Onboarding from "./Onboarding";
 
@@ -621,7 +621,7 @@ export default function EcraAuth({ onAuth }) {
       onConvidado={entrarConvidado}
       convidadoLoading={convidadoLoading}
       convidadoErro={convidadoErro}
-      comConvidado={!emAppAndroid()}
+      comConvidado={!emAppNativa()}
     />
   );
 }
