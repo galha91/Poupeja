@@ -5,7 +5,7 @@ import { ArrowLeft, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, jaComparados as listaComparados, MAX_ARTIGOS } from "./lib/listaCompras";
+import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 
 /*
@@ -296,7 +296,7 @@ export default function SecaoListaCompras({ onVoltar }) {
   // Com a lista vazia, o "Já comparaste" aparece por baixo, à vista (não em menu).
   // O menu só aparece enquanto se escreve: com o campo vazio não tapa a lista.
   const sugestoes = focado && texto.trim() && catalogo ? catalogo.sugerir(texto, { comparados }) : [];
-  const jaComparados = !itens.length && !texto.trim() ? listaComparados(comparados) : [];
+  const iniciais = !itens.length && !texto.trim() ? sugestoesIniciais(comparados) : [];
 
   // ── Ações ──
   async function juntar(nome) {
@@ -395,7 +395,12 @@ export default function SecaoListaCompras({ onVoltar }) {
       <div className={`${topo === null ? "relative" : "sticky"} z-20 px-4`} style={{ top: topo ?? undefined, paddingTop: 6, paddingBottom: 10, background: "var(--pj-surface)" }}>
         <form onSubmit={e => { e.preventDefault(); juntar(texto); }} className="relative" role="search">
           <label htmlFor="pj-lista-adicionar" className="sr-only">Adicionar artigo</label>
-          <Plus size={18} aria-hidden className="absolute" style={{ left: 14, top: 15, color: "var(--pj-text-faint)" }} />
+          {/* O "+" é um botão: com texto junta o artigo; vazio, abre o teclado. */}
+          <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => texto.trim() ? juntar(texto) : inputRef.current?.focus()}
+            aria-label="Adicionar artigo" className="pj-tap absolute flex items-center justify-center"
+            style={{ left: 2, top: 2, width: 44, height: 44, background: "transparent", border: 0, color: texto.trim() ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
+            <Plus size={18} aria-hidden />
+          </button>
           <input
             id="pj-lista-adicionar"
             ref={inputRef}
@@ -450,11 +455,11 @@ export default function SecaoListaCompras({ onVoltar }) {
           <p className="px-1" style={{ marginTop: 14, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
             A lista está vazia.
           </p>
-          {jaComparados.length > 0 && (
+          {iniciais.length > 0 && (
             <>
-              <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>Já comparaste</h3>
+              <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>{iniciais.some(s => s.origem === "frequentes") ? "Sugestões" : "Já comparaste"}</h3>
               <ul>
-                {jaComparados.map((s, i) => (
+                {iniciais.map((s, i) => (
                   <li key={s.nome} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
                     <button onMouseDown={e => e.preventDefault()} onClick={() => juntar(s.nome)} className="pj-tap w-full flex items-center text-left"
                       style={{ gap: 12, minHeight: 48, padding: "0 4px", background: "transparent", border: 0, fontSize: 15, color: "var(--pj-text)" }}>

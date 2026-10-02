@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agruparPorCategoria, adicionar as adicionarSem, alterarQty, retirar, repor, categoriaDe, OUTROS, CATEGORIAS, jaComparados } from "../lib/listaCompras.js";
+import { agruparPorCategoria, adicionar as adicionarSem, alterarQty, retirar, repor, categoriaDe, OUTROS, CATEGORIAS, jaComparados, sugestoesIniciais, FREQUENTES } from "../lib/listaCompras.js";
 import { sugerir, doCatalogo, preencherCategorias, CATEGORIAS as DO_CATALOGO } from "../lib/catalogoLista.js";
 
 const adicionar = (itens, nome, id) => adicionarSem(itens, nome, { id, doCatalogo });
@@ -115,4 +115,13 @@ test("Já comparaste, sem catálogo: sem repetidos, com maiúscula", () => {
   assert.deepEqual(jaComparados(["café moído", "Café  moído", "", "laranjas"]), [
     { nome: "Café moído", origem: "comparados" }, { nome: "Laranjas", origem: "comparados" },
   ]);
+});
+
+test("lista vazia: já comparados primeiro, depois os frequentes (do catálogo), sem repetir", () => {
+  for (const n of FREQUENTES) assert.ok(doCatalogo(n), n);
+  const s = sugestoesIniciais(["ovos", "laranjas"]);
+  assert.deepEqual(s.slice(0, 2).map((x) => x.nome), ["Ovos", "Laranjas"]);
+  assert.equal(s.filter((x) => x.nome === "Ovos").length, 1);
+  assert.equal(s.length, 8);
+  assert.equal(sugestoesIniciais([])[0].nome, "Leite meio-gordo");
 });
