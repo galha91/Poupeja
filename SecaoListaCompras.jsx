@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, ChevronRight, LayoutList, Minus, Plus, Share2, Trash2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
@@ -166,6 +166,9 @@ export default function SecaoListaCompras({ onVoltar }) {
   const pushTimer      = useRef(null);
   const anularTimer    = useRef(null);
   const acaoRef        = useRef(null);   // o foco volta aqui ao fechar o resultado
+  const catalogoRef    = useRef(null);   // e aqui ao fechar "Todos os artigos"
+  const [verCatalogo, setVerCatalogo] = useState(false);
+  const [catAtiva, setCatAtiva] = useState(null);
 
   function push(novosItens, id) {
     if (!id) return;
@@ -299,10 +302,10 @@ export default function SecaoListaCompras({ onVoltar }) {
   const iniciais = !itens.length && !texto.trim() ? sugestoesIniciais(comparados) : [];
 
   // ── Ações ──
-  async function juntar(nome) {
+  async function juntar(nome, { foco = true } = {}) {
     if (!String(nome || "").trim()) return;
     setTexto("");
-    inputRef.current?.focus();
+    if (foco) inputRef.current?.focus();
     // O nome e a categoria certos vêm do catálogo (já carregado, quase sempre).
     const doCatalogo = (catalogo || await carregarCatalogo())?.doCatalogo;
     // Primeiro artigo de uma lista vazia = lista criada (GA4).
@@ -449,6 +452,17 @@ export default function SecaoListaCompras({ onVoltar }) {
         )}
       </div>
 
+      {/* Todos os artigos do catálogo, por categoria (como a antiga grelha, em lista) */}
+      {!texto.trim() && (
+        <div className="px-4">
+          <button ref={catalogoRef} onClick={() => { carregarCatalogo(); setVerCatalogo(true); }} className="pj-tap flex items-center w-full"
+            style={{ gap: 10, minHeight: 44, padding: "0 4px", background: "transparent", border: 0, fontSize: 14.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+            <LayoutList size={17} aria-hidden /> <span className="flex-1 text-left">Ver todos os artigos</span>
+            <ChevronRight size={17} aria-hidden />
+          </button>
+        </div>
+      )}
+
       {/* Lista vazia */}
       {!itens.length && (
         <div className="px-4">
@@ -568,10 +582,66 @@ export default function SecaoListaCompras({ onVoltar }) {
 
       {/* Resultado — folha por cima da lista */}
       {verResultado && comparacao.linhas && createPortal(
-        <FolhaResultado onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
+        <Folha titulo="Onde fica mais barata" onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
           <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo}
             onAtualizar={() => comparar(true)} />
-        </FolhaResultado>,
+        </Folha>,
+        document.body,
+      )}
+
+      {/* Todos os artigos — folha com as categorias do catálogo */}
+      {verCatalogo && createPortal(
+        <Folha titulo="Todos os artigos" alta onFechar={() => { setVerCatalogo(false); requestAnimationFrame(() => catalogoRef.current?.focus()); }}>
+          {!catalogo ? (
+            <p role="status" style={{ padding: 16, fontSize: 14, color: "var(--pj-text-muted)" }}>A carregar…</p>
+          ) : (() => {
+            const cat = catAtiva || catalogo.CATEGORIAS[0];
+            return (
+              <>
+                <div className="sticky z-10 flex overflow-x-auto no-scrollbar" role="tablist" aria-label="Categorias"
+                  style={{ top: 57, gap: 8, padding: "10px 16px", background: "var(--pj-card)", borderBottom: "1px solid var(--pj-subtle)" }}>
+                  {catalogo.CATEGORIAS.map(c => (
+                    <button key={c} role="tab" aria-selected={c === cat} onClick={e => {
+                        setCatAtiva(c);
+                        // Categoria nova começa no topo; a pastilha escolhida fica à vista.
+                        const painel = e.currentTarget.closest(".pj-folha-painel");
+                        if (painel) painel.scrollTop = 0;
+                        e.currentTarget.scrollIntoView({ inline: "center", block: "nearest" });
+                      }} className="pj-tap flex-none"
+                      style={{ minHeight: 40, padding: "0 14px", borderRadius: 999, fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap",
+                        border: c === cat ? "1px solid var(--pj-brand)" : "1px solid var(--pj-border)",
+                        background: c === cat ? "var(--pj-brand)" : "transparent", color: c === cat ? "#fff" : "var(--pj-text-muted)" }}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                <div role="tabpanel" aria-label={cat}>
+                <ul style={{ padding: "0 16px 16px" }}>
+                  {catalogo.CATS[cat].items.map((it, i) => {
+                    const na = pendentes.find(x => semAcentos(x.nome) === semAcentos(it.nome));
+                    return (
+                      <li key={it.nome} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
+                        <button onClick={() => juntar(it.nome, { foco: false })} className="pj-tap w-full flex items-center justify-between text-left"
+                          aria-label={na ? `${it.nome}, na lista (${na.qty || 1}). Juntar mais um` : `Juntar ${it.nome}`}
+                          style={{ gap: 12, minHeight: 48, padding: "0 4px", background: "transparent", border: 0 }}>
+                          <span style={{ fontSize: 15.5, color: "var(--pj-text)" }}>{it.nome}</span>
+                          {na ? (
+                            <span className="pj-num flex items-center flex-none" style={{ gap: 6, fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                              <Check size={16} aria-hidden /> {(na.qty || 1) > 1 ? `${na.qty}×` : "Na lista"}
+                            </span>
+                          ) : (
+                            <Plus size={18} aria-hidden className="flex-none" style={{ color: "var(--pj-text-faint)" }} />
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+                </div>
+              </>
+            );
+          })()}
+        </Folha>,
         document.body,
       )}
     </div>
@@ -580,11 +650,11 @@ export default function SecaoListaCompras({ onVoltar }) {
 }
 
 /*
- * Folha de baixo para o resultado: fecha com o X, o fundo, Esc ou o
+ * Folha de baixo (resultado, todos os artigos): fecha com o X, o fundo, Esc ou o
  * "voltar" do Android (empilha uma entrada no histórico enquanto está
  * aberta — senão o "voltar" saía da lista com a folha por cima).
  */
-function FolhaResultado({ onFechar, children }) {
+function Folha({ titulo, alta = false, onFechar, children }) {
   const fecharRef = useRef(null);
   const fechar = () => {
     if (window.history.state?.pj === "folha") window.history.back(); // o popstate fecha
@@ -608,11 +678,11 @@ function FolhaResultado({ onFechar, children }) {
     };
   }, []);
   return (
-    <div className="pj-folha fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-labelledby="pj-resultado-titulo">
+    <div className="pj-folha fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={titulo}>
       <div className="pj-folha-fundo absolute inset-0" onClick={fechar} style={{ background: "rgba(20,35,28,0.45)" }} />
-      <div className="pj-folha-painel relative w-full max-w-md overflow-y-auto" style={{ maxHeight: "88vh", borderRadius: "20px 20px 0 0", background: "var(--pj-card)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <div className="pj-folha-painel relative w-full max-w-md overflow-y-auto" style={{ maxHeight: "88vh", height: alta ? "88vh" : undefined, borderRadius: "20px 20px 0 0", background: "var(--pj-card)", paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="sticky top-0 z-10 flex items-center justify-between" style={{ padding: "6px 6px 6px 16px", background: "var(--pj-card)", borderBottom: "1px solid var(--pj-subtle)" }}>
-          <h2 id="pj-resultado-titulo" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>Onde fica mais barata</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{titulo}</h2>
           <button ref={fecharRef} onClick={fechar} aria-label="Fechar" className="pj-tap flex items-center justify-center"
             style={{ width: 44, height: 44, background: "transparent", border: 0, color: "var(--pj-text-muted)" }}>
             <X size={20} />
