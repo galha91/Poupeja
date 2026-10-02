@@ -40,6 +40,7 @@ export const CATEGORIAS = [
       { nome: "Mirtilos", un: "emb." },
       { nome: "Framboesas", un: "emb." },
       { nome: "Abacate", un: "un." },
+      { nome: "Castanhas", un: "kg" },
       { nome: "Batatas", un: "kg", sin: ["batata"], top: true },
       { nome: "Batata-doce", un: "kg" },
       { nome: "Cebolas", un: "kg", sin: ["cebola"], top: true },

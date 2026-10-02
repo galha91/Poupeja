@@ -41,7 +41,7 @@ function atualDe(dados) {
   return { ...resumoAtual(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade };
 }
 
-export default function ResultadoLista({ linhas, nota = true, onAtualizar }) {
+export default function ResultadoLista({ linhas, nota = true, onAtualizar, onResumo, moldura = true }) {
   const [verDetalhe, setVerDetalhe] = useState(false);
   const [verDivisao, setVerDivisao] = useState(false);
   const [escolha, setEscolha] = useState(null);
@@ -62,6 +62,14 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar }) {
 
   // ── Resultado ──
   const { unica, maisCara, porLoja, divisao, semPreco, parciais, comparaveis, grupo } = r;
+
+  // O resumo vai para o bloco de baixo da lista e para o cartão do Início.
+  useEffect(() => {
+    onResumo?.(unica ? {
+      loja: unica.loja, nome: nomeCadeia(unica.loja), total: unica.total,
+      poupanca: grupo.length > 1 ? r.poupancaUnica : 0, artigos: comparaveis.length,
+    } : null);
+  }, [r]);
   const total = linhas.length;
   const guardados = linhas.filter((l) => l.guardado);
   const maisAntigo = guardados.map((l) => l.dados?.obtidoEm).filter(Boolean).sort()[0];
@@ -116,7 +124,7 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar }) {
   const pequeno = { fontSize: 11.5, color: "var(--pj-text-faint)", lineHeight: 1.5 };
 
   return (
-    <div style={{ borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)", overflow: "hidden" }}>
+    <div style={moldura ? { borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)", overflow: "hidden" } : { background: "var(--pj-card)" }}>
       {unica ? (
         <>
           <div style={{ background: "var(--pj-brand)", color: "#fff", padding: "12px 16px" }}>

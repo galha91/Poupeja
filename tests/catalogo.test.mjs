@@ -42,3 +42,12 @@ test("correspondência exata pelo nome ou sinónimo", () => {
   assert.ok(!correspondeExato("bacalhau com natas", b));
   assert.equal(itemPorNome("MACAS")?.nome, "Maçãs");
 });
+
+test("catalogo-precos.json só fala de artigos que existem e cobre o catálogo todo", async () => {
+  const { readFileSync } = await import("node:fs");
+  const j = JSON.parse(readFileSync(new URL("../data/catalogo-precos.json", import.meta.url)));
+  const todos = [...j.comPreco, ...j.poucasLojas, ...j.semPreco, ...j.porVerificar];
+  const ids = new Set(ITENS.map((i) => i.id));
+  for (const id of todos) assert.ok(ids.has(id), `não existe no catálogo: ${id}`);
+  assert.equal(new Set(todos).size, ITENS.length);
+});

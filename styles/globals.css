@@ -394,3 +394,33 @@ html.dark body {
 /* App shell de fundo */
 .dark .min-h-screen.bg-slate-50,
 .dark .min-h-screen.bg-gray-50 { background-color: var(--pj-surface) !important; }
+
+/* Ação principal da lista de compras: logo acima da barra de baixo
+   (no desktop não há barra, e o conteúdo começa depois da lateral). */
+.pj-acao-lista { bottom: calc(env(safe-area-inset-bottom) + 76px); }
+@media (min-width: 1024px) {
+  .pj-acao-lista { bottom: 24px; left: 15rem; }
+}
+
+/* O conteúdo corta o que sai para os lados (animação entre separadores).
+   Com "clip" não vira contentor de scroll, e o campo da lista de compras
+   pode ficar preso ao topo (position: sticky) ao deslocar a página. */
+.pj-main { overflow-x: hidden; }
+@supports (overflow-x: clip) { .pj-main { overflow-x: clip; } }
+
+/* Foco visível ao navegar por teclado (lista, folha do resultado, Início). */
+.pj-lista :focus-visible, .pj-folha :focus-visible, .pj-inicio :focus-visible {
+  outline: 2px solid var(--pj-brand-ink);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+.pj-lista input:focus-visible { outline: none; } /* o campo já marca o foco na borda */
+
+/* Folha do resultado: sobe ao abrir; sem animação para quem a dispensa. */
+@keyframes pjFolhaSobe { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pjFolhaFundo { from { opacity: 0; } to { opacity: 1; } }
+.pj-folha-painel { animation: pjFolhaSobe .24s cubic-bezier(0.22,1,0.36,1) both; }
+.pj-folha-fundo  { animation: pjFolhaFundo .2s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .pj-folha-painel, .pj-folha-fundo { animation: none; }
+}

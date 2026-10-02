@@ -1,16 +1,45 @@
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
-  Flame, ShieldCheck, ListChecks, Landmark, Calculator, Search,
+  Flame, ListChecks, Landmark, Calculator, Search, Gift,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
-import FolhetoViewer from "./FolhetoViewer";
 import { embutivel } from "./lib/folhetos-embed";
 import { Preco } from "./Preco";
 import Divisoria from "./Divisoria";
 import { calcularEstado } from "./lib/desafios";
 import { N_COMPARADAS } from "./lib/cobertura";
+import { lerResumo } from "./lib/resumoLista";
+import { eur } from "./lib/formato";
+import { mostrarIRS } from "./lib/atalhos";
+
+// O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
+const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
+
+/* ─── Lista de compras: o estado real, no topo do Início ─── */
+function CartaoLista({ lista, onAbrir }) {
+  const { n, resumo } = lista;
+  const artigos = `${n} ${n === 1 ? "artigo" : "artigos"}`;
+  const titulo = !n ? "Lista de compras" : resumo ? `Mais barata no ${resumo.nome}` : `${artigos} na lista`;
+  const sub = !n ? "Começa a tua lista e vê onde fica mais barata"
+    : resumo ? (resumo.poupanca >= 0.01 ? `${artigos} · poupas ${eur(resumo.poupanca, 2)} €` : artigos)
+    : n >= 2 ? `Vê onde fica mais barata em ${N_COMPARADAS} supermercados` : "Junta mais artigos para comparar";
+  return (
+    <button onClick={onAbrir} className="pj-tap w-full text-left flex items-center anim-up anim-up-2"
+      style={{ gap: 12, marginTop: 24, padding: "14px 14px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+      <ListChecks size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span className="truncate" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{titulo}</span>
+        <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>{sub}</span>
+      </span>
+      {resumo
+        ? <span className="pj-num flex-none" style={{ fontSize: 15, fontWeight: 700, color: "var(--pj-text)" }}>{eur(resumo.total, 2)} €</span>
+        : <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />}
+    </button>
+  );
+}
 
 function calcStreak() {
   try {
@@ -288,6 +317,8 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const [estadoDesafio, setEstadoDesafio] = useState(null);
   const [folhetos, setFolhetos]   = useState([]);
   const [streak, setStreak]       = useState(0);
+  const [lista, setLista]         = useState({ n: 0, resumo: null });
+  const [irsUsado, setIrsUsado]   = useState(false);
   const [resumo, setResumo]       = useState({ nTaloesMes: 0, nTaloesTotal: 0, totalMesAnterior: 0, houveMesAnterior: false, nomeMesAnterior: "" });
   useEffect(() => {
     try {
@@ -320,6 +351,11 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         nomeMesAnterior: anterior.toLocaleDateString("pt-PT", { month: "long" }),
       });
     } catch {}
+    try {
+      const pendentes = JSON.parse(localStorage.getItem("poupeja_lista_compras") || "[]").filter(i => !i.feito);
+      setLista({ n: pendentes.length, resumo: lerResumo(pendentes) });
+      setIrsUsado(!!localStorage.getItem("poupeja_irs"));
+    } catch {}
     setEstadoDesafio(calcularEstado());
     setStreak(calcStreak());
     fetch("/api/folhetos").then(r => r.json()).then(d => setFolhetos(d.folhetos || [])).catch(() => {});
@@ -345,21 +381,26 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
    * que já existiam no código e nunca chegavam ao ecrã — passam a
    * aparecer: o rótulo diz o nome, a descrição diz para que serve.
    */
+  /*
+   * Revisto (lista otimizada): a Lista de compras saiu daqui para um
+   * cartão próprio no topo; talões e garantias são o mesmo ecrã com
+   * duas abas, e passam a uma linha; o IRS só aparece na época. Lojas e
+   * Apoios ficam: no telemóvel não têm outra entrada (a barra lateral,
+   * onde também estão, só existe no desktop — lá escondem-se daqui).
+   */
   const MAIS = [
-    { icon: Receipt,       label: "Os meus talões",     desc: "Compras guardadas, produto a produto", ir: () => setTab("taloes") },
-    { icon: ShieldCheck,   label: "Garantias",          desc: "O que ainda está dentro do prazo",     ir: goGarantias },
-    { icon: ListChecks,    label: "Lista de compras",   desc: "Organiza antes de ir às compras",      ir: () => setTab("lista") },
+    { icon: Receipt,    label: "Talões e garantias", desc: avisosCount > 0 ? `${avisosCount} ${avisosCount === 1 ? "garantia a acabar" : "garantias a acabar"}` : "Compras guardadas e prazos de garantia", ir: avisosCount > 0 ? goGarantias : () => setTab("taloes") },
     // Ia para "mercados" e abria em Folhetos — o rótulo prometia receitas
     // e entregava o folheto do Aldi. Agora abre mesmo no separador certo.
-    { icon: ChefHat,       label: "Ementas económicas", desc: "Receitas baratas, com lista num toque", ir: () => (abrirEmentas ? abrirEmentas() : setTab("mercados")) },
-    { icon: Store,         label: "Lojas",              desc: "Moda, eletrónica e desporto",          ir: () => setTab("lojas") },
-    { icon: Landmark,      label: "Apoios do Estado",   desc: "Benefícios a que podes ter direito",   ir: () => setTab("apoios") },
-    { icon: Calculator,    label: "Simulador de IRS",   desc: "Estima o teu IRS antes da hora",       ir: () => setTab("irs") },
+    { icon: ChefHat,    label: "Ementas económicas", desc: "Receitas baratas, com lista num toque", ir: () => (abrirEmentas ? abrirEmentas() : setTab("mercados")) },
+    { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios a que podes ter direito",   ir: () => setTab("apoios"), soMovel: true },
+    { icon: Store,      label: "Lojas",              desc: "Moda, eletrónica e desporto",          ir: () => setTab("lojas"), soMovel: true },
+    ...(mostrarIRS(new Date(), irsUsado) ? [{ icon: Calculator, label: "Simulador de IRS", desc: "Estima o teu IRS antes da hora", ir: () => setTab("irs") }] : []),
   ];
 
 
   return (
-    <div className="pb-28" style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
+    <div className="pj-inicio pb-28" style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
       <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 24px 32px" }}>
 
         {/* Cabeçalho */}
@@ -383,7 +424,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {retratoDisponivel && (
           <button onClick={onAbrirRetrato} className="pj-tap w-full text-left flex items-center anim-up"
             style={{ gap: 12, marginTop: 18, padding: "13px 14px", borderRadius: 14, background: "var(--pj-brand)" }}>
-            <span style={{ fontSize: 22, flexShrink: 0 }}>🎁</span>
+            <Gift size={20} strokeWidth={1.8} style={{ color: "#fff", flexShrink: 0 }} />
             <span style={{ flex: 1 }}>
               <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "#fff" }}>O teu retrato de {retratoDisponivel.mes.nome} está pronto</span>
               <span style={{ display: "block", fontSize: 12, color: "#a7cbbb", marginTop: 1 }}>€{retratoDisponivel.total.toFixed(2).replace(".", ",")} poupados — vê e partilha</span>
@@ -426,9 +467,12 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           onGuardarTalao={() => setTab("taloes")}
         />
 
+        {/* Lista de compras — com o resultado da lista otimizada, quando há */}
+        <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />
+
         {/* Comparar preços — a pergunta que traz as pessoas de volta */}
         <button onClick={() => setTab("mercados", "comparar")} className="pj-tap w-full text-left flex items-center anim-up anim-up-2"
-          style={{ gap: 12, marginTop: 20, padding: "13px 14px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+          style={{ gap: 12, marginTop: 10, padding: "13px 14px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           <Search size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Onde está mais barato?</span>
@@ -450,7 +494,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
               <div style={{ flex: 1 }}>
                 <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{estadoDesafio.desafio.nome}</div>
                 <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 3 }}>
-                  {completo ? "Desafio do mês completo 🎉" : `Faltam €${falta.toFixed(2).replace(".", ",")} para a meta de €${estadoDesafio.desafio.meta}`}
+                  {completo ? "Desafio do mês completo" : `Faltam €${falta.toFixed(2).replace(".", ",")} para a meta de €${estadoDesafio.desafio.meta}`}
                 </div>
               </div>
               <div style={{ position: "relative", width: 44, height: 44, flex: "none" }}>
@@ -516,7 +560,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           <div className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em", marginBottom: 6 }}>Mais no PoupeJá</div>
           <div className="flex flex-col">
             {MAIS.map((f, i) => (
-              <div key={f.label}>
+              <div key={f.label} className={f.soMovel ? "lg:hidden" : undefined}>
                 {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
                 <button onClick={f.ir} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "11px 0" }}>
                   <span className="flex items-center justify-center flex-none" style={{ width: 36, height: 36, borderRadius: 10, background: "var(--pj-subtle)", color: "var(--pj-text-strong)" }}>

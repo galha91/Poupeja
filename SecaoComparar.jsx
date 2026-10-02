@@ -7,7 +7,10 @@ import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
-import { ITENS } from "./data/catalogo-lista";
+import { ITENS, CATEGORIAS as CATS_CATALOGO, itemPorNome } from "./data/catalogo-lista";
+
+// Direto dos dados (sem a pesquisa tolerante da lista): é o que este ecrã precisa.
+const NOME_CATEGORIA = Object.fromEntries(CATS_CATALOGO.map((c) => [c.id, c.nome]));
 import { NotaCobertura } from "./Cobertura";
 import { N_COMPARADAS } from "./lib/cobertura";
 
@@ -28,9 +31,10 @@ const NOTA_LOJA = { lidl: "só promoções em loja", aldi: "preço de loja" };
 const normalizar = (q) => String(q || "").toLowerCase().replace(/\s+/g, " ").trim().slice(0, 60);
 const semAcentos = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-// Sugestões enquanto se escreve: os termos de pesquisa do catálogo da
-// lista (data/catalogo-lista), que as lojas reconhecem. Primeiro os que
-// começam pelo que se escreveu, depois os que o contêm.
+// Sugestões enquanto se escreve: o catálogo da lista de compras (~250
+// artigos com nomes que as lojas reconhecem). Primeiro os que começam
+// pelo que se escreveu, depois os que o contêm.
+// O termo de pesquisa de cada artigo do catálogo (o que as lojas reconhecem).
 const CATALOGO = [...new Set(ITENS.map((i) => i.q))].filter(Boolean);
 function sugerir(texto) {
   const t = semAcentos(texto.trim());
@@ -62,7 +66,7 @@ function juntarALista(nome) {
     const existe = itens.find((i) => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
     const novos = existe
       ? itens.map((i) => (i === existe ? { ...i, qty: (i.qty || 1) + 1 } : i))
-      : [{ id: Date.now() + Math.random(), nome, emoji: "🛒", categoria: "", qty: 1, feito: false }, ...itens];
+      : [{ id: Date.now() + Math.random(), nome: itemPorNome(nome)?.nome || nome, emoji: "", categoria: NOME_CATEGORIA[itemPorNome(nome)?.cat] || "", qty: 1, feito: false, ...(itemPorNome(nome) ? { q: itemPorNome(nome).q } : {}) }, ...itens];
     localStorage.setItem(LS_LISTA, JSON.stringify(novos));
     return true;
   } catch { return false; }

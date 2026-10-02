@@ -1,28 +1,37 @@
-import { useState, useEffect, useRef } from "react";
-import { ShoppingCart, Plus, X, Check, Minus, Share2 } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
-import CompararLista from "./CompararLista";
+import { createPortal } from "react-dom";
+import { ArrowLeft, Check, ChevronDown, ChevronRight, LayoutList, Minus, Plus, Share2, X } from "lucide-react";
+import { N_COMPARADAS } from "./lib/cobertura";
+import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
+import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, CATEGORIAS, MAX_ARTIGOS } from "./lib/listaCompras";
+import { lerResumo, guardarResumo } from "./lib/resumoLista";
 
-// O catálogo (~230 artigos) só é carregado quando se vai adicionar.
-const AdicionarArtigos = dynamic(() => import("./AdicionarArtigos"), { ssr: false, loading: () => <div className="px-4 pt-2" style={{ height: 400 }} /> });
+/*
+ * Lista de compras.
+ *
+ * Uma lista de papel bem feita: caixa à esquerda, nome, quantidade à
+ * direita. Sem ícones por artigo — eram metade emoji, metade inicial num
+ * círculo, e tudo o que vinha do Comparar levava 🛒.
+ *
+ * Por ordem de importância:
+ *   1. o campo "Adicionar artigo…", sempre no topo (sem mudar de ecrã);
+ *   2. a lista, por categoria quando há 2 ou mais;
+ *   3. a ação principal, em baixo: onde fica mais barata (lista otimizada).
+ * Partilhar fica no cabeçalho, como ação secundária.
+ *
+ * Nada depende de hover: toca-se na linha para marcar, na quantidade
+ * para a mudar, e na cruz ao fim da linha para remover. Remover e limpar
+ * têm "Anular" durante uns segundos.
+ *
+ * O resultado da comparação (ResultadoLista) só se descarrega ao comparar.
+ */
+
+const ResultadoLista = dynamic(() => import("./ResultadoLista"), { ssr: false, loading: () => null });
 
 const LS_KEY = "poupeja_lista_compras";
-
-function IconeArtigo({ nome, size = 30, className = "" }) {
-  // Sem emojis: metade dos artigos tinha um, a outra metade não, e a
-  // lista parecia montada à pressa. A inicial é igual para todos.
-  const inicial = (nome || "?").trim().charAt(0).toUpperCase();
-  return (
-    <span
-      className={`inline-flex items-center justify-center rounded-full font-display font-semibold ${className}`}
-      style={{ width: size, height: size, background: "var(--pj-subtle)", color: "var(--pj-brand-ink)", fontSize: Math.round(size * 0.46) }}
-    >
-      {inicial}
-    </span>
-  );
-}
-
+const ANULAR_MS = 5000;
 
 function lerItens() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; }
@@ -30,6 +39,7 @@ function lerItens() {
 function guardarItens(itens) {
   try { localStorage.setItem(LS_KEY, JSON.stringify(itens)); } catch {}
 }
+
 
 const LS_SHARE_KEY = "poupeja_lista_partilhada_id";
 
@@ -59,17 +69,83 @@ function gerarShareId() {
   return Array.from(bytes, b => alfabeto[b % alfabeto.length]).join("");
 }
 
-export default function SecaoListaCompras() {
+const rotulo = { fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" };
+
+/* ── Uma linha da lista ─────────────────────────────────────────── */
+function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onRemover }) {
+  const feito = item.feito;
+  const qty = item.qty || 1;
+  return (
+    <li className="flex items-center" style={{ listStyle: "none", minHeight: 52, borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
+      <button onClick={editando ? onEditar : onMarcar} className="pj-tap flex items-center flex-1 min-w-0 text-left"
+        style={{ gap: 14, minHeight: 52, padding: "0 4px 0 0", background: "transparent", border: 0 }}
+        aria-pressed={feito} aria-label={`${item.nome}${qty > 1 ? `, ${qty}` : ""}${feito ? ", comprado" : ""}`}>
+        <span aria-hidden className="flex items-center justify-center flex-none"
+          style={{ width: 22, height: 22, borderRadius: 7, border: feito ? 0 : "1.5px solid var(--pj-text-faint)", background: feito ? "var(--pj-brand)" : "transparent", transition: "background-color .15s ease" }}>
+          {feito && <Check size={14} strokeWidth={3} color="#fff" />}
+        </span>
+        <span className="truncate" style={{ fontSize: 16, fontWeight: 500, color: feito ? "var(--pj-text-faint)" : "var(--pj-text)", textDecoration: feito ? "line-through" : "none", transition: "color .15s ease" }}>
+          {item.nome}
+        </span>
+      </button>
+
+      {!feito && (editando ? (
+        <div className="flex items-center flex-none" style={{ gap: 2 }}>
+          <button onClick={() => onQty(-1)} disabled={qty <= 1} aria-label={`Menos ${item.nome}`} className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: qty <= 1 ? 0.4 : 1 }}>
+            <Minus size={16} />
+          </button>
+          <span className="pj-num text-center" aria-live="polite" style={{ width: 30, fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{qty}</span>
+          <button onClick={() => onQty(1)} aria-label={`Mais ${item.nome}`} className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)" }}>
+            <Plus size={16} />
+          </button>
+        </div>
+      ) : (
+        <button onClick={onEditar} aria-label={`Quantidade de ${item.nome}: ${qty}. Alterar`} className="pj-tap pj-num flex items-center justify-end flex-none"
+          style={{ minWidth: 40, height: 44, padding: "0 2px 0 8px", background: "transparent", border: 0, fontSize: 14, fontWeight: qty > 1 ? 600 : 500, color: qty > 1 ? "var(--pj-text)" : "var(--pj-text-faint)" }}>
+          {qty > 1 ? `${qty}×` : "1"}
+        </button>
+      ))}
+
+      {/* Remover: uma cruz discreta, sempre no mesmo sítio, com "Anular" a seguir. */}
+      <button onClick={onRemover} aria-label={`Remover ${item.nome}`} className="pj-tap flex items-center justify-center flex-none"
+        style={{ width: 44, height: 44, marginRight: -10, background: "transparent", border: 0, color: "var(--pj-text-faint)" }}>
+        <X size={18} />
+      </button>
+    </li>
+  );
+}
+
+/* ── O ecrã ─────────────────────────────────────────────────────── */
+export default function SecaoListaCompras({ onVoltar }) {
   const [itens, setItens]       = useState(lerItens);
-  const [modo, setModo]         = useState("lista"); // "lista" | "adicionar"
+  const [texto, setTexto]       = useState("");
+  const [focado, setFocado]     = useState(false);
+  const [editando, setEditando] = useState(null);
+  const [verComprados, setVerComprados] = useState(false);
+  const [anular, setAnular]     = useState(null);   // { texto, removidos }
   const [listaId, setListaId]   = useState(() => {
     try { return localStorage.getItem(LS_SHARE_KEY) || null; } catch { return null; }
   });
+  const [verPartilha, setVerPartilha] = useState(false);
   const [copiado, setCopiado]   = useState(false);
   const [criandoLink, setCriandoLink] = useState(false);
+  const [topo, setTopo]         = useState(null); // null = campo não fica preso
+  // Comparação: estado do bloco de baixo e do resultado.
+  const [comparacao, setComparacao] = useState({ estado: "inicio", feitos: 0, linhas: null });
+  const [resumo, setResumo]     = useState(null);
+  const [verResultado, setVerResultado] = useState(false);
+  const inputRef       = useRef(null);
   const ultimoPull     = useRef(null);   // JSON do último estado vindo do servidor
   const primeiraRender = useRef(true);
   const pushTimer      = useRef(null);
+  const anularTimer    = useRef(null);
+  const acaoRef        = useRef(null);   // o foco volta aqui ao fechar o resultado
+  const catalogoRef    = useRef(null);   // e aqui ao fechar "Todos os artigos"
+  const [verCatalogo, setVerCatalogo] = useState(false);
+  const [catAtiva, setCatAtiva] = useState(null);
+  const [outro, setOutro]       = useState("");     // "Outro…" escrito na folha de todos os artigos
 
   function push(novosItens, id) {
     if (!id) return;
@@ -117,14 +193,45 @@ export default function SecaoListaCompras() {
     if (listaId && JSON.stringify(itens) !== ultimoPull.current) push(itens, listaId);
   }, [itens]);
 
+  // O campo fica preso logo abaixo do cabeçalho da app. Precisa de
+  // overflow-x: clip no <main> (ver .pj-main); sem ele, fica no sítio.
+  const [noBrowser, setNoBrowser] = useState(false);
+  useEffect(() => {
+    setNoBrowser(true);
+    if (!window.CSS?.supports?.("overflow-x", "clip")) return;
+    const h = document.querySelector("header");
+    setTopo(h && getComputedStyle(h).position === "sticky" ? h.offsetHeight : 0);
+  }, []);
+
+  // Catálogo (autocomplete, nomes e categorias): à parte, só quando se
+  // começa a escrever ou se junta um artigo. Não pesa na abertura da lista.
+  // (Os artigos vindos do Comparar já trazem a categoria.)
+  const [catalogo, setCatalogo] = useState(null);
+  const pedidoCatalogo = useRef(null);
+  function carregarCatalogo() {
+    if (!pedidoCatalogo.current) {
+      pedidoCatalogo.current = import("./lib/catalogoLista").then(m => {
+        setCatalogo(m);
+        setItens(prev => m.preencherCategorias(prev));
+        return m;
+      }).catch(() => { pedidoCatalogo.current = null; return null; });
+    }
+    return pedidoCatalogo.current;
+  }
+  // Lista vazia: o campo já vem focado.
+  useEffect(() => { if (!itens.length) inputRef.current?.focus(); }, []);
+
+  useEffect(() => () => { clearTimeout(anularTimer.current); clearTimeout(pushTimer.current); }, []);
+
   // Abre o menu de partilha nativo do telemóvel (WhatsApp, Mensagens…).
   // Se não houver partilha nativa (ex: desktop), copia o link.
   async function abrirPartilha(url) {
     // O url é passado em separado; não o repetir no texto (senão aparece duplicado).
-    const texto = "🛒 A nossa lista de compras no PoupeJá — abre e edita comigo:";
+    const texto = "A nossa lista de compras no PoupeJá — abre e edita comigo:";
     if (navigator.share) {
       try {
         await navigator.share({ title: "Lista de compras — PoupeJá", text: texto, url });
+        evento("share", { content_type: "lista" });
         return;
       } catch (e) {
         if (e?.name === "AbortError") return; // utilizador fechou o menu
@@ -148,232 +255,442 @@ export default function SecaoListaCompras() {
       localStorage.setItem(LS_SHARE_KEY, id);
       setListaId(id);
       await abrirPartilha(`${window.location.origin}/lista/${id}`);
-    } catch { alert("Erro ao criar link. Tenta novamente."); }
+    } catch { alert("Não foi possível criar o link. Tenta outra vez."); }
     finally { setCriandoLink(false); }
   }
 
   function pararPartilha() {
     localStorage.removeItem(LS_SHARE_KEY);
     setListaId(null);
-  }
-
-  async function copiarLink() {
-    await abrirPartilha(`${window.location.origin}/lista/${listaId}`);
+    setVerPartilha(false);
   }
 
   const pendentes = itens.filter(i => !i.feito);
   const feitos    = itens.filter(i => i.feito);
-  const progresso = itens.length ? (feitos.length / itens.length) * 100 : 0;
+  const grupos    = useMemo(() => agruparPorCategoria(pendentes), [itens]);
 
-  function adicionarItem(nome, cat = "", q = "") {
+  // Produtos já comparados no "Comparar preços" — os nomes que as lojas reconhecem.
+  const [comparados] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("poupeja_pesquisas_precos") || "[]"); } catch { return []; }
+  });
+  // Com a lista vazia, o "Já comparaste" aparece por baixo, à vista (não em menu).
+  // O menu só aparece enquanto se escreve: com o campo vazio não tapa a lista.
+  const sugestoes = focado && texto.trim() && catalogo ? catalogo.sugerir(texto, { comparados }) : [];
+  const iniciais = !itens.length && !texto.trim() ? sugestoesIniciais(comparados) : [];
+
+  // ── Ações ──
+  async function juntar(nome, { foco = true, categoria = "" } = {}) {
+    if (!String(nome || "").trim()) return;
+    setTexto("");
+    if (foco) inputRef.current?.focus();
+    // O nome e a categoria certos vêm do catálogo (já carregado, quase sempre).
+    const doCatalogo = (catalogo || await carregarCatalogo())?.doCatalogo;
     // Primeiro artigo de uma lista vazia = lista criada (GA4).
-    if (!itens.some(i => !i.feito)) evento("lista_criada", { origem: q ? "catalogo" : "texto" });
-    setItens(prev => {
-      const existe = prev.find(i => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
-      if (existe) return prev;
-      return [{ id: Date.now() + Math.random(), nome, emoji: "", categoria: cat, qty: 1, feito: false, ...(q ? { q } : {}) }, ...prev];
-    });
-  }
-
-  // Catálogo: um toque adiciona, outro toque tira (só dos por comprar).
-  function alternarCatalogo(it) {
-    const existe = itens.find(i => i.nome.toLowerCase() === it.nome.toLowerCase() && !i.feito);
-    if (existe) setItens(prev => prev.filter(i => i.id !== existe.id));
-    else adicionarItem(it.nome, it.cat, it.q);
-  }
-  function adicionarLivre(nome, alternar = false) {
-    const existe = itens.find(i => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
-    if (existe && alternar) setItens(prev => prev.filter(i => i.id !== existe.id));
-    else if (!existe) adicionarItem(nome.charAt(0).toUpperCase() + nome.slice(1));
+    if (!pendentes.length) evento("lista_criada", { origem: doCatalogo?.(nome) ? "catalogo" : "texto" });
+    setItens(prev => adicionar(prev, nome, { doCatalogo, categoria }));
   }
 
   function marcar(id) {
+    setEditando(null);
     setItens(prev => prev.map(i => i.id === id ? { ...i, feito: !i.feito } : i));
   }
 
-  function remover(id) {
-    setItens(prev => prev.filter(i => i.id !== id));
+  function tirar(ids, frase) {
+    setEditando(null);
+    const r = retirar(itens, ids);
+    setItens(r.itens);
+    clearTimeout(anularTimer.current);
+    setAnular({ texto: frase, removidos: r.removidos });
+    anularTimer.current = setTimeout(() => setAnular(null), ANULAR_MS);
   }
 
-  function alterarQty(id, delta) {
-    setItens(prev => prev.map(i => {
-      if (i.id !== id) return i;
-      const nova = Math.max(1, (i.qty || 1) + delta);
-      return { ...i, qty: nova };
-    }));
+  function desfazer() {
+    if (!anular) return;
+    clearTimeout(anularTimer.current);
+    const { removidos } = anular;
+    setItens(prev => repor(prev, removidos));
+    setAnular(null);
   }
 
-  function limparFeitos() {
-    setItens(prev => prev.filter(i => !i.feito));
+  // ── Comparar (lista otimizada) ──
+  // O último resultado (desta lista, de hoje) — `resumo` só serve para redesenhar.
+  const resumoAtual = useMemo(() => lerResumo(pendentes), [itens, resumo]);
+  // Os artigos mudaram desde a última comparação: o resultado em memória já não vale.
+  const chaveAtual = JSON.stringify(pendentes.map(i => [i.nome, i.qty || 1]));
+  const linhasValidas = comparacao.linhas && comparacao.chave === chaveAtual;
+
+  async function comparar(forcar = false) {
+    if (linhasValidas && !forcar) { setVerResultado(true); return; }
+    // As pesquisas e o resultado só se descarregam aqui, ao comparar.
+    import("./ResultadoLista");
+    setVerResultado(false);
+    const artigos = pendentes.slice(0, MAX_ARTIGOS);
+    setComparacao({ estado: "a-carregar", feitos: 0, linhas: null });
+    const { compararArtigos } = await import("./CompararLista");
+    const linhas = await compararArtigos(artigos, () => setComparacao(c => ({ ...c, feitos: c.feitos + 1 })));
+    setComparacao({ estado: "pronto", feitos: artigos.length, linhas, chave: chaveAtual });
+    setVerResultado(true);
   }
 
-  if (modo === "adicionar") {
-    return (
-      <AdicionarArtigos
-        naLista={new Set(pendentes.map(i => i.nome.toLowerCase()))}
-        onAlternar={alternarCatalogo}
-        onLivre={adicionarLivre}
-        onFechar={() => setModo("lista")}
-      />
-    );
+  function aoResumo(r) {
+    setResumo(guardarResumo(pendentes, r));
   }
 
-  // ── MODO LISTA ──
+  const nPend = pendentes.length;
+  const aComparar = comparacao.estado === "a-carregar";
+  const temAcao = nPend >= 2;
+
   return (
-    <div className="pb-28 no-scrollbar">
+    <div className="pj-lista" style={{ paddingBottom: temAcao ? 176 : 112 }}>
 
-      {/* Header */}
-      <div className="mx-4 mb-5 pt-2 anim-up">
-        <p className="flex items-center gap-1.5 mb-2" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
-          <ShoppingCart size={11} style={{ color: "var(--pj-brand-ink)" }} /> Lista de compras
-        </p>
-        <div className="flex items-end gap-3 mb-4">
-          <span className="font-display leading-none" style={{ fontSize: "48px", fontWeight: 600, color: "var(--pj-text)" }}>{pendentes.length}</span>
-          <p className="text-sm font-medium pb-1.5" style={{ color: "var(--pj-text-muted)" }}>{pendentes.length === 1 ? "artigo por comprar" : "artigos por comprar"}</p>
-        </div>
+      {/* Cabeçalho: voltar e partilhar (ação secundária) */}
+      <div className="flex items-center justify-between px-2" style={{ minHeight: 48 }}>
+        <button onClick={onVoltar} className="pj-tap flex items-center" style={{ gap: 6, minHeight: 44, padding: "0 10px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+          <ArrowLeft size={17} /> Voltar
+        </button>
         {itens.length > 0 && (
-          <>
-            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--pj-subtle)" }}>
-              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progresso}%`, background: "var(--pj-brand)" }} />
-            </div>
-            <p className="text-[11px] mt-1.5" style={{ color: "var(--pj-text-faint)" }}>{feitos.length} de {itens.length} comprados</p>
-          </>
+          <button onClick={listaId ? () => setVerPartilha(v => !v) : partilhar} disabled={criandoLink} aria-expanded={listaId ? verPartilha : undefined}
+            className="pj-tap flex items-center" style={{ gap: 7, minHeight: 44, padding: "0 12px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+            {listaId
+              ? <><span aria-hidden className="rounded-full" style={{ width: 7, height: 7, background: "var(--pj-brand-ink)" }} /> Partilhada</>
+              : <><Share2 size={16} /> {criandoLink ? "A criar link…" : "Partilhar"}</>}
+          </button>
         )}
-
-        {/* Partilha */}
-        <div className="mt-4 flex gap-2 flex-wrap">
-          {!listaId ? (
-            <button
-              onClick={partilhar}
-              disabled={criandoLink}
-              className="pj-tap press inline-flex items-center gap-1.5 text-[11px] font-semibold px-3.5 py-2 rounded-xl"
-              style={{ background: "var(--pj-brand)", color: "#fff" }}
-            >
-              <Share2 size={13} /> {criandoLink ? "A criar…" : "Partilhar com a família"}
+      </div>
+      {listaId && verPartilha && (
+        <div className="mx-4 mb-2 flex items-center justify-between" style={{ gap: 8, padding: "6px 6px 6px 14px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
+          <p style={{ fontSize: 13, color: "var(--pj-text)", lineHeight: 1.4 }}>Quem tiver o link vê e edita esta lista.</p>
+          <div className="flex flex-none">
+            <button onClick={() => abrirPartilha(`${window.location.origin}/lista/${listaId}`)} className="pj-tap" style={{ minHeight: 44, padding: "0 10px", background: "transparent", border: 0, fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+              {copiado ? "Copiado" : "Enviar link"}
             </button>
-          ) : (
+            <button onClick={pararPartilha} className="pj-tap" style={{ minHeight: 44, padding: "0 10px", background: "transparent", border: 0, fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+              Parar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Adicionar — sempre no topo */}
+      <div className={`${topo === null ? "relative" : "sticky"} z-20 px-4`} style={{ top: topo ?? undefined, paddingTop: 6, paddingBottom: 10, background: "var(--pj-surface)" }}>
+        <form onSubmit={e => { e.preventDefault(); juntar(texto); }} className="relative" role="search">
+          <label htmlFor="pj-lista-adicionar" className="sr-only">Adicionar artigo</label>
+          {/* O "+" é um botão: com texto junta o artigo; vazio, abre o teclado. */}
+          <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => texto.trim() ? juntar(texto) : inputRef.current?.focus()}
+            aria-label="Adicionar artigo" className="pj-tap absolute flex items-center justify-center"
+            style={{ left: 2, top: 2, width: 44, height: 44, background: "transparent", border: 0, color: texto.trim() ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
+            <Plus size={18} aria-hidden />
+          </button>
+          <input
+            id="pj-lista-adicionar"
+            ref={inputRef}
+            type="text"
+            value={texto}
+            onChange={e => { setTexto(e.target.value); carregarCatalogo(); }}
+            onFocus={() => { setFocado(true); setEditando(null); }}
+            onBlur={() => setFocado(false)}
+            onKeyDown={e => e.key === "Escape" && (setTexto(""), e.currentTarget.blur())}
+            placeholder="Adicionar artigo…"
+            autoComplete="off"
+            enterKeyHint="done"
+            role="combobox"
+            aria-expanded={sugestoes.length > 0}
+            aria-controls="pj-lista-sugestoes"
+            className="w-full focus:outline-none"
+            style={{ height: 48, padding: "0 44px 0 42px", borderRadius: 14, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-card)", border: `1px solid ${focado ? "var(--pj-brand-ink)" : "var(--pj-border)"}`, boxShadow: focado ? "0 0 0 1px var(--pj-brand-ink)" : "none", transition: "border-color .15s ease, box-shadow .15s ease" }}
+          />
+          {texto && (
+            <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => setTexto("")} aria-label="Limpar texto" className="pj-tap absolute flex items-center justify-center"
+              style={{ right: 2, top: 2, width: 44, height: 44, background: "transparent", border: 0, color: "var(--pj-text-faint)" }}>
+              <X size={16} />
+            </button>
+          )}
+        </form>
+
+        {sugestoes.length > 0 && (
+          <ul id="pj-lista-sugestoes" role="listbox" aria-label="Sugestões" className="absolute left-4 right-4"
+            style={{ marginTop: 6, padding: "4px 0", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)", boxShadow: "0 12px 32px -12px rgba(20,35,28,0.28)" }}>
+            {sugestoes.map(s => {
+              const na = pendentes.find(i => semAcentos(i.nome) === semAcentos(s.nome));
+              return (
+                <li key={s.nome} role="option" aria-selected={false}>
+                  {/* onMouseDown: o campo não perde o foco (o teclado fica aberto) */}
+                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => juntar(s.nome)}
+                    className="pj-tap w-full flex items-center justify-between text-left" style={{ minHeight: 44, padding: "0 14px", background: "transparent", border: 0, gap: 12 }}>
+                    <span className="truncate" style={{ fontSize: 15, color: "var(--pj-text)" }}>{s.nome}</span>
+                    <span className="flex-none" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>
+                      {na ? `Na lista${(na.qty || 1) > 1 ? ` · ${na.qty}×` : ""}` : s.origem === "comparados" ? "Já comparaste" : s.origem === "epoca" ? "Da época" : ""}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      {/* Todos os artigos do catálogo, por categoria (como a antiga grelha, em lista) */}
+      {!texto.trim() && (
+        <div className="px-4">
+          <button ref={catalogoRef} onClick={() => { carregarCatalogo(); setVerCatalogo(true); }} className="pj-tap press flex items-center w-full text-left"
+            style={{ gap: 12, minHeight: 60, padding: "10px 14px", borderRadius: 14, background: "var(--pj-brand-wash)", border: "1px solid var(--pj-brand-soft)" }}>
+            <span aria-hidden className="flex items-center justify-center flex-none" style={{ width: 38, height: 38, borderRadius: 11, background: "var(--pj-brand)", color: "#fff" }}>
+              <LayoutList size={19} />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>Ver todos os artigos</span>
+              <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>{CATEGORIAS.length} categorias · escolhe com um toque</span>
+            </span>
+            <ChevronRight size={18} aria-hidden style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+          </button>
+        </div>
+      )}
+
+      {/* Lista vazia */}
+      {!itens.length && (
+        <div className="px-4">
+          <p className="px-1" style={{ marginTop: 14, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
+            A lista está vazia.
+          </p>
+          {iniciais.length > 0 && (
             <>
-              <button
-                onClick={copiarLink}
-                className="pj-tap press inline-flex items-center gap-1.5 text-[11px] font-semibold px-3.5 py-2 rounded-xl"
-                style={{ background: "var(--pj-brand)", color: "#fff" }}
-              >
-                <Share2 size={13} /> {copiado ? "Copiado ✓" : "Partilhar"}
-              </button>
-              <button
-                onClick={pararPartilha}
-                className="pj-tap press inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-2 rounded-xl"
-                style={{ background: "var(--pj-subtle)", color: "var(--pj-text-muted)", border: "1px solid var(--pj-border)" }}
-              >
-                <X size={12} /> Parar partilha
-              </button>
+              <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>{iniciais.some(s => s.origem !== "comparados") ? "Sugestões" : "Já comparaste"}</h3>
+              <ul>
+                {iniciais.map((s, i) => (
+                  <li key={s.nome} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
+                    <button onMouseDown={e => e.preventDefault()} onClick={() => juntar(s.nome)} className="pj-tap w-full flex items-center text-left"
+                      style={{ gap: 12, minHeight: 48, padding: "0 4px", background: "transparent", border: 0, fontSize: 15, color: "var(--pj-text)" }}>
+                      <Plus size={16} aria-hidden style={{ color: "var(--pj-brand-ink)" }} />
+                      <span className="flex-1">{s.nome}</span>
+                      {s.origem === "epoca" && <span style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>Da época</span>}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </div>
-        {listaId && (
-          <p className="text-[10px] mt-2 flex items-center gap-1.5" style={{ color: "var(--pj-text-faint)" }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style={{ background: "var(--pj-brand)" }} />
-            Lista partilhada — sincroniza automaticamente
-          </p>
-        )}
-      </div>
-      <div className="mx-4 mb-5" style={{ borderTop: "1px solid var(--pj-border)" }} />
-
-      {/* Onde fica mais barata — com 2 ou mais artigos por comprar */}
-      {pendentes.length >= 2 && (
-        <div className="px-4 mb-5 anim-up">
-          <CompararLista itens={pendentes} />
-        </div>
+      )}
+      {itens.length > 0 && !nPend && (
+        <p className="px-5" style={{ marginTop: 18, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
+          Tudo comprado.
+        </p>
       )}
 
-      {/* Botão adicionar */}
-      <div className="px-4 mb-5 anim-up anim-up-1">
-        <button
-          onClick={() => setModo("adicionar")}
-          className="pj-tap press w-full py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
-          style={{ background: "var(--pj-brand)" }}
-        >
-          <Plus size={18} /> Adicionar artigos
-        </button>
-      </div>
-
-      {/* Empty state */}
-      {itens.length === 0 && (
-        <div className="mx-4 p-10 flex flex-col items-center text-center anim-up anim-up-2 rounded-2xl" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "var(--pj-subtle)" }}>
-            <ShoppingCart size={28} style={{ color: "var(--pj-brand-ink)" }} />
-          </div>
-          <p className="font-display text-sm font-semibold mb-1" style={{ color: "var(--pj-text)" }}>Lista vazia</p>
-          <p className="text-[12px]" style={{ color: "var(--pj-text-faint)" }}>Toca em "Adicionar artigos" para começar</p>
-        </div>
-      )}
-
-      {/* Pendentes — grelha */}
-      {pendentes.length > 0 && (
-        <div className="px-4 mb-5 anim-up anim-up-2">
-          <p className="mb-3" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Por comprar ({pendentes.length})</p>
-          <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
-            {pendentes.map(it => {
-              return (
-                <div key={it.id} className="relative flex flex-col rounded-2xl" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-                  <button
-                    onClick={() => marcar(it.id)}
-                    aria-label={`Marcar ${it.nome} como comprado`}
-                    className="pj-tap press w-full flex flex-col items-center gap-1.5"
-                    style={{ padding: "14px 8px 6px", background: "transparent", border: 0 }}
-                  >
-                    <IconeArtigo nome={it.nome} size={30} />
-                    <p className="text-[11px] font-semibold text-center leading-tight" style={{ color: "var(--pj-text)" }}>{it.nome}</p>
-                  </button>
-                  {/* Quantidade — dentro do cartão e sempre à mão (não há "hover" no telemóvel). */}
-                  <div className="flex items-center justify-center mt-auto" style={{ paddingBottom: 6 }}>
-                    <button onClick={() => alterarQty(it.id, -1)} aria-label={`Menos ${it.nome}`} disabled={(it.qty || 1) <= 1}
-                      className="pj-tap flex items-center justify-center" style={{ width: 32, height: 32, background: "transparent", border: 0, color: "var(--pj-text-faint)", opacity: (it.qty || 1) <= 1 ? 0.35 : 1 }}>
-                      <Minus size={12} />
-                    </button>
-                    <span className="text-[12px] font-semibold text-center pj-num" style={{ minWidth: 18, color: it.qty > 1 ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>{it.qty || 1}</span>
-                    <button onClick={() => alterarQty(it.id, 1)} aria-label={`Mais ${it.nome}`}
-                      className="pj-tap flex items-center justify-center" style={{ width: 32, height: 32, background: "transparent", border: 0, color: "var(--pj-text-faint)" }}>
-                      <Plus size={12} />
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => remover(it.id)}
-                    aria-label={`Tirar ${it.nome} da lista`}
-                    className="pj-tap press absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: "var(--pj-subtle)", border: "1px solid var(--pj-border)" }}
-                  >
-                    <X size={9} style={{ color: "var(--pj-text-muted)" }} />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Feitos */}
-      {feitos.length > 0 && (
-        <div className="px-4 anim-up anim-up-3">
-          <div className="flex items-center justify-between mb-3">
-            <p style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Comprados ({feitos.length})</p>
-            <button onClick={limparFeitos} className="pj-tap press text-[11px] font-semibold" style={{ color: "var(--pj-text-muted)" }}>Limpar tudo</button>
-          </div>
-          <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5" style={{ opacity: 0.55 }}>
-            {feitos.map(it => (
-              <button key={it.id} onClick={() => marcar(it.id)}
-                className="pj-tap press p-3.5 flex flex-col items-center gap-1.5 relative rounded-2xl"
-                style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-subtle)" }}>
-                <IconeArtigo nome={it.nome} size={30} className="grayscale" />
-                <p className="text-[11px] font-medium text-center leading-tight line-through" style={{ color: "var(--pj-text-faint)" }}>{it.nome}</p>
-                <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--pj-brand)" }}>
-                  <Check size={11} className="text-white" />
-                </div>
-              </button>
+      {/* Por comprar */}
+      {grupos.map(g => (
+        <section key={g.categoria || "todos"} className="px-4" style={{ marginTop: g.categoria ? 14 : 4 }} aria-label={g.categoria || "Por comprar"}>
+          {g.categoria && <h3 style={{ ...rotulo, padding: "6px 0 2px" }}>{g.categoria}</h3>}
+          <ul>
+            {g.itens.map((it, i) => (
+              <Linha key={it.id} item={it} primeira={!i} editando={editando === it.id}
+                onMarcar={() => marcar(it.id)}
+                onEditar={() => setEditando(e => e === it.id ? null : it.id)}
+                onQty={d => setItens(prev => alterarQty(prev, it.id, d))}
+                onRemover={() => tirar([it.id], `«${it.nome}» removido`)} />
             ))}
+          </ul>
+        </section>
+      ))}
+
+      {/* Comprados — recolhidos */}
+      {feitos.length > 0 && (
+        <section className="px-4" style={{ marginTop: 22 }}>
+          <div className="flex items-center justify-between" style={{ borderTop: "1px solid var(--pj-border)" }}>
+            <button onClick={() => setVerComprados(v => !v)} aria-expanded={verComprados} className="pj-tap flex items-center"
+              style={{ gap: 6, minHeight: 48, background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+              Comprados ({feitos.length})
+              <ChevronDown size={16} style={{ transform: verComprados ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
+            </button>
+            <button onClick={() => tirar(feitos.map(i => i.id), feitos.length === 1 ? "1 artigo limpo" : `${feitos.length} artigos limpos`)} className="pj-tap"
+              style={{ minHeight: 44, padding: "0 4px 0 12px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+              Limpar
+            </button>
+          </div>
+          {verComprados && (
+            <ul>
+              {feitos.map((it, i) => (
+                <Linha key={it.id} item={it} primeira={!i} editando={false} onMarcar={() => marcar(it.id)} onEditar={() => {}} onQty={() => {}}
+                  onRemover={() => tirar([it.id], `«${it.nome}» removido`)} />
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {/* Em baixo: "Anular" e a ação principal. Vão para o <body>: o separador
+          anima com transform, e um position: fixed lá dentro ficava preso a ele. */}
+      {noBrowser && (temAcao || anular) && createPortal(
+        <div className="pj-acao-lista fixed z-30 inset-x-0 pointer-events-none">
+          <div className="max-w-md mx-auto px-4 flex flex-col pointer-events-auto" style={{ gap: 8 }}>
+            {anular && (
+              <div role="status" className="flex items-center justify-between" style={{ gap: 8, padding: "4px 4px 4px 16px", borderRadius: 14, background: "var(--pj-text)", color: "var(--pj-surface)" }}>
+                <span className="truncate" style={{ fontSize: 14 }}>{anular.texto}</span>
+                <button onClick={desfazer} className="pj-tap flex-none" style={{ minHeight: 44, padding: "0 14px", background: "transparent", border: 0, fontSize: 14, fontWeight: 700, color: "var(--pj-surface)" }}>
+                  Anular
+                </button>
+              </div>
+            )}
+            {temAcao && (
+              <button ref={acaoRef} onClick={() => comparar()} disabled={aComparar} className="pj-tap press w-full text-left flex items-center relative overflow-hidden"
+                style={{ gap: 12, minHeight: 64, padding: "12px 16px", borderRadius: 16, border: 0, background: "var(--pj-brand)", color: "#fff", boxShadow: "0 10px 28px -12px rgba(11,107,79,0.6)" }}>
+                <span className="flex-1 min-w-0">
+                  {aComparar ? (
+                    <span role="status" style={{ display: "block", fontSize: 15, fontWeight: 600 }}>A ver os preços… {comparacao.feitos} de {Math.min(nPend, MAX_ARTIGOS)}</span>
+                  ) : resumoAtual ? (
+                    <>
+                      <span className="truncate" style={{ display: "block", fontSize: 15, fontWeight: 600 }}>
+                        Mais barata no {resumoAtual.nome} · <span className="pj-num">{eur(resumoAtual.total, 2)} €</span>
+                      </span>
+                      <span style={{ display: "block", fontSize: 13, opacity: 0.85, marginTop: 2 }}>
+                        {resumoAtual.poupanca >= 0.01 ? <>Poupas <span className="pj-num">{eur(resumoAtual.poupanca, 2)} €</span> · ver detalhe</> : "Ver detalhe"}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ display: "block", fontSize: 15, fontWeight: 600 }}>Onde fica mais barata?</span>
+                      <span style={{ display: "block", fontSize: 13, opacity: 0.85, marginTop: 2 }}>
+                        Comparar {Math.min(nPend, MAX_ARTIGOS)} artigos em {N_COMPARADAS} supermercados
+                      </span>
+                    </>
+                  )}
+                </span>
+                {!aComparar && <ChevronRight size={20} aria-hidden className="flex-none" />}
+                {aComparar && (
+                  <span aria-hidden className="absolute left-0 bottom-0" style={{ height: 3, background: "rgba(255,255,255,0.75)", transition: "width .3s", width: `${Math.round((comparacao.feitos / Math.max(1, Math.min(nPend, MAX_ARTIGOS))) * 100)}%` }} />
+                )}
+              </button>
+            )}
           </div>
         </div>
+      , document.body)}
+
+      {/* Resultado — folha por cima da lista */}
+      {verResultado && comparacao.linhas && createPortal(
+        <Folha titulo="Onde fica mais barata" onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
+          <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo}
+            onAtualizar={() => comparar(true)} />
+        </Folha>,
+        document.body,
       )}
+
+      {/* Todos os artigos — folha com as categorias do catálogo */}
+      {verCatalogo && createPortal(
+        <Folha titulo="Todos os artigos" alta onFechar={() => { setVerCatalogo(false); requestAnimationFrame(() => catalogoRef.current?.focus()); }}>
+          {!catalogo ? (
+            <p role="status" style={{ padding: 16, fontSize: 14, color: "var(--pj-text-muted)" }}>A carregar…</p>
+          ) : (() => {
+            const cat = catAtiva || catalogo.CATEGORIAS[0];
+            return (
+              <>
+                <div className="sticky z-10 flex overflow-x-auto no-scrollbar" role="tablist" aria-label="Categorias"
+                  style={{ top: 57, gap: 8, padding: "10px 16px", background: "var(--pj-card)", borderBottom: "1px solid var(--pj-subtle)" }}>
+                  {catalogo.CATEGORIAS.map(c => (
+                    <button key={c} role="tab" aria-selected={c === cat} onClick={e => {
+                        setCatAtiva(c);
+                        // Categoria nova começa no topo; a pastilha escolhida fica à vista.
+                        const painel = e.currentTarget.closest(".pj-folha-painel");
+                        if (painel) painel.scrollTop = 0;
+                        e.currentTarget.scrollIntoView({ inline: "center", block: "nearest" });
+                      }} className="pj-tap flex-none"
+                      style={{ minHeight: 40, padding: "0 14px", borderRadius: 999, fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap",
+                        border: c === cat ? "1px solid var(--pj-brand)" : "1px solid var(--pj-border)",
+                        background: c === cat ? "var(--pj-brand)" : "transparent", color: c === cat ? "#fff" : "var(--pj-text-muted)" }}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                <div role="tabpanel" aria-label={cat}>
+                <ul style={{ padding: "0 16px 16px" }}>
+                  {catalogo.CATS[cat].items.map((it, i) => {
+                    const na = pendentes.find(x => semAcentos(x.nome) === semAcentos(it.nome));
+                    return (
+                      <li key={it.nome} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
+                        <button onClick={() => juntar(it.nome, { foco: false })} className="pj-tap w-full flex items-center justify-between text-left"
+                          aria-label={na ? `${it.nome}, na lista (${na.qty || 1}). Juntar mais um` : `Juntar ${it.nome}`}
+                          style={{ gap: 12, minHeight: 48, padding: "0 4px", background: "transparent", border: 0 }}>
+                          <span style={{ fontSize: 15.5, color: "var(--pj-text)" }}>{it.nome}</span>
+                          {na ? (
+                            <span className="pj-num flex items-center flex-none" style={{ gap: 6, fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                              <Check size={16} aria-hidden /> {(na.qty || 1) > 1 ? `${na.qty}×` : "Na lista"}
+                            </span>
+                          ) : (
+                            <Plus size={18} aria-hidden className="flex-none" style={{ color: "var(--pj-text-faint)" }} />
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                  {/* Não está no catálogo? Escreve-se aqui e fica nesta categoria. */}
+                  <li style={{ listStyle: "none", borderTop: "1px solid var(--pj-subtle)", paddingTop: 12 }}>
+                    <label htmlFor="pj-lista-outro" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)", marginBottom: 8 }}>
+                      Outro <span style={{ fontWeight: 500, color: "var(--pj-text-muted)" }}>· não está na lista? Escreve-o</span>
+                    </label>
+                    <form className="flex items-center" style={{ gap: 8 }}
+                      onSubmit={e => { e.preventDefault(); if (outro.trim()) { juntar(outro, { foco: false, categoria: cat }); setOutro(""); } }}>
+                      <input id="pj-lista-outro" value={outro} onChange={e => setOutro(e.target.value)} placeholder="Ex.: pilhas, fita-cola…"
+                        autoComplete="off" enterKeyHint="done" className="flex-1 min-w-0 focus:outline-none"
+                        style={{ height: 46, padding: "0 14px", borderRadius: 12, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }} />
+                      <button type="submit" disabled={!outro.trim()} aria-label={`Juntar outro artigo em ${cat}`} className="pj-tap flex items-center justify-center flex-none"
+                        style={{ width: 46, height: 46, borderRadius: 12, border: 0, background: outro.trim() ? "var(--pj-brand)" : "var(--pj-subtle)", color: outro.trim() ? "#fff" : "var(--pj-text-faint)" }}>
+                        <Plus size={18} />
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+                </div>
+              </>
+            );
+          })()}
+        </Folha>,
+        document.body,
+      )}
+    </div>
+  );
+
+}
+
+/*
+ * Folha de baixo (resultado, todos os artigos): fecha com o X, o fundo, Esc ou o
+ * "voltar" do Android (empilha uma entrada no histórico enquanto está
+ * aberta — senão o "voltar" saía da lista com a folha por cima).
+ */
+function Folha({ titulo, alta = false, onFechar, children }) {
+  const fecharRef = useRef(null);
+  const fechar = () => {
+    if (window.history.state?.pj === "folha") window.history.back(); // o popstate fecha
+    else onFechar();
+  };
+  useEffect(() => {
+    fecharRef.current?.focus();
+    window.history.pushState({ pj: "folha" }, "");
+    const aoVoltar = () => onFechar();
+    const tecla = (e) => e.key === "Escape" && fechar();
+    window.addEventListener("popstate", aoVoltar);
+    window.addEventListener("keydown", tecla);
+    const antes = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("popstate", aoVoltar);
+      window.removeEventListener("keydown", tecla);
+      document.body.style.overflow = antes;
+      // Fechou sem ser pelo "voltar" (ex.: Atualizar): tira a entrada que pôs.
+      if (window.history.state?.pj === "folha") window.history.back();
+    };
+  }, []);
+  return (
+    <div className="pj-folha fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={titulo}>
+      <div className="pj-folha-fundo absolute inset-0" onClick={fechar} style={{ background: "rgba(20,35,28,0.45)" }} />
+      <div className="pj-folha-painel relative w-full max-w-md overflow-y-auto" style={{ maxHeight: "88vh", height: alta ? "88vh" : undefined, borderRadius: "20px 20px 0 0", background: "var(--pj-card)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+        <div className="sticky top-0 z-10 flex items-center justify-between" style={{ padding: "6px 6px 6px 16px", background: "var(--pj-card)", borderBottom: "1px solid var(--pj-subtle)" }}>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{titulo}</h2>
+          <button ref={fecharRef} onClick={fechar} aria-label="Fechar" className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, background: "transparent", border: 0, color: "var(--pj-text-muted)" }}>
+            <X size={20} />
+          </button>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
