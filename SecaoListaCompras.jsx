@@ -293,9 +293,8 @@ export default function SecaoListaCompras({ onVoltar }) {
     try { return JSON.parse(localStorage.getItem("poupeja_pesquisas_precos") || "[]"); } catch { return []; }
   });
   // Com a lista vazia, o "Já comparaste" aparece por baixo, à vista (não em menu).
-  const sugestoes = !focado ? []
-    : texto.trim() ? (catalogo ? catalogo.sugerir(texto, { comparados }) : [])
-    : itens.length ? listaComparados(comparados) : [];
+  // O menu só aparece enquanto se escreve: com o campo vazio não tapa a lista.
+  const sugestoes = focado && texto.trim() && catalogo ? catalogo.sugerir(texto, { comparados }) : [];
   const jaComparados = !itens.length && !texto.trim() ? listaComparados(comparados) : [];
 
   // ── Ações ──
@@ -425,7 +424,6 @@ export default function SecaoListaCompras({ onVoltar }) {
         {sugestoes.length > 0 && (
           <ul id="pj-lista-sugestoes" role="listbox" aria-label="Sugestões" className="absolute left-4 right-4"
             style={{ marginTop: 6, padding: "4px 0", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)", boxShadow: "0 12px 32px -12px rgba(20,35,28,0.28)" }}>
-            {!texto && <li role="presentation" style={{ ...rotulo, padding: "8px 14px 4px" }}>Já comparaste</li>}
             {sugestoes.map(s => {
               const na = pendentes.find(i => semAcentos(i.nome) === semAcentos(s.nome));
               return (
@@ -435,7 +433,7 @@ export default function SecaoListaCompras({ onVoltar }) {
                     className="pj-tap w-full flex items-center justify-between text-left" style={{ minHeight: 44, padding: "0 14px", background: "transparent", border: 0, gap: 12 }}>
                     <span className="truncate" style={{ fontSize: 15, color: "var(--pj-text)" }}>{s.nome}</span>
                     <span className="flex-none" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>
-                      {na ? `Na lista${(na.qty || 1) > 1 ? ` · ${na.qty}×` : ""}` : texto && s.origem === "comparados" ? "Já comparaste" : ""}
+                      {na ? `Na lista${(na.qty || 1) > 1 ? ` · ${na.qty}×` : ""}` : s.origem === "comparados" ? "Já comparaste" : ""}
                     </span>
                   </button>
                 </li>
