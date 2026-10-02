@@ -1,14 +1,29 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, sugerir, categoriaDe, OUTROS } from "../lib/listaCompras.js";
+import { agruparPorCategoria, adicionar as adicionarSem, alterarQty, retirar, repor, categoriaDe, OUTROS, CATEGORIAS, jaComparados } from "../lib/listaCompras.js";
+import { sugerir, doCatalogo, preencherCategorias, CATEGORIAS as DO_CATALOGO } from "../lib/catalogoLista.js";
+
+const adicionar = (itens, nome, id) => adicionarSem(itens, nome, { id, doCatalogo });
 import { resumoValido, chaveDaLista, VALIDADE_MS } from "../lib/resumoLista.js";
 
 const it = (id, nome, categoria = "", extra = {}) => ({ id, nome, emoji: "", categoria, qty: 1, feito: false, ...extra });
 
-test("categoria: a do artigo, senão a do catálogo pelo nome, senão Outros", () => {
+test("categoria: a do artigo, senão Outros; o catálogo preenche as que faltam", () => {
+  assert.deepEqual(CATEGORIAS, DO_CATALOGO);
   assert.equal(categoriaDe(it(1, "Maçãs", "Frutas")), "Frutas");
-  assert.equal(categoriaDe(it(2, "leite meio gordo")), "Laticínios & Ovos"); // veio do Comparar, sem categoria
   assert.equal(categoriaDe(it(3, "Café moído")), OUTROS);
+  const l = [it(1, "Maçãs", "Frutas"), it(2, "leite meio gordo"), it(3, "Café moído")]; // 2 veio do Comparar, sem categoria
+  const p = preencherCategorias(l);
+  assert.equal(p[1].categoria, "Laticínios & Ovos");
+  assert.equal(p[2].categoria, "");
+  assert.equal(p[0], l[0]);
+  assert.equal(preencherCategorias(p), p); // nada a mudar: a mesma lista
+});
+
+test("sem catálogo carregado, adicionar guarda o texto tal como está (com maiúscula)", () => {
+  const l = adicionarSem([], "leite meio gordo", { id: 1 });
+  assert.equal(l[0].nome, "Leite meio gordo");
+  assert.equal(l[0].categoria, "");
 });
 
 test("agrupar: só há títulos com 2 ou mais categorias", () => {
@@ -94,4 +109,10 @@ test("resumo da comparação só vale para a mesma lista e durante um dia", () =
   assert.equal(resumoValido(g, lista, 1000 + VALIDADE_MS), null);
   assert.equal(resumoValido(null, lista, 2000), null);
   assert.equal(resumoValido(g, [], 2000), null);
+});
+
+test("Já comparaste, sem catálogo: sem repetidos, com maiúscula", () => {
+  assert.deepEqual(jaComparados(["café moído", "Café  moído", "", "laranjas"]), [
+    { nome: "Café moído", origem: "comparados" }, { nome: "Laranjas", origem: "comparados" },
+  ]);
 });

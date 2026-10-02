@@ -7,7 +7,7 @@ import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
-import { NOMES_ARTIGOS } from "./lib/catalogoLista";
+import { NOMES_ARTIGOS, doCatalogo } from "./lib/catalogoLista";
 import { NotaCobertura } from "./Cobertura";
 import { N_COMPARADAS } from "./lib/cobertura";
 
@@ -62,7 +62,7 @@ function juntarALista(nome) {
     const existe = itens.find((i) => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
     const novos = existe
       ? itens.map((i) => (i === existe ? { ...i, qty: (i.qty || 1) + 1 } : i))
-      : [{ id: Date.now() + Math.random(), nome, emoji: "🛒", categoria: "", qty: 1, feito: false }, ...itens];
+      : [{ id: Date.now() + Math.random(), nome, emoji: "🛒", categoria: doCatalogo(nome)?.categoria || "", qty: 1, feito: false }, ...itens];
     localStorage.setItem(LS_LISTA, JSON.stringify(novos));
     return true;
   } catch { return false; }

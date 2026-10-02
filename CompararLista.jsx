@@ -19,7 +19,8 @@ import { evento } from "./lib/analytics";
  */
 
 const ResultadoLista = dynamic(() => import("./ResultadoLista"), { ssr: false, loading: () => null });
-export const MAX_ARTIGOS = 25;
+import { MAX_ARTIGOS } from "./lib/listaCompras";
+export { MAX_ARTIGOS };
 const EM_PARALELO = 3;
 
 /*

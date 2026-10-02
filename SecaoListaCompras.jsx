@@ -2,12 +2,10 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
 import { ArrowLeft, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
-import { compararArtigos, MAX_ARTIGOS } from "./CompararLista";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, sugerir } from "./lib/listaCompras";
-import { doCatalogo, semAcentos } from "./lib/catalogoLista";
+import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, jaComparados as listaComparados, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 
 /*
@@ -224,6 +222,21 @@ export default function SecaoListaCompras({ onVoltar }) {
     setTopo(h && getComputedStyle(h).position === "sticky" ? h.offsetHeight : 0);
   }, []);
 
+  // Catálogo (autocomplete, nomes e categorias): à parte, só quando se
+  // começa a escrever ou se junta um artigo. Não pesa na abertura da lista.
+  // (Os artigos vindos do Comparar já trazem a categoria.)
+  const [catalogo, setCatalogo] = useState(null);
+  const pedidoCatalogo = useRef(null);
+  function carregarCatalogo() {
+    if (!pedidoCatalogo.current) {
+      pedidoCatalogo.current = import("./lib/catalogoLista").then(m => {
+        setCatalogo(m);
+        setItens(prev => m.preencherCategorias(prev));
+        return m;
+      }).catch(() => { pedidoCatalogo.current = null; return null; });
+    }
+    return pedidoCatalogo.current;
+  }
   // Lista vazia: o campo já vem focado.
   useEffect(() => { if (!itens.length) inputRef.current?.focus(); }, []);
 
@@ -280,16 +293,21 @@ export default function SecaoListaCompras({ onVoltar }) {
     try { return JSON.parse(localStorage.getItem("poupeja_pesquisas_precos") || "[]"); } catch { return []; }
   });
   // Com a lista vazia, o "Já comparaste" aparece por baixo, à vista (não em menu).
-  const sugestoes = focado && (texto.trim() || itens.length) ? sugerir(texto, { comparados }) : [];
-  const jaComparados = !itens.length && !texto.trim() ? sugerir("", { comparados }) : [];
+  const sugestoes = !focado ? []
+    : texto.trim() ? (catalogo ? catalogo.sugerir(texto, { comparados }) : [])
+    : itens.length ? listaComparados(comparados) : [];
+  const jaComparados = !itens.length && !texto.trim() ? listaComparados(comparados) : [];
 
   // ── Ações ──
-  function juntar(nome) {
-    // Primeiro artigo de uma lista vazia = lista criada (GA4).
-    if (!pendentes.length) evento("lista_criada", { origem: doCatalogo(nome) ? "catalogo" : "texto" });
-    setItens(prev => adicionar(prev, nome));
+  async function juntar(nome) {
+    if (!String(nome || "").trim()) return;
     setTexto("");
     inputRef.current?.focus();
+    // O nome e a categoria certos vêm do catálogo (já carregado, quase sempre).
+    const doCatalogo = (catalogo || await carregarCatalogo())?.doCatalogo;
+    // Primeiro artigo de uma lista vazia = lista criada (GA4).
+    if (!pendentes.length) evento("lista_criada", { origem: doCatalogo?.(nome) ? "catalogo" : "texto" });
+    setItens(prev => adicionar(prev, nome, { doCatalogo }));
   }
 
   function marcar(id) {
@@ -323,10 +341,12 @@ export default function SecaoListaCompras({ onVoltar }) {
 
   async function comparar(forcar = false) {
     if (linhasValidas && !forcar) { setVerResultado(true); return; }
+    // As pesquisas e o resultado só se descarregam aqui, ao comparar.
     import("./ResultadoLista");
     setVerResultado(false);
     const artigos = pendentes.slice(0, MAX_ARTIGOS);
     setComparacao({ estado: "a-carregar", feitos: 0, linhas: null });
+    const { compararArtigos } = await import("./CompararLista");
     const linhas = await compararArtigos(artigos, () => setComparacao(c => ({ ...c, feitos: c.feitos + 1 })));
     setComparacao({ estado: "pronto", feitos: artigos.length, linhas, chave: chaveAtual });
     setVerResultado(true);
@@ -381,7 +401,7 @@ export default function SecaoListaCompras({ onVoltar }) {
             ref={inputRef}
             type="text"
             value={texto}
-            onChange={e => setTexto(e.target.value)}
+            onChange={e => { setTexto(e.target.value); carregarCatalogo(); }}
             onFocus={() => { setFocado(true); setEditando(null); }}
             onBlur={() => setFocado(false)}
             onKeyDown={e => e.key === "Escape" && (setTexto(""), e.currentTarget.blur())}
