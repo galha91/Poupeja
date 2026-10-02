@@ -77,11 +77,23 @@ const TITULOS = {
 
 
 
+/* ─── Voltar ao Início ─── */
+function BotaoVoltar({ onClick }) {
+  return (
+    <div className="px-2 pt-2">
+      <button onClick={onClick} className="pj-tap flex items-center"
+        style={{ gap: 6, minHeight: 44, padding: "0 10px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+        <ArrowLeft size={17} /> Voltar
+      </button>
+    </div>
+  );
+}
+
 /* ─── Wrapper Mercados ─── */
 function SecaoMercados({ setTab, inicioAba = "comparar" }) {
   const [sub, setSub] = useState(inicioAba);
   return (
-    <div className="pb-28 pt-4">
+    <div className="pb-28 pt-1">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
         {[
           { id: "comparar", icon: Scale, label: "Preços" },
@@ -640,28 +652,17 @@ export default function PoupeJa() {
             <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
+                {/* "Voltar" ao Início em todos os separadores menos o próprio Início
+                    (a lista tem o seu, ao lado do "Partilhar"). */}
+                {tab !== "inicio" && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
                 {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
-                {tab === "irs"        && (
-                  <div className="pt-4">
-                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
-                      <ArrowLeft size={15} /> Voltar
-                    </button>
-                    <SecaoIRS />
-                  </div>
-                )}
-                {tab === "taloes"     && (
-                  <div className="pt-4">
-                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
-                      <ArrowLeft size={15} /> Voltar
-                    </button>
-                    <SecaoTaloes inicioAba={subTabTaloes} />
-                  </div>
-                )}
+                {tab === "irs"        && <SecaoIRS />}
+                {tab === "taloes"     && <SecaoTaloes inicioAba={subTabTaloes} />}
                 {tab === "lista" && (
                   <div className="pt-2">
                     <SecaoListaCompras onVoltar={() => go("inicio")} />
