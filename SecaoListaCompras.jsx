@@ -69,7 +69,7 @@ function gerarShareId() {
   return Array.from(bytes, b => alfabeto[b % alfabeto.length]).join("");
 }
 
-const rotulo = { fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" };
+const rotulo = { fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" };
 
 /* ── Uma linha da lista ─────────────────────────────────────────── */
 function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onRemover }) {
@@ -106,10 +106,10 @@ function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onRemover 
           style={{ gap: 14, minHeight: 52, padding: "0 4px 0 0", background: "transparent", border: 0 }}
           aria-pressed={feito} aria-label={`${item.nome}${qty > 1 ? `, ${qty}` : ""}${feito ? ", comprado" : ""}`}>
           <span aria-hidden className="flex items-center justify-center flex-none"
-            style={{ width: 22, height: 22, borderRadius: 7, border: feito ? 0 : "1.5px solid var(--pj-text-faint)", background: feito ? "var(--pj-brand)" : "transparent" }}>
+            style={{ width: 22, height: 22, borderRadius: 7, border: feito ? 0 : "1.5px solid var(--pj-text-faint)", background: feito ? "var(--pj-brand)" : "transparent", transition: "background-color .15s ease" }}>
             {feito && <Check size={14} strokeWidth={3} color="#fff" />}
           </span>
-          <span className="truncate" style={{ fontSize: 15.5, fontWeight: 500, color: feito ? "var(--pj-text-faint)" : "var(--pj-text)", textDecoration: feito ? "line-through" : "none" }}>
+          <span className="truncate" style={{ fontSize: 16, fontWeight: 500, color: feito ? "var(--pj-text-faint)" : "var(--pj-text)", textDecoration: feito ? "line-through" : "none", transition: "color .15s ease" }}>
             {item.nome}
           </span>
         </button>
@@ -165,6 +165,7 @@ export default function SecaoListaCompras({ onVoltar }) {
   const primeiraRender = useRef(true);
   const pushTimer      = useRef(null);
   const anularTimer    = useRef(null);
+  const acaoRef        = useRef(null);   // o foco volta aqui ao fechar o resultado
 
   function push(novosItens, id) {
     if (!id) return;
@@ -411,7 +412,7 @@ export default function SecaoListaCompras({ onVoltar }) {
             aria-expanded={sugestoes.length > 0}
             aria-controls="pj-lista-sugestoes"
             className="w-full focus:outline-none"
-            style={{ height: 48, padding: "0 44px 0 42px", borderRadius: 14, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-card)", border: `1px solid ${focado ? "var(--pj-brand-ink)" : "var(--pj-border)"}` }}
+            style={{ height: 48, padding: "0 44px 0 42px", borderRadius: 14, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-card)", border: `1px solid ${focado ? "var(--pj-brand-ink)" : "var(--pj-border)"}`, boxShadow: focado ? "0 0 0 1px var(--pj-brand-ink)" : "none", transition: "border-color .15s ease, box-shadow .15s ease" }}
           />
           {texto && (
             <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => setTexto("")} aria-label="Limpar texto" className="pj-tap absolute flex items-center justify-center"
@@ -527,7 +528,7 @@ export default function SecaoListaCompras({ onVoltar }) {
               </div>
             )}
             {temAcao && (
-              <button onClick={() => comparar()} disabled={aComparar} className="pj-tap press w-full text-left flex items-center relative overflow-hidden"
+              <button ref={acaoRef} onClick={() => comparar()} disabled={aComparar} className="pj-tap press w-full text-left flex items-center relative overflow-hidden"
                 style={{ gap: 12, minHeight: 64, padding: "12px 16px", borderRadius: 16, border: 0, background: "var(--pj-brand)", color: "#fff", boxShadow: "0 10px 28px -12px rgba(11,107,79,0.6)" }}>
                 <span className="flex-1 min-w-0">
                   {aComparar ? (
@@ -562,7 +563,7 @@ export default function SecaoListaCompras({ onVoltar }) {
 
       {/* Resultado — folha por cima da lista */}
       {verResultado && comparacao.linhas && createPortal(
-        <FolhaResultado onFechar={() => setVerResultado(false)}>
+        <FolhaResultado onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
           <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo}
             onAtualizar={() => comparar(true)} />
         </FolhaResultado>,
@@ -573,24 +574,41 @@ export default function SecaoListaCompras({ onVoltar }) {
 
 }
 
-/* Folha de baixo para o resultado: fecha com o X, o fundo ou Esc. */
+/*
+ * Folha de baixo para o resultado: fecha com o X, o fundo, Esc ou o
+ * "voltar" do Android (empilha uma entrada no histórico enquanto está
+ * aberta — senão o "voltar" saía da lista com a folha por cima).
+ */
 function FolhaResultado({ onFechar, children }) {
   const fecharRef = useRef(null);
+  const fechar = () => {
+    if (window.history.state?.pj === "folha") window.history.back(); // o popstate fecha
+    else onFechar();
+  };
   useEffect(() => {
     fecharRef.current?.focus();
-    const tecla = (e) => e.key === "Escape" && onFechar();
+    window.history.pushState({ pj: "folha" }, "");
+    const aoVoltar = () => onFechar();
+    const tecla = (e) => e.key === "Escape" && fechar();
+    window.addEventListener("popstate", aoVoltar);
     window.addEventListener("keydown", tecla);
     const antes = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", tecla); document.body.style.overflow = antes; };
+    return () => {
+      window.removeEventListener("popstate", aoVoltar);
+      window.removeEventListener("keydown", tecla);
+      document.body.style.overflow = antes;
+      // Fechou sem ser pelo "voltar" (ex.: Atualizar): tira a entrada que pôs.
+      if (window.history.state?.pj === "folha") window.history.back();
+    };
   }, []);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-labelledby="pj-resultado-titulo">
-      <div className="absolute inset-0" onClick={onFechar} style={{ background: "rgba(20,35,28,0.45)" }} />
-      <div className="relative w-full max-w-md overflow-y-auto" style={{ maxHeight: "88vh", borderRadius: "20px 20px 0 0", background: "var(--pj-card)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+    <div className="pj-folha fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-labelledby="pj-resultado-titulo">
+      <div className="pj-folha-fundo absolute inset-0" onClick={fechar} style={{ background: "rgba(20,35,28,0.45)" }} />
+      <div className="pj-folha-painel relative w-full max-w-md overflow-y-auto" style={{ maxHeight: "88vh", borderRadius: "20px 20px 0 0", background: "var(--pj-card)", paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="sticky top-0 z-10 flex items-center justify-between" style={{ padding: "6px 6px 6px 16px", background: "var(--pj-card)", borderBottom: "1px solid var(--pj-subtle)" }}>
           <h2 id="pj-resultado-titulo" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>Onde fica mais barata</h2>
-          <button ref={fecharRef} onClick={onFechar} aria-label="Fechar" className="pj-tap flex items-center justify-center"
+          <button ref={fecharRef} onClick={fechar} aria-label="Fechar" className="pj-tap flex items-center justify-center"
             style={{ width: 44, height: 44, background: "transparent", border: 0, color: "var(--pj-text-muted)" }}>
             <X size={20} />
           </button>

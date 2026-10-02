@@ -400,7 +400,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
 
   return (
-    <div className="pb-28" style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
+    <div className="pj-inicio pb-28" style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
       <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 24px 32px" }}>
 
         {/* Cabeçalho */}
@@ -494,7 +494,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
               <div style={{ flex: 1 }}>
                 <div className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{estadoDesafio.desafio.nome}</div>
                 <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 3 }}>
-                  {completo ? "Desafio do mês completo 🎉" : `Faltam €${falta.toFixed(2).replace(".", ",")} para a meta de €${estadoDesafio.desafio.meta}`}
+                  {completo ? "Desafio do mês completo" : `Faltam €${falta.toFixed(2).replace(".", ",")} para a meta de €${estadoDesafio.desafio.meta}`}
                 </div>
               </div>
               <div style={{ position: "relative", width: 44, height: 44, flex: "none" }}>

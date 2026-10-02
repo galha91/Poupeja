@@ -407,3 +407,20 @@ html.dark body {
    pode ficar preso ao topo (position: sticky) ao deslocar a página. */
 .pj-main { overflow-x: hidden; }
 @supports (overflow-x: clip) { .pj-main { overflow-x: clip; } }
+
+/* Foco visível ao navegar por teclado (lista, folha do resultado, Início). */
+.pj-lista :focus-visible, .pj-folha :focus-visible, .pj-inicio :focus-visible {
+  outline: 2px solid var(--pj-brand-ink);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+.pj-lista input:focus-visible { outline: none; } /* o campo já marca o foco na borda */
+
+/* Folha do resultado: sobe ao abrir; sem animação para quem a dispensa. */
+@keyframes pjFolhaSobe { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pjFolhaFundo { from { opacity: 0; } to { opacity: 1; } }
+.pj-folha-painel { animation: pjFolhaSobe .24s cubic-bezier(0.22,1,0.36,1) both; }
+.pj-folha-fundo  { animation: pjFolhaFundo .2s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .pj-folha-painel, .pj-folha-fundo { animation: none; }
+}

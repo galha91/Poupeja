@@ -456,6 +456,9 @@ export default function PoupeJa() {
   useEffect(() => {
     const aoVoltar = () => {
       if (!naPilha.current) return; // o back() acima, já tratado
+      // Ainda na entrada da app: o "voltar" fechou algo por cima (a folha
+      // do resultado da lista), não o separador.
+      if (window.history.state?.pj === "nav") return;
       naPilha.current = false;
       setVerDefs(false);
       setVerAvisos(false);
