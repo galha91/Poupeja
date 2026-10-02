@@ -19,8 +19,35 @@ import { evento } from "./lib/analytics";
  */
 
 const ResultadoLista = dynamic(() => import("./ResultadoLista"), { ssr: false, loading: () => null });
-const MAX_ARTIGOS = 25;
+export const MAX_ARTIGOS = 25;
 const EM_PARALELO = 3;
+
+/*
+ * Pesquisa os artigos e devolve as linhas que o ResultadoLista soma.
+ * Também usado pelo bloco "Onde fica mais barata?" do ecrã da lista.
+ */
+export async function compararArtigos(itens, aoAvancar = () => {}) {
+  const artigos = itens.slice(0, MAX_ARTIGOS);
+  evento("comparar_lista", { artigos: artigos.length });
+  const resultado = new Array(artigos.length);
+  let proximo = 0;
+  // Poucas de cada vez: o servidor limita pesquisas por minuto.
+  await Promise.all(Array.from({ length: EM_PARALELO }, async () => {
+    while (proximo < artigos.length) {
+      const i = proximo++;
+      const it = artigos[i];
+      const q = termoDePesquisa(it.nome);
+      try {
+        const { dados, guardado } = await pesquisarComRecurso(q);
+        resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1) };
+      } catch {
+        resultado[i] = { item: it, q, custos: {}, erro: true };
+      }
+      aoAvancar();
+    }
+  }));
+  return resultado;
+}
 
 export default function CompararLista({ itens, nota = true }) {
   const [estado, setEstado] = useState("inicio"); // inicio | a-carregar | pronto
@@ -34,25 +61,7 @@ export default function CompararLista({ itens, nota = true }) {
     import("./ResultadoLista");
     setEstado("a-carregar");
     setFeitos(0);
-    evento("comparar_lista", { artigos: artigos.length });
-    const resultado = new Array(artigos.length);
-    let proximo = 0;
-    // Poucas de cada vez: o servidor limita pesquisas por minuto.
-    await Promise.all(Array.from({ length: EM_PARALELO }, async () => {
-      while (proximo < artigos.length) {
-        const i = proximo++;
-        const it = artigos[i];
-        const q = termoDePesquisa(it.nome);
-        try {
-          const { dados, guardado } = await pesquisarComRecurso(q);
-          resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1) };
-        } catch {
-          resultado[i] = { item: it, q, custos: {}, erro: true };
-        }
-        setFeitos((n) => n + 1);
-      }
-    }));
-    setLinhas(resultado);
+    setLinhas(await compararArtigos(artigos, () => setFeitos((n) => n + 1)));
     setEstado("pronto");
   }
 

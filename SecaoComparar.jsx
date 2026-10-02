@@ -7,7 +7,7 @@ import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
-import { NOMES_ARTIGOS } from "./SecaoListaCompras";
+import { NOMES_ARTIGOS } from "./lib/catalogoLista";
 import { NotaCobertura } from "./Cobertura";
 import { N_COMPARADAS } from "./lib/cobertura";
 
