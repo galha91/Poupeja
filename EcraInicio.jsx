@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
   Flame, ListChecks, Landmark, Calculator, Search, Gift,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
-import FolhetoViewer from "./FolhetoViewer";
 import { embutivel } from "./lib/folhetos-embed";
 import { Preco } from "./Preco";
 import Divisoria from "./Divisoria";
@@ -14,6 +14,9 @@ import { N_COMPARADAS } from "./lib/cobertura";
 import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
 import { mostrarIRS } from "./lib/atalhos";
+
+// O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
+const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
 
 /* ─── Lista de compras: o estado real, no topo do Início ─── */
 function CartaoLista({ lista, onAbrir }) {
