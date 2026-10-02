@@ -6,6 +6,7 @@ import { eur } from "../../lib/formato";
 import { pesquisarTudo } from "../../lib/supermercados";
 import { registar } from "../../lib/supermercados/historico";
 import { melhoresPorLoja, valorComparacao } from "../../lib/comparacao";
+import { avaliarVigia, resumoAtual } from "../../lib/alertas";
 
 /*
  * Avisos personalizados por utilizador — cron diário (Vercel, 18:00 UTC).
@@ -15,7 +16,10 @@ import { melhoresPorLoja, valorComparacao } from "../../lib/comparacao";
  * lib/sync.js) e envia push só a quem tem algo relevante:
  *
  *   🛒 Preços       — poupeja_alertas_precos: o mais barato de uma pesquisa
- *                     do "Comparar preços" ≤ alvo (supressão de 3 dias)
+ *                     do "Comparar preços" ≤ alvo (supressão de 3 dias);
+ *                     os do tipo "vigiar" (da lista de compras) avisam
+ *                     quando o preço desce ou entra em promoção, uma vez
+ *                     por preço (ver lib/alertas)
  *   ⛽ Combustível  — poupeja_avisos: preço nacional mais barato ≤ precoAlvo
  *                     (com supressão de 6 dias para não repetir todos os dias)
  *   🛡️ Garantias    — poupeja_taloes: garantia a expirar em 30, 7 ou 1 dia(s)
@@ -53,7 +57,7 @@ async function precosDosAlertas(qs) {
         await registar(r).catch(() => {});
         const { modo, ranking } = melhoresPorLoja(r);
         const p = ranking[0];
-        if (p) out[q] = { valor: valorComparacao(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade, loja: p.lojaNome, nome: p.nome };
+        if (p) out[q] = { ...resumoAtual(p, modo), valor: valorComparacao(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade };
       } catch (_) {}
       await new Promise((ok) => setTimeout(ok, 600));
     }
@@ -156,6 +160,28 @@ export default async function handler(req, res) {
     const alertasPreco = Array.isArray(d.poupeja_alertas_precos) ? d.poupeja_alertas_precos : [];
     for (const a of alertasPreco) {
       const atual = precosAlertas[a.q];
+      // 👁️ Vigiar: desceu ou entrou em promoção (um aviso por preço).
+      if (a.tipo === "vigiar") {
+        if (!atual || atual.unidade !== a.unidade) continue;
+        const chave = `vigiar_${a.id}`;
+        const v = avaliarVigia(a, atual, notificados[chave]);
+        if (v.limpar) { delete notificados[chave]; notificadosMudou = true; }
+        if (!v.avisar) continue;
+        const porUnid = atual.unidade === "embalagem" ? "" : `/${atual.unidade}`;
+        const nome = a.q.charAt(0).toUpperCase() + a.q.slice(1);
+        notifs.push({
+          title: v.motivo === "desceu"
+            ? `🛒 ${nome} desceu para €${eur(atual.valor, 2)}${porUnid}`
+            : `🛒 ${nome} em promoção`,
+          body: v.motivo === "desceu"
+            ? `No ${atual.loja} — estava a €${eur(a.referencia, 2)}${porUnid} quando começaste a vigiar. ${atual.nome}.`
+            : `No ${atual.loja}, a €${eur(atual.valor, 2)}${porUnid}. ${atual.nome}.`,
+          url: `/?atalho=mercados&q=${encodeURIComponent(a.q)}`,
+        });
+        notificados[chave] = { valor: atual.valor, dia: hoje.iso };
+        notificadosMudou = true;
+        continue;
+      }
       if (!atual || !(a.alvo > 0) || atual.unidade !== a.unidade || atual.valor > a.alvo) continue;
       const ultima = notificados[`preco_${a.id}`];
       if (ultima && diasAte(hoje.iso, ultima) < SUPRESSAO_PRECO_DIAS) continue;
