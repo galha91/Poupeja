@@ -596,6 +596,7 @@ export default function PoupeJa() {
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => { calcGarantiasAviso(); setVerAvisos(true); }}
+                    aria-label="Avisos"
                     className="press w-9 h-9 rounded-xl border flex items-center justify-center relative" style={{ background: "var(--pj-subtle)", borderColor: "var(--pj-border)" }}
                   >
                     <Bell size={16} style={{ color: "var(--pj-text-muted)" }} />
@@ -607,6 +608,7 @@ export default function PoupeJa() {
                   </button>
                   <button
                     onClick={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }}
+                    aria-label="A minha conta"
                     className="press w-9 h-9 rounded-xl border flex items-center justify-center" style={{ background: "var(--pj-brand-wash)", borderColor: "var(--pj-border)" }}
                   >
                     <Users size={16} style={{ color: "var(--pj-brand-ink)" }} />
