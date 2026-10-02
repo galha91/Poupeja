@@ -77,11 +77,23 @@ const TITULOS = {
 
 
 
+/* ─── Voltar ao Início ─── */
+function BotaoVoltar({ onClick }) {
+  return (
+    <div className="px-2 pt-2">
+      <button onClick={onClick} className="pj-tap flex items-center"
+        style={{ gap: 6, minHeight: 44, padding: "0 10px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+        <ArrowLeft size={17} /> Voltar
+      </button>
+    </div>
+  );
+}
+
 /* ─── Wrapper Mercados ─── */
 function SecaoMercados({ setTab, inicioAba = "comparar" }) {
   const [sub, setSub] = useState(inicioAba);
   return (
-    <div className="pb-28 pt-4">
+    <div className="pb-28 pt-1">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
         {[
           { id: "comparar", icon: Scale, label: "Preços" },
@@ -116,6 +128,9 @@ export default function PoupeJa() {
     if (typeof window !== "undefined") {
       try {
         const a = new URLSearchParams(window.location.search).get("atalho");
+        // A lista abre direto pelo atalho: o código dela começa a descarregar
+        // já, em paralelo com o arranque, e não só quando o separador desenha.
+        if (a === "lista") import("../SecaoListaCompras");
         if (a && NAV_IDS.includes(a)) return a;
       } catch {}
     }
@@ -453,6 +468,9 @@ export default function PoupeJa() {
   useEffect(() => {
     const aoVoltar = () => {
       if (!naPilha.current) return; // o back() acima, já tratado
+      // Ainda na entrada da app: o "voltar" fechou algo por cima (a folha
+      // do resultado da lista), não o separador.
+      if (window.history.state?.pj === "nav") return;
       naPilha.current = false;
       setVerDefs(false);
       setVerAvisos(false);
@@ -596,6 +614,7 @@ export default function PoupeJa() {
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => { calcGarantiasAviso(); setVerAvisos(true); }}
+                    aria-label="Avisos"
                     className="press w-9 h-9 rounded-xl border flex items-center justify-center relative" style={{ background: "var(--pj-subtle)", borderColor: "var(--pj-border)" }}
                   >
                     <Bell size={16} style={{ color: "var(--pj-text-muted)" }} />
@@ -607,6 +626,7 @@ export default function PoupeJa() {
                   </button>
                   <button
                     onClick={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }}
+                    aria-label="A minha conta"
                     className="press w-9 h-9 rounded-xl border flex items-center justify-center" style={{ background: "var(--pj-brand-wash)", borderColor: "var(--pj-border)" }}
                   >
                     <Users size={16} style={{ color: "var(--pj-brand-ink)" }} />
@@ -629,37 +649,23 @@ export default function PoupeJa() {
             )}
 
             {/* Conteúdo */}
-            <main style={{ overflowX: "hidden" }}>
+            <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
+                {/* "Voltar" ao Início em todos os separadores menos o próprio Início
+                    (a lista tem o seu, ao lado do "Partilhar"). */}
+                {tab !== "inicio" && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
                 {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
                 {tab === "apoios"     && <SecaoApoios />}
                 {tab === "contas"     && <SecaoContas />}
-                {tab === "irs"        && (
-                  <div className="pt-4">
-                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
-                      <ArrowLeft size={15} /> Voltar
-                    </button>
-                    <SecaoIRS />
-                  </div>
-                )}
-                {tab === "taloes"     && (
-                  <div className="pt-4">
-                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
-                      <ArrowLeft size={15} /> Voltar
-                    </button>
-                    <SecaoTaloes inicioAba={subTabTaloes} />
-                  </div>
-                )}
+                {tab === "irs"        && <SecaoIRS />}
+                {tab === "taloes"     && <SecaoTaloes inicioAba={subTabTaloes} />}
                 {tab === "lista" && (
-                  <div className="pt-4">
-                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
-                      <ArrowLeft size={15} /> Voltar
-                    </button>
-                    <SecaoListaCompras />
+                  <div className="pt-2">
+                    <SecaoListaCompras onVoltar={() => go("inicio")} />
                   </div>
                 )}
               </div>
