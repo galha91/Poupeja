@@ -394,3 +394,16 @@ html.dark body {
 /* App shell de fundo */
 .dark .min-h-screen.bg-slate-50,
 .dark .min-h-screen.bg-gray-50 { background-color: var(--pj-surface) !important; }
+
+/* Ação principal da lista de compras: logo acima da barra de baixo
+   (no desktop não há barra, e o conteúdo começa depois da lateral). */
+.pj-acao-lista { bottom: calc(env(safe-area-inset-bottom) + 76px); }
+@media (min-width: 1024px) {
+  .pj-acao-lista { bottom: 24px; left: 15rem; }
+}
+
+/* O conteúdo corta o que sai para os lados (animação entre separadores).
+   Com "clip" não vira contentor de scroll, e o campo da lista de compras
+   pode ficar preso ao topo (position: sticky) ao deslocar a página. */
+.pj-main { overflow-x: hidden; }
+@supports (overflow-x: clip) { .pj-main { overflow-x: clip; } }

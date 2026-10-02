@@ -629,7 +629,7 @@ export default function PoupeJa() {
             )}
 
             {/* Conteúdo */}
-            <main style={{ overflowX: "hidden" }}>
+            <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
                 {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
@@ -655,11 +655,8 @@ export default function PoupeJa() {
                   </div>
                 )}
                 {tab === "lista" && (
-                  <div className="pt-4">
-                    <button onClick={() => go("inicio")} className="press mx-4 mb-3 flex items-center gap-1.5 text-sm font-bold text-slate-400">
-                      <ArrowLeft size={15} /> Voltar
-                    </button>
-                    <SecaoListaCompras />
+                  <div className="pt-2">
+                    <SecaoListaCompras onVoltar={() => go("inicio")} />
                   </div>
                 )}
               </div>
