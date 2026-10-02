@@ -7,7 +7,7 @@ import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
-import { NOMES_ARTIGOS } from "./SecaoListaCompras";
+import { ITENS } from "./data/catalogo-lista";
 import { NotaCobertura } from "./Cobertura";
 import { N_COMPARADAS } from "./lib/cobertura";
 
@@ -28,10 +28,10 @@ const NOTA_LOJA = { lidl: "só promoções em loja", aldi: "preço de loja" };
 const normalizar = (q) => String(q || "").toLowerCase().replace(/\s+/g, " ").trim().slice(0, 60);
 const semAcentos = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-// Sugestões enquanto se escreve: o catálogo da lista de compras (~250
-// artigos com nomes que as lojas reconhecem). Primeiro os que começam
-// pelo que se escreveu, depois os que o contêm.
-const CATALOGO = [...new Set(NOMES_ARTIGOS.map(termoDePesquisa))].filter(Boolean);
+// Sugestões enquanto se escreve: os termos de pesquisa do catálogo da
+// lista (data/catalogo-lista), que as lojas reconhecem. Primeiro os que
+// começam pelo que se escreveu, depois os que o contêm.
+const CATALOGO = [...new Set(ITENS.map((i) => i.q))].filter(Boolean);
 function sugerir(texto) {
   const t = semAcentos(texto.trim());
   if (t.length < 2) return [];
