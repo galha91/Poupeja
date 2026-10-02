@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Check, ChevronDown, ChevronRight, LayoutList, Minus, Plus, Share2, Trash2, X } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, ChevronRight, LayoutList, Minus, Plus, Share2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
+import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, CATEGORIAS, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 
 /*
@@ -22,8 +22,8 @@ import { lerResumo, guardarResumo } from "./lib/resumoLista";
  * Partilhar fica no cabeçalho, como ação secundária.
  *
  * Nada depende de hover: toca-se na linha para marcar, na quantidade
- * para a mudar (e remover); deslizar para a esquerda também remove.
- * Remover e limpar têm "Anular" durante uns segundos.
+ * para a mudar, e na cruz ao fim da linha para remover. Remover e limpar
+ * têm "Anular" durante uns segundos.
  *
  * O resultado da comparação (ResultadoLista) só se descarrega ao comparar.
  */
@@ -73,70 +73,46 @@ const rotulo = { fontSize: 12, fontWeight: 600, textTransform: "uppercase", lett
 
 /* ── Uma linha da lista ─────────────────────────────────────────── */
 function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onRemover }) {
-  const [dx, setDx] = useState(0);
-  const toque = useRef(null);
-
-  // Deslizar para a esquerda remove. Só conta se o gesto for sobretudo
-  // horizontal — o resto é deslocar a página.
-  function inicio(e) { const t = e.touches[0]; toque.current = { x: t.clientX, y: t.clientY, h: null }; }
-  function mover(e) {
-    const s = toque.current; if (!s) return;
-    const t = e.touches[0]; const ddx = t.clientX - s.x; const ddy = t.clientY - s.y;
-    if (s.h === null && (Math.abs(ddx) > 8 || Math.abs(ddy) > 8)) s.h = Math.abs(ddx) > Math.abs(ddy);
-    if (s.h) setDx(Math.min(0, ddx));
-  }
-  function fim() {
-    const s = toque.current; toque.current = null;
-    if (s?.h && dx < -90) { onRemover(); return; }
-    setDx(0);
-  }
-
   const feito = item.feito;
   const qty = item.qty || 1;
   return (
-    <li className="relative" style={{ listStyle: "none", overflow: "hidden", borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
-      {dx < 0 && (
-        <div aria-hidden className="absolute inset-0 flex items-center justify-end" style={{ background: "var(--pj-danger-wash)", color: "var(--pj-danger)", paddingRight: 18, fontSize: 13, fontWeight: 600 }}>
-          Remover
-        </div>
-      )}
-      <div className="relative flex items-center" onTouchStart={inicio} onTouchMove={mover} onTouchEnd={fim}
-        style={{ minHeight: 52, background: "var(--pj-surface)", transform: dx ? `translateX(${dx}px)` : undefined, transition: dx ? "none" : "transform .2s" }}>
-        <button onClick={editando ? onEditar : onMarcar} className="pj-tap flex items-center flex-1 min-w-0 text-left"
-          style={{ gap: 14, minHeight: 52, padding: "0 4px 0 0", background: "transparent", border: 0 }}
-          aria-pressed={feito} aria-label={`${item.nome}${qty > 1 ? `, ${qty}` : ""}${feito ? ", comprado" : ""}`}>
-          <span aria-hidden className="flex items-center justify-center flex-none"
-            style={{ width: 22, height: 22, borderRadius: 7, border: feito ? 0 : "1.5px solid var(--pj-text-faint)", background: feito ? "var(--pj-brand)" : "transparent", transition: "background-color .15s ease" }}>
-            {feito && <Check size={14} strokeWidth={3} color="#fff" />}
-          </span>
-          <span className="truncate" style={{ fontSize: 16, fontWeight: 500, color: feito ? "var(--pj-text-faint)" : "var(--pj-text)", textDecoration: feito ? "line-through" : "none", transition: "color .15s ease" }}>
-            {item.nome}
-          </span>
-        </button>
+    <li className="flex items-center" style={{ listStyle: "none", minHeight: 52, borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
+      <button onClick={editando ? onEditar : onMarcar} className="pj-tap flex items-center flex-1 min-w-0 text-left"
+        style={{ gap: 14, minHeight: 52, padding: "0 4px 0 0", background: "transparent", border: 0 }}
+        aria-pressed={feito} aria-label={`${item.nome}${qty > 1 ? `, ${qty}` : ""}${feito ? ", comprado" : ""}`}>
+        <span aria-hidden className="flex items-center justify-center flex-none"
+          style={{ width: 22, height: 22, borderRadius: 7, border: feito ? 0 : "1.5px solid var(--pj-text-faint)", background: feito ? "var(--pj-brand)" : "transparent", transition: "background-color .15s ease" }}>
+          {feito && <Check size={14} strokeWidth={3} color="#fff" />}
+        </span>
+        <span className="truncate" style={{ fontSize: 16, fontWeight: 500, color: feito ? "var(--pj-text-faint)" : "var(--pj-text)", textDecoration: feito ? "line-through" : "none", transition: "color .15s ease" }}>
+          {item.nome}
+        </span>
+      </button>
 
-        {!feito && (editando ? (
-          <div className="flex items-center flex-none" style={{ gap: 2 }}>
-            <button onClick={() => onQty(-1)} disabled={qty <= 1} aria-label={`Menos ${item.nome}`} className="pj-tap flex items-center justify-center"
-              style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: qty <= 1 ? 0.4 : 1 }}>
-              <Minus size={16} />
-            </button>
-            <span className="pj-num text-center" aria-live="polite" style={{ width: 30, fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{qty}</span>
-            <button onClick={() => onQty(1)} aria-label={`Mais ${item.nome}`} className="pj-tap flex items-center justify-center"
-              style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)" }}>
-              <Plus size={16} />
-            </button>
-            <button onClick={onRemover} aria-label={`Remover ${item.nome}`} className="pj-tap flex items-center justify-center"
-              style={{ width: 44, height: 44, marginLeft: 4, borderRadius: 12, background: "transparent", border: 0, color: "var(--pj-danger)" }}>
-              <Trash2 size={17} />
-            </button>
-          </div>
-        ) : (
-          <button onClick={onEditar} aria-label={`Quantidade de ${item.nome}: ${qty}. Alterar`} className="pj-tap pj-num flex items-center justify-end flex-none"
-            style={{ minWidth: 44, height: 44, padding: "0 2px 0 8px", background: "transparent", border: 0, fontSize: 14, fontWeight: qty > 1 ? 600 : 500, color: qty > 1 ? "var(--pj-text)" : "var(--pj-text-faint)" }}>
-            {qty > 1 ? `${qty}×` : "1"}
+      {!feito && (editando ? (
+        <div className="flex items-center flex-none" style={{ gap: 2 }}>
+          <button onClick={() => onQty(-1)} disabled={qty <= 1} aria-label={`Menos ${item.nome}`} className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: qty <= 1 ? 0.4 : 1 }}>
+            <Minus size={16} />
           </button>
-        ))}
-      </div>
+          <span className="pj-num text-center" aria-live="polite" style={{ width: 30, fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{qty}</span>
+          <button onClick={() => onQty(1)} aria-label={`Mais ${item.nome}`} className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)" }}>
+            <Plus size={16} />
+          </button>
+        </div>
+      ) : (
+        <button onClick={onEditar} aria-label={`Quantidade de ${item.nome}: ${qty}. Alterar`} className="pj-tap pj-num flex items-center justify-end flex-none"
+          style={{ minWidth: 40, height: 44, padding: "0 2px 0 8px", background: "transparent", border: 0, fontSize: 14, fontWeight: qty > 1 ? 600 : 500, color: qty > 1 ? "var(--pj-text)" : "var(--pj-text-faint)" }}>
+          {qty > 1 ? `${qty}×` : "1"}
+        </button>
+      ))}
+
+      {/* Remover: uma cruz discreta, sempre no mesmo sítio, com "Anular" a seguir. */}
+      <button onClick={onRemover} aria-label={`Remover ${item.nome}`} className="pj-tap flex items-center justify-center flex-none"
+        style={{ width: 44, height: 44, marginRight: -10, background: "transparent", border: 0, color: "var(--pj-text-faint)" }}>
+        <X size={18} />
+      </button>
     </li>
   );
 }
@@ -169,6 +145,7 @@ export default function SecaoListaCompras({ onVoltar }) {
   const catalogoRef    = useRef(null);   // e aqui ao fechar "Todos os artigos"
   const [verCatalogo, setVerCatalogo] = useState(false);
   const [catAtiva, setCatAtiva] = useState(null);
+  const [outro, setOutro]       = useState("");     // "Outro…" escrito na folha de todos os artigos
 
   function push(novosItens, id) {
     if (!id) return;
@@ -302,7 +279,7 @@ export default function SecaoListaCompras({ onVoltar }) {
   const iniciais = !itens.length && !texto.trim() ? sugestoesIniciais(comparados) : [];
 
   // ── Ações ──
-  async function juntar(nome, { foco = true } = {}) {
+  async function juntar(nome, { foco = true, categoria = "" } = {}) {
     if (!String(nome || "").trim()) return;
     setTexto("");
     if (foco) inputRef.current?.focus();
@@ -310,7 +287,7 @@ export default function SecaoListaCompras({ onVoltar }) {
     const doCatalogo = (catalogo || await carregarCatalogo())?.doCatalogo;
     // Primeiro artigo de uma lista vazia = lista criada (GA4).
     if (!pendentes.length) evento("lista_criada", { origem: doCatalogo?.(nome) ? "catalogo" : "texto" });
-    setItens(prev => adicionar(prev, nome, { doCatalogo }));
+    setItens(prev => adicionar(prev, nome, { doCatalogo, categoria }));
   }
 
   function marcar(id) {
@@ -455,10 +432,16 @@ export default function SecaoListaCompras({ onVoltar }) {
       {/* Todos os artigos do catálogo, por categoria (como a antiga grelha, em lista) */}
       {!texto.trim() && (
         <div className="px-4">
-          <button ref={catalogoRef} onClick={() => { carregarCatalogo(); setVerCatalogo(true); }} className="pj-tap flex items-center w-full"
-            style={{ gap: 10, minHeight: 44, padding: "0 4px", background: "transparent", border: 0, fontSize: 14.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-            <LayoutList size={17} aria-hidden /> <span className="flex-1 text-left">Ver todos os artigos</span>
-            <ChevronRight size={17} aria-hidden />
+          <button ref={catalogoRef} onClick={() => { carregarCatalogo(); setVerCatalogo(true); }} className="pj-tap press flex items-center w-full text-left"
+            style={{ gap: 12, minHeight: 60, padding: "10px 14px", borderRadius: 14, background: "var(--pj-brand-wash)", border: "1px solid var(--pj-brand-soft)" }}>
+            <span aria-hidden className="flex items-center justify-center flex-none" style={{ width: 38, height: 38, borderRadius: 11, background: "var(--pj-brand)", color: "#fff" }}>
+              <LayoutList size={19} />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>Ver todos os artigos</span>
+              <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>{CATEGORIAS.length} categorias · escolhe com um toque</span>
+            </span>
+            <ChevronRight size={18} aria-hidden style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
           </button>
         </div>
       )}
@@ -636,6 +619,22 @@ export default function SecaoListaCompras({ onVoltar }) {
                       </li>
                     );
                   })}
+                  {/* Não está no catálogo? Escreve-se aqui e fica nesta categoria. */}
+                  <li style={{ listStyle: "none", borderTop: "1px solid var(--pj-subtle)", paddingTop: 12 }}>
+                    <label htmlFor="pj-lista-outro" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)", marginBottom: 8 }}>
+                      Outro <span style={{ fontWeight: 500, color: "var(--pj-text-muted)" }}>· não está na lista? Escreve-o</span>
+                    </label>
+                    <form className="flex items-center" style={{ gap: 8 }}
+                      onSubmit={e => { e.preventDefault(); if (outro.trim()) { juntar(outro, { foco: false, categoria: cat }); setOutro(""); } }}>
+                      <input id="pj-lista-outro" value={outro} onChange={e => setOutro(e.target.value)} placeholder="Ex.: pilhas, fita-cola…"
+                        autoComplete="off" enterKeyHint="done" className="flex-1 min-w-0 focus:outline-none"
+                        style={{ height: 46, padding: "0 14px", borderRadius: 12, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }} />
+                      <button type="submit" disabled={!outro.trim()} aria-label={`Juntar outro artigo em ${cat}`} className="pj-tap flex items-center justify-center flex-none"
+                        style={{ width: 46, height: 46, borderRadius: 12, border: 0, background: outro.trim() ? "var(--pj-brand)" : "var(--pj-subtle)", color: outro.trim() ? "#fff" : "var(--pj-text-faint)" }}>
+                        <Plus size={18} />
+                      </button>
+                    </form>
+                  </li>
                 </ul>
                 </div>
               </>

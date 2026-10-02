@@ -125,3 +125,12 @@ test("lista vazia: já comparados primeiro, depois os frequentes (do catálogo),
   assert.equal(s.length, 8);
   assert.equal(sugestoesIniciais([])[0].nome, "Leite meio-gordo");
 });
+
+test("'Outro…' numa categoria: fora do catálogo fica nessa categoria; no catálogo manda o catálogo", () => {
+  let l = adicionarSem([], "pilhas aa", { id: 1, doCatalogo, categoria: "Limpeza" });
+  assert.equal(l[0].categoria, "Limpeza");
+  l = adicionarSem(l, "bananas", { id: 2, doCatalogo, categoria: "Limpeza" });
+  assert.equal(l[0].categoria, "Frutas");
+  l = adicionarSem(l, "xpto", { id: 3, doCatalogo, categoria: "Inventada" });
+  assert.equal(l[0].categoria, "");
+});
