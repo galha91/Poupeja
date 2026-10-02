@@ -3,6 +3,8 @@ import { Bell, BellRing, X, TrendingDown, ChartLine } from "lucide-react";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { estadoPush, ativarPush } from "./lib/push";
+import { avaliarPreco } from "./lib/historicoPrecos";
+import { N_COMPARADAS } from "./lib/cobertura";
 
 /*
  * Alertas de preço e histórico do "Comparar preços".
@@ -26,24 +28,57 @@ export function alertaDe(q) {
   return lerAlertas().find((a) => a.q === q) || null;
 }
 
+/*
+ * "Vigiar" um artigo da lista: sem preço-alvo. A referência é o melhor
+ * preço de hoje; avisa quando descer ou entrar em promoção (lib/alertas).
+ * Uma pesquisa tem um alerta só — vigiar substitui um alvo que lá estivesse.
+ */
+export function vigiar({ q, valor, unidade, modo, promo }) {
+  const atual = lerAlertas();
+  if (atual.length >= MAX_ALERTAS && !atual.some((a) => a.q === q)) return null;
+  const novo = { id: Date.now(), q, tipo: "vigiar", referencia: valor, unidade, modo, promoNaCriacao: !!promo, criadoEm: new Date().toISOString() };
+  guardarAlertas([novo, ...atual.filter((a) => a.q !== q)]);
+  evento("alerta_preco_criado", { q, tipo: "vigiar", origem: "lista" });
+  return novo;
+}
+export function deixarDeVigiar(q) {
+  guardarAlertas(lerAlertas().filter((a) => a.q !== q));
+  evento("alerta_preco_removido", { q, origem: "lista" });
+}
+
 const sufixo = (unidade) => (unidade === "embalagem" ? "" : `/${unidade}`);
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 const dataCurta = (iso) => { const [, m, d] = String(iso).split("-"); return `${Number(d)} ${MESES[Number(m) - 1]}`; };
 
-/* ── Histórico: uma linha, logo abaixo do preço ── */
+/* ── Histórico: mínimo, máximo e hoje, logo abaixo do preço ── */
+const VEREDITO = {
+  minimo: (dias) => `O preço mais baixo dos últimos ${dias} dias`,
+  bom: () => "Bom preço face aos últimos 30 dias",
+  normal: () => "Preço habitual nos últimos 30 dias",
+  alto: () => "Acima do habitual nos últimos 30 dias",
+};
 export function LinhaHistorico({ historico, valorAtual, unidade }) {
   if (!historico?.minimo || valorAtual == null) return null;
   const min = historico.minimo.valor;
-  const noMinimo = valorAtual <= min + 0.005;
+  const aval = avaliarPreco(valorAtual, historico);
+  const destaque = aval === "minimo" || aval === "bom";
+  const suf = sufixo(unidade);
   return (
-    <div className="flex items-center gap-2 mt-3" style={{ padding: "8px 10px", borderRadius: 10, background: noMinimo ? "var(--pj-brand-wash)" : "var(--pj-surface)" }}>
-      {noMinimo
-        ? <TrendingDown size={15} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
-        : <ChartLine size={15} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />}
-      <span style={{ fontSize: 12.5, lineHeight: 1.4, color: noMinimo ? "var(--pj-brand-ink)" : "var(--pj-text-muted)", fontWeight: noMinimo ? 600 : 500 }}>
-        {noMinimo
-          ? `O preço mais baixo dos últimos ${historico.dias} dias`
-          : <>Nos últimos 30 dias já esteve a <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(min, 2)} €{sufixo(unidade)}</strong> ({dataCurta(historico.minimo.dia)})</>}
+    <div className="flex items-start gap-2 mt-3" style={{ padding: "8px 10px", borderRadius: 10, background: destaque ? "var(--pj-brand-wash)" : "var(--pj-surface)" }}>
+      {destaque
+        ? <TrendingDown size={15} style={{ color: "var(--pj-brand-ink)", flexShrink: 0, marginTop: 1 }} />
+        : <ChartLine size={15} style={{ color: "var(--pj-text-faint)", flexShrink: 0, marginTop: 1 }} />}
+      <span style={{ fontSize: 12.5, lineHeight: 1.45, color: destaque ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>
+        {historico.maximo ? (
+          <>
+            <span style={{ display: "block", fontWeight: 600 }}>{VEREDITO[aval](historico.dias)}</span>
+            <span className="pj-num" style={{ display: "block", color: "var(--pj-text-muted)" }}>
+              Mín. {eur(min, 2)} € · Máx. {eur(historico.maximo.valor, 2)} € · Hoje {eur(valorAtual, 2)} €{suf}
+            </span>
+          </>
+        ) : aval === "minimo"
+          ? <span style={{ fontWeight: 600 }}>{VEREDITO.minimo(historico.dias)}</span>
+          : <>Nos últimos 30 dias já esteve a <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(min, 2)} €{suf}</strong> ({dataCurta(historico.minimo.dia)})</>}
       </span>
     </div>
   );
@@ -104,7 +139,7 @@ export function CriarAlerta({ q, valorAtual, unidade, modo, onFechar, onGuardado
         </button>
       </div>
       <p style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 8, lineHeight: 1.5 }}>
-        Hoje está a {eur(valorAtual, 2)} €{sufixo(unidade)}. Verificamos todos os dias nos 5 supermercados e mandamos uma notificação quando baixar.
+        Hoje está a {eur(valorAtual, 2)} €{sufixo(unidade)}. Verificamos todos os dias nos {N_COMPARADAS} supermercados comparados e mandamos uma notificação quando baixar.
         {push === "bloqueado" && " As notificações estão bloqueadas neste telemóvel — ativa-as nas definições do sistema para receberes o aviso."}
         {push === "sem-suporte" && " Este browser não recebe notificações; instala a app para receberes o aviso."}
       </p>
@@ -127,6 +162,7 @@ export function ListaAlertas({ onAbrir }) {
     const l = lerAlertas().filter((a) => a.q !== q);
     guardarAlertas(l);
     setAlertas(l);
+    evento("alerta_preco_removido", { q, origem: "comparar" });
   }
 
   return (
@@ -139,7 +175,9 @@ export function ListaAlertas({ onAbrir }) {
           <button onClick={() => onAbrir(a.q)} className="pj-tap flex-1 min-w-0 text-left" style={{ background: "transparent", border: 0, padding: 0 }}>
             <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{a.q.charAt(0).toUpperCase() + a.q.slice(1)}</span>
             <span className="pj-num" style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 1 }}>
-              Avisar abaixo de {eur(a.alvo, 2)} €{sufixo(a.unidade)}
+              {a.tipo === "vigiar"
+                ? `A vigiar · avisamos se descer de ${eur(a.referencia, 2)} €${sufixo(a.unidade)}`
+                : `Avisar abaixo de ${eur(a.alvo, 2)} €${sufixo(a.unidade)}`}
             </span>
           </button>
           <button onClick={() => apagar(a.q)} aria-label={`Apagar alerta de ${a.q}`} className="pj-tap flex items-center justify-center"

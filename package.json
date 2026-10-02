@@ -12,7 +12,8 @@
     "cap:sync": "cap sync",
     "cap:android": "cap open android",
     "cap:ios": "cap open ios",
-    "icons:generate": "node scripts/generate-icons.js && npx capacitor-assets generate"
+    "icons:generate": "node scripts/generate-icons.js && npx capacitor-assets generate",
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/*.test.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",

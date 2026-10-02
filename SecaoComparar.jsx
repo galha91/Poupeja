@@ -8,6 +8,8 @@ import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/compara
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
 import { NOMES_ARTIGOS } from "./SecaoListaCompras";
+import { NotaCobertura } from "./Cobertura";
+import { N_COMPARADAS } from "./lib/cobertura";
 
 /*
  * "Onde está mais barato?" — escreve-se o artigo, a app pergunta aos
@@ -20,14 +22,6 @@ import { NOMES_ARTIGOS } from "./SecaoListaCompras";
 const LS_RECENTES = "poupeja_pesquisas_precos";
 const LS_LISTA = "poupeja_lista_compras";
 const SUGESTOES = ["laranjas", "leite meio gordo", "ovos", "arroz agulha", "azeite", "bananas", "frango", "café moído"];
-const LOJAS_COMPARADAS = [
-  { nome: "Continente", cobertura: "Todos os produtos" },
-  { nome: "Pingo Doce", cobertura: "Todos os produtos" },
-  { nome: "Auchan", cobertura: "Todos os produtos" },
-  { nome: "Aldi", cobertura: "Todos os produtos · preço de loja" },
-  { nome: "Lidl", cobertura: "Só promoções da semana", parcial: true },
-];
-
 // Nota ao lado do nome da loja, onde o preço não é o da loja online.
 const NOTA_LOJA = { lidl: "só promoções em loja", aldi: "preço de loja" };
 
@@ -155,7 +149,7 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
         {/* Mesmo preço em várias lojas: dizer isso, não coroar a primeira. */}
         {empatados.length > 1
           ? `Mesmo preço no ${empatados.map((e) => e.lojaNome).join(", ").replace(/, ([^,]*)$/, " e no $1")}`
-          : `Mais barato hoje · ${p.lojaNome}`}
+          : `${p.lojaNome} · o mais barato entre os supermercados comparados`}
       </div>
       <div style={{ padding: 16 }}>
         <div className="flex items-start gap-3">
@@ -460,29 +454,20 @@ export default function SecaoComparar() {
 
       {estado === "inicio" && listaCompras.length >= 2 && (
         <div className="px-4 mt-5">
-          <CompararLista itens={listaCompras} />
+          <CompararLista itens={listaCompras} nota={false} />
         </div>
       )}
 
       {estado === "inicio" && (
-        <div className="px-4 mt-5">
-          {/* Dizer à partida o que se compara — e que o Lidl só traz promoções. */}
-          <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)", padding: "14px 16px 6px" }}>Supermercados que comparamos</p>
-            {LOJAS_COMPARADAS.map((l) => (
-              <div key={l.nome} className="flex items-center gap-3" style={{ padding: "9px 16px", borderTop: "1px solid var(--pj-subtle)" }}>
-                <LogoLoja loja={l.nome} size={32} radius={8} />
-                <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: l.parcial ? "var(--pj-warn)" : "var(--pj-brand-ink)" }}>{l.cobertura}</span>
-              </div>
-            ))}
-          </div>
+        <div className="px-4 mt-3">
+          {/* Discreto: uma linha; o pormenor abre ao tocar (lib/cobertura). */}
+          <NotaCobertura />
         </div>
       )}
 
       {estado === "a-carregar" && (
         <>
-          <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>A ver os preços de «{pesquisa}» em {LOJAS_COMPARADAS.length} supermercados…</p>
+          <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>A ver os preços de «{pesquisa}» em {N_COMPARADAS} supermercados…</p>
           <Esqueleto />
         </>
       )}
@@ -580,6 +565,7 @@ export default function SecaoComparar() {
                 (na loja física podem ser diferentes). Aldi e Lidl: preços de loja; no Lidl só aparecem as promoções desta semana e da próxima.
               </span>
             </p>
+            <NotaCobertura style={{ padding: "0 2px" }} />
           </div>
         ) : (
           <div className="px-4 mt-5">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ShoppingCart, Plus, X, Check, Search, ChevronLeft, Minus, Share2, Link } from "lucide-react";
 import CompararLista from "./CompararLista";
+import { evento } from "./lib/analytics";
 
 const LS_KEY = "poupeja_lista_compras";
 
@@ -381,6 +382,8 @@ export default function SecaoListaCompras() {
   const progresso = itens.length ? (feitos.length / itens.length) * 100 : 0;
 
   function adicionarItem(nome, emoji = "🛒", cat = "") {
+    // Primeiro artigo de uma lista vazia = lista criada (GA4).
+    if (!itens.some(i => !i.feito)) evento("lista_criada", { origem: cat ? "catalogo" : "texto" });
     setItens(prev => {
       const existe = prev.find(i => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
       if (existe) {
@@ -422,6 +425,10 @@ export default function SecaoListaCompras() {
   const todasItems = Object.entries(CATS).flatMap(([cat, c]) =>
     c.items.map(it => ({ ...it, cat }))
   );
+  // Produtos já comparados no "Comparar preços" — os nomes que as lojas reconhecem.
+  const [comparados] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("poupeja_pesquisas_precos") || "[]"); } catch { return []; }
+  });
   const resultadosBusca = busca.length > 1
     ? todasItems.filter(it => it.nome.toLowerCase().includes(busca.toLowerCase()))
     : [];
@@ -505,6 +512,26 @@ export default function SecaoListaCompras() {
             <Plus size={20} className="text-white" />
           </button>
         </div>
+
+        {/* Já comparados — um toque e entram na lista */}
+        {busca.length < 2 && comparados.length > 0 && (
+          <div className="px-4 mb-5">
+            <p className="mb-2" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Já comparaste</p>
+            <div className="flex gap-1.5 flex-wrap">
+              {comparados.map(q => {
+                const nome = q.charAt(0).toUpperCase() + q.slice(1);
+                const na = itens.find(i => i.nome.toLowerCase() === q && !i.feito);
+                return (
+                  <button key={q} onClick={() => adicionarItem(nome)} className="pj-tap press"
+                    style={{ fontSize: 12.5, fontWeight: 600, padding: "8px 12px", borderRadius: 999, border: "1px solid var(--pj-border)",
+                      background: na ? "var(--pj-brand-wash)" : "var(--pj-card)", color: na ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>
+                    {na ? `${nome} · ${na.qty}×` : `+ ${nome}`}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Resultados de busca */}
         {busca.length > 1 ? (

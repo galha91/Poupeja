@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import DesafiosMensais from "./DesafiosMensais";
 import MetaPoupanca from "./MetaPoupanca";
+import PoupancaListas from "./PoupancaListas";
 import Divisoria from "./Divisoria";
 import { partilharPoupanca } from "./lib/partilhar";
 import { eur } from "./lib/formato";
@@ -168,6 +169,9 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         </div>
       </div>
       <div className="px-6"><Divisoria /></div>
+
+      {/* Quanto poupaste com a lista otimizada (estimativa) */}
+      <PoupancaListas setTab={setTab} />
 
       {/* Meta de poupança — "estou a poupar para…" */}
       <MetaPoupanca />
