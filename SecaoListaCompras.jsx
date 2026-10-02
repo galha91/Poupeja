@@ -1,227 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import { ShoppingCart, Plus, X, Check, Search, ChevronLeft, Minus, Share2, Link } from "lucide-react";
+import { ShoppingCart, Plus, X, Check, Minus, Share2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import CompararLista from "./CompararLista";
 import { evento } from "./lib/analytics";
 
+// O catálogo (~230 artigos) só é carregado quando se vai adicionar.
+const AdicionarArtigos = dynamic(() => import("./AdicionarArtigos"), { ssr: false, loading: () => <div className="px-4 pt-2" style={{ height: 400 }} /> });
+
 const LS_KEY = "poupeja_lista_compras";
 
-const CATS = {
-  "Frutas": {
-    emoji: "🍎", cor: "var(--pj-cat-vermelho)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Maçãs", emoji: "🍎" }, { nome: "Bananas", emoji: "🍌" },
-      { nome: "Laranjas", emoji: "🍊" }, { nome: "Morangos", emoji: "🍓" },
-      { nome: "Uvas", emoji: "🍇" }, { nome: "Pêras", emoji: "🍐" },
-      { nome: "Melão", emoji: "🍈" }, { nome: "Limões", emoji: "🍋" },
-      { nome: "Kiwi", emoji: "🥝" }, { nome: "Ananás", emoji: "🍍" },
-      { nome: "Manga", emoji: "🥭" }, { nome: "Cerejas", emoji: "🍒" },
-      { nome: "Pêssegos", emoji: "🍑" }, { nome: "Ameixas", emoji: "" },
-      { nome: "Melancia", emoji: "🍉" }, { nome: "Figos", emoji: "" },
-      { nome: "Framboesas", emoji: "" }, { nome: "Mirtilos", emoji: "🫐" },
-      { nome: "Tangerinas", emoji: "🍊" }, { nome: "Amoras", emoji: "" },
-      { nome: "Toranja", emoji: "🍊" }, { nome: "Papaia", emoji: "" },
-      { nome: "Coco", emoji: "🥥" }, { nome: "Abacate", emoji: "🥑" },
-    ],
-  },
-  "Legumes": {
-    emoji: "🥦", cor: "var(--pj-cat-verde)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Tomates", emoji: "🍅" }, { nome: "Alface", emoji: "🥬" },
-      { nome: "Cenouras", emoji: "🥕" }, { nome: "Cebolas", emoji: "🧅" },
-      { nome: "Alho", emoji: "🧄" }, { nome: "Batatas", emoji: "🥔" },
-      { nome: "Bróculos", emoji: "🥦" }, { nome: "Pepinos", emoji: "🥒" },
-      { nome: "Pimentos", emoji: "🫑" }, { nome: "Couve", emoji: "🥬" },
-      { nome: "Espinafres", emoji: "🥬" }, { nome: "Cogumelos", emoji: "🍄" },
-      { nome: "Beringela", emoji: "🍆" }, { nome: "Malagueta", emoji: "🌶️" },
-      { nome: "Beterraba", emoji: "" }, { nome: "Nabo", emoji: "" },
-      { nome: "Ervilhas", emoji: "🫛" }, { nome: "Feijão verde", emoji: "🫛" },
-      { nome: "Milho", emoji: "🌽" }, { nome: "Courgette", emoji: "🥒" },
-      { nome: "Salsa", emoji: "🌿" }, { nome: "Coentros", emoji: "🌿" },
-      { nome: "Hortelã", emoji: "🌿" }, { nome: "Louro", emoji: "🌿" },
-      { nome: "Cebola roxa", emoji: "🧅" }, { nome: "Alho francês", emoji: "🥬" },
-      { nome: "Aipo", emoji: "🥬" }, { nome: "Grelos", emoji: "🥬" },
-    ],
-  },
-  "Laticínios & Ovos": {
-    emoji: "🥛", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Leite meio-gordo", emoji: "🥛" }, { nome: "Leite gordo", emoji: "🥛" },
-      { nome: "Iogurte natural", emoji: "🫙" }, { nome: "Iogurte grego", emoji: "🫙" },
-      { nome: "Iogurte de fruta", emoji: "🫙" }, { nome: "Queijo flamengo", emoji: "🧀" },
-      { nome: "Queijo fresco", emoji: "🧀" }, { nome: "Queijo parmesão", emoji: "🧀" },
-      { nome: "Manteiga", emoji: "🧈" }, { nome: "Natas", emoji: "🥛" },
-      { nome: "Ovos", emoji: "🥚" }, { nome: "Requeijão", emoji: "🧀" },
-      { nome: "Mozarela", emoji: "🧀" }, { nome: "Queijo para barrar", emoji: "🧀" },
-      { nome: "Creme fraîche", emoji: "🥛" }, { nome: "Kefir", emoji: "🥛" },
-      { nome: "Queijo da Serra", emoji: "🧀" }, { nome: "Queijo azul", emoji: "🧀" },
-    ],
-  },
-  "Padaria": {
-    emoji: "🍞", cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Pão de trigo", emoji: "🍞" }, { nome: "Pão de forma", emoji: "🍞" },
-      { nome: "Pão integral", emoji: "🍞" }, { nome: "Baguete", emoji: "🥖" },
-      { nome: "Croissant", emoji: "🥐" }, { nome: "Tostas", emoji: "🍞" },
-      { nome: "Bolacha Maria", emoji: "🍪" }, { nome: "Bolacha torrada", emoji: "🍪" },
-      { nome: "Bolos", emoji: "🧁" }, { nome: "Pão de leite", emoji: "🍞" },
-      { nome: "Tarte", emoji: "🥧" }, { nome: "Pastel de nata", emoji: "🥧" },
-      { nome: "Broa", emoji: "🍞" }, { nome: "Papo-seco", emoji: "🥖" },
-      { nome: "Pão de centeio", emoji: "🍞" }, { nome: "Muffins", emoji: "🧁" },
-      { nome: "Granola", emoji: "🌾" },
-    ],
-  },
-  "Carnes": {
-    emoji: "🥩", cor: "var(--pj-cat-vermelho)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Frango inteiro", emoji: "🍗" }, { nome: "Peito de frango", emoji: "🍗" },
-      { nome: "Coxa de frango", emoji: "🍗" }, { nome: "Carne picada", emoji: "🥩" },
-      { nome: "Bifes de vaca", emoji: "🥩" }, { nome: "Costeletas de porco", emoji: "🥩" },
-      { nome: "Lombo de porco", emoji: "🥩" }, { nome: "Entrecosto", emoji: "🥩" },
-      { nome: "Cordeiro", emoji: "🍖" }, { nome: "Vitela", emoji: "🥩" },
-      { nome: "Presunto", emoji: "🥓" }, { nome: "Fiambre", emoji: "🍖" },
-      { nome: "Chouriço", emoji: "🌭" }, { nome: "Salpicão", emoji: "🌭" },
-      { nome: "Alheira", emoji: "🌭" }, { nome: "Salsichas", emoji: "🌭" },
-      { nome: "Bacon", emoji: "🥓" }, { nome: "Mortadela", emoji: "🍖" },
-      { nome: "Paio", emoji: "🌭" }, { nome: "Linguiça", emoji: "🌭" },
-      { nome: "Morcela", emoji: "🌭" }, { nome: "Peru fatiado", emoji: "🍗" },
-    ],
-  },
-  "Peixe & Marisco": {
-    emoji: "🐟", cor: "var(--pj-cat-petroleo)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Atum (lata)", emoji: "🐟" }, { nome: "Sardinha (lata)", emoji: "🐟" },
-      { nome: "Cavala (lata)", emoji: "🐟" }, { nome: "Bacalhau", emoji: "🐠" },
-      { nome: "Salmão", emoji: "🐟" }, { nome: "Pescada", emoji: "🐠" },
-      { nome: "Dourada", emoji: "🐠" }, { nome: "Robalo", emoji: "🐠" },
-      { nome: "Camarão", emoji: "🦐" }, { nome: "Lulas", emoji: "🦑" },
-      { nome: "Mexilhão", emoji: "🦪" }, { nome: "Polvo", emoji: "🐙" },
-      { nome: "Truta", emoji: "🐟" }, { nome: "Filetes", emoji: "🐠" },
-      { nome: "Peixe espada", emoji: "🐠" }, { nome: "Choco", emoji: "🦑" },
-      { nome: "Amêijoas", emoji: "🦪" }, { nome: "Berbigão", emoji: "🦪" },
-    ],
-  },
-  "Mercearia": {
-    emoji: "🛒", cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Arroz", emoji: "🍚" }, { nome: "Massa esparguete", emoji: "🍝" },
-      { nome: "Massa penne", emoji: "🍝" }, { nome: "Massa laços", emoji: "🍝" },
-      { nome: "Farinha", emoji: "🌾" }, { nome: "Açúcar", emoji: "🍬" },
-      { nome: "Sal", emoji: "🧂" }, { nome: "Azeite", emoji: "🫒" },
-      { nome: "Óleo vegetal", emoji: "🫙" }, { nome: "Vinagre", emoji: "🫙" },
-      { nome: "Molho de tomate", emoji: "🍅" }, { nome: "Polpa de tomate", emoji: "🍅" },
-      { nome: "Feijão (lata)", emoji: "🫘" }, { nome: "Grão (lata)", emoji: "🫘" },
-      { nome: "Lentilhas", emoji: "🫘" }, { nome: "Caldo de galinha", emoji: "🫙" },
-      { nome: "Maionese", emoji: "🫙" }, { nome: "Ketchup", emoji: "🍅" },
-      { nome: "Mostarda", emoji: "🫙" }, { nome: "Mel", emoji: "🍯" },
-      { nome: "Compotas", emoji: "🍓" }, { nome: "Cereais", emoji: "🌾" },
-      { nome: "Aveia", emoji: "🌾" }, { nome: "Flocos milho", emoji: "🌾" },
-      { nome: "Pimenta", emoji: "🫙" }, { nome: "Canela", emoji: "🫙" },
-      { nome: "Bicarbonato", emoji: "🫙" }, { nome: "Fermento", emoji: "🫙" },
-      { nome: "Levedura", emoji: "🫙" }, { nome: "Amido milho", emoji: "🌽" },
-      { nome: "Milho (lata)", emoji: "🌽" }, { nome: "Pickles", emoji: "🥒" },
-    ],
-  },
-  "Bebidas": {
-    emoji: "🧃", cor: "var(--pj-cat-ameixa)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Água natural", emoji: "💧" }, { nome: "Água com gás", emoji: "💧" },
-      { nome: "Sumo de laranja", emoji: "🍊" }, { nome: "Sumo de fruta", emoji: "🧃" },
-      { nome: "Refrigerante cola", emoji: "🥤" }, { nome: "Refrigerante limão", emoji: "🥤" },
-      { nome: "Cerveja", emoji: "🍺" }, { nome: "Vinho tinto", emoji: "🍷" },
-      { nome: "Vinho branco", emoji: "🥂" }, { nome: "Vinho verde", emoji: "🍷" },
-      { nome: "Espumante", emoji: "🍾" }, { nome: "Sumo de maçã", emoji: "🍎" },
-      { nome: "Café", emoji: "☕" }, { nome: "Cápsulas café", emoji: "☕" },
-      { nome: "Chá", emoji: "🍵" }, { nome: "Leite vegetal", emoji: "🥛" },
-      { nome: "Chocolate quente", emoji: "🍫" }, { nome: "Bebida energética", emoji: "⚡" },
-      { nome: "Tónica", emoji: "🥤" }, { nome: "Cidra", emoji: "🍺" },
-      { nome: "Sangria", emoji: "🍷" }, { nome: "Água com sabor", emoji: "💧" },
-    ],
-  },
-  "Congelados": {
-    emoji: "🧊", cor: "var(--pj-cat-petroleo)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Batata frita (cong.)", emoji: "🍟" }, { nome: "Pizza congelada", emoji: "🍕" },
-      { nome: "Lasanha congelada", emoji: "🍝" }, { nome: "Legumes cong.", emoji: "🥦" },
-      { nome: "Peixe cong.", emoji: "🐟" }, { nome: "Camarão cong.", emoji: "🦐" },
-      { nome: "Hambúrgueres", emoji: "🍔" }, { nome: "Nuggets", emoji: "🍗" },
-      { nome: "Gelados", emoji: "🍦" }, { nome: "Fruta cong.", emoji: "🍓" },
-      { nome: "Pão cong.", emoji: "🍞" }, { nome: "Waffles cong.", emoji: "🧇" },
-      { nome: "Ervilhas cong.", emoji: "🫛" }, { nome: "Espinafres cong.", emoji: "🥬" },
-    ],
-  },
-  "Snacks": {
-    emoji: "🍫", cor: "var(--pj-cat-ocre)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Chocolate", emoji: "🍫" }, { nome: "Batatas fritas", emoji: "🥔" },
-      { nome: "Pipocas", emoji: "🍿" }, { nome: "Gomas", emoji: "🍬" },
-      { nome: "Amendoins", emoji: "🥜" }, { nome: "Frutos secos", emoji: "🥜" },
-      { nome: "Barras de cereais", emoji: "🌾" }, { nome: "Rebuçados", emoji: "🍬" },
-      { nome: "Chupa-chupas", emoji: "🍭" }, { nome: "Chips", emoji: "🥔" },
-      { nome: "Bolachas doces", emoji: "🍪" }, { nome: "Croissant embal.", emoji: "🥐" },
-      { nome: "Panquecas", emoji: "🥞" }, { nome: "Tortilhas", emoji: "🫓" },
-      { nome: "Rissóis", emoji: "🫓" }, { nome: "Croquetes", emoji: "🫓" },
-    ],
-  },
-  "Limpeza": {
-    emoji: "🧹", cor: "var(--pj-cat-petroleo)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Detergente loiça", emoji: "🧴" }, { nome: "Detergente máq.", emoji: "🧺" },
-      { nome: "Amaciador roupa", emoji: "🧺" }, { nome: "Limpeza WC", emoji: "🚿" },
-      { nome: "Limpeza casa banho", emoji: "🫧" }, { nome: "Limpeza cozinha", emoji: "🫧" },
-      { nome: "Papel higiénico", emoji: "🧻" }, { nome: "Papel de cozinha", emoji: "🧻" },
-      { nome: "Guardanapos", emoji: "🧻" }, { nome: "Sacos do lixo", emoji: "🗑️" },
-      { nome: "Sacos congelar", emoji: "🛍️" }, { nome: "Esfregão", emoji: "🧹" },
-      { nome: "Vassoura", emoji: "🧹" }, { nome: "Desinfetante", emoji: "💧" },
-      { nome: "Lixívia", emoji: "💧" }, { nome: "Esponjas", emoji: "🧽" },
-      { nome: "Pano de cozinha", emoji: "🧻" }, { nome: "Film plástico", emoji: "🫙" },
-      { nome: "Papel de alumínio", emoji: "🫙" }, { nome: "Ambientador", emoji: "🌸" },
-      { nome: "Spray limpeza", emoji: "💧" }, { nome: "Pastilhas máq. loiça", emoji: "🧴" },
-    ],
-  },
-  "Higiene": {
-    emoji: "🧼", cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Champô", emoji: "🧴" }, { nome: "Condicionador", emoji: "🧴" },
-      { nome: "Gel de banho", emoji: "🚿" }, { nome: "Sabonete", emoji: "🧼" },
-      { nome: "Pasta dentes", emoji: "🪥" }, { nome: "Escova dentes", emoji: "🪥" },
-      { nome: "Fio dentário", emoji: "🦷" }, { nome: "Elixir bucal", emoji: "🦷" },
-      { nome: "Desodorizante", emoji: "🧴" }, { nome: "Creme rosto", emoji: "🧴" },
-      { nome: "Creme corpo", emoji: "🧴" }, { nome: "Protetor solar", emoji: "☀️" },
-      { nome: "Maquilhagem", emoji: "💄" }, { nome: "Máscara facial", emoji: "🧖" },
-      { nome: "Pensos higiénicos", emoji: "🩸" }, { nome: "Tampões", emoji: "🩸" },
-      { nome: "Algodão", emoji: "🌱" }, { nome: "Lâminas barbear", emoji: "🪒" },
-      { nome: "Espuma de barbear", emoji: "🪒" }, { nome: "Perfume", emoji: "🌺" },
-      { nome: "Cotonetes", emoji: "🌱" }, { nome: "Papel higiénico húmido", emoji: "🧻" },
-      { nome: "Champô seco", emoji: "🧴" }, { nome: "Creme de mãos", emoji: "🧴" },
-    ],
-  },
-  "Bebé & Criança": {
-    emoji: "👶", cor: "var(--pj-cat-rosa)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Fraldas", emoji: "👶" }, { nome: "Lenços húmidos", emoji: "🧻" },
-      { nome: "Leite em pó", emoji: "🥛" }, { nome: "Papas bebé", emoji: "🍼" },
-      { nome: "Iogurte bebé", emoji: "🫙" }, { nome: "Sumo bebé", emoji: "🧃" },
-      { nome: "Creme bumbum", emoji: "🧴" }, { nome: "Champô bebé", emoji: "🧴" },
-      { nome: "Chupeta", emoji: "🍼" }, { nome: "Biberão", emoji: "🍼" },
-    ],
-  },
-  "Farmácia": {
-    emoji: "💊", cor: "var(--pj-cat-azul)", bg: "var(--pj-subtle)",
-    items: [
-      { nome: "Paracetamol", emoji: "💊" }, { nome: "Ibuprofeno", emoji: "💊" },
-      { nome: "Vitamina C", emoji: "🍊" }, { nome: "Vitamina D", emoji: "☀️" },
-      { nome: "Multivitaminas", emoji: "💊" }, { nome: "Magnésio", emoji: "💊" },
-      { nome: "Probióticos", emoji: "🫙" }, { nome: "Ómega 3", emoji: "🐟" },
-      { nome: "Pensos rápidos", emoji: "🩹" }, { nome: "Termómetro", emoji: "🌡️" },
-      { nome: "Álcool etílico", emoji: "💧" }, { nome: "Água oxigenada", emoji: "💧" },
-    ],
-  },
-};
-
-// Mostra o emoji quando existe; caso contrário, um círculo com a inicial
-// e a cor da categoria (evita emojis enganadores em produtos sem emoji próprio).
-function IconeArtigo({ emoji, nome, cor = "#0b6b4f", size = 30, className = "" }) {
-  if (emoji) return <span className={`leading-none ${className}`} style={{ fontSize: size }}>{emoji}</span>;
+function IconeArtigo({ nome, size = 30, className = "" }) {
+  // Sem emojis: metade dos artigos tinha um, a outra metade não, e a
+  // lista parecia montada à pressa. A inicial é igual para todos.
   const inicial = (nome || "?").trim().charAt(0).toUpperCase();
   return (
     <span
@@ -233,8 +23,6 @@ function IconeArtigo({ emoji, nome, cor = "#0b6b4f", size = 30, className = "" }
   );
 }
 
-// Nomes do catálogo da lista — o "Comparar preços" usa-os como sugestões.
-export const NOMES_ARTIGOS = Object.values(CATS).flatMap((c) => c.items.map((i) => i.nome));
 
 function lerItens() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; }
@@ -274,15 +62,11 @@ function gerarShareId() {
 export default function SecaoListaCompras() {
   const [itens, setItens]       = useState(lerItens);
   const [modo, setModo]         = useState("lista"); // "lista" | "adicionar"
-  const [catAtiva, setCatAtiva] = useState("Frutas");
-  const [busca, setBusca]       = useState("");
-  const [inputCustom, setInputCustom] = useState("");
   const [listaId, setListaId]   = useState(() => {
     try { return localStorage.getItem(LS_SHARE_KEY) || null; } catch { return null; }
   });
   const [copiado, setCopiado]   = useState(false);
   const [criandoLink, setCriandoLink] = useState(false);
-  const inputRef       = useRef(null);
   const ultimoPull     = useRef(null);   // JSON do último estado vindo do servidor
   const primeiraRender = useRef(true);
   const pushTimer      = useRef(null);
@@ -381,24 +165,26 @@ export default function SecaoListaCompras() {
   const feitos    = itens.filter(i => i.feito);
   const progresso = itens.length ? (feitos.length / itens.length) * 100 : 0;
 
-  function adicionarItem(nome, emoji = "🛒", cat = "") {
+  function adicionarItem(nome, cat = "", q = "") {
     // Primeiro artigo de uma lista vazia = lista criada (GA4).
-    if (!itens.some(i => !i.feito)) evento("lista_criada", { origem: cat ? "catalogo" : "texto" });
+    if (!itens.some(i => !i.feito)) evento("lista_criada", { origem: q ? "catalogo" : "texto" });
     setItens(prev => {
       const existe = prev.find(i => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
-      if (existe) {
-        return prev.map(i => i.id === existe.id ? { ...i, qty: (i.qty || 1) + 1 } : i);
-      }
-      return [{ id: Date.now() + Math.random(), nome, emoji, categoria: cat, qty: 1, feito: false }, ...prev];
+      if (existe) return prev;
+      return [{ id: Date.now() + Math.random(), nome, emoji: "", categoria: cat, qty: 1, feito: false, ...(q ? { q } : {}) }, ...prev];
     });
   }
 
-  function adicionarCustom() {
-    const nome = inputCustom.trim();
-    if (!nome) return;
-    adicionarItem(nome);
-    setInputCustom("");
-    inputRef.current?.focus();
+  // Catálogo: um toque adiciona, outro toque tira (só dos por comprar).
+  function alternarCatalogo(it) {
+    const existe = itens.find(i => i.nome.toLowerCase() === it.nome.toLowerCase() && !i.feito);
+    if (existe) setItens(prev => prev.filter(i => i.id !== existe.id));
+    else adicionarItem(it.nome, it.cat, it.q);
+  }
+  function adicionarLivre(nome, alternar = false) {
+    const existe = itens.find(i => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
+    if (existe && alternar) setItens(prev => prev.filter(i => i.id !== existe.id));
+    else if (!existe) adicionarItem(nome.charAt(0).toUpperCase() + nome.slice(1));
   }
 
   function marcar(id) {
@@ -421,187 +207,14 @@ export default function SecaoListaCompras() {
     setItens(prev => prev.filter(i => !i.feito));
   }
 
-  // Busca cross-category
-  const todasItems = Object.entries(CATS).flatMap(([cat, c]) =>
-    c.items.map(it => ({ ...it, cat }))
-  );
-  // Produtos já comparados no "Comparar preços" — os nomes que as lojas reconhecem.
-  const [comparados] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("poupeja_pesquisas_precos") || "[]"); } catch { return []; }
-  });
-  const resultadosBusca = busca.length > 1
-    ? todasItems.filter(it => it.nome.toLowerCase().includes(busca.toLowerCase()))
-    : [];
-
   if (modo === "adicionar") {
-    const catCfg = CATS[catAtiva];
     return (
-      <div className="pb-28 no-scrollbar">
-
-        {/* Header */}
-        <div className="flex items-center gap-3 px-4 mb-4 pt-1">
-          <button onClick={() => { setModo("lista"); setBusca(""); }} className="pj-tap press w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
-            <ChevronLeft size={18} style={{ color: "var(--pj-text-muted)" }} />
-          </button>
-          <div className="flex-1 relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--pj-text-faint)" }} />
-            <input
-              autoFocus
-              type="text"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              placeholder="Pesquisar artigo…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-2xl text-sm font-medium focus:outline-none"
-              style={{ border: "1px solid var(--pj-border)", background: "var(--pj-card)", color: "var(--pj-text)" }}
-            />
-          </div>
-        </div>
-
-        {/* ── Mini-lista: sempre visível enquanto adiciona ── */}
-        {pendentes.length > 0 && (
-          <div className="px-4 mb-4">
-            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-              <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
-                <p className="flex items-center gap-1.5" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
-                  <ShoppingCart size={11} style={{ color: "var(--pj-brand-ink)" }} /> Na lista ({pendentes.length})
-                </p>
-                <button onClick={() => setModo("lista")} className="pj-tap press" style={{ fontSize: "11px", fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-                  Ver tudo →
-                </button>
-              </div>
-              <div className="flex gap-2 px-3 pb-3 overflow-x-auto no-scrollbar">
-                {pendentes.map(it => {
-                  const catC = it.categoria ? CATS[it.categoria] : null;
-                  return (
-                    <div
-                      key={it.id}
-                      className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl"
-                      style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }}
-                    >
-                      <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catC?.cor} size={16} />
-                      <span className="text-[11px] font-semibold max-w-[64px] truncate" style={{ color: "var(--pj-text)" }}>{it.nome}</span>
-                      {it.qty > 1 && (
-                        <span className="text-[9px] font-semibold px-1 py-0.5 rounded-full" style={{ background: "var(--pj-subtle)", color: "var(--pj-brand-ink)" }}>
-                          ×{it.qty}
-                        </span>
-                      )}
-                      <button onClick={() => remover(it.id)} className="pj-tap press w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
-                        <X size={8} style={{ color: "var(--pj-text-muted)" }} />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Custom input */}
-        <div className="px-4 mb-5 flex gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputCustom}
-            onChange={e => setInputCustom(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && adicionarCustom()}
-            placeholder="Outro artigo (escrever)…"
-            className="flex-1 px-4 py-3 rounded-2xl text-sm font-medium focus:outline-none"
-            style={{ border: "1px solid var(--pj-border)", background: "var(--pj-card)", color: "var(--pj-text)" }}
-          />
-          <button onClick={adicionarCustom} className="pj-tap press w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: "var(--pj-brand)" }}>
-            <Plus size={20} className="text-white" />
-          </button>
-        </div>
-
-        {/* Já comparados — um toque e entram na lista */}
-        {busca.length < 2 && comparados.length > 0 && (
-          <div className="px-4 mb-5">
-            <p className="mb-2" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Já comparaste</p>
-            <div className="flex gap-1.5 flex-wrap">
-              {comparados.map(q => {
-                const nome = q.charAt(0).toUpperCase() + q.slice(1);
-                const na = itens.find(i => i.nome.toLowerCase() === q && !i.feito);
-                return (
-                  <button key={q} onClick={() => adicionarItem(nome)} className="pj-tap press"
-                    style={{ fontSize: 12.5, fontWeight: 600, padding: "8px 12px", borderRadius: 999, border: "1px solid var(--pj-border)",
-                      background: na ? "var(--pj-brand-wash)" : "var(--pj-card)", color: na ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>
-                    {na ? `${nome} · ${na.qty}×` : `+ ${nome}`}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Resultados de busca */}
-        {busca.length > 1 ? (
-          <div className="px-4">
-            <p className="mb-3" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>{resultadosBusca.length} resultado{resultadosBusca.length !== 1 ? "s" : ""}</p>
-            <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
-              {resultadosBusca.map(it => {
-                const na = itens.find(i => i.nome === it.nome && !i.feito);
-                const cfg = CATS[it.cat];
-                return (
-                  <button key={it.nome + it.cat} onClick={() => adicionarItem(it.nome, it.emoji, it.cat)}
-                    className="pj-tap press p-3 flex flex-col items-center gap-1.5 relative rounded-2xl"
-                    style={{ border: "1px solid var(--pj-border)", background: na ? "var(--pj-subtle)" : "var(--pj-card)" }}
-                  >
-                    <IconeArtigo emoji={it.emoji} nome={it.nome} cor={CATS[it.cat]?.cor} size={24} />
-                    <p className="text-[10px] font-semibold text-center leading-tight" style={{ color: "var(--pj-text)" }}>{it.nome}</p>
-                    {na && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: "var(--pj-brand)", color: "#fff" }}>{na.qty}×</span>}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Category pills */}
-            <div className="px-4 mb-4 flex gap-2 overflow-x-auto no-scrollbar">
-              {Object.entries(CATS).map(([nome, cfg]) => (
-                <button
-                  key={nome}
-                  onClick={() => setCatAtiva(nome)}
-                  className="pj-tap press flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all"
-                  style={catAtiva === nome
-                    ? { background: "var(--pj-brand)", color: "#fff" }
-                    : { background: "var(--pj-card)", color: "var(--pj-text-muted)", border: "1px solid var(--pj-border)" }}
-                >
-                  {cfg.emoji} {nome}
-                </button>
-              ))}
-            </div>
-
-            {/* Items grid */}
-            <div className="px-4 grid grid-cols-3 lg:grid-cols-6 gap-2.5">
-              {catCfg.items.map(it => {
-                const naLista = itens.find(i => i.nome === it.nome && !i.feito);
-                return (
-                  <button
-                    key={it.nome}
-                    onClick={() => adicionarItem(it.nome, it.emoji, catAtiva)}
-                    className="pj-tap press p-3.5 flex flex-col items-center gap-1.5 relative rounded-2xl"
-                    style={{ border: "1px solid var(--pj-border)", background: naLista ? "var(--pj-subtle)" : "var(--pj-card)" }}
-                  >
-                    <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catCfg.cor} size={30} />
-                    <p className="text-[11px] font-semibold text-center leading-tight" style={{ color: "var(--pj-text)" }}>{it.nome}</p>
-                    {naLista && (
-                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: "var(--pj-brand)", color: "#fff" }}>
-                        {naLista.qty}×
-                      </span>
-                    )}
-                    {!naLista && (
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ border: "2px solid var(--pj-border)" }}>
-                        <Plus size={10} style={{ color: "var(--pj-text-faint)" }} />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
+      <AdicionarArtigos
+        naLista={new Set(pendentes.map(i => i.nome.toLowerCase()))}
+        onAlternar={alternarCatalogo}
+        onLivre={adicionarLivre}
+        onFechar={() => setModo("lista")}
+      />
     );
   }
 
@@ -701,35 +314,32 @@ export default function SecaoListaCompras() {
           <p className="mb-3" style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Por comprar ({pendentes.length})</p>
           <div className="grid grid-cols-3 lg:grid-cols-6 gap-2.5">
             {pendentes.map(it => {
-              const catCfg = it.categoria ? CATS[it.categoria] : null;
               return (
-                <div key={it.id} className="relative">
+                <div key={it.id} className="relative flex flex-col rounded-2xl" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
                   <button
                     onClick={() => marcar(it.id)}
-                    className="pj-tap press w-full p-3.5 flex flex-col items-center gap-1.5 rounded-2xl"
-                    style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
+                    aria-label={`Marcar ${it.nome} como comprado`}
+                    className="pj-tap press w-full flex flex-col items-center gap-1.5"
+                    style={{ padding: "14px 8px 6px", background: "transparent", border: 0 }}
                   >
-                    <IconeArtigo emoji={it.emoji} nome={it.nome} cor={catCfg?.cor} size={30} />
+                    <IconeArtigo nome={it.nome} size={30} />
                     <p className="text-[11px] font-semibold text-center leading-tight" style={{ color: "var(--pj-text)" }}>{it.nome}</p>
-                    {it.qty > 1 && (
-                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
-                        style={{ background: "var(--pj-subtle)", color: "var(--pj-brand-ink)" }}>
-                        {it.qty}×
-                      </span>
-                    )}
                   </button>
-                  {/* Controles de quantidade */}
-                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-0.5 rounded-full px-1 py-0.5 opacity-0 group-hover:opacity-100" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", boxShadow: "0 2px 8px -4px rgba(20,35,28,0.25)" }}>
-                    <button onClick={() => alterarQty(it.id, -1)} className="pj-tap press w-5 h-5 rounded-full flex items-center justify-center" style={{ color: "var(--pj-text-muted)" }}>
-                      <Minus size={9} />
+                  {/* Quantidade — dentro do cartão e sempre à mão (não há "hover" no telemóvel). */}
+                  <div className="flex items-center justify-center mt-auto" style={{ paddingBottom: 6 }}>
+                    <button onClick={() => alterarQty(it.id, -1)} aria-label={`Menos ${it.nome}`} disabled={(it.qty || 1) <= 1}
+                      className="pj-tap flex items-center justify-center" style={{ width: 32, height: 32, background: "transparent", border: 0, color: "var(--pj-text-faint)", opacity: (it.qty || 1) <= 1 ? 0.35 : 1 }}>
+                      <Minus size={12} />
                     </button>
-                    <span className="text-[10px] font-semibold w-4 text-center" style={{ color: "var(--pj-text)" }}>{it.qty || 1}</span>
-                    <button onClick={() => alterarQty(it.id, 1)} className="pj-tap press w-5 h-5 rounded-full flex items-center justify-center" style={{ color: "var(--pj-text-muted)" }}>
-                      <Plus size={9} />
+                    <span className="text-[12px] font-semibold text-center pj-num" style={{ minWidth: 18, color: it.qty > 1 ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>{it.qty || 1}</span>
+                    <button onClick={() => alterarQty(it.id, 1)} aria-label={`Mais ${it.nome}`}
+                      className="pj-tap flex items-center justify-center" style={{ width: 32, height: 32, background: "transparent", border: 0, color: "var(--pj-text-faint)" }}>
+                      <Plus size={12} />
                     </button>
                   </div>
                   <button
                     onClick={() => remover(it.id)}
+                    aria-label={`Tirar ${it.nome} da lista`}
                     className="pj-tap press absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
                     style={{ background: "var(--pj-subtle)", border: "1px solid var(--pj-border)" }}
                   >
@@ -754,7 +364,7 @@ export default function SecaoListaCompras() {
               <button key={it.id} onClick={() => marcar(it.id)}
                 className="pj-tap press p-3.5 flex flex-col items-center gap-1.5 relative rounded-2xl"
                 style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-subtle)" }}>
-                <IconeArtigo emoji={it.emoji} nome={it.nome} cor={CATS[it.categoria]?.cor} size={30} className="grayscale" />
+                <IconeArtigo nome={it.nome} size={30} className="grayscale" />
                 <p className="text-[11px] font-medium text-center leading-tight line-through" style={{ color: "var(--pj-text-faint)" }}>{it.nome}</p>
                 <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--pj-brand)" }}>
                   <Check size={11} className="text-white" />
