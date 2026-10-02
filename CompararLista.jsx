@@ -33,6 +33,13 @@ export default function CompararLista({ itens, nota = true }) {
   async function comparar() {
     import("./ResultadoLista");
     setEstado("a-carregar");
+    // Catálogo: o termo de pesquisa certo de cada artigo e os que se sabe
+    // não terem preço comparável (não vale a pena perguntar às lojas).
+    const [{ itemPorNome }, cobertura] = await Promise.all([
+      import("./data/catalogo-lista"),
+      import("./data/catalogo-precos.json").then((m) => m.default || m).catch(() => ({})),
+    ]);
+    const semPreco = new Set(cobertura.semPreco || []);
     setFeitos(0);
     evento("comparar_lista", { artigos: artigos.length });
     const resultado = new Array(artigos.length);
@@ -42,7 +49,13 @@ export default function CompararLista({ itens, nota = true }) {
       while (proximo < artigos.length) {
         const i = proximo++;
         const it = artigos[i];
-        const q = termoDePesquisa(it.nome);
+        const doCatalogo = itemPorNome(it.nome);
+        const q = it.q || doCatalogo?.q || termoDePesquisa(it.nome);
+        if (doCatalogo && semPreco.has(doCatalogo.id)) {
+          resultado[i] = { item: it, q, custos: {} };
+          setFeitos((n) => n + 1);
+          continue;
+        }
         try {
           const { dados, guardado } = await pesquisarComRecurso(q);
           resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1) };
