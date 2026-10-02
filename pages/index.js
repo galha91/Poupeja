@@ -116,6 +116,9 @@ export default function PoupeJa() {
     if (typeof window !== "undefined") {
       try {
         const a = new URLSearchParams(window.location.search).get("atalho");
+        // A lista abre direto pelo atalho: o código dela começa a descarregar
+        // já, em paralelo com o arranque, e não só quando o separador desenha.
+        if (a === "lista") import("../SecaoListaCompras");
         if (a && NAV_IDS.includes(a)) return a;
       } catch {}
     }

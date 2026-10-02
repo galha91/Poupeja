@@ -447,7 +447,7 @@ export default function SecaoListaCompras({ onVoltar }) {
       {!itens.length && (
         <div className="px-4">
           <p className="px-1" style={{ marginTop: 14, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
-            A lista está vazia. Escreve o primeiro artigo — com dois ou mais, vemos onde fica mais barata.
+            A lista está vazia.
           </p>
           {jaComparados.length > 0 && (
             <>
