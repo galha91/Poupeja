@@ -3,6 +3,7 @@ import { Fuel, MapPin, Bell, ShieldCheck, Info, ChevronRight, Check, ArrowLeft, 
 import { apagarConta } from "./lib/apagarConta";
 import { supabase } from "./lib/supabase";
 import { partilharApp } from "./lib/partilhar";
+import { emAppNativa } from "./lib/plataforma";
 
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan","Minipreço"];
 const COMBUSTIVEIS  = ["Gasolina 95","Gasóleo","GPL"];
@@ -18,7 +19,7 @@ const LABEL_STYLE = {
 const PREFS_OMISSAO = {
   nome: "", email: "", combustivel: "Gasolina 95",
   distancia: 10, favoritos: ["Continente","Pingo Doce"],
-  avisoGarantias: true, avisoPrecos: true, diasGarantia: 60,
+  avisoGarantias: true, avisoPrecos: true,
   emailSemanal: true,
 };
 
@@ -44,6 +45,8 @@ function Toggle({ on, onChange }) {
   return (
     <button
       onClick={() => onChange(!on)}
+      role="switch"
+      aria-checked={!!on}
       className="w-12 h-7 rounded-full relative transition-colors flex-shrink-0"
       style={{ background: on ? "var(--pj-brand)" : "var(--pj-border)" }}
     >
@@ -153,6 +156,19 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
     if (!r) return; // cancelado ou sem suporte — não dizer nada
     setFeedbackConvite(r === "copiado" ? "Link copiado ✓" : "Obrigado! 💚");
     setTimeout(() => setFeedbackConvite(""), 2500);
+  }
+
+  // Avisos de garantias/renovações/prazos com a app fechada (opt-in)
+  const [naConta, setNaConta] = useState(false);
+  useEffect(() => {
+    import("./lib/dadosLocais").then(m => setNaConta(m.lembretesNaConta())).catch(() => {});
+  }, []);
+  async function alternarNaConta(v) {
+    if (v && user?.convidado) { onCriarConta?.(); return; }
+    setNaConta(v);
+    const m = await import("./lib/dadosLocais");
+    m.definirLembretesNaConta(v);
+    if (v && pushEstado === "inativo") ativarPush();
   }
 
   // Push notifications
@@ -435,18 +451,29 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
             <Toggle on={prefs.avisoPrecos} onChange={v => set("avisoPrecos", v)} />
           </div>
         </Row>
-        <Row border={false}>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Avisar com antecedência</p>
-            <span className="text-sm font-semibold" style={{ color: "var(--pj-brand-ink)" }}>{prefs.diasGarantia} dias</span>
-          </div>
-          <input
-            type="range" min="15" max="120" step="15" value={prefs.diasGarantia}
-            onChange={e => set("diasGarantia", parseInt(e.target.value))}
-            className="w-full"
-            style={{ accentColor: "#0b6b4f" }}
-          />
-        </Row>
+        {/* Na app Android (Capacitor) os avisos são agendados no próprio
+            telemóvel; isto só faz falta no browser e na versão da Play Store. */}
+        {!emAppNativa() || !window.Capacitor ? (
+          <Row border={false}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <BellRing size={17} style={{ color: "var(--pj-text-muted)" }} />
+                <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Avisos com a app fechada</p>
+              </div>
+              <Toggle on={naConta} onChange={alternarNaConta} />
+            </div>
+            <p className="text-[11px] mt-2 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
+              Garantias, renovações e prazos com lembrete, por notificação. Para isso, só o nome e a data
+              de cada lembrete ficam na tua conta — sem preços, lojas nem fotos. Desligado, fica tudo só neste telemóvel.
+            </p>
+          </Row>
+        ) : (
+          <Row border={false}>
+            <p className="text-[11px] leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
+              Os lembretes de garantias, renovações e prazos são agendados neste telemóvel e chegam mesmo com a app fechada.
+            </p>
+          </Row>
+        )}
       </Section>
 
       {/* Notificações Push */}

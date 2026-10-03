@@ -60,6 +60,19 @@ const NAV_SECUNDARIO = [
   { id: "apoios",     label: "Apoios",     icon: Landmark },
   { id: "lojas",      label: "Lojas",      icon: Store },
 ];
+/* Atalhos para dentro de um separador (vêm das notificações dos lembretes). */
+const ATALHOS_SUB = {
+  garantias:  ["taloes", "garantias"],
+  renovacoes: ["contas", "renovacoes"],
+  prazos:     ["apoios", "prazos"],
+};
+function subDoAtalho(tab) {
+  if (typeof window === "undefined") return null;
+  try {
+    const par = ATALHOS_SUB[new URLSearchParams(window.location.search).get("atalho")];
+    return par && par[0] === tab ? par[1] : null;
+  } catch { return null; }
+}
 const NAV_IDS = ["inicio","poupanca","mercados","contas","mobilidade","apoios","lojas","irs","taloes","lista"];
 
 const TITULOS = {
@@ -68,8 +81,8 @@ const TITULOS = {
   lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
   mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
-  apoios:     { t: "Apoios do Estado",                  s: "Benefícios a que podes ter direito" },
-  contas:     { t: "Contas",                            s: "Despesas fixas, crédito e renda" },
+  apoios:     { t: "Apoios do Estado",                  s: "Benefícios e prazos a não perder" },
+  contas:     { t: "Contas",                            s: "Despesas fixas, renovações e crédito" },
   irs:        { t: "Simulador de IRS",                   s: "Estima o teu IRS antes da hora" },
   taloes:     { t: "Os meus talões",                    s: "Compras e garantias num só sítio" },
   lista:      { t: "Lista de compras",                  s: "Os artigos que precisas de comprar" },
@@ -132,6 +145,7 @@ export default function PoupeJa() {
         // já, em paralelo com o arranque, e não só quando o separador desenha.
         if (a === "lista") import("../SecaoListaCompras");
         if (a && NAV_IDS.includes(a)) return a;
+        if (a && ATALHOS_SUB[a]) return ATALHOS_SUB[a][0];
       } catch {}
     }
     return "inicio";
@@ -140,8 +154,10 @@ export default function PoupeJa() {
   const [bounce, setBounce]       = useState(null);
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
-  const [subTabTaloes, setSubTabTaloes] = useState("compras");
+  const [subTabTaloes, setSubTabTaloes] = useState(() => subDoAtalho("taloes") || "compras");
   const [subTabMercados, setSubTabMercados] = useState("comparar");
+  const [subTabContas, setSubTabContas]     = useState(() => subDoAtalho("contas") || "contas");
+  const [subTabApoios, setSubTabApoios]     = useState(() => subDoAtalho("apoios") || "apoios");
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
@@ -151,21 +167,34 @@ export default function PoupeJa() {
   const [retratoAberto, setRetratoAberto] = useState(false);
   const { modo: installModo, prompt: installPrompt } = useInstallDetect();
 
+  /* Avisos do sino: garantias, contas que renovam e prazos do Estado.
+     O módulo (com os prazos) só descarrega depois do arranque — não pesa
+     no JavaScript inicial. */
   function calcGarantiasAviso() {
-    try {
-      const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
-      const agora = new Date();
-      const lista = taloes
-        .filter(t => t.tipo === "garantia" && t.dataExpiracao)
-        .map(t => {
-          const dias = Math.ceil((new Date(t.dataExpiracao) - agora) / 86400000);
-          return { produto: t.nome, restam: dias, dataExpiracao: t.dataExpiracao };
-        })
-        .filter(t => t.restam >= 0 && t.restam <= 30)
-        .sort((a, b) => a.restam - b.restam);
-      setGarantiasAviso(lista);
-    } catch {}
+    import("../lib/dadosLocais")
+      .then(m => {
+        const lista = m.avisosLocais();
+        setGarantiasAviso(lista);
+        m.notificarAvisosNovos(lista);
+        m.atualizarLembretesForaDaApp();
+      })
+      .catch(() => {});
   }
+
+  /* Garantias antigas → registo novo, e o sino. Só com alguém dentro da
+     app (o ecrã de entrar não precisa disto). A migração arranca logo e a
+     sincronização espera por ela; o sino é calculado quando o browser
+     estiver livre — não compete com a primeira pintura. */
+  const migracao = useRef(null);
+  useEffect(() => {
+    if (!user || migracao.current) return;
+    migracao.current = import("../lib/dadosLocais")
+      .then(m => m.migrarGarantiasAntigas())
+      .catch(() => {});
+    const sino = () => migracao.current.finally(calcGarantiasAviso);
+    if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(sino, { timeout: 2500 });
+    else setTimeout(sino, 1200);
+  }, [user]);
 
   /* Convidado local que passou a ter sessão: conta como conversão */
   function largarConvidadoLocal() {
@@ -190,7 +219,6 @@ export default function PoupeJa() {
       }
       setHydrated(true);
     });
-    calcGarantiasAviso();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") setRecovery(true);
@@ -212,7 +240,9 @@ export default function PoupeJa() {
 
   /* Sincroniza dados locais com a conta (talões, lista, prefs…) */
   useEffect(() => {
-    if (user?.id) iniciarSync(user.id);
+    // Depois da migração das garantias (ver acima): o primeiro pull não
+    // pode escrever por cima dos talões antes de elas saírem de lá.
+    if (user?.id) (migracao.current || Promise.resolve()).finally(() => iniciarSync(user.id));
   }, [user?.id]);
 
   /* Regista plataforma e estado de instalação PWA no Supabase */
@@ -376,6 +406,12 @@ export default function PoupeJa() {
     return () => window.removeEventListener("poupeja:sync-updated", onSync);
   }, []);
 
+  /* Um ecrã mudou garantias, renovações ou lembretes → recalcula o sino */
+  useEffect(() => {
+    window.addEventListener("poupeja:avisos", calcGarantiasAviso);
+    return () => window.removeEventListener("poupeja:avisos", calcGarantiasAviso);
+  }, []);
+
   useEffect(() => {
     function onNav(e) { go(e.detail); }
     window.addEventListener("poupeja:nav", onNav);
@@ -424,6 +460,8 @@ export default function PoupeJa() {
     if (newTab === tab) return;
     if (newTab === "taloes") setSubTabTaloes("compras");
     if (newTab === "mercados") setSubTabMercados(sub || "comparar");
+    if (newTab === "contas") setSubTabContas(sub || "contas");
+    if (newTab === "apoios") setSubTabApoios(sub || "apoios");
     if (tab === "taloes") calcGarantiasAviso();
     const pi = NAV_IDS.indexOf(tab);
     const ni = NAV_IDS.indexOf(newTab);
@@ -489,6 +527,16 @@ export default function PoupeJa() {
     setSubTabTaloes("garantias");
     setDir("up");
     setTabRaw("taloes");
+  }
+
+  /* Tocar num aviso do sino abre o ecrã de onde ele vem */
+  function abrirAviso(a) {
+    setVerAvisos(false);
+    setVerDefs(false);
+    setDir("up");
+    if (a?.tipo === "conta")      { setSubTabContas("renovacoes"); setTabRaw("contas"); }
+    else if (a?.tipo === "prazo") { setSubTabApoios("prazos"); setTabRaw("apoios"); }
+    else goGarantias();
   }
 
   // "Ementas económicas" no Início abria os Supermercados em Folhetos —
@@ -651,7 +699,7 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} garantiasCount={garantiasAviso.filter(a => a.tipo === "garantia").length} />}
                 {/* "Voltar" ao Início em todos os separadores menos o próprio Início
                     (a lista tem o seu, ao lado do "Partilhar"). */}
                 {tab !== "inicio" && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
@@ -659,8 +707,8 @@ export default function PoupeJa() {
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
-                {tab === "apoios"     && <SecaoApoios />}
-                {tab === "contas"     && <SecaoContas />}
+                {tab === "apoios"     && <SecaoApoios key={subTabApoios} inicioAba={subTabApoios} />}
+                {tab === "contas"     && <SecaoContas key={subTabContas} inicioAba={subTabContas} />}
                 {tab === "irs"        && <SecaoIRS />}
                 {tab === "taloes"     && <SecaoTaloes inicioAba={subTabTaloes} />}
                 {tab === "lista" && (
@@ -713,9 +761,9 @@ export default function PoupeJa() {
 
         {verAvisos && (
           <PainelAvisos
-            avisos={{ garantias: garantiasAviso }}
+            avisos={garantiasAviso}
             onFechar={() => setVerAvisos(false)}
-            onAbrirTaloes={() => { setVerAvisos(false); goGarantias(); }}
+            onAbrir={abrirAviso}
           />
         )}
 

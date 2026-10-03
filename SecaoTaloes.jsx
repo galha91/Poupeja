@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import { comprimirImagem } from "./lib/imagem";
 import { evento } from "./lib/analytics";
 import {
@@ -6,6 +7,11 @@ import {
   X, TrendingUp, Package, Check, Trash2, Image, ChevronRight, Loader2, Euro,
 } from "lucide-react";
 import { eur } from "./lib/formato";
+
+// Garantias: ecrã próprio (dados e fotos só no dispositivo), carregado ao abrir a aba
+const GarantiasLista = dynamic(() => import("./GarantiasLista"), {
+  loading: () => <div className="mx-4 h-40 rounded-2xl animate-pulse" style={{ background: "var(--pj-subtle)" }} />,
+});
 
 const STORAGE_KEY = "poupeja_taloes";
 
@@ -21,13 +27,6 @@ function diasRestantes(dataExpiracao) {
   return Math.ceil((new Date(dataExpiracao) - new Date()) / 86400000);
 }
 
-const DURACOES = [
-  { label: "6 m",  meses: 6 },
-  { label: "1 ano", meses: 12 },
-  { label: "2 anos", meses: 24 },
-  { label: "3 anos", meses: 36 },
-  { label: "5 anos", meses: 60 },
-];
 
 /* ── Modal guardar ── */
 function ModalGuardar({ onFechar, onGuardar, modo }) {
@@ -39,8 +38,6 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
   const [lendo, setLendo]             = useState(false);
   const [nome, setNome]               = useState("");
   const [dataCompra, setDataCompra]   = useState(new Date().toISOString().split("T")[0]);
-  const [duracao, setDuracao]         = useState(24);
-  const [erroNome, setErroNome]       = useState(false);
 
   async function lerValorTalao(base64) {
     let ok = false;
@@ -70,27 +67,16 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
     if (!file) return;
     comprimirImagem(file).then(dataUrl => {
       setPreview(dataUrl);
-      if (modo === "garantia") {
-        setFase("detalhes");
-      } else {
-        setLendo(true);
-        setFase("lendo");
-        lerValorTalao(dataUrl);
-      }
+      setLendo(true);
+      setFase("lendo");
+      lerValorTalao(dataUrl);
     }).catch(() => {});
     e.target.value = "";
   }
 
   function confirmar() {
-    if (modo === "garantia" && !nome.trim()) { setErroNome(true); return; }
-    let dataExpiracao = null;
-    if (modo === "garantia" && dataCompra) {
-      const d = new Date(dataCompra);
-      d.setMonth(d.getMonth() + duracao);
-      dataExpiracao = d.toISOString().split("T")[0];
-    }
     const valor = valorPoupado ? parseFloat(valorPoupado.replace(",", ".")) : null;
-    onGuardar(preview, { nome: nome.trim(), dataCompra, duracao, dataExpiracao, valorPoupado: isNaN(valor) ? null : valor });
+    onGuardar(preview, { nome: nome.trim(), dataCompra, valorPoupado: isNaN(valor) ? null : valor });
     onFechar();
   }
 
@@ -112,7 +98,7 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
 
         <div className="flex items-center justify-between mb-6">
           <p className="font-display" style={{ fontSize: "19px", fontWeight: 600, color: "var(--pj-text)" }}>
-            {fase === "foto" ? (modo === "garantia" ? "Foto do talão" : "Guardar talão") : "Detalhes da garantia"}
+            Guardar talão
           </p>
           <button onClick={onFechar} className="pj-tap w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
             <X size={17} style={{ color: "var(--pj-text-muted)" }} />
@@ -210,87 +196,6 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
           </div>
         )}
 
-        {/* ── fase: detalhes garantia ── */}
-        {fase === "detalhes" && (
-          <div className="flex flex-col gap-4">
-            {preview && (
-              <img src={preview} alt="talão" className="w-full rounded-2xl object-cover max-h-36" style={{ border: "1px solid var(--pj-border)" }} />
-            )}
-
-            {/* Nome do produto */}
-            <div>
-              <p className="uppercase mb-2" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
-                Nome do produto <span style={{ color: "var(--pj-danger)" }}>*</span>
-              </p>
-              <input
-                type="text"
-                value={nome}
-                onChange={e => { setNome(e.target.value); setErroNome(false); }}
-                placeholder={'Ex: TV Samsung 55", Frigorífico Bosch...'}
-                className="w-full px-4 py-3.5 rounded-xl font-semibold text-sm focus:outline-none transition-all"
-                style={{ background: "var(--pj-card)", border: `1px solid ${erroNome ? "var(--pj-danger)" : "var(--pj-border)"}`, color: "var(--pj-text)" }}
-              />
-              {erroNome && <p className="text-[11px] mt-1.5 font-semibold" style={{ color: "var(--pj-danger)" }}>Escreve o nome do produto.</p>}
-            </div>
-
-            {/* Data de compra */}
-            <div>
-              <p className="uppercase mb-2" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Data de compra</p>
-              <input
-                type="date"
-                value={dataCompra}
-                max={new Date().toISOString().split("T")[0]}
-                onChange={e => setDataCompra(e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl font-semibold text-sm focus:outline-none transition-all"
-                style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }}
-              />
-            </div>
-
-            {/* Duração */}
-            <div>
-              <p className="uppercase mb-2" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Duração da garantia</p>
-              <div className="flex gap-2 flex-wrap">
-                {DURACOES.map(d => (
-                  <button
-                    key={d.meses}
-                    onClick={() => setDuracao(d.meses)}
-                    className="press pj-tap px-3.5 py-2 rounded-xl text-xs font-semibold transition-all"
-                    style={duracao === d.meses ? { background: "var(--pj-brand)", color: "#ffffff" } : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}
-                  >
-                    {d.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Expira em */}
-            {dataCompra && (
-              <div className="rounded-xl px-3.5 py-2.5 flex items-center gap-2" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-                <ShieldCheck size={14} style={{ color: "var(--pj-brand-ink)" }} />
-                <p className="text-[12px] font-semibold" style={{ color: "var(--pj-text)" }}>
-                  Garantia válida até{" "}
-                  {(() => {
-                    const d = new Date(dataCompra);
-                    d.setMonth(d.getMonth() + duracao);
-                    return d.toLocaleDateString("pt-PT", { day: "numeric", month: "long", year: "numeric" });
-                  })()}
-                </p>
-              </div>
-            )}
-
-            <button
-              onClick={confirmar}
-              className="press pj-tap w-full py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-2 mt-1"
-              style={{ background: "var(--pj-brand)" }}
-            >
-              <Check size={19} /> Guardar garantia
-            </button>
-
-            <button onClick={() => { setPreview(null); setFase("foto"); }} className="press pj-tap w-full py-3 rounded-xl text-sm font-semibold" style={{ background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}>
-              Tirar outra foto
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -366,9 +271,9 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
   function adicionarTalao(imagem, meta = {}) {
     const novo = {
       id: Date.now(),
-      tipo: aba === "garantias" ? "garantia" : "compra",
+      tipo: "compra",
       imagem,
-      nome: meta.nome || (aba === "garantias" ? "Garantia" : "Talão"),
+      nome: meta.nome || "Talão",
       dataCompra: meta.dataCompra || null,
       duracao: meta.duracao || null,
       dataExpiracao: meta.dataExpiracao || null,
@@ -388,7 +293,6 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
   }
 
   const compras   = taloes.filter(t => t.tipo === "compra");
-  const garantias = taloes.filter(t => t.tipo === "garantia");
 
   return (
     <div className="pb-28">
@@ -451,49 +355,13 @@ export default function SecaoTaloes({ inicioAba = "compras" }) {
       )}
 
       {/* GARANTIAS */}
-      {aba === "garantias" && (
-        <div className="anim-up">
-          <div className="mx-4 mb-5 pb-5" style={{ borderBottom: "1px solid var(--pj-border)" }}>
-            <p className="uppercase flex items-center gap-1.5" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
-              <ShieldCheck size={11} /> Garantias ativas
-            </p>
-            <p className="font-display mt-1" style={{ fontSize: "40px", fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.05 }}>{garantias.length}</p>
-            <p className="text-xs mt-1" style={{ color: "var(--pj-text-muted)" }}>{garantias.length === 1 ? "produto protegido" : "produtos protegidos"}</p>
-          </div>
-
-          <button onClick={() => setModal(true)}
-            className="press pj-tap mx-4 mb-5 w-[calc(100%-2rem)] py-3.5 rounded-2xl text-white font-semibold flex items-center justify-center gap-2"
-            style={{ background: "var(--pj-brand)" }}>
-            <Camera size={17} /> Guardar talão de garantia
-          </button>
-
-          {garantias.length === 0 ? (
-            <>
-              <div className="mx-4 rounded-2xl" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-                <EstadoVazio icon={Package} titulo="Ainda não tens garantias guardadas"
-                  descricao="Guarda o talão dos teus produtos para nunca perderes a validade da garantia."
-                  corFundo="#eeece4" corIcone="#0b6b4f" />
-              </div>
-              <div className="mx-4 mt-4 rounded-2xl p-4 flex gap-2.5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-                <ShieldCheck size={16} className="flex-shrink-0 mt-0.5" style={{ color: "var(--pj-brand-ink)" }} />
-                <p className="text-[12px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
-                  Regista o nome do produto, data de compra e duração. Avisamos-te quando a garantia estiver a terminar.
-                </p>
-              </div>
-            </>
-          ) : (
-            <div className="px-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {garantias.map(t => <CardTalao key={t.id} talao={t} onApagar={apagarTalao} />)}
-            </div>
-          )}
-        </div>
-      )}
+      {aba === "garantias" && <GarantiasLista />}
 
       {modal && (
         <ModalGuardar
           onFechar={() => setModal(false)}
           onGuardar={adicionarTalao}
-          modo={aba === "garantias" ? "garantia" : "compra"}
+          modo="compra"
         />
       )}
     </div>

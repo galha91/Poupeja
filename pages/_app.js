@@ -84,6 +84,10 @@ function MyApp({ Component, pageProps }) {
           cartão personalizado sem o genérico vir atrás. Mexer numa key aqui
           obriga a mexer na mesma key nas páginas.
         */}
+        {/* Título por omissão: a app (/) não tinha <title> — o separador do
+            browser e os leitores de ecrã mostravam o endereço. As páginas
+            públicas substituem-no com o seu (mesma key). */}
+        <title key="title">PoupeJá — Poupa nas compras do dia a dia</title>
         <meta property="og:site_name" content="PoupeJá" key="og:site_name" />
         <meta property="og:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" key="og:title" />
         <meta property="og:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." key="og:description" />

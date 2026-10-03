@@ -1,11 +1,17 @@
 import { useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import {
   Landmark, ExternalLink, ChevronDown, ChevronUp,
-  Zap, Bus, Home, Users, GraduationCap, Heart, Briefcase, Search,
+  Zap, Bus, Home, Users, GraduationCap, Heart, Briefcase, Search, CalendarClock,
 } from "lucide-react";
 import dadosRaw from "./public/apoios.json";
 import FonteOficial from "./FonteOficial";
 import { dominioDe } from "./lib/fontes";
+
+// Prazos do Estado (IRS, IMI, abono…) — carregado só quando o separador abre
+const PrazosEstado = dynamic(() => import("./PrazosEstado"), {
+  loading: () => <div className="mx-4 mt-4 h-40 rounded-2xl animate-pulse" style={{ background: "var(--pj-subtle)" }} />,
+});
 
 const ICONES_CAT = {
   energia:     Zap,
@@ -32,7 +38,7 @@ const C = {
 const LBL = { fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: C.faint, textTransform: "uppercase" };
 const LBL_SM = { fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: C.faint, textTransform: "uppercase" };
 
-export default function SecaoApoios() {
+function ApoiosLista() {
   const [catAtiva, setCatAtiva] = useState("todos");
   const [pesquisa, setPesquisa] = useState("");
   const [aberto, setAberto] = useState(null);
@@ -226,6 +232,34 @@ export default function SecaoApoios() {
           <a href="/fontes" style={{ color: "var(--pj-brand-ink)", fontWeight: 600, textDecoration: "underline" }}>Todas as fontes</a>
         </p>
       </div>
+    </div>
+  );
+}
+
+/* ═══ Apoios + Prazos, no mesmo separador (mesmo padrão das Contas) ═══ */
+export default function SecaoApoios({ inicioAba = "apoios" }) {
+  const [sub, setSub] = useState(inicioAba);
+  return (
+    <div>
+      <div className="flex gap-1 p-1 rounded-2xl mx-4 mt-4 mb-1" style={{ background: "var(--pj-subtle)" }} role="tablist">
+        {[
+          { id: "apoios", icon: Landmark,      label: "Apoios" },
+          { id: "prazos", icon: CalendarClock, label: "Prazos" },
+        ].map(o => (
+          <button
+            key={o.id}
+            role="tab"
+            aria-selected={sub === o.id}
+            onClick={() => setSub(o.id)}
+            className={`pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${sub === o.id ? "shadow-sm" : ""}`}
+            style={sub === o.id ? { background: "var(--pj-card)", color: "var(--pj-text)", minHeight: 44 } : { color: "var(--pj-text-faint)", minHeight: 44 }}
+          >
+            <o.icon size={13} /> {o.label}
+          </button>
+        ))}
+      </div>
+      {sub === "apoios" && <ApoiosLista />}
+      {sub === "prazos" && <PrazosEstado />}
     </div>
   );
 }

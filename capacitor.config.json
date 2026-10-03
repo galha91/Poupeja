@@ -17,6 +17,9 @@
     "StatusBar": {
       "style": "LIGHT",
       "backgroundColor": "#0b6b4f"
+    },
+    "LocalNotifications": {
+      "iconColor": "#0b6b4f"
     }
   },
   "ios": {
