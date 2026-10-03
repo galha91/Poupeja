@@ -4,8 +4,9 @@
  * Para cada artigo de data/catalogo-lista.js pergunta à API do site
  * (/api/precos-supermercado) e conta em quantos supermercados aparece o
  * próprio artigo (relevância 2). Com pelo menos 2 lojas, "comPreco"; sem
- * nenhuma, "semPreco". Escreve data/catalogo-precos.json — a app não pede
- * preços dos "semPreco" e trata-os como "sem preço comparável".
+ * nenhuma, "semPreco". Escreve data/catalogo-precos.json — um relatório
+ * para afinar os termos de pesquisa do catálogo. A app pergunta SEMPRE às
+ * lojas pelos preços do momento, incluindo pelos "semPreco".
  *
  * Uso:  node scripts/verificar-catalogo.mjs [https://www.xn--poupej-uta.com]
  * Demora uns 8 minutos: uma pesquisa a cada 2 s, para respeitar o limite

@@ -13,10 +13,10 @@ const comPrazo = (p, ms) => Promise.race([p, new Promise((ok) => setTimeout(() =
  *
  * Cada pesquisa custa pedidos a sites de terceiros, por isso há duas
  * camadas de cache: a CDN do Vercel (a mesma pesquisa, de quem for, é
- * servida da cache durante 3 h) e uma memória curta dentro da função.
+ * servida da cache durante 1 h, no máximo) e uma memória curta dentro da função.
  */
 
-const TTL_MEMORIA = 30 * 60 * 1000;
+const TTL_MEMORIA = 15 * 60 * 1000;
 const memoria = new Map();
 
 // O ecrã normaliza da mesma forma antes de pedir, para "Laranjas " e
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
   const guardado = memoria.get(q);
   if (guardado && Date.now() - guardado.em < TTL_MEMORIA) {
-    res.setHeader("Cache-Control", "public, s-maxage=10800, stale-while-revalidate=21600");
+    res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=300");
     return res.status(200).json(guardado.dados);
   }
 
@@ -62,8 +62,8 @@ export default async function handler(req, res) {
 
   // Com alguma loja em falha, cache curta — para ela voltar depressa.
   res.setHeader("Cache-Control", falhas.length
-    ? "public, s-maxage=600, stale-while-revalidate=1800"
-    : "public, s-maxage=10800, stale-while-revalidate=21600");
+    ? "public, s-maxage=600, stale-while-revalidate=120"
+    : "public, s-maxage=3600, stale-while-revalidate=300");
   if (!falhas.length) {
     memoria.set(q, { em: Date.now(), dados });
     if (memoria.size > 500) memoria.delete(memoria.keys().next().value);
