@@ -51,3 +51,11 @@ test("catalogo-precos.json só fala de artigos que existem e cobre o catálogo t
   for (const id of todos) assert.ok(ids.has(id), `não existe no catálogo: ${id}`);
   assert.equal(new Set(todos).size, ITENS.length);
 });
+
+test("exemplo do campo Outro: um por categoria, e só com artigos que não estão no catálogo", async () => {
+  const { itemPorNome } = await import("../data/catalogo-lista.js");
+  for (const c of CATEGORIAS) {
+    assert.ok(c.outro, `sem exemplo: ${c.nome}`);
+    for (const n of c.outro.split(",").map((x) => x.trim())) assert.equal(itemPorNome(n), null, `já está no catálogo: ${n}`);
+  }
+});
