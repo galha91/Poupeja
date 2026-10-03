@@ -12,6 +12,9 @@
  *   sin   sinónimos para a pesquisa, opcional
  *   top   aparece em "Mais comuns", opcional (manter à volta de 16)
  *
+ * Cada categoria tem também `outro`: o exemplo do campo "Outro" em
+ * "Todos os artigos" — artigos daquela secção que NÃO estão no catálogo.
+ *
  * O id é gerado a partir do nome (sem acentos, com hífenes) e tem de ser
  * único: o teste tests/catalogo.test.mjs avisa se houver repetidos.
  * Genéricos sempre; marcas só quando é a pessoa a escrevê-las.
@@ -19,7 +22,7 @@
 
 export const CATEGORIAS = [
   {
-    id: "frutas-legumes", nome: "Frutas e legumes", itens: [
+    id: "frutas-legumes", nome: "Frutas e legumes", outro: "romãs, nêsperas", itens: [
       { nome: "Maçãs", un: "kg", sin: ["maçã"], top: true },
       { nome: "Bananas", un: "kg", sin: ["banana"], top: true },
       { nome: "Laranjas", un: "kg", sin: ["laranja"] },
@@ -70,7 +73,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "talho", nome: "Talho", itens: [
+    id: "talho", nome: "Talho", outro: "coelho, rabo de boi", itens: [
       { nome: "Frango inteiro", un: "kg", sin: ["frango"] },
       { nome: "Peito de frango", un: "kg", sin: ["bifes de frango"], top: true },
       { nome: "Coxas de frango", un: "kg", q: "coxa de frango" },
@@ -89,7 +92,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "peixaria", nome: "Peixaria", itens: [
+    id: "peixaria", nome: "Peixaria", outro: "sapateira, linguado", itens: [
       { nome: "Bacalhau", un: "kg", sin: ["bacalhau salgado", "bacalhau seco", "bacalhau graúdo"] },
       { nome: "Sardinha", un: "kg", q: "sardinha fresca", sin: ["sardinhas"] },
       { nome: "Carapau", un: "kg" },
@@ -108,7 +111,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "charcutaria", nome: "Charcutaria e queijos", itens: [
+    id: "charcutaria", nome: "Charcutaria e queijos", outro: "queijo de ovelha, paio", itens: [
       { nome: "Fiambre", un: "emb.", top: true },
       { nome: "Fiambre de peru", un: "emb." },
       { nome: "Presunto", un: "emb." },
@@ -129,7 +132,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "padaria", nome: "Padaria", itens: [
+    id: "padaria", nome: "Padaria", outro: "pão de Mafra, bolo de arroz", itens: [
       { nome: "Carcaças", un: "un.", q: "carcaça", sin: ["carcaça", "papo-seco", "pão"], top: true },
       { nome: "Pão de forma", un: "emb.", sin: ["pão de sanduíche"] },
       { nome: "Pão integral", un: "un." },
@@ -144,7 +147,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "laticinios", nome: "Laticínios e ovos", itens: [
+    id: "laticinios", nome: "Laticínios e ovos", outro: "leite com chocolate, queijo creme", itens: [
       { nome: "Leite meio-gordo", un: "L", q: "leite meio gordo", sin: ["leite"], top: true },
       { nome: "Leite magro", un: "L" },
       { nome: "Leite gordo", un: "L" },
@@ -161,7 +164,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "mercearia", nome: "Mercearia", itens: [
+    id: "mercearia", nome: "Mercearia", outro: "tapioca, sementes de chia", itens: [
       { nome: "Arroz carolino", un: "kg", sin: ["arroz"], top: true },
       { nome: "Arroz agulha", un: "kg" },
       { nome: "Massa esparguete", un: "emb.", sin: ["esparguete", "spaghetti"], top: true },
@@ -205,7 +208,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "conservas", nome: "Conservas", itens: [
+    id: "conservas", nome: "Conservas", outro: "pimentos assados, patê", itens: [
       { nome: "Atum em lata", un: "lata", q: "atum", sin: ["atum"] },
       { nome: "Sardinhas em lata", un: "lata", q: "sardinhas em lata", sin: ["sardinhas em conserva"] },
       { nome: "Cavala em lata", un: "lata", q: "cavala em conserva" },
@@ -218,7 +221,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "bebidas", nome: "Bebidas", itens: [
+    id: "bebidas", nome: "Bebidas", outro: "água tónica, kombucha", itens: [
       { nome: "Água", un: "L", sin: ["água sem gás", "garrafão de água"] },
       { nome: "Água com gás", un: "L" },
       { nome: "Sumo de laranja", un: "L" },
@@ -238,7 +241,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "congelados", nome: "Congelados", itens: [
+    id: "congelados", nome: "Congelados", outro: "rissóis, lasanha", itens: [
       { nome: "Bacalhau demolhado", un: "kg", sin: ["bacalhau congelado"] },
       { nome: "Filetes de pescada", un: "emb.", q: "filetes pescada", sin: ["pescada congelada", "filetes"] },
       { nome: "Douradinhos", un: "emb.", sin: ["palitos de peixe"] },
@@ -251,7 +254,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "higiene", nome: "Higiene", itens: [
+    id: "higiene", nome: "Higiene", outro: "fio dentário, creme de mãos", itens: [
       { nome: "Papel higiénico", un: "emb.", sin: ["rolos de papel"], top: true },
       { nome: "Champô", un: "un.", sin: ["shampoo"] },
       { nome: "Gel de banho", un: "un.", sin: ["gel duche"] },
@@ -268,7 +271,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "limpeza", nome: "Limpeza", itens: [
+    id: "limpeza", nome: "Limpeza", outro: "tira-nódoas, limpa-vidros", itens: [
       { nome: "Detergente da roupa", un: "emb.", q: "detergente roupa", sin: ["detergente máquina roupa"] },
       { nome: "Amaciador", un: "emb.", sin: ["amaciador da roupa"] },
       { nome: "Detergente da loiça", un: "un.", q: "detergente loiça", sin: ["detergente"] },
@@ -285,7 +288,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "bebe", nome: "Bebé", itens: [
+    id: "bebe", nome: "Bebé", outro: "biberão, chupeta", itens: [
       { nome: "Fraldas", un: "emb." },
       { nome: "Toalhitas", un: "emb.", sin: ["lenços húmidos"] },
       { nome: "Leite infantil", un: "emb.", sin: ["leite em pó", "leite de transição"] },
@@ -295,7 +298,7 @@ export const CATEGORIAS = [
     ],
   },
   {
-    id: "animais", nome: "Animais", itens: [
+    id: "animais", nome: "Animais", outro: "snacks para cão, coleira", itens: [
       { nome: "Ração para cão", un: "emb.", q: "ração cão", sin: ["comida de cão"] },
       { nome: "Ração para gato", un: "emb.", q: "ração gato", sin: ["comida de gato"] },
       { nome: "Comida húmida para gato", un: "emb.", q: "saquetas gato", sin: ["saquetas gato", "patê gato"] },

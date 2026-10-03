@@ -628,7 +628,7 @@ export default function SecaoListaCompras({ onVoltar }) {
                     </label>
                     <form className="flex items-center" style={{ gap: 8 }}
                       onSubmit={e => { e.preventDefault(); if (outro.trim()) { juntar(outro, { foco: false, categoria: cat }); setOutro(""); } }}>
-                      <input id="pj-lista-outro" value={outro} onChange={e => setOutro(e.target.value)} placeholder="Ex.: pilhas, fita-cola…"
+                      <input id="pj-lista-outro" value={outro} onChange={e => setOutro(e.target.value)} placeholder={catalogo.EXEMPLO_OUTRO?.[cat] ? `Ex.: ${catalogo.EXEMPLO_OUTRO[cat]}…` : "Escreve o nome do artigo"}
                         autoComplete="off" enterKeyHint="done" className="flex-1 min-w-0 focus:outline-none"
                         style={{ height: 46, padding: "0 14px", borderRadius: 12, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }} />
                       <button type="submit" disabled={!outro.trim()} aria-label={`Juntar outro artigo em ${cat}`} className="pj-tap flex items-center justify-center flex-none"
