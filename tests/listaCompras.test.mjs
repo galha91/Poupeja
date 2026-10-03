@@ -112,7 +112,7 @@ test("sugestões sem texto: só o que já se comparou", () => {
   assert.deepEqual(sugerir(""), []);
 });
 
-test("resumo da comparação só vale para a mesma lista e durante um dia", () => {
+test("resumo da comparação só vale para a mesma lista e durante 3 horas", () => {
   const lista = [it(1, "Arroz"), it(2, "Ovos", "", { qty: 2 })];
   const g = { loja: "auchan", total: 10, chave: chaveDaLista(lista), em: 1000 };
   assert.equal(resumoValido(g, [...lista].reverse(), 2000), g);
