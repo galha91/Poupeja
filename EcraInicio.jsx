@@ -305,7 +305,7 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
 }
 
 /* ─── Ecrã Início ─── */
-export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0 }) {
+export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0, garantiasCount = 0 }) {
   const [convPendente] = useState(() => {
     try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
   });
@@ -389,11 +389,11 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
    * onde também estão, só existe no desktop — lá escondem-se daqui).
    */
   const MAIS = [
-    { icon: Receipt,    label: "Talões e garantias", desc: avisosCount > 0 ? `${avisosCount} ${avisosCount === 1 ? "garantia a acabar" : "garantias a acabar"}` : "Compras guardadas e prazos de garantia", ir: avisosCount > 0 ? goGarantias : () => setTab("taloes") },
+    { icon: Receipt,    label: "Talões e garantias", desc: garantiasCount > 0 ? `${garantiasCount} ${garantiasCount === 1 ? "garantia a acabar" : "garantias a acabar"}` : "Compras guardadas e prazos de garantia", ir: garantiasCount > 0 ? goGarantias : () => setTab("taloes") },
     // Ia para "mercados" e abria em Folhetos — o rótulo prometia receitas
     // e entregava o folheto do Aldi. Agora abre mesmo no separador certo.
     { icon: ChefHat,    label: "Ementas económicas", desc: "Receitas baratas, com lista num toque", ir: () => (abrirEmentas ? abrirEmentas() : setTab("mercados")) },
-    { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios a que podes ter direito",   ir: () => setTab("apoios"), soMovel: true },
+    { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e prazos (IRS, IMI, abono…)",   ir: () => setTab("apoios"), soMovel: true },
     { icon: Store,      label: "Lojas",              desc: "Moda, eletrónica e desporto",          ir: () => setTab("lojas"), soMovel: true },
     ...(mostrarIRS(new Date(), irsUsado) ? [{ icon: Calculator, label: "Simulador de IRS", desc: "Estima o teu IRS antes da hora", ir: () => setTab("irs") }] : []),
   ];
