@@ -4,7 +4,7 @@ import {
   fimGarantia, estadoGarantia, ordenarGarantias, normalizarGarantia,
   converterGarantiaAntiga, mesesPorOmissao, MESES_GARANTIA_LEGAL,
 } from "../lib/garantias.js";
-import { somarMeses, diaDoAno, diasEntre } from "../lib/datas.js";
+import { somarMeses, diaDoAno, diasEntre, falta } from "../lib/datas.js";
 
 const HOJE = "2026-10-03";
 
@@ -90,4 +90,14 @@ test("converte garantias antigas dos talões, mantendo o fim que já tinham", ()
   const s = converterGarantiaAntiga({ id: 2, tipo: "garantia", nome: "X", criadoEm: "2026-01-05T09:00:00Z" });
   assert.equal(s.garantia.dataCompra, "2026-01-05");
   assert.equal(s.garantia.fim, "2029-01-05");
+});
+
+test("tempo em falta legível: dias até 60, depois meses e anos", () => {
+  assert.equal(falta(0), "hoje");
+  assert.equal(falta(1), "amanhã");
+  assert.equal(falta(45), "daqui a 45 dias");
+  assert.equal(falta(486), "daqui a 16 meses");
+  assert.equal(falta(1075), "daqui a 3 anos");
+  assert.equal(falta(-3), "há 3 dias");
+  assert.equal(falta(-400), "há 13 meses");
 });
