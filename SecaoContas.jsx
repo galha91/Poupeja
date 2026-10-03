@@ -5,12 +5,17 @@ import {
   Circle, X, AlertCircle, ChevronLeft, ChevronRight,
   TrendingDown, BarChart3, CalendarDays, Pencil, Check,
   SlidersHorizontal, ExternalLink, Flame, Building2,
-  Home, Zap, Wifi, ShieldCheck, Pill, Car, Gamepad2, FileText,
+  Home, Zap, Wifi, ShieldCheck, Pill, Car, Gamepad2, FileText, RefreshCw,
 } from "lucide-react";
 import { eur } from "./lib/formato";
 
 // Crédito Habitação / Renda — sub-secção irmã, carregada só quando aberta
 const SecaoCasaConteudo = dynamic(() => import("./SecaoCasa"), {
+  loading: () => <div className="mx-4 mt-4 h-40 rounded-2xl animate-pulse" style={{ background: "var(--pj-subtle)" }} />,
+});
+
+// Eletricidade, gás, telecomunicações e seguros: renovações e fidelizações
+const ContasRenovacoes = dynamic(() => import("./ContasRenovacoes"), {
   loading: () => <div className="mx-4 mt-4 h-40 rounded-2xl animate-pulse" style={{ background: "var(--pj-subtle)" }} />,
 });
 
@@ -994,20 +999,22 @@ function ContasFixasConteudo() {
   );
 }
 
-/* ═══ Root — Contas fixas + Crédito Habitação, num só separador ═══ */
-export default function SecaoContas() {
-  const [sub, setSub] = useState("contas");
+/* ═══ Root — Contas fixas, Renovações e Crédito Habitação, num só separador ═══ */
+export default function SecaoContas({ inicioAba = "contas" }) {
+  const [sub, setSub] = useState(inicioAba);
   return (
     <div>
       <SubTabBar
         value={sub}
         onChange={setSub}
         options={[
-          { id: "contas", icon: CalendarDays, label: "Contas fixas" },
-          { id: "casa",   icon: Building2,    label: "Crédito Habitação" },
+          { id: "contas",     icon: CalendarDays, label: "Mensais" },
+          { id: "renovacoes", icon: RefreshCw,    label: "Renovações" },
+          { id: "casa",       icon: Building2,    label: "Crédito" },
         ]}
       />
       {sub === "contas" && <ContasFixasConteudo />}
+      {sub === "renovacoes" && <ContasRenovacoes />}
       {sub === "casa"   && <SecaoCasaConteudo />}
     </div>
   );
