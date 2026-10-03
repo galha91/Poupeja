@@ -5,7 +5,7 @@ import {
   anualizar, proximoMarco, poupancaPossivel, normalizarConta,
 } from "./lib/renovacoes";
 import { ANTECEDENCIA_CONTAS } from "./lib/lembretes";
-import { lerRenovacoes, guardarRenovacoes, novoId, exportarIcs } from "./lib/dadosLocais";
+import { lerRenovacoes, guardarRenovacoes, novoId, exportarIcs, ativouLembrete } from "./lib/dadosLocais";
 import { hojeIso, diasEntre, dataExtenso, falta } from "./lib/datas";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
@@ -185,7 +185,7 @@ function Detalhe({ conta, onAtualizar, onApagar, onEditar }) {
 
   function alternarLembrete() {
     onAtualizar({ ...conta, lembrete: !conta.lembrete });
-    if (!conta.lembrete) evento("lembrete_ativado", { tipo: "conta", conta: conta.tipo });
+    if (!conta.lembrete) ativouLembrete({ tipo: "conta", conta: conta.tipo });
   }
 
   return (
@@ -292,7 +292,7 @@ export default function ContasRenovacoes() {
     const nova = { id: novoId("r"), ...dados, criadoEm: new Date().toISOString() };
     gravar([...contas, nova]);
     evento("conta_renovacao_registada", { tipo: dados.tipo });
-    if (dados.lembrete) evento("lembrete_ativado", { tipo: "conta", conta: dados.tipo });
+    if (dados.lembrete) ativouLembrete({ tipo: "conta", conta: dados.tipo });
     setFolha({ modo: "ver", id: nova.id });
   }
 

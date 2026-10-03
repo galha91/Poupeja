@@ -4,8 +4,7 @@ import { PERFIS, filtrarPorPerfil, ordenarPrazos } from "./lib/prazosEstado";
 import { ANTECEDENCIA_PRAZOS } from "./lib/lembretes";
 import {
   prazosDoFicheiro, prazosAtualizado, lerPerfilPrazos, guardarPerfilPrazos,
-  lerLembretesPrazos, guardarLembretesPrazos, exportarIcs,
-} from "./lib/dadosLocais";
+  lerLembretesPrazos, guardarLembretesPrazos, exportarIcs, ativouLembrete } from "./lib/dadosLocais";
 import { hojeIso, diasEntre, dataExtenso, dataCurta, falta } from "./lib/datas";
 import { evento } from "./lib/analytics";
 import { Chip, Nota, Cartao, BotaoPrincipal, EstadoVazio } from "./UiSimples";
@@ -52,7 +51,7 @@ export default function PrazosEstado() {
     setLembretes(novo);
     guardarLembretesPrazos(novo);
     window.dispatchEvent(new CustomEvent("poupeja:avisos"));
-    if (!ativo) evento("lembrete_ativado", { tipo: "prazo", prazo: id });
+    if (!ativo) ativouLembrete({ tipo: "prazo", prazo: id });
   }
 
   // Calendário: os prazos com lembrete; sem nenhum escolhido, os que estão à vista.

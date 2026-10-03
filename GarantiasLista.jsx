@@ -10,8 +10,7 @@ import {
 import { ANTECEDENCIA_GARANTIAS } from "./lib/lembretes";
 import {
   lerGarantias, guardarGarantias, novoId, exportarIcs, migrarGarantiasAntigas,
-  criarCopia, restaurarCopia, descarregar, partilharOuDescarregar,
-} from "./lib/dadosLocais";
+  criarCopia, restaurarCopia, descarregar, partilharOuDescarregar, ativouLembrete } from "./lib/dadosLocais";
 import { guardarFoto, lerFoto, apagarFoto, dataUrlParaBlob } from "./lib/fotosDB";
 import { comprimirImagem } from "./lib/imagem";
 import { hojeIso, dataCurta, dataExtenso, falta } from "./lib/datas";
@@ -201,7 +200,7 @@ function Detalhe({ g, onAtualizar, onEditar, onApagar }) {
         g.temFoto ? lerFoto(g.id).catch(() => null) : null,
       ]);
       const png = await gerarFichaPng(g, blob, estado);
-      const nome = `garantia-${g.produto.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "compra"}.png`;
+      const nome = `garantia-${g.produto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "compra"}.png`;
       const r = await partilharOuDescarregar(nome, png, `Garantia: ${g.produto}`);
       if (r !== "cancelado") evento("garantia_exportada", { formato: "png", via: r });
     } catch {}
@@ -222,7 +221,7 @@ function Detalhe({ g, onAtualizar, onEditar, onApagar }) {
   function alternarLembrete() {
     const ativo = g.lembrete !== false;
     onAtualizar({ ...g, lembrete: !ativo });
-    if (!ativo) evento("lembrete_ativado", { tipo: "garantia" });
+    if (!ativo) ativouLembrete({ tipo: "garantia" });
   }
 
   return (
@@ -305,7 +304,7 @@ export default function GarantiasLista() {
     gravar(existente ? lista.map(x => (x.id === id ? g : x)) : [...lista, g]);
     if (!existente) {
       evento("garantia_registada", { estado_bem: g.estado, com_foto: temFoto, meses: g.meses });
-      if (g.lembrete !== false) evento("lembrete_ativado", { tipo: "garantia" });
+      if (g.lembrete !== false) ativouLembrete({ tipo: "garantia" });
     }
     setFolha({ modo: "ver", id });
   }
@@ -350,7 +349,7 @@ export default function GarantiasLista() {
                 <span className="flex-1 min-w-0">
                   <span className="block truncate" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{g.produto}</span>
                   <span className="block truncate" style={{ fontSize: 12, color: "var(--pj-text-muted)" }}>
-                    {estado === "expirada" ? `Acabou a ${dataCurta(g.fim)}` : `Até ${dataCurta(g.fim)} · ${falta(dias)}`}
+                    {estado === "expirada" ? `Acabou a ${dataCurta(g.fim)}` : estado === "a_expirar" ? `Acaba ${falta(dias)}` : `Até ${dataCurta(g.fim)}`}
                   </span>
                 </span>
                 <Etiqueta estado={estado} />
