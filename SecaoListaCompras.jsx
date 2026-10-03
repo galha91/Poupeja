@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Check, ChevronDown, ChevronRight, LayoutList, Minus, Plus, Share2, X } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, CATEGORIAS, MAX_ARTIGOS } from "./lib/listaCompras";
+import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 
 /*
@@ -142,7 +142,7 @@ export default function SecaoListaCompras({ onVoltar }) {
   const pushTimer      = useRef(null);
   const anularTimer    = useRef(null);
   const acaoRef        = useRef(null);   // o foco volta aqui ao fechar o resultado
-  const catalogoRef    = useRef(null);   // e aqui ao fechar "Todos os artigos"
+  const catalogoRef    = useRef(null);   // o "+": volta aqui ao fechar "Todos os artigos"
   const [verCatalogo, setVerCatalogo] = useState(false);
   const [catAtiva, setCatAtiva] = useState(null);
   const [outro, setOutro]       = useState("");     // "Outro…" escrito na folha de todos os artigos
@@ -375,11 +375,13 @@ export default function SecaoListaCompras({ onVoltar }) {
       <div className={`${topo === null ? "relative" : "sticky"} z-20 px-4`} style={{ top: topo ?? undefined, paddingTop: 6, paddingBottom: 10, background: "var(--pj-surface)" }}>
         <form onSubmit={e => { e.preventDefault(); juntar(texto); }} className="relative" role="search">
           <label htmlFor="pj-lista-adicionar" className="sr-only">Adicionar artigo</label>
-          {/* O "+" é um botão: com texto junta o artigo; vazio, abre o teclado. */}
-          <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => texto.trim() ? juntar(texto) : inputRef.current?.focus()}
-            aria-label="Adicionar artigo" className="pj-tap absolute flex items-center justify-center"
-            style={{ left: 2, top: 2, width: 44, height: 44, background: "transparent", border: 0, color: texto.trim() ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
-            <Plus size={18} aria-hidden />
+          {/* O "+": com texto junta o artigo; vazio, abre todos os artigos por categoria. */}
+          <button ref={catalogoRef} type="button" onMouseDown={e => e.preventDefault()}
+            onClick={() => { if (texto.trim()) juntar(texto); else { carregarCatalogo(); setVerCatalogo(true); } }}
+            aria-label={texto.trim() ? "Adicionar artigo" : "Ver todos os artigos"} aria-haspopup={texto.trim() ? undefined : "dialog"}
+            className="pj-tap absolute flex items-center justify-center"
+            style={{ left: 2, top: 2, width: 44, height: 44, background: "transparent", border: 0, color: "var(--pj-brand-ink)" }}>
+            <Plus size={20} aria-hidden />
           </button>
           <input
             id="pj-lista-adicionar"
@@ -428,23 +430,6 @@ export default function SecaoListaCompras({ onVoltar }) {
           </ul>
         )}
       </div>
-
-      {/* Todos os artigos do catálogo, por categoria (como a antiga grelha, em lista) */}
-      {!texto.trim() && (
-        <div className="px-4">
-          <button ref={catalogoRef} onClick={() => { carregarCatalogo(); setVerCatalogo(true); }} className="pj-tap press flex items-center w-full text-left"
-            style={{ gap: 12, minHeight: 60, padding: "10px 14px", borderRadius: 14, background: "var(--pj-brand-wash)", border: "1px solid var(--pj-brand-soft)" }}>
-            <span aria-hidden className="flex items-center justify-center flex-none" style={{ width: 38, height: 38, borderRadius: 11, background: "var(--pj-brand)", color: "#fff" }}>
-              <LayoutList size={19} />
-            </span>
-            <span className="flex-1 min-w-0">
-              <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>Ver todos os artigos</span>
-              <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>{CATEGORIAS.length} categorias · escolhe com um toque</span>
-            </span>
-            <ChevronRight size={18} aria-hidden style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
-          </button>
-        </div>
-      )}
 
       {/* Lista vazia */}
       {!itens.length && (
