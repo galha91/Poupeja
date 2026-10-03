@@ -89,3 +89,30 @@ No Xcode:
 - **Ícone e splash:** usa os ícones em `public/icon-512.png`. Para gerar todos
   os tamanhos automaticamente: `npm i -D @capacitor/assets` e depois
   `npx capacitor-assets generate`.
+
+## Garantias, renovações e prazos na app
+
+Estas três secções guardam tudo **só no telemóvel** e precisam de três
+plugins nativos, já em `package.json`: `@capacitor/local-notifications`,
+`@capacitor/share` e `@capacitor/filesystem`. Depois de `npm install`, corre
+**`npm run cap:sync`** (sem isto a app compila mas os plugins não entram).
+
+| O quê | Browser / TWA (Play Store) | App Capacitor |
+|---|---|---|
+| Avisos 60/30 dias (garantias, renovações) e 30/7 (prazos) | sino + notificação ao abrir; com conta e "Avisos com a app fechada" nas Definições, push do servidor | **agendados no telemóvel** (LocalNotifications), tocam com a app fechada, sem servidor |
+| "Adicionar ao calendário" (.ics), cópia de segurança, ficha da compra | descarrega / menu de partilha do Chrome | grava na cache da app e abre o menu de partilha (Filesystem + Share) |
+| Fotos dos talões | IndexedDB do Chrome | IndexedDB da WebView |
+
+O código deteta sozinho os plugins (`lib/nativo.js`): sem eles, segue o
+caminho do browser. Nada a configurar no código.
+
+**Android 13+:** a autorização de notificações é pedida na primeira vez que
+a pessoa ativa um lembrete (não ao abrir a app). Para os avisos tocarem à
+hora certa mesmo em poupança de bateria, o Android pode pedir "Alarmes e
+lembretes" nas definições da app — sem isso tocam na mesma, com alguns
+minutos de folga.
+
+**Atenção à mudança de app:** os dados destas secções vivem no armazenamento
+do browser/WebView. Quem passar do site (ou da TWA) para a app Capacitor
+começa com elas vazias — usa "Cópia de segurança" em Talões → Garantias e
+"Restaurar cópia" na app.

@@ -170,6 +170,15 @@ em [A impressão digital certa](#a-impressão-digital-certa).
   Diz também que os dados são encriptados em trânsito e que o utilizador pode pedir
   a eliminação da conta.
 
+## Garantias, renovações e prazos na TWA
+
+A TWA corre no Chrome do telemóvel, por isso estas secções funcionam como no
+site: os dados ficam no Chrome (a TWA e o site em poupejá.com partilham-nos),
+as fotos no IndexedDB, os ficheiros (.ics, cópia de segurança, ficha da compra)
+descarregam ou abrem o menu de partilha. Avisos com a app fechada: o `.ics` no
+calendário, ou — com conta e push ativo — a opção "Avisos com a app fechada" nas
+Definições (o cron `api/cron-avisos` envia-os). Não é preciso nada no Bubblewrap.
+
 ## Sobre o Capacitor
 
 Não o apagues. Fica no repositório para o dia em que precisares de nativo a sério.
