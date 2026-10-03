@@ -7,7 +7,10 @@ import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
-import { NOMES_ARTIGOS, doCatalogo } from "./lib/catalogoLista";
+import { ITENS, CATEGORIAS as CATS_CATALOGO, itemPorNome } from "./data/catalogo-lista";
+
+// Direto dos dados (sem a pesquisa tolerante da lista): é o que este ecrã precisa.
+const NOME_CATEGORIA = Object.fromEntries(CATS_CATALOGO.map((c) => [c.id, c.nome]));
 import { NotaCobertura } from "./Cobertura";
 import { N_COMPARADAS } from "./lib/cobertura";
 
@@ -31,7 +34,8 @@ const semAcentos = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toL
 // Sugestões enquanto se escreve: o catálogo da lista de compras (~250
 // artigos com nomes que as lojas reconhecem). Primeiro os que começam
 // pelo que se escreveu, depois os que o contêm.
-const CATALOGO = [...new Set(NOMES_ARTIGOS.map(termoDePesquisa))].filter(Boolean);
+// O termo de pesquisa de cada artigo do catálogo (o que as lojas reconhecem).
+const CATALOGO = [...new Set(ITENS.map((i) => i.q))].filter(Boolean);
 function sugerir(texto) {
   const t = semAcentos(texto.trim());
   if (t.length < 2) return [];
@@ -62,7 +66,7 @@ function juntarALista(nome) {
     const existe = itens.find((i) => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
     const novos = existe
       ? itens.map((i) => (i === existe ? { ...i, qty: (i.qty || 1) + 1 } : i))
-      : [{ id: Date.now() + Math.random(), nome, emoji: "🛒", categoria: doCatalogo(nome)?.categoria || "", qty: 1, feito: false }, ...itens];
+      : [{ id: Date.now() + Math.random(), nome: itemPorNome(nome)?.nome || nome, emoji: "", categoria: NOME_CATEGORIA[itemPorNome(nome)?.cat] || "", qty: 1, feito: false, ...(itemPorNome(nome) ? { q: itemPorNome(nome).q } : {}) }, ...itens];
     localStorage.setItem(LS_LISTA, JSON.stringify(novos));
     return true;
   } catch { return false; }

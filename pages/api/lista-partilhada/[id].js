@@ -21,6 +21,8 @@ function limparItens(itens) {
     qty: Number.isFinite(it?.qty) ? Math.max(1, Math.min(99, Math.floor(it.qty))) : 1,
     feito: !!it?.feito,
     ...(it?.categoria ? { categoria: String(it.categoria).slice(0, 40) } : {}),
+    // Termo de pesquisa do preço (catálogo da lista), para a comparação.
+    ...(it?.q ? { q: String(it.q).slice(0, 60) } : {}),
   }));
 }
 

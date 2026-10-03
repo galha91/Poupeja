@@ -30,6 +30,13 @@ const EM_PARALELO = 3;
 export async function compararArtigos(itens, aoAvancar = () => {}) {
   const artigos = itens.slice(0, MAX_ARTIGOS);
   evento("comparar_lista", { artigos: artigos.length });
+  // Catálogo: o termo de pesquisa certo de cada artigo e os que se sabe
+  // não terem preço comparável (não vale a pena perguntar às lojas).
+  const [catalogo, cobertura] = await Promise.all([
+    import("./lib/catalogoLista").catch(() => null),
+    import("./data/catalogo-precos.json").then((m) => m.default || m).catch(() => ({})),
+  ]);
+  const semPreco = new Set(cobertura.semPreco || []);
   const resultado = new Array(artigos.length);
   let proximo = 0;
   // Poucas de cada vez: o servidor limita pesquisas por minuto.
@@ -37,7 +44,13 @@ export async function compararArtigos(itens, aoAvancar = () => {}) {
     while (proximo < artigos.length) {
       const i = proximo++;
       const it = artigos[i];
-      const q = termoDePesquisa(it.nome);
+      const doCat = catalogo?.doCatalogo(it.nome);
+      const q = it.q || doCat?.q || termoDePesquisa(it.nome);
+      if (doCat && semPreco.has(doCat.id)) {
+        resultado[i] = { item: it, q, custos: {} };
+        aoAvancar();
+        continue;
+      }
       try {
         const { dados, guardado } = await pesquisarComRecurso(q);
         resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1) };

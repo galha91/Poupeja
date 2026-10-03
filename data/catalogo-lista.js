@@ -1,0 +1,320 @@
+/*
+ * Catálogo da lista de compras — o que se adiciona com um toque.
+ *
+ * Para acrescentar um artigo, junta uma linha à categoria certa:
+ *
+ *   { nome: "Leite meio-gordo", un: "L", q: "leite meio gordo", sin: ["leite"], top: true },
+ *
+ *   nome  como aparece na lista (pt-PT, genérico, sem marcas)
+ *   un    unidade típica, opcional: "kg", "L", "un.", "emb.", "dúzia"
+ *   q     termo usado para pesquisar o preço nos supermercados, opcional
+ *         (por omissão, o nome sem parênteses e em minúsculas)
+ *   sin   sinónimos para a pesquisa, opcional
+ *   top   aparece em "Mais comuns", opcional (manter à volta de 16)
+ *
+ * O id é gerado a partir do nome (sem acentos, com hífenes) e tem de ser
+ * único: o teste tests/catalogo.test.mjs avisa se houver repetidos.
+ * Genéricos sempre; marcas só quando é a pessoa a escrevê-las.
+ */
+
+export const CATEGORIAS = [
+  {
+    id: "frutas-legumes", nome: "Frutas e legumes", itens: [
+      { nome: "Maçãs", un: "kg", sin: ["maçã"], top: true },
+      { nome: "Bananas", un: "kg", sin: ["banana"], top: true },
+      { nome: "Laranjas", un: "kg", sin: ["laranja"] },
+      { nome: "Peras", un: "kg", sin: ["pera", "pêra", "pêras", "pera rocha"] },
+      { nome: "Tangerinas", un: "kg", sin: ["clementinas", "mandarinas"] },
+      { nome: "Limões", un: "kg", sin: ["limão"] },
+      { nome: "Kiwis", un: "kg", sin: ["kiwi"] },
+      { nome: "Uvas", un: "kg" },
+      { nome: "Morangos", un: "emb." },
+      { nome: "Ananás", un: "un.", sin: ["abacaxi"] },
+      { nome: "Melão", un: "kg" },
+      { nome: "Melancia", un: "kg" },
+      { nome: "Manga", un: "un." },
+      { nome: "Pêssegos", un: "kg", sin: ["pêssego"] },
+      { nome: "Ameixas", un: "kg" },
+      { nome: "Cerejas", un: "kg" },
+      { nome: "Figos", un: "kg" },
+      { nome: "Mirtilos", un: "emb." },
+      { nome: "Framboesas", un: "emb." },
+      { nome: "Abacate", un: "un." },
+      { nome: "Castanhas", un: "kg" },
+      { nome: "Batatas", un: "kg", sin: ["batata"], top: true },
+      { nome: "Batata-doce", un: "kg" },
+      { nome: "Cebolas", un: "kg", sin: ["cebola"], top: true },
+      { nome: "Cebola roxa", un: "kg" },
+      { nome: "Alho", un: "emb.", sin: ["alhos"] },
+      { nome: "Alho-francês", un: "un.", sin: ["alho porro"] },
+      { nome: "Cenouras", un: "kg", sin: ["cenoura"] },
+      { nome: "Tomate", un: "kg", sin: ["tomates"], top: true },
+      { nome: "Alface", un: "un." },
+      { nome: "Pepino", un: "un." },
+      { nome: "Pimentos", un: "kg", sin: ["pimento"] },
+      { nome: "Curgete", un: "kg", q: "courgette", sin: ["courgette", "abobrinha"] },
+      { nome: "Beringela", un: "kg" },
+      { nome: "Brócolos", un: "kg", sin: ["brócolis", "bróculos"] },
+      { nome: "Couve-flor", un: "un." },
+      { nome: "Couve portuguesa", un: "kg", sin: ["couve"] },
+      { nome: "Couve galega", un: "emb.", sin: ["couve para caldo verde", "caldo verde"] },
+      { nome: "Grelos", un: "emb.", sin: ["nabiças"] },
+      { nome: "Espinafres", un: "emb." },
+      { nome: "Feijão-verde", un: "kg", q: "feijão verde" },
+      { nome: "Cogumelos", un: "emb." },
+      { nome: "Abóbora", un: "kg" },
+      { nome: "Beterraba", un: "emb." },
+      { nome: "Salsa", un: "molho" },
+      { nome: "Coentros", un: "molho" },
+      { nome: "Hortelã", un: "molho" },
+    ],
+  },
+  {
+    id: "talho", nome: "Talho", itens: [
+      { nome: "Frango inteiro", un: "kg", sin: ["frango"] },
+      { nome: "Peito de frango", un: "kg", sin: ["bifes de frango"], top: true },
+      { nome: "Coxas de frango", un: "kg", q: "coxa de frango" },
+      { nome: "Bifes de peru", un: "kg", q: "peru", sin: ["peru"] },
+      { nome: "Carne picada", un: "kg" },
+      { nome: "Bifes de vaca", un: "kg", sin: ["bife"] },
+      { nome: "Carne para estufar", un: "kg", q: "novilho para estufar", sin: ["vaca para estufar", "carne de vaca"] },
+      { nome: "Vitela", un: "kg" },
+      { nome: "Febras de porco", un: "kg", q: "febras", sin: ["febras", "bifanas"] },
+      { nome: "Costeletas de porco", un: "kg", q: "costeletas porco" },
+      { nome: "Lombo de porco", un: "kg" },
+      { nome: "Entrecosto", un: "kg" },
+      { nome: "Entremeada", un: "kg", sin: ["toucinho"] },
+      { nome: "Borrego", un: "kg", sin: ["cordeiro"] },
+      { nome: "Hambúrgueres", un: "emb.", sin: ["hamburguer"] },
+    ],
+  },
+  {
+    id: "peixaria", nome: "Peixaria", itens: [
+      { nome: "Bacalhau", un: "kg", sin: ["bacalhau salgado", "bacalhau seco", "bacalhau graúdo"] },
+      { nome: "Sardinha", un: "kg", q: "sardinha fresca", sin: ["sardinhas"] },
+      { nome: "Carapau", un: "kg" },
+      { nome: "Cavala", un: "kg" },
+      { nome: "Dourada", un: "kg" },
+      { nome: "Robalo", un: "kg" },
+      { nome: "Salmão", un: "kg" },
+      { nome: "Pescada", un: "kg" },
+      { nome: "Peixe-espada", un: "kg", q: "peixe espada" },
+      { nome: "Polvo", un: "kg" },
+      { nome: "Lulas", un: "kg", sin: ["lula"] },
+      { nome: "Choco", un: "kg", sin: ["chocos"] },
+      { nome: "Camarão", un: "kg", sin: ["gambas"] },
+      { nome: "Amêijoas", un: "kg", sin: ["ameijoa"] },
+      { nome: "Mexilhão", un: "kg" },
+    ],
+  },
+  {
+    id: "charcutaria", nome: "Charcutaria e queijos", itens: [
+      { nome: "Fiambre", un: "emb.", top: true },
+      { nome: "Fiambre de peru", un: "emb." },
+      { nome: "Presunto", un: "emb." },
+      { nome: "Chouriço", un: "un.", sin: ["chouriço de carne"] },
+      { nome: "Salpicão", un: "un." },
+      { nome: "Alheira", un: "un.", sin: ["alheiras"] },
+      { nome: "Farinheira", un: "un." },
+      { nome: "Morcela", un: "un." },
+      { nome: "Bacon", un: "emb.", sin: ["toucinho fumado"] },
+      { nome: "Queijo flamengo", un: "emb.", sin: ["queijo fatiado", "queijo"] },
+      { nome: "Queijo fresco", un: "un." },
+      { nome: "Requeijão", un: "un." },
+      { nome: "Queijo da Serra", un: "un.", sin: ["queijo serra da estrela"] },
+      { nome: "Queijo de cabra", un: "un." },
+      { nome: "Queijo ralado", un: "emb." },
+      { nome: "Mozarela", un: "un.", sin: ["mozzarella"] },
+      { nome: "Queijo parmesão", un: "emb.", sin: ["parmesão", "grana padano"] },
+    ],
+  },
+  {
+    id: "padaria", nome: "Padaria", itens: [
+      { nome: "Carcaças", un: "un.", q: "carcaça", sin: ["carcaça", "papo-seco", "pão"], top: true },
+      { nome: "Pão de forma", un: "emb.", sin: ["pão de sanduíche"] },
+      { nome: "Pão integral", un: "un." },
+      { nome: "Pão de centeio", un: "un.", q: "pão centeio" },
+      { nome: "Broa de milho", un: "un.", sin: ["broa"] },
+      { nome: "Pão de leite", un: "emb." },
+      { nome: "Baguete", un: "un." },
+      { nome: "Tostas", un: "emb.", sin: ["tostas integrais"] },
+      { nome: "Croissants", un: "un.", sin: ["croissant"] },
+      { nome: "Pastéis de nata", un: "un.", sin: ["pastel de nata"] },
+      { nome: "Bolo-rei", un: "un." },
+    ],
+  },
+  {
+    id: "laticinios", nome: "Laticínios e ovos", itens: [
+      { nome: "Leite meio-gordo", un: "L", q: "leite meio gordo", sin: ["leite"], top: true },
+      { nome: "Leite magro", un: "L" },
+      { nome: "Leite gordo", un: "L" },
+      { nome: "Leite sem lactose", un: "L" },
+      { nome: "Bebida vegetal", un: "L", q: "bebida de aveia", sin: ["leite vegetal", "bebida de aveia", "bebida de soja", "bebida de amêndoa"] },
+      { nome: "Iogurte natural", un: "emb.", sin: ["iogurtes"], top: true },
+      { nome: "Iogurte grego", un: "emb." },
+      { nome: "Iogurtes de fruta", un: "emb.", q: "iogurte de aroma", sin: ["iogurte de morango"] },
+      { nome: "Iogurte líquido", un: "emb." },
+      { nome: "Manteiga", un: "un." },
+      { nome: "Margarina", un: "un.", sin: ["creme vegetal"] },
+      { nome: "Natas", un: "un.", sin: ["natas para culinária"] },
+      { nome: "Ovos", un: "dúzia", sin: ["ovo", "dúzia de ovos"], top: true },
+    ],
+  },
+  {
+    id: "mercearia", nome: "Mercearia", itens: [
+      { nome: "Arroz carolino", un: "kg", sin: ["arroz"], top: true },
+      { nome: "Arroz agulha", un: "kg" },
+      { nome: "Massa esparguete", un: "emb.", sin: ["esparguete", "spaghetti"], top: true },
+      { nome: "Massa penne", un: "emb.", sin: ["penne", "massa"] },
+      { nome: "Macarrão", un: "emb.", sin: ["macarronete", "cotovelinhos"] },
+      { nome: "Massinhas para sopa", un: "emb.", q: "massinhas", sin: ["aletria", "estrelinhas"] },
+      { nome: "Feijão encarnado", un: "kg", q: "feijão encarnado", sin: ["feijão", "feijão seco"] },
+      { nome: "Feijão-frade", un: "kg", q: "feijão frade" },
+      { nome: "Grão-de-bico", un: "kg", q: "grão de bico", sin: ["grão"] },
+      { nome: "Lentilhas", un: "kg" },
+      { nome: "Farinha", un: "kg", sin: ["farinha de trigo"] },
+      { nome: "Açúcar", un: "kg" },
+      { nome: "Sal", un: "kg", sin: ["sal grosso", "sal fino"] },
+      { nome: "Azeite", un: "L", sin: ["azeite virgem extra"], top: true },
+      { nome: "Óleo", un: "L", q: "óleo alimentar", sin: ["óleo de girassol"] },
+      { nome: "Vinagre", un: "L" },
+      { nome: "Polpa de tomate", un: "un.", sin: ["tomate pelado", "molho de tomate"] },
+      { nome: "Caldo de galinha", un: "emb.", sin: ["cubos de caldo", "caldo"] },
+      { nome: "Maionese", un: "un." },
+      { nome: "Ketchup", un: "un." },
+      { nome: "Mostarda", un: "un." },
+      { nome: "Pimenta", un: "un." },
+      { nome: "Colorau", un: "un.", sin: ["paprika", "pimentão doce"] },
+      { nome: "Louro", un: "emb.", sin: ["folhas de louro"] },
+      { nome: "Orégãos", un: "un.", sin: ["oregãos", "orégano"] },
+      { nome: "Canela", un: "un." },
+      { nome: "Fermento", un: "emb.", sin: ["fermento em pó"] },
+      { nome: "Pão ralado", un: "emb." },
+      { nome: "Cereais", un: "emb.", sin: ["cereais de pequeno-almoço", "corn flakes"] },
+      { nome: "Flocos de aveia", un: "emb.", sin: ["aveia"] },
+      { nome: "Bolacha Maria", un: "emb.", sin: ["bolachas"] },
+      { nome: "Bolacha de água e sal", un: "emb.", sin: ["bolachas de água e sal"] },
+      { nome: "Chocolate", un: "un.", sin: ["tablete de chocolate"] },
+      { nome: "Chocolate em pó", un: "un.", sin: ["cacau"] },
+      { nome: "Marmelada", un: "un." },
+      { nome: "Compota", un: "un.", sin: ["doce de fruta"] },
+      { nome: "Mel", un: "un." },
+      { nome: "Frutos secos", un: "emb.", sin: ["amêndoas", "nozes", "cajus"] },
+      { nome: "Amendoins", un: "emb." },
+      { nome: "Batatas fritas de pacote", un: "emb.", q: "batatas fritas", sin: ["batatas fritas", "chips"] },
+    ],
+  },
+  {
+    id: "conservas", nome: "Conservas", itens: [
+      { nome: "Atum em lata", un: "lata", q: "atum", sin: ["atum"] },
+      { nome: "Sardinhas em lata", un: "lata", q: "sardinhas em lata", sin: ["sardinhas em conserva"] },
+      { nome: "Cavala em lata", un: "lata", q: "cavala em conserva" },
+      { nome: "Salsichas em lata", un: "lata", q: "salsichas", sin: ["salsichas"] },
+      { nome: "Feijão cozido", un: "frasco", sin: ["feijão em lata"] },
+      { nome: "Grão cozido", un: "frasco", sin: ["grão em lata"] },
+      { nome: "Milho doce", un: "lata", sin: ["milho"] },
+      { nome: "Ervilhas em lata", un: "lata", q: "ervilhas em conserva" },
+      { nome: "Azeitonas", un: "frasco" },
+    ],
+  },
+  {
+    id: "bebidas", nome: "Bebidas", itens: [
+      { nome: "Água", un: "L", sin: ["água sem gás", "garrafão de água"] },
+      { nome: "Água com gás", un: "L" },
+      { nome: "Sumo de laranja", un: "L" },
+      { nome: "Néctar de fruta", un: "L", q: "néctar", sin: ["sumo", "néctar"] },
+      { nome: "Refrigerante de cola", un: "L", q: "cola", sin: ["cola", "refrigerante"] },
+      { nome: "Ice tea", un: "L", sin: ["chá frio"] },
+      { nome: "Cerveja", un: "emb.", sin: ["minis", "imperial"] },
+      { nome: "Vinho tinto", un: "garrafa" },
+      { nome: "Vinho branco", un: "garrafa" },
+      { nome: "Vinho verde", un: "garrafa" },
+      { nome: "Espumante", un: "garrafa" },
+      { nome: "Café moído", un: "emb.", sin: ["café"], top: true },
+      { nome: "Café em cápsulas", un: "emb.", q: "cápsulas café", sin: ["cápsulas", "café em cápsula"] },
+      { nome: "Café em grão", un: "emb." },
+      { nome: "Cevada", un: "emb.", q: "cevada solúvel", sin: ["cevada solúvel"] },
+      { nome: "Chá", un: "emb.", sin: ["infusão"] },
+    ],
+  },
+  {
+    id: "congelados", nome: "Congelados", itens: [
+      { nome: "Bacalhau demolhado", un: "kg", sin: ["bacalhau congelado"] },
+      { nome: "Filetes de pescada", un: "emb.", q: "filetes pescada", sin: ["pescada congelada", "filetes"] },
+      { nome: "Douradinhos", un: "emb.", sin: ["palitos de peixe"] },
+      { nome: "Legumes para sopa", un: "emb.", q: "legumes congelados", sin: ["legumes congelados", "sopa congelada"] },
+      { nome: "Ervilhas congeladas", un: "emb.", sin: ["ervilhas"] },
+      { nome: "Espinafres congelados", un: "emb." },
+      { nome: "Batata frita congelada", un: "emb.", sin: ["batata palito"] },
+      { nome: "Pizza congelada", un: "un.", sin: ["pizza"] },
+      { nome: "Gelado", un: "emb.", sin: ["gelados"] },
+    ],
+  },
+  {
+    id: "higiene", nome: "Higiene", itens: [
+      { nome: "Papel higiénico", un: "emb.", sin: ["rolos de papel"], top: true },
+      { nome: "Champô", un: "un.", sin: ["shampoo"] },
+      { nome: "Gel de banho", un: "un.", sin: ["gel duche"] },
+      { nome: "Sabonete", un: "un.", sin: ["sabonete líquido"] },
+      { nome: "Pasta de dentes", un: "un.", sin: ["dentífrico"] },
+      { nome: "Escova de dentes", un: "un." },
+      { nome: "Desodorizante", un: "un.", sin: ["desodorante"] },
+      { nome: "Pensos higiénicos", un: "emb.", sin: ["pensos"] },
+      { nome: "Lâminas de barbear", un: "emb.", sin: ["gilete", "máquina de barbear"] },
+      { nome: "Cotonetes", un: "emb." },
+      { nome: "Creme hidratante", un: "un.", sin: ["creme de corpo"] },
+      { nome: "Protetor solar", un: "un." },
+      { nome: "Lenços de papel", un: "emb." },
+    ],
+  },
+  {
+    id: "limpeza", nome: "Limpeza", itens: [
+      { nome: "Detergente da roupa", un: "emb.", q: "detergente roupa", sin: ["detergente máquina roupa"] },
+      { nome: "Amaciador", un: "emb.", sin: ["amaciador da roupa"] },
+      { nome: "Detergente da loiça", un: "un.", q: "detergente loiça", sin: ["detergente"] },
+      { nome: "Pastilhas da máquina da loiça", un: "emb.", q: "pastilhas máquina loiça", sin: ["pastilhas"] },
+      { nome: "Lixívia", un: "L" },
+      { nome: "Multiusos", un: "un.", q: "limpa multiusos", sin: ["spray de limpeza"] },
+      { nome: "Gel WC", un: "un.", q: "wc gel", sin: ["limpa sanitas"] },
+      { nome: "Papel de cozinha", un: "emb.", sin: ["rolo de cozinha"] },
+      { nome: "Guardanapos", un: "emb." },
+      { nome: "Sacos do lixo", un: "emb." },
+      { nome: "Esponjas", un: "emb.", sin: ["esfregão"] },
+      { nome: "Película aderente", un: "un.", sin: ["film", "papel aderente"] },
+      { nome: "Papel de alumínio", un: "un.", sin: ["alumínio"] },
+    ],
+  },
+  {
+    id: "bebe", nome: "Bebé", itens: [
+      { nome: "Fraldas", un: "emb." },
+      { nome: "Toalhitas", un: "emb.", sin: ["lenços húmidos"] },
+      { nome: "Leite infantil", un: "emb.", sin: ["leite em pó", "leite de transição"] },
+      { nome: "Papa infantil", un: "emb.", q: "papa", sin: ["papas"] },
+      { nome: "Puré de fruta para bebé", un: "un.", q: "boião fruta", sin: ["boião", "boiões"] },
+      { nome: "Creme para a muda da fralda", un: "un.", q: "creme muda fralda", sin: ["creme do rabinho"] },
+    ],
+  },
+  {
+    id: "animais", nome: "Animais", itens: [
+      { nome: "Ração para cão", un: "emb.", q: "ração cão", sin: ["comida de cão"] },
+      { nome: "Ração para gato", un: "emb.", q: "ração gato", sin: ["comida de gato"] },
+      { nome: "Comida húmida para gato", un: "emb.", q: "saquetas gato", sin: ["saquetas gato", "patê gato"] },
+      { nome: "Areia para gato", un: "emb.", q: "areia gato", sin: ["areia"] },
+    ],
+  },
+];
+
+/* ── Derivados (não editar à mão) ── */
+
+const semAcentos = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "");
+export const slug = (s) => semAcentos(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const termo = (nome) => String(nome).toLowerCase().replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+
+export const ITENS = CATEGORIAS.flatMap((c) =>
+  c.itens.map((i) => ({ ...i, id: slug(i.nome), cat: c.id, q: i.q || termo(i.nome), sin: i.sin || [] })));
+
+const POR_NOME = new Map(ITENS.map((i) => [semAcentos(i.nome).toLowerCase(), i]));
+/* Artigo do catálogo com este nome (ignora maiúsculas e acentos), ou null. */
+export const itemPorNome = (nome) => POR_NOME.get(semAcentos(String(nome || "").trim()).toLowerCase()) || null;
+
+export const MAIS_COMUNS = ITENS.filter((i) => i.top);

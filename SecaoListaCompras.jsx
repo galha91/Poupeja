@@ -419,7 +419,7 @@ export default function SecaoListaCompras({ onVoltar }) {
                     className="pj-tap w-full flex items-center justify-between text-left" style={{ minHeight: 44, padding: "0 14px", background: "transparent", border: 0, gap: 12 }}>
                     <span className="truncate" style={{ fontSize: 15, color: "var(--pj-text)" }}>{s.nome}</span>
                     <span className="flex-none" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>
-                      {na ? `Na lista${(na.qty || 1) > 1 ? ` · ${na.qty}×` : ""}` : s.origem === "comparados" ? "Já comparaste" : ""}
+                      {na ? `Na lista${(na.qty || 1) > 1 ? ` · ${na.qty}×` : ""}` : s.origem === "comparados" ? "Já comparaste" : s.origem === "epoca" ? "Da época" : ""}
                     </span>
                   </button>
                 </li>
@@ -454,13 +454,15 @@ export default function SecaoListaCompras({ onVoltar }) {
           </p>
           {iniciais.length > 0 && (
             <>
-              <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>{iniciais.some(s => s.origem === "frequentes") ? "Sugestões" : "Já comparaste"}</h3>
+              <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>{iniciais.some(s => s.origem !== "comparados") ? "Sugestões" : "Já comparaste"}</h3>
               <ul>
                 {iniciais.map((s, i) => (
                   <li key={s.nome} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
                     <button onMouseDown={e => e.preventDefault()} onClick={() => juntar(s.nome)} className="pj-tap w-full flex items-center text-left"
                       style={{ gap: 12, minHeight: 48, padding: "0 4px", background: "transparent", border: 0, fontSize: 15, color: "var(--pj-text)" }}>
-                      <Plus size={16} aria-hidden style={{ color: "var(--pj-brand-ink)" }} /> {s.nome}
+                      <Plus size={16} aria-hidden style={{ color: "var(--pj-brand-ink)" }} />
+                      <span className="flex-1">{s.nome}</span>
+                      {s.origem === "epoca" && <span style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>Da época</span>}
                     </button>
                   </li>
                 ))}

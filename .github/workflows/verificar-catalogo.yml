@@ -1,0 +1,31 @@
+name: Verificar preços do catálogo da lista
+
+# Corre à mão (Actions → "Verificar preços do catálogo da lista" → Run
+# workflow) e no dia 1 de cada mês. Abre um pull request com o
+# data/catalogo-precos.json atualizado — nada vai para a main sem revisão.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 1 * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verificar cada artigo na API do site
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verificar-catalogo.mjs | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: catalogo-precos-automatico
+          commit-message: "Catálogo da lista: atualizar artigos com e sem preço comparável"
+          title: "Catálogo da lista: artigos com e sem preço comparável"
+          body: "Gerado pelo workflow verificar-catalogo. Revê o ficheiro data/catalogo-precos.json antes de fazer merge."
+          add-paths: data/catalogo-precos.json
