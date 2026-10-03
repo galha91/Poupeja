@@ -318,8 +318,6 @@ const OPORTUNIDADES = [
     cats: ["energia"],
     label: "Energia (luz, gás, água)",
     emoji: "⚡",
-    pct: 0.22,
-    minAnual: 80,
     provider: "ComparaJá",
     url: "https://www.comparaja.pt/?ref=poupeja",
     cor: "var(--pj-cat-ocre)",
@@ -329,8 +327,6 @@ const OPORTUNIDADES = [
     cats: ["internet"],
     label: "Internet e telemóvel",
     emoji: "🌐",
-    pct: 0.25,
-    minAnual: 60,
     provider: "ComparaJá",
     url: "https://www.comparaja.pt/?ref=poupeja",
     cor: "var(--pj-cat-azul)",
@@ -340,8 +336,6 @@ const OPORTUNIDADES = [
     cats: ["seguro"],
     label: "Seguros",
     emoji: "🛡️",
-    pct: 0.20,
-    minAnual: 80,
     provider: "ComparaJá",
     url: "https://www.comparaja.pt/?ref=poupeja",
     cor: "var(--pj-cat-ameixa)",
@@ -351,8 +345,6 @@ const OPORTUNIDADES = [
     cats: ["habitacao"],
     label: "Crédito habitação",
     emoji: "🏦",
-    pct: 0.05,
-    minAnual: 400,
     minMensal: 200,
     provider: "Doutor Finanças",
     url: "https://www.doutorfinancas.pt/?ref=poupeja",
@@ -361,25 +353,36 @@ const OPORTUNIDADES = [
   },
 ];
 
+/*
+ * Antes mostrava "podes poupar até €X/ano" com percentagens fixas (22%, 25%…)
+ * sem fonte — um valor inventado. Agora só aparece um número quando vem de
+ * uma comparação real: o resultado do simulador da ERSE guardado em
+ * Contas → Renovações. O resto é o convite a comparar, sem prometer valores.
+ */
 function calcOportunidades(contas) {
-  return OPORTUNIDADES
-    .map(op => {
-      const filtradas = contas.filter(c =>
-        op.cats.includes(c.categoria) && (!op.minMensal || c.valor >= op.minMensal)
-      );
-      if (filtradas.length === 0) return null;
-      const anual = filtradas.reduce((s, c) => s + c.valor, 0) * 12;
-      const economia = Math.max(op.minAnual, Math.round(anual * op.pct));
-      return { ...op, economia };
-    })
-    .filter(Boolean);
+  return OPORTUNIDADES.filter(op =>
+    contas.some(c => op.cats.includes(c.categoria) && (!op.minMensal || c.valor >= op.minMensal))
+  );
+}
+
+function poupancaErse() {
+  try {
+    const ren = JSON.parse(localStorage.getItem("poupeja_renovacoes") || "[]");
+    let total = 0;
+    for (const c of Array.isArray(ren) ? ren : []) {
+      const alt = Number(c?.resultadoErse?.valorAnual);
+      const porAno = { mensal: 12, trimestral: 4, semestral: 2, anual: 1 }[c?.periodicidade] || 12;
+      const atual = Number(c?.valor) * porAno;
+      if (Number.isFinite(alt) && alt > 0 && Number.isFinite(atual) && atual > alt) total += atual - alt;
+    }
+    return Math.round(total);
+  } catch { return 0; }
 }
 
 function PoupancaPotencial({ contas }) {
   const ativas = calcOportunidades(contas);
   if (ativas.length === 0) return null;
-
-  const totalEconomia = ativas.reduce((s, op) => s + op.economia, 0);
+  const erse = poupancaErse();
 
   return (
     <div className="px-4 mb-4 anim-up anim-up-1">
@@ -387,22 +390,18 @@ function PoupancaPotencial({ contas }) {
         className="rounded-2xl overflow-hidden"
         style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}
       >
-        {/* Cabeçalho */}
-        <div className="px-4 pt-4 pb-3 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl" style={{ background: "var(--pj-subtle)" }}>
-            💡
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Poupança potencial</p>
-            <p className="font-display leading-tight mt-0.5" style={{ fontSize: "19px", fontWeight: 600, color: "var(--pj-text)" }}>
-              Podes poupar até{" "}
-              <span style={{ color: "var(--pj-brand-ink)" }}>€{totalEconomia.toLocaleString("pt-PT")}/ano</span>
-            </p>
-            <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Com base nas categorias que tens registadas</p>
-          </div>
+        <div className="px-4 pt-4 pb-3">
+          <p className="text-[11px] uppercase" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>Pagar menos</p>
+          <p className="font-display leading-tight mt-0.5" style={{ fontSize: "17px", fontWeight: 600, color: "var(--pj-text)" }}>
+            {erse > 0
+              ? <>O simulador da ERSE encontrou <span style={{ color: "var(--pj-brand-ink)" }}>€{erse.toLocaleString("pt-PT")}/ano</span> de poupança na energia</>
+              : "Vale a pena comparar estas contas"}
+          </p>
+          <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>
+            Na energia, usa o simulador oficial em Contas → Renovações.
+          </p>
         </div>
 
-        {/* Oportunidades por categoria */}
         <div className="px-3 pb-3 flex flex-col gap-1.5">
           {ativas.map((op, i) => (
             <a
@@ -411,31 +410,21 @@ function PoupancaPotencial({ contas }) {
               target="_blank"
               rel="noopener noreferrer"
               className="press pj-tap flex items-center justify-between rounded-xl px-3.5 py-2.5 no-underline"
-              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-subtle)" }}
+              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-subtle)", minHeight: 48 }}
             >
               <div className="flex items-center gap-2.5">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base"
-                  style={{ background: op.bg }}
-                >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base" style={{ background: op.bg }}>
                   {op.emoji}
                 </div>
                 <div>
                   <p className="text-[12px]" style={{ fontWeight: 600, color: "var(--pj-text)" }}>{op.label}</p>
-                  <p className="text-[10px]" style={{ color: "var(--pj-text-faint)" }}>via {op.provider} — grátis</p>
+                  <p className="text-[10px]" style={{ color: "var(--pj-text-faint)" }}>Comparar via {op.provider} — grátis</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
-                <span className="text-[12px]" style={{ fontWeight: 600, color: op.cor }}>
-                  até €{op.economia}/ano
-                </span>
-                <ExternalLink size={11} style={{ color: "var(--pj-text-faint)" }} />
-              </div>
+              <ExternalLink size={12} style={{ color: "var(--pj-text-faint)" }} />
             </a>
           ))}
         </div>
-
-        <p className="text-[10px] text-center pb-3" style={{ color: "var(--pj-text-faint)" }}>Comparação gratuita e sem compromisso</p>
       </div>
     </div>
   );
@@ -981,7 +970,7 @@ function ContasFixasConteudo() {
                           className="pj-tap mt-1 inline-flex items-center gap-1 text-[10px] no-underline"
                           style={{ fontWeight: 600, color: op.cor }}
                         >
-                          💡 Comparar tarifas — poupar até €{Math.max(op.minAnual, Math.round(totalCat * 12 * op.pct))}/ano
+                          💡 Comparar tarifas — grátis
                           <ExternalLink size={9} />
                         </a>
                       );
