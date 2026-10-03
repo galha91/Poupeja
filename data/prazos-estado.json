@@ -249,6 +249,39 @@
       "link": "https://www.gov.pt/servicos/pagar-o-imposto-unico-de-circulacao-iuc-",
       "fonte": "gov.pt",
       "verificado": "2026-10-03"
+    },
+    {
+      "id": "isencao-imi-hpp",
+      "titulo": "Isenção de IMI para casa de família com rendimentos baixos",
+      "descricao": "Quem tem rendimentos baixos e uma casa de valor reduzido onde vive pode não pagar IMI. A isenção é reconhecida automaticamente pelas Finanças todos os anos — não é preciso pedir. Confirma que a morada fiscal é a da casa.",
+      "quemPode": "Donos da habitação própria e permanente, com rendimento do agregado e valor patrimonial dos imóveis abaixo dos limites definidos na lei.",
+      "perfis": [
+        "casa"
+      ],
+      "prazo": {
+        "tipo": "continuo"
+      },
+      "prazoTexto": "Sem pedido — reconhecida automaticamente todos os anos",
+      "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/questoes_frequentes/pages/faqs-00488.aspx",
+      "fonte": "Portal das Finanças",
+      "verificado": "2026-10-03"
+    },
+    {
+      "id": "passe-jovem-navegante",
+      "titulo": "Passe gratuito para jovens (Navegante, área de Lisboa)",
+      "descricao": "Na área metropolitana de Lisboa, os jovens viajam de graça com o cartão Navegante. Basta carregar uma vez a \"Gratuitidade Jovem\" na app Navegante: fica válida até ao fim do mês em que fazes 24 anos (ou até o cartão expirar).",
+      "quemPode": "Jovens até aos 23 anos, estudantes ou não, com cartão Navegante.",
+      "perfis": [
+        "jovem",
+        "estudante"
+      ],
+      "prazo": {
+        "tipo": "continuo"
+      },
+      "prazoTexto": "Sem prazo — um carregamento vale até aos 24 anos",
+      "link": "https://www.navegante.pt/faq",
+      "fonte": "navegante.pt",
+      "verificado": "2026-10-03"
     }
   ]
 }
