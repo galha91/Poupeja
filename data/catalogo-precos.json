@@ -1,7 +1,7 @@
 {
   "verificadoEm": "2026-10-03",
   "fonte": "https://www.xn--poupej-uta.com/api/precos-supermercado",
-  "nota": "Gerado por scripts/verificar-catalogo.mjs. semPreco: nenhum supermercado tem o artigo; poucasLojas: só um; porVerificar: a pesquisa falhou. Os que ficaram sem preço a 2026-10-03 ganharam termo de pesquisa novo e voltaram a 'porVerificar' até à próxima verificação.",
+  "nota": "Gerado por scripts/verificar-catalogo.mjs. semPreco: nenhum supermercado tem o artigo; poucasLojas: só um; porVerificar: a pesquisa falhou.",
   "comPreco": [
     "macas",
     "bananas",
@@ -33,6 +33,7 @@
     "alface",
     "pepino",
     "pimentos",
+    "curgete",
     "beringela",
     "brocolos",
     "couve-flor",
@@ -51,6 +52,7 @@
     "coxas-de-frango",
     "bifes-de-peru",
     "carne-picada",
+    "bifes-de-vaca",
     "carne-para-estufar",
     "vitela",
     "costeletas-de-porco",
@@ -89,6 +91,7 @@
     "queijo-da-serra",
     "queijo-de-cabra",
     "queijo-ralado",
+    "mozarela",
     "carcacas",
     "pao-de-forma",
     "pao-integral",
@@ -109,6 +112,7 @@
     "iogurtes-de-fruta",
     "iogurte-liquido",
     "manteiga",
+    "margarina",
     "natas",
     "ovos",
     "arroz-carolino",
@@ -150,10 +154,13 @@
     "amendoins",
     "batatas-fritas-de-pacote",
     "atum-em-lata",
+    "sardinhas-em-lata",
+    "cavala-em-lata",
     "salsichas-em-lata",
     "feijao-cozido",
     "grao-cozido",
     "milho-doce",
+    "ervilhas-em-lata",
     "azeitonas",
     "agua",
     "agua-com-gas",
@@ -175,6 +182,7 @@
     "filetes-de-pescada",
     "douradinhos",
     "ervilhas-congeladas",
+    "pizza-congelada",
     "gelado",
     "papel-higienico",
     "champo",
@@ -192,6 +200,8 @@
     "amaciador",
     "detergente-da-loica",
     "lixivia",
+    "multiusos",
+    "papel-de-cozinha",
     "guardanapos",
     "sacos-do-lixo",
     "esponjas",
@@ -204,6 +214,7 @@
     "creme-para-a-muda-da-fralda",
     "racao-para-cao",
     "racao-para-gato",
+    "comida-humida-para-gato",
     "areia-para-gato"
   ],
   "poucasLojas": [
@@ -216,25 +227,14 @@
     "batata-frita-congelada",
     "laminas-de-barbear",
     "pastilhas-da-maquina-da-loica",
-    "gel-wc"
+    "gel-wc",
+    "papel-de-aluminio"
   ],
-  "semPreco": [],
-  "porVerificar": [
+  "semPreco": [
+    "tangerinas",
     "alho-frances",
-    "bifes-de-vaca",
-    "cavala-em-lata",
-    "comida-humida-para-gato",
     "couve-galega",
-    "curgete",
-    "ervilhas-em-lata",
-    "febras-de-porco",
-    "margarina",
-    "mozarela",
-    "multiusos",
-    "papel-de-aluminio",
-    "papel-de-cozinha",
-    "pizza-congelada",
-    "sardinhas-em-lata",
-    "tangerinas"
-  ]
+    "febras-de-porco"
+  ],
+  "porVerificar": []
 }
