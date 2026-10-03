@@ -3,6 +3,11 @@ name: Verificar preços do catálogo da lista
 # Corre à mão (Actions → "Verificar preços do catálogo da lista" → Run
 # workflow) e no dia 1 de cada mês. Abre um pull request com o
 # data/catalogo-precos.json atualizado — nada vai para a main sem revisão.
+#
+# Para o PR abrir sozinho é preciso ativar uma vez, no GitHub:
+# Settings → Actions → General → Workflow permissions →
+# "Allow GitHub Actions to create and approve pull requests".
+# Sem isso, o ramo catalogo-precos-automatico fica criado mas o PR não.
 on:
   workflow_dispatch:
   schedule:
