@@ -60,6 +60,19 @@ const NAV_SECUNDARIO = [
   { id: "apoios",     label: "Apoios",     icon: Landmark },
   { id: "lojas",      label: "Lojas",      icon: Store },
 ];
+/* Atalhos para dentro de um separador (vêm das notificações dos lembretes). */
+const ATALHOS_SUB = {
+  garantias:  ["taloes", "garantias"],
+  renovacoes: ["contas", "renovacoes"],
+  prazos:     ["apoios", "prazos"],
+};
+function subDoAtalho(tab) {
+  if (typeof window === "undefined") return null;
+  try {
+    const par = ATALHOS_SUB[new URLSearchParams(window.location.search).get("atalho")];
+    return par && par[0] === tab ? par[1] : null;
+  } catch { return null; }
+}
 const NAV_IDS = ["inicio","poupanca","mercados","contas","mobilidade","apoios","lojas","irs","taloes","lista"];
 
 const TITULOS = {
@@ -132,6 +145,7 @@ export default function PoupeJa() {
         // já, em paralelo com o arranque, e não só quando o separador desenha.
         if (a === "lista") import("../SecaoListaCompras");
         if (a && NAV_IDS.includes(a)) return a;
+        if (a && ATALHOS_SUB[a]) return ATALHOS_SUB[a][0];
       } catch {}
     }
     return "inicio";
@@ -140,10 +154,10 @@ export default function PoupeJa() {
   const [bounce, setBounce]       = useState(null);
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
-  const [subTabTaloes, setSubTabTaloes] = useState("compras");
+  const [subTabTaloes, setSubTabTaloes] = useState(() => subDoAtalho("taloes") || "compras");
   const [subTabMercados, setSubTabMercados] = useState("comparar");
-  const [subTabContas, setSubTabContas]     = useState("contas");
-  const [subTabApoios, setSubTabApoios]     = useState("apoios");
+  const [subTabContas, setSubTabContas]     = useState(() => subDoAtalho("contas") || "contas");
+  const [subTabApoios, setSubTabApoios]     = useState(() => subDoAtalho("apoios") || "apoios");
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
@@ -162,9 +176,25 @@ export default function PoupeJa() {
         const lista = m.avisosLocais();
         setGarantiasAviso(lista);
         m.notificarAvisosNovos(lista);
+        m.atualizarLembretesForaDaApp();
       })
       .catch(() => {});
   }
+
+  /* Garantias antigas → registo novo, e o sino. Só com alguém dentro da
+     app (o ecrã de entrar não precisa disto). A migração arranca logo e a
+     sincronização espera por ela; o sino é calculado quando o browser
+     estiver livre — não compete com a primeira pintura. */
+  const migracao = useRef(null);
+  useEffect(() => {
+    if (!user || migracao.current) return;
+    migracao.current = import("../lib/dadosLocais")
+      .then(m => m.migrarGarantiasAntigas())
+      .catch(() => {});
+    const sino = () => migracao.current.finally(calcGarantiasAviso);
+    if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(sino, { timeout: 2500 });
+    else setTimeout(sino, 1200);
+  }, [user]);
 
   /* Convidado local que passou a ter sessão: conta como conversão */
   function largarConvidadoLocal() {
@@ -189,12 +219,6 @@ export default function PoupeJa() {
       }
       setHydrated(true);
     });
-    // Garantias antigas (nos talões) passam para o registo novo, só local.
-    // Corre antes do primeiro pull da sincronização, que espera pela sessão.
-    import("../lib/dadosLocais")
-      .then(m => m.migrarGarantiasAntigas())
-      .catch(() => {})
-      .finally(calcGarantiasAviso);
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") setRecovery(true);
@@ -216,7 +240,9 @@ export default function PoupeJa() {
 
   /* Sincroniza dados locais com a conta (talões, lista, prefs…) */
   useEffect(() => {
-    if (user?.id) iniciarSync(user.id);
+    // Depois da migração das garantias (ver acima): o primeiro pull não
+    // pode escrever por cima dos talões antes de elas saírem de lá.
+    if (user?.id) (migracao.current || Promise.resolve()).finally(() => iniciarSync(user.id));
   }, [user?.id]);
 
   /* Regista plataforma e estado de instalação PWA no Supabase */

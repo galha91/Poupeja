@@ -124,3 +124,54 @@ test("cópia de segurança: validação e junção sem duplicar", () => {
   const r = juntarPorId([{ id: "a", v: 1 }], [{ id: "a", v: 2 }, { id: "b" }, { id: "b" }, null, {}]);
   assert.deepEqual(r, [{ id: "a", v: 1 }, { id: "b" }]);
 });
+
+test("lembretes futuros: só o que tem lembrete e ainda não passou", async () => {
+  const { lembretesFuturos, textoLembrete } = await import("../lib/avisos.js");
+  const l = lembretesFuturos({
+    garantias: [
+      { id: "1", produto: "TV", fim: "2028-01-10" },
+      { id: "2", produto: "Velho", fim: "2025-01-01" },
+      { id: "3", produto: "Sem aviso", fim: "2028-01-10", lembrete: false },
+    ],
+    contas: [{ id: "a", tipo: "seguro", lembrete: true, dataRenovacao: "2025-12-01" }, { id: "b", tipo: "gas", dataRenovacao: "2027-01-01" }],
+    prazos: [{ id: "imi", titulo: "Pagar o IMI", prazo: IMI }, { id: "irs", titulo: "IRS", prazo: IRS }],
+    prazosComLembrete: ["imi"],
+  }, HOJE);
+  assert.deepEqual(l.map(x => [x.tipo, x.data, x.antecedencias.join("/")]), [
+    ["prazo", "2026-11-30", "30/7"],
+    ["conta", "2026-12-01", "60/30"],
+    ["garantia", "2028-01-10", "60/30"],
+  ]);
+  // Nada de preço, loja ou foto no que pode sair do dispositivo.
+  assert.deepEqual(Object.keys(l[2]).sort(), ["antecedencias", "data", "id", "tipo", "titulo"]);
+  assert.equal(textoLembrete(l[2], 30), "A garantia acaba daqui a 30 dias.");
+});
+
+test("servidor: avisa só no dia exato de cada antecedência e ignora lixo", async () => {
+  const { lembretesDoDia } = await import("../lib/avisos.js");
+  const lista = [
+    { id: "g:1", tipo: "garantia", titulo: "TV", data: "2026-12-02", antecedencias: [60, 30] },
+    { id: "p:imi", tipo: "prazo", titulo: "Pagar o IMI", data: "2026-10-10", antecedencias: [30, 7] },
+    { id: "x", tipo: "outro", titulo: "?", data: "2026-12-02", antecedencias: [60] },
+    null, "lixo", { tipo: "conta", data: "nada", antecedencias: [60] },
+  ];
+  const r = lembretesDoDia(lista, HOJE);
+  assert.deepEqual(r.map(x => x.titulo), ["🛡️ TV", "📅 Pagar o IMI"]);
+  assert.equal(r[1].texto, "O prazo acaba daqui a 7 dias.");
+  assert.equal(r[0].url, "/?atalho=garantias");
+  assert.deepEqual(lembretesDoDia(lista, "2026-10-04"), []);
+  assert.deepEqual(lembretesDoDia(undefined, HOJE), []);
+});
+
+test("app nativa: plano de notificações às 9:00, só no futuro", async () => {
+  const { planoNotificacoes, idNotificacao } = await import("../lib/nativo.js");
+  const agora = new Date(2026, 9, 3, 12, 0);
+  const plano = planoNotificacoes([
+    { id: "g:1", titulo: "TV", data: "2026-12-02", antecedencias: [60, 30] },
+    { id: "p:x", titulo: "Prazo", data: "2026-10-09", antecedencias: [30, 7] },
+  ], (l, d) => `${d}`, agora);
+  // 60 dias antes de 2/12 é hoje às 9:00 — já passou; 7 dias antes de 9/10 é ontem.
+  assert.deepEqual(plano.map(n => [n.title, n.body, n.at.getMonth() + 1, n.at.getDate(), n.at.getHours()]), [["TV", "30", 11, 2, 9]]);
+  assert.ok(Number.isInteger(idNotificacao("g:1@30")) && idNotificacao("g:1@30") > 0 && idNotificacao("g:1@30") <= 2 ** 31);
+  assert.notEqual(idNotificacao("g:1@30"), idNotificacao("g:1@60"));
+});

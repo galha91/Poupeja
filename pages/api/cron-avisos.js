@@ -7,6 +7,7 @@ import { pesquisarTudo } from "../../lib/supermercados";
 import { registar } from "../../lib/supermercados/historico";
 import { melhoresPorLoja, valorComparacao } from "../../lib/comparacao";
 import { avaliarVigia, resumoAtual } from "../../lib/alertas";
+import { lembretesDoDia } from "../../lib/avisos";
 
 /*
  * Avisos personalizados por utilizador — cron diário (Vercel, 18:00 UTC).
@@ -23,6 +24,11 @@ import { avaliarVigia, resumoAtual } from "../../lib/alertas";
  *   ⛽ Combustível  — poupeja_avisos: preço nacional mais barato ≤ precoAlvo
  *                     (com supressão de 6 dias para não repetir todos os dias)
  *   🛡️ Garantias    — poupeja_taloes: garantia a expirar em 30, 7 ou 1 dia(s)
+ *                     (formato antigo; as garantias novas ficam no dispositivo)
+ *   🔔 Lembretes    — poupeja_lembretes_push: garantias, renovações de contas e
+ *                     prazos do Estado, SÓ de quem pediu "avisos com a app
+ *                     fechada". Cada um traz a data-alvo e as antecedências
+ *                     (60/30 ou 30/7 dias); avisa no dia exato de cada uma
  *   📅 Contas fixas — poupeja_contas: diaVencimento é amanhã e ainda não paga
  *   🔥 Streak       — poupeja_taloes: domingo, sequência semanal ≥2 em risco
  *   🎯 Desafio      — poupeja_taloes: ≥80% da meta do mês por completar
@@ -34,7 +40,7 @@ import { avaliarVigia, resumoAtual } from "../../lib/alertas";
  * Requer: VAPID_*, SUPABASE_SERVICE_ROLE_KEY, CRON_SECRET.
  */
 
-const CHAVES = ["poupeja_alertas_precos", "poupeja_avisos", "poupeja_taloes", "poupeja_contas", "poupeja_contas_pago", "poupeja_meta", "poupeja_avisos_notificados"];
+const CHAVES = ["poupeja_alertas_precos", "poupeja_avisos", "poupeja_taloes", "poupeja_contas", "poupeja_contas_pago", "poupeja_meta", "poupeja_avisos_notificados", "poupeja_lembretes_push"];
 const MAX_POR_USER = 3;
 const SUPRESSAO_COMBUSTIVEL_DIAS = 6;
 const SUPRESSAO_PRECO_DIAS = 3;
@@ -226,6 +232,11 @@ export default async function handler(req, res) {
           : `A garantia de ${nome} termina em ${dias} dias.`,
         url: "/",
       });
+    }
+
+    // 🔔 Garantias, renovações e prazos (opt-in "avisos com a app fechada")
+    for (const n of lembretesDoDia(d.poupeja_lembretes_push, hoje.iso)) {
+      notifs.push({ title: n.titulo, body: n.texto, url: n.url });
     }
 
     // 📅 Contas fixas a vencer amanhã (e ainda não pagas este mês)
