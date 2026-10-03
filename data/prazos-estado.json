@@ -1,5 +1,5 @@
 {
-  "_comoEditar": "Cada prazo tem: id (único, sem espaços), titulo, descricao, quemPode (linguagem simples), perfis (todos | filhos | arrendo | casa | jovem | estudante), prazo, prazoTexto (como aparece no ecrã), link (fonte oficial) e verificado (AAAA-MM-DD). prazo.tipo 'anual' repete todos os anos: periodos é uma lista de { inicio?, fim } em MM-DD (02-29 fica 02-28 nos anos comuns). prazo.tipo 'continuo' não tem data. Só entram prazos confirmados na fonte oficial.",
+  "_comoEditar": "Cada prazo tem: id (único, sem espaços), titulo, descricao, quemPode (linguagem simples), perfis (todos | filhos | arrendo | casa | jovem | estudante | carro), prazo, prazoTexto (como aparece no ecrã), link (fonte oficial) e verificado (AAAA-MM-DD). prazo.tipo 'anual' repete todos os anos: periodos é uma lista de { inicio?, fim } em MM-DD (02-29 fica 02-28 nos anos comuns). prazo.tipo 'continuo' não tem data. Só entram prazos confirmados na fonte oficial.",
   "atualizado": "2026-10-03",
   "prazos": [
     {
@@ -7,8 +7,17 @@
       "titulo": "Atualizar o agregado familiar nas Finanças",
       "descricao": "Diz às Finanças quem fazia parte da tua família a 31 de dezembro. Conta para o IRS e para apoios como a tarifa social de energia.",
       "quemPode": "Quem teve mudanças no ano passado (nascimento, casamento, divórcio, mudança de casa) e quem tem filhos em residência alternada (esses comunicam todos os anos).",
-      "perfis": ["todos"],
-      "prazo": { "tipo": "anual", "periodos": [{ "fim": "02-29" }] },
+      "perfis": [
+        "todos"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "fim": "02-29"
+          }
+        ]
+      },
       "prazoTexto": "Até ao fim de fevereiro",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/questoes_frequentes/pages/faqs-00063.aspx",
       "fonte": "Portal das Finanças",
@@ -19,8 +28,17 @@
       "titulo": "Confirmar as faturas no e-Fatura",
       "descricao": "Verifica as faturas do ano anterior que contam para as deduções do IRS (saúde, educação, casa, despesas gerais) e resolve as pendentes.",
       "quemPode": "Todos os contribuintes com despesas no ano anterior.",
-      "perfis": ["todos"],
-      "prazo": { "tipo": "anual", "periodos": [{ "fim": "02-29" }] },
+      "perfis": [
+        "todos"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "fim": "02-29"
+          }
+        ]
+      },
       "prazoTexto": "Até ao fim de fevereiro",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/Folhetos_informativos/Documents/IRS_2025_Principais_prazos_2026.pdf",
       "fonte": "Portal das Finanças",
@@ -31,8 +49,18 @@
       "titulo": "Comprovativo de estudante dependente que trabalhou",
       "descricao": "Entregar nas Finanças o comprovativo de matrícula de um filho estudante que teve rendimentos de trabalho, para continuar a contar como dependente.",
       "quemPode": "Estudantes dependentes com rendimentos de contrato de trabalho ou de prestação de serviços.",
-      "perfis": ["filhos", "estudante"],
-      "prazo": { "tipo": "anual", "periodos": [{ "fim": "02-29" }] },
+      "perfis": [
+        "filhos",
+        "estudante"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "fim": "02-29"
+          }
+        ]
+      },
       "prazoTexto": "Até ao fim de fevereiro",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/Folhetos_informativos/Documents/IRS_2025_Principais_prazos_2026.pdf",
       "fonte": "Portal das Finanças",
@@ -43,8 +71,18 @@
       "titulo": "Consultar e reclamar as despesas dedutíveis",
       "descricao": "As Finanças mostram as despesas que vão contar no IRS. Se faltar alguma ou estiver errada, é nesta janela que se reclama.",
       "quemPode": "Todos os contribuintes.",
-      "perfis": ["todos"],
-      "prazo": { "tipo": "anual", "periodos": [{ "inicio": "03-16", "fim": "03-31" }] },
+      "perfis": [
+        "todos"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "inicio": "03-16",
+            "fim": "03-31"
+          }
+        ]
+      },
       "prazoTexto": "De 16 a 31 de março",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/Folhetos_informativos/Documents/IRS_2025_Principais_prazos_2026.pdf",
       "fonte": "Portal das Finanças",
@@ -55,8 +93,18 @@
       "titulo": "Entregar o IRS",
       "descricao": "Confirmar o IRS automático ou entregar a declaração Modelo 3 com os rendimentos do ano anterior.",
       "quemPode": "Quem teve rendimentos no ano anterior e não está dispensado de entregar.",
-      "perfis": ["todos"],
-      "prazo": { "tipo": "anual", "periodos": [{ "inicio": "04-01", "fim": "06-30" }] },
+      "perfis": [
+        "todos"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "inicio": "04-01",
+            "fim": "06-30"
+          }
+        ]
+      },
       "prazoTexto": "De 1 de abril a 30 de junho",
       "link": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/Folhetos_informativos/Documents/IRS_2025_Principais_prazos_2026.pdf",
       "fonte": "Portal das Finanças",
@@ -67,8 +115,18 @@
       "titulo": "Pedir o IRS Jovem",
       "descricao": "Isenção parcial de IRS durante até 10 anos. Pede-se na declaração anual ou, a qualquer momento, à entidade patronal (desconta-se menos todos os meses).",
       "quemPode": "Até 35 anos, com rendimentos de trabalho por conta de outrem ou por conta própria, que não sejam dependentes e não tenham dívidas às Finanças.",
-      "perfis": ["jovem"],
-      "prazo": { "tipo": "anual", "periodos": [{ "inicio": "04-01", "fim": "06-30" }] },
+      "perfis": [
+        "jovem"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "inicio": "04-01",
+            "fim": "06-30"
+          }
+        ]
+      },
       "prazoTexto": "Na declaração de IRS (abril a junho) ou à entidade patronal a qualquer momento",
       "link": "https://www.gov.pt/servicos/pedir-o-irs-jovem",
       "fonte": "gov.pt",
@@ -79,8 +137,26 @@
       "titulo": "Pagar o IMI",
       "descricao": "Imposto anual sobre a casa. Até 100 € paga-se de uma vez em maio; entre 100 € e 500 €, em maio e novembro; acima de 500 €, em maio, agosto e novembro.",
       "quemPode": "Quem é dono de uma casa (com ou sem crédito habitação) a 31 de dezembro do ano anterior.",
-      "perfis": ["casa"],
-      "prazo": { "tipo": "anual", "periodos": [{ "inicio": "05-01", "fim": "05-31" }, { "inicio": "08-01", "fim": "08-31" }, { "inicio": "11-01", "fim": "11-30" }] },
+      "perfis": [
+        "casa"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "inicio": "05-01",
+            "fim": "05-31"
+          },
+          {
+            "inicio": "08-01",
+            "fim": "08-31"
+          },
+          {
+            "inicio": "11-01",
+            "fim": "11-30"
+          }
+        ]
+      },
       "prazoTexto": "31 de maio · 31 de agosto · 30 de novembro (conforme o valor)",
       "link": "https://www.gov.pt/servicos/pagar-o-imposto-municipal-sobre-imoveis-imi-",
       "fonte": "gov.pt",
@@ -91,8 +167,19 @@
       "titulo": "Prova escolar do abono de família",
       "descricao": "Confirmar a matrícula para manter o abono (e a bolsa de estudo, quando existe). Em alguns casos é feita automaticamente — confirma no portal.",
       "quemPode": "Quem recebe abono por jovens a partir dos 16 anos matriculados (ou a partir dos 14, no secundário, nos 1.º e 2.º escalões, para a bolsa de estudo).",
-      "perfis": ["filhos", "estudante"],
-      "prazo": { "tipo": "anual", "periodos": [{ "inicio": "07-01", "fim": "07-31" }] },
+      "perfis": [
+        "filhos",
+        "estudante"
+      ],
+      "prazo": {
+        "tipo": "anual",
+        "periodos": [
+          {
+            "inicio": "07-01",
+            "fim": "07-31"
+          }
+        ]
+      },
       "prazoTexto": "Em julho (se falhar, ainda dá até 31 de dezembro para recuperar o abono)",
       "link": "https://www.seg-social.pt/ptss/pssd/menu/familia/desenvolvimento-criancas-jovens/prova-escolar",
       "fonte": "Segurança Social",
@@ -103,11 +190,64 @@
       "titulo": "Tarifa social de energia",
       "descricao": "Desconto na eletricidade e no gás natural, atribuído automaticamente todos os meses — não é preciso pedir. Para não falhar, o agregado e a morada têm de estar certos nas Finanças e na Segurança Social.",
       "quemPode": "Agregados com rendimentos baixos ou que recebem certas prestações sociais, com contrato de energia para uso doméstico na habitação permanente.",
-      "perfis": ["todos"],
-      "prazo": { "tipo": "continuo" },
+      "perfis": [
+        "todos"
+      ],
+      "prazo": {
+        "tipo": "continuo"
+      },
       "prazoTexto": "Sem prazo — atribuição automática mensal",
       "link": "https://www.dgeg.gov.pt/pt/areas-transversais/politicas-de-protecao-ao-consumidor-de-energia/tarifa-social-de-energia/como-e-atribuida-a-tarifa-social-de-energia/",
       "fonte": "DGEG",
+      "verificado": "2026-10-03"
+    },
+    {
+      "id": "porta-65-jovem",
+      "titulo": "Porta 65 Jovem — apoio à renda",
+      "descricao": "Subvenção mensal que paga uma parte da renda. A candidatura é online e a decisão demora até 45 dias úteis.",
+      "quemPode": "Jovens dos 18 aos 35 anos que arrendam casa para habitação permanente (num casal, um pode ter 36 anos se o outro tiver até 35).",
+      "perfis": [
+        "arrendo",
+        "jovem"
+      ],
+      "prazo": {
+        "tipo": "continuo"
+      },
+      "prazoTexto": "Candidaturas sempre abertas",
+      "link": "https://www.gov.pt/servicos/candidatar-se-ao-porta-65-jovem",
+      "fonte": "gov.pt",
+      "verificado": "2026-10-03"
+    },
+    {
+      "id": "apoio-extraordinario-renda",
+      "titulo": "Apoio extraordinário à renda",
+      "descricao": "Apoio mensal pago pela Segurança Social a quem tem direito, sem ser preciso pedir. Valores abaixo de 20 € são pagos de seis em seis meses.",
+      "quemPode": "Quem arrenda a habitação permanente e cumpre as condições de rendimento e de contrato definidas para o apoio — a verificação é feita automaticamente.",
+      "perfis": [
+        "arrendo"
+      ],
+      "prazo": {
+        "tipo": "continuo"
+      },
+      "prazoTexto": "Sem pedido — pago até ao dia 20 de cada mês a quem tem direito",
+      "link": "https://www.portaldahabitacao.pt/apoio-extraordin%C3%A1rio-%C3%A0-renda",
+      "fonte": "Portal da Habitação",
+      "verificado": "2026-10-03"
+    },
+    {
+      "id": "iuc",
+      "titulo": "Pagar o IUC do carro",
+      "descricao": "Imposto anual do veículo. Paga-se todos os anos no mês da matrícula, até deixares de ser proprietário ou a matrícula ser cancelada.",
+      "quemPode": "Quem é proprietário de um veículo matriculado em Portugal.",
+      "perfis": [
+        "carro"
+      ],
+      "prazo": {
+        "tipo": "continuo"
+      },
+      "prazoTexto": "Todos os anos, durante o mês da matrícula do veículo",
+      "link": "https://www.gov.pt/servicos/pagar-o-imposto-unico-de-circulacao-iuc-",
+      "fonte": "gov.pt",
       "verificado": "2026-10-03"
     }
   ]
