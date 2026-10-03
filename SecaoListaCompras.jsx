@@ -145,6 +145,7 @@ export default function SecaoListaCompras({ onVoltar }) {
   const catalogoRef    = useRef(null);   // e aqui ao fechar "Todos os artigos"
   const [verCatalogo, setVerCatalogo] = useState(false);
   const [catAtiva, setCatAtiva] = useState(null);
+  const [outro, setOutro]       = useState("");     // "Outro…" escrito na folha de todos os artigos
 
   function push(novosItens, id) {
     if (!id) return;
@@ -620,6 +621,22 @@ export default function SecaoListaCompras({ onVoltar }) {
                       </li>
                     );
                   })}
+                  {/* Não está no catálogo? Escreve-se aqui e fica nesta categoria. */}
+                  <li style={{ listStyle: "none", borderTop: "1px solid var(--pj-subtle)", paddingTop: 12 }}>
+                    <label htmlFor="pj-lista-outro" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)", marginBottom: 8 }}>
+                      Outro <span style={{ fontWeight: 500, color: "var(--pj-text-muted)" }}>· não está na lista? Escreve-o</span>
+                    </label>
+                    <form className="flex items-center" style={{ gap: 8 }}
+                      onSubmit={e => { e.preventDefault(); if (outro.trim()) { juntar(outro, { foco: false, categoria: cat }); setOutro(""); } }}>
+                      <input id="pj-lista-outro" value={outro} onChange={e => setOutro(e.target.value)} placeholder="Ex.: pilhas, fita-cola…"
+                        autoComplete="off" enterKeyHint="done" className="flex-1 min-w-0 focus:outline-none"
+                        style={{ height: 46, padding: "0 14px", borderRadius: 12, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }} />
+                      <button type="submit" disabled={!outro.trim()} aria-label={`Juntar outro artigo em ${cat}`} className="pj-tap flex items-center justify-center flex-none"
+                        style={{ width: 46, height: 46, borderRadius: 12, border: 0, background: outro.trim() ? "var(--pj-brand)" : "var(--pj-subtle)", color: outro.trim() ? "#fff" : "var(--pj-text-faint)" }}>
+                        <Plus size={18} />
+                      </button>
+                    </form>
+                  </li>
                 </ul>
                 </div>
               </>
