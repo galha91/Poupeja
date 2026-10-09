@@ -252,14 +252,14 @@
     {
       "id": "bolsa-acao-social",
       "titulo": "Bolsa de Estudo do Ensino Superior",
-      "descricao": "Bolsa da DGES para estudantes do ensino superior com rendimentos baixos. A bolsa mínima é 872€/ano e pode chegar a 5,5× o IAS mais complementos (alojamento, transporte). Em 2026/2027 as candidaturas decorrem de 14 de agosto a 2 de outubro.",
+      "descricao": "Bolsa da DGES para estudantes do ensino superior com rendimentos baixos. A bolsa mínima é 872€/ano e pode chegar a 5,5× o IAS mais complementos (alojamento, transporte). As candidaturas de 2026/2027 decorreram de 14 de agosto a 2 de outubro e já encerraram; confirma no portal as datas seguintes.",
       "valor": "A partir de 872€/ano",
       "categoria": "jovens",
       "quemPode": [
         "Estudantes do ensino superior público ou privado",
         "Rendimento per capita do agregado até 23× o IAS mais a propina máxima (≈ 13.050€/ano)"
       ],
-      "comoRequerer": "Candidatura online no portal BEON da DGES. Para 2026/2027, até 2 de outubro de 2026.",
+      "comoRequerer": "Candidatura online no portal BEON da DGES. O prazo de 2026/2027 terminou a 2 de outubro de 2026; vê no portal quando abre o seguinte.",
       "link": "https://www.dges.gov.pt/wwwbeon/",
       "novo": false
     },
@@ -307,20 +307,6 @@
       "comoRequerer": "Inscreve-te no IEFP e pede o subsídio na Segurança Social Direta até 90 dias depois de ficares sem trabalho.",
       "link": "https://www.seg-social.pt/ptss/pssd/menu/trabalho/desemprego/subsidio-desemprego",
       "novo": false
-    },
-    {
-      "id": "emprego-mais-talento",
-      "titulo": "Emprego +Talento",
-      "descricao": "Medida do IEFP que apoia as empresas que contratem jovens qualificados com contrato sem termo. Os apoios são majorados em 35% e as ofertas podem ser registadas até 2 de dezembro de 2026.",
-      "valor": "Apoio ao empregador por cada contratação",
-      "categoria": "emprego",
-      "quemPode": [
-        "Jovens até 35 anos com qualificação de nível superior",
-        "Inscritos no IEFP como desempregados ou à procura de emprego"
-      ],
-      "comoRequerer": "Inscreve-te no IEFP (iefponline) como candidato a emprego. A empresa que te contratar faz a candidatura ao apoio.",
-      "link": "https://iefponline.iefp.pt/IEFP/medida/emprego-mais-talento.do?action=overview",
-      "novo": true
     }
   ]
 }

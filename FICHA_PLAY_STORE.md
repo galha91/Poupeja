@@ -124,7 +124,7 @@ de remoção posterior.
 | **Fotografia do talão** | **enviada uma vez** para `/api/ler-talao`, que a reencaminha para a **API da Anthropic** para extrair loja, data, total e poupança. Depois fica só no dispositivo — **não é sincronizada** | `SecaoTaloes.jsx`, `pages/api/ler-talao.js`, `lib/sync.js` (`TRANSFORMA.poupeja_taloes`) |
 | **Talões guardados (sem a imagem)** | `localStorage` e, com sessão iniciada, sincronizados para o Supabase (`dados_utilizador`) | `lib/sync.js` |
 | **Utilização do site** | Google Analytics em todas as páginas | `pages/_document.js` |
-| **Passagem para lojas parceiras** | Awin, para atribuição de comissão | `pages/_document.js:67` |
+| **Passagem para lojas parceiras** | Awin, para atribuição de comissão | `lib/cookies.js` (só após aceitar) |
 | **Anúncios** | **nenhuns** — não há AdMob nem adsbygoogle no projeto | verificado |
 
 ### Respostas ao formulário
@@ -137,7 +137,7 @@ de remoção posterior.
 | O utilizador pode pedir a eliminação dos dados? | **Sim** |
 | Link para pedir a eliminação da conta | `https://xn--poupej-uta.com/apagar-conta` |
 
-A app exige conta, por isso a Google obriga a duas coisas, e as duas existem:
+A app abre sem conta (modo convidado automático), mas permite criar uma, por isso a Google obriga a duas coisas, e as duas existem:
 apagar a conta **dentro da app** (Definições → Conta → Apagar conta) e uma
 **página web** para o pedir sem a app instalada (`/apagar-conta`). As duas
 apagam a conta e, em cascata, todos os dados dela no Supabase.

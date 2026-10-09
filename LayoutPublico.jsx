@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { instalado } from "./lib/plataforma";
+import SubscreverFolhetos from "./SubscreverFolhetos";
 
 /*
  * Estas páginas também abrem dentro da app Android e da PWA — e aí um
@@ -40,7 +41,10 @@ export default function LayoutPublico({ children }) {
         </a>
       </header>
 
-      <main className="mx-auto px-5 pb-16" style={{ maxWidth: 720 }}>{children}</main>
+      <main className="mx-auto px-5 pb-16" style={{ maxWidth: 720 }}>
+        {children}
+        <SoForaDaApp><SubscreverFolhetos origem="paginas-publicas" /></SoForaDaApp>
+      </main>
 
       <footer className="mx-auto px-5 pb-12" style={{ maxWidth: 720 }}>
         <div style={{ height: 1, background: "var(--pj-border)", marginBottom: 20 }} />
@@ -57,7 +61,7 @@ export default function LayoutPublico({ children }) {
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
         </nav>
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 14 }}>
-          PoupeJá — a app de poupança portuguesa. 100% grátis.
+          PoupeJá — folhetos, lista de compras e combustível mais barato. Grátis. Alguns links levam a lojas parceiras e podemos receber comissão; isso não altera os resultados.
         </p>
       </footer>
     </div>

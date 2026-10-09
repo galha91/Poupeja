@@ -4,6 +4,7 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos, calcularResumoUtilizador } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
 import { urlUnsub } from "../../lib/unsubscribeToken";
+import { urlCancelarSub } from "../../lib/subscritoresToken";
 import { bearerValido } from "../../lib/seguranca";
 
 /*
@@ -114,6 +115,40 @@ export default async function handler(req, res) {
 
     if (users.length < PER_PAGE) break;
     pagina++;
+  }
+
+  // 3b. Subscritores sem conta (email deixado nas páginas públicas)
+  try {
+    const { data: subs } = await admin
+      .from("subscritores_folhetos")
+      .select("id, email")
+      .is("cancelado_em", null)
+      .limit(5000);
+    for (const sub of subs || []) {
+      const unsubscribeUrl = urlCancelarSub(base, sub.id);
+      const { subject, html, text } = construirEmailFolhetos({ nome: "", folhetos, base, unsubscribeUrl });
+      try {
+        await enviarEmail(resend, {
+          from: "PoupeJá <noreply@xn--poupej-uta.com>",
+          to: sub.email,
+          replyTo: "ricardogalha1@hotmail.com",
+          subject,
+          html,
+          text,
+          headers: {
+            "List-Unsubscribe": `<${unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          },
+        });
+        enviados++;
+      } catch (e) {
+        falhas++;
+        console.error("cron-email: falha de envio (subscritor):", e?.message);
+      }
+      await new Promise(r => setTimeout(r, 120));
+    }
+  } catch (e) {
+    console.error("cron-email: erro a ler subscritores:", e?.message);
   }
 
   console.log(`cron-email: enviados=${enviados} ignorados=${ignorados} falhas=${falhas}`);

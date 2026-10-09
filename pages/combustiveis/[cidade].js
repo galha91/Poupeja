@@ -57,6 +57,16 @@ export default function CombustiveisConcelho({ dados }) {
   const titulo = `Preço dos Combustíveis em ${municipio.nome} Hoje — gasóleo e gasolina mais baratos | PoupeJá`;
   const canonical = `${URL_SITE}/combustiveis/${municipio.slug}`;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "PoupeJá", item: URL_SITE },
+      { "@type": "ListItem", position: 2, name: "Combustíveis", item: `${URL_SITE}/combustiveis` },
+      { "@type": "ListItem", position: 3, name: municipio.nome, item: canonical },
+    ],
+  };
+
   return (
     <LayoutPublico>
       <Head>
@@ -66,6 +76,7 @@ export default function CombustiveisConcelho({ dados }) {
         <meta property="og:title" content={`Preço dos combustíveis em ${municipio.nome} hoje`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

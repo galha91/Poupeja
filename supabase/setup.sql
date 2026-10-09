@@ -129,3 +129,19 @@ returns void language sql security definer set search_path = public as $$
 $$;
 
 revoke all on function public.registar_convidado(uuid, boolean) from public, anon, authenticated;
+
+-- ── Subscritores do resumo de folhetos (sem conta) ──────────────────────────
+-- Quem deixa o email nas páginas públicas para receber os folhetos de
+-- segunda-feira, sem criar conta. Só a API (service role) lê/escreve.
+create table if not exists public.subscritores_folhetos (
+  id           uuid primary key default gen_random_uuid(),
+  email        text not null,
+  origem       text,
+  criado_em    timestamptz not null default now(),
+  cancelado_em timestamptz
+);
+
+create unique index if not exists subscritores_folhetos_email_uq
+  on public.subscritores_folhetos (lower(email));
+
+alter table public.subscritores_folhetos enable row level security;

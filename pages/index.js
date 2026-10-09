@@ -29,6 +29,7 @@ import PainelAvisos from "../PainelAvisos";
 import RetratoMes from "../RetratoMes";
 import { retratoPorVer, calcularRetrato } from "../lib/retrato";
 import EcraAuth, { DefinirNovaPass, sessionParaUser } from "../EcraAuth";
+import ConteudoPublicoInicio, { HeadInicio } from "../ConteudoPublicoInicio";
 import { supabase } from "../lib/supabase";
 import { iniciarSync, pararSync } from "../lib/sync";
 import {
@@ -36,8 +37,15 @@ import {
   Tag, ArrowLeft, Landmark, CalendarClock, Scale,
 } from "lucide-react";
 import { evento, ecra } from "../lib/analytics";
-import { modoExecucao, emAppNativa } from "../lib/plataforma";
+import { modoExecucao } from "../lib/plataforma";
 import { registarAberturaConvidado, registarConversaoConvidado } from "../lib/convidado";
+
+/* Convidado local: sem conta, sem rede. Os dados vivem no localStorage e
+   sobem para a conta quando a pessoa se registar (pull() do lib/sync). */
+function convidadoLocalNovo() {
+  try { localStorage.setItem("poupeja_convidado_local", "1"); } catch {}
+  return { id: null, nome: "Convidado", email: null, criado: new Date().toISOString(), convidado: true, local: true };
+}
 
 /* ─── nav config ─── */
 /* A barra de baixo leva 5 separadores. Com 7 sobravam ~55px cada num
@@ -131,7 +139,11 @@ function SecaoMercados({ setTab, inicioAba = "comparar" }) {
 }
 
 /* ─── Root App ─── */
-export default function PoupeJa() {
+export default function Pagina() {
+  return <><HeadInicio /><PoupeJa /></>;
+}
+
+function PoupeJa() {
   const [user, setUser]           = useState(null);
   const [hydrated, setHydrated]   = useState(false);
   const [recovery, setRecovery]   = useState(false);
@@ -162,6 +174,7 @@ export default function PoupeJa() {
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
   const [modalConta, setModalConta] = useState(false);
+  const [ecraEntrar, setEcraEntrar] = useState(false);
   const [retrato, setRetrato] = useState(null);          // retrato do mês anterior, se houver dados
   const [bannerRetrato, setBannerRetrato] = useState(null); // só dias 1-7 e ainda não visto
   const [retratoAberto, setRetratoAberto] = useState(false);
@@ -213,9 +226,9 @@ export default function PoupeJa() {
         largarConvidadoLocal();
         setUser(sessionParaUser(session));
       } else {
-        let convidadoLocal = false;
-        try { convidadoLocal = !!localStorage.getItem("poupeja_convidado_local"); } catch {}
-        setUser(convidadoLocal ? { id: null, nome: "Convidado", email: null, convidado: true, local: true } : null);
+        /* Sem sessão: entra como convidado local, sem ecrã de registo. A
+           conta só é pedida quando alguém quer guardar ou sincronizar. */
+        setUser(convidadoLocalNovo());
       }
       setHydrated(true);
     });
@@ -226,7 +239,7 @@ export default function PoupeJa() {
         largarConvidadoLocal();
         setUser(sessionParaUser(session));
       } else if (event === "SIGNED_OUT") {
-        setUser(null);
+        setUser(convidadoLocalNovo());
       }
       // sem sessão e sem SIGNED_OUT explícito → não mexe (preserva convidado local)
     });
@@ -430,7 +443,7 @@ export default function PoupeJa() {
     pararSync();
     try { localStorage.removeItem("poupeja_convidado_local"); } catch {}
     try { await supabase.auth.signOut(); } catch {}
-    setUser(null);
+    setUser(convidadoLocalNovo());
     setTabRaw("inicio");
     setVerDefs(false);
   }
@@ -439,7 +452,7 @@ export default function PoupeJa() {
   // parar a sincronização e voltar ao ecrã de entrar.
   function handleContaApagada() {
     pararSync();
-    setUser(null);
+    setUser(convidadoLocalNovo());
     setTabRaw("inicio");
     setVerDefs(false);
   }
@@ -554,25 +567,23 @@ export default function PoupeJa() {
     go(id);
   }
 
-  /* Não renderiza nada até hidratar (evita flash) */
-  if (!hydrated) return null;
+  /* Antes de hidratar mostra o conteúdo público (é o que o Google e quem
+     tem JS lento vê); depois a app abre sempre — com conta ou como convidado. */
+  if (!hydrated) return <ConteudoPublicoInicio />;
 
   /* Veio do link de recuperação → definir nova password */
   if (recovery) {
     return <DefinirNovaPass onConcluido={() => setRecovery(false)} />;
   }
 
-  /* Utilizador não autenticado → ecrã de auth.
-     Na app Android não há modo convidado: quem já o usava vê o ecrã de
-     entrar. Não perde nada — os dados de convidado estão no localStorage e
-     o pull() do lib/sync sobe-os para a conta no primeiro login. */
-  if (!user || (user.convidado && emAppNativa())) {
-    return <EcraAuth onAuth={handleAuth} />;
+  /* Quem já tem conta toca em "Já tenho conta" no convite a registar. */
+  if (ecraEntrar || !user) {
+    return <EcraAuth onAuth={u => { setEcraEntrar(false); handleAuth(u); }} ecraInicial="login" onCancelar={() => setEcraEntrar(false)} />;
   }
 
   const info = TITULOS[tab] || TITULOS.inicio;
   const tituloPersonalizado = tab === "inicio"
-    ? { t: `Olá, ${user.nome.split(" ")[0]}!`, s: "Vamos poupar nas compras de hoje?" }
+    ? { t: user.convidado ? "Olá!" : `Olá, ${user.nome.split(" ")[0]}!`, s: "Vamos poupar nas compras de hoje?" }
     : info;
 
   return (
@@ -699,7 +710,7 @@ export default function PoupeJa() {
             {/* Conteúdo */}
             <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} garantiasCount={garantiasAviso.filter(a => a.tipo === "garantia").length} />}
+                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} onEntrar={() => setEcraEntrar(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} garantiasCount={garantiasAviso.filter(a => a.tipo === "garantia").length} />}
                 {/* "Voltar" ao Início em todos os separadores menos o próprio Início
                     (a lista tem o seu, ao lado do "Partilhar"). */}
                 {tab !== "inicio" && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
@@ -776,6 +787,7 @@ export default function PoupeJa() {
           <ModalCriarConta
             local={!!user?.local}
             onFechar={() => setModalConta(false)}
+            onEntrar={() => { setModalConta(false); setEcraEntrar(true); }}
             onConvertido={(nome, email) => setUser(u => ({ ...u, nome, email }))}
           />
         )}
