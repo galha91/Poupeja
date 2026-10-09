@@ -45,6 +45,8 @@ export default function Document() {
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+try { if (localStorage.getItem('poupeja_cookies') === 'sim') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
 gtag('js', new Date());
 gtag('config', 'G-Q3JQG95879');`,
           }}
@@ -62,8 +64,7 @@ gtag('config', 'G-Q3JQG95879');`,
       <body>
         <Main />
         <NextScript />
-        {/* Awin Publisher MasterTag */}
-        <script src="https://www.dwin1.com/pub.2930079.min.js" type="text/javascript" defer="defer"></script>
+        {/* Awin: só carrega depois de aceitares os cookies (ver lib/cookies.js) */}
       </body>
     </Html>
   )

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Head from 'next/head';
 import { URL_SITE } from '../lib/site';
 import { modoExecucao } from '../lib/plataforma';
+import AvisoCookies from '../AvisoCookies';
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
@@ -106,6 +107,7 @@ function MyApp({ Component, pageProps }) {
             página já substitui. Duplicar aqui mostrava o cartão genérico. */}
       </Head>
       <Component {...pageProps} />
+      <AvisoCookies />
     </>
   )
 }
