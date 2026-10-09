@@ -568,7 +568,7 @@ function Login({ onVoltar, onAuth, onEsqueceu }) {
 }
 
 /* ── Export principal ── */
-export default function EcraAuth({ onAuth }) {
+export default function EcraAuth({ onAuth, ecraInicial, onCancelar }) {
   const [convidadoLoading, setConvidadoLoading] = useState(false);
   const [convidadoErro, setConvidadoErro] = useState("");
 
@@ -599,6 +599,7 @@ export default function EcraAuth({ onAuth }) {
 
   // Onboarding só na 1ª visita (EcraAuth renderiza apenas no cliente)
   const [ecra, setEcra] = useState(() => {
+    if (ecraInicial) return ecraInicial;
     try {
       if (typeof window !== "undefined" && !localStorage.getItem("poupeja_onboarding_v1")) return "onboarding";
     } catch {}
@@ -612,7 +613,7 @@ export default function EcraAuth({ onAuth }) {
 
   if (ecra === "onboarding") return <Onboarding onConcluido={concluirOnboarding} />;
   if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} />;
-  if (ecra === "login")     return <Login        onVoltar={() => setEcra("landing")} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
+  if (ecra === "login")     return <Login        onVoltar={() => (onCancelar ? onCancelar() : setEcra("landing"))} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
   if (ecra === "recuperar") return <RecuperarPass onVoltar={() => setEcra("login")} />;
   return (
     <Landing

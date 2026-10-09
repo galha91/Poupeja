@@ -5,7 +5,7 @@ import { evento } from "./lib/analytics";
 import { IconGoogle } from "./EcraAuth";
 
 /* ─── Converter convidado em conta — updateUser mantém o user_id, zero migração ─── */
-export default function ModalCriarConta({ local = false, onFechar, onConvertido }) {
+export default function ModalCriarConta({ local = false, onFechar, onConvertido, onEntrar }) {
   const [nome, setNome]       = useState("");
   const [email, setEmail]     = useState("");
   const [pass, setPass]       = useState("");
@@ -71,7 +71,7 @@ export default function ModalCriarConta({ local = false, onFechar, onConvertido 
     } catch (err) {
       const m = String(err?.message || "").toLowerCase();
       setErro(m.includes("already") || m.includes("registered")
-        ? "Já existe uma conta com este email. Sai do modo convidado e entra com ela."
+        ? "Já existe uma conta com este email. Toca em «Já tenho conta — entrar»."
         : "Não foi possível criar a conta agora. Tenta novamente daqui a pouco.");
     } finally {
       setLoading(false);
@@ -150,6 +150,11 @@ export default function ModalCriarConta({ local = false, onFechar, onConvertido 
               style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}>
               {loading ? "A criar a conta…" : "Criar conta e guardar o meu progresso"}
             </button>
+            {onEntrar && (
+              <button type="button" onClick={onEntrar} className="pj-tap w-full py-2 font-semibold text-[13px]" style={{ color: "var(--pj-brand-ink)" }}>
+                Já tenho conta — entrar
+              </button>
+            )}
             <button type="button" onClick={onFechar} className="pj-tap w-full py-2 font-semibold text-[13px]" style={{ color: "var(--pj-text-faint)" }}>
               Agora não
             </button>

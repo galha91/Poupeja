@@ -137,7 +137,7 @@ de remoção posterior.
 | O utilizador pode pedir a eliminação dos dados? | **Sim** |
 | Link para pedir a eliminação da conta | `https://xn--poupej-uta.com/apagar-conta` |
 
-A app exige conta, por isso a Google obriga a duas coisas, e as duas existem:
+A app abre sem conta (modo convidado automático), mas permite criar uma, por isso a Google obriga a duas coisas, e as duas existem:
 apagar a conta **dentro da app** (Definições → Conta → Apagar conta) e uma
 **página web** para o pedir sem a app instalada (`/apagar-conta`). As duas
 apagam a conta e, em cascata, todos os dados dela no Supabase.

@@ -87,23 +87,23 @@ function MyApp({ Component, pageProps }) {
         {/* Título por omissão: a app (/) não tinha <title> — o separador do
             browser e os leitores de ecrã mostravam o endereço. As páginas
             públicas substituem-no com o seu (mesma key). */}
-        <title key="title">PoupeJá — Poupa nas compras do dia a dia</title>
+        <title key="title">PoupeJá — Folhetos, lista de compras e combustível mais barato</title>
+        <meta name="description" content="Folhetos de 9 supermercados, uma lista de compras que diz onde fica mais barata e os postos de combustível mais baratos perto de ti. Grátis e sem registo." />
         <meta property="og:site_name" content="PoupeJá" key="og:site_name" />
-        <meta property="og:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" key="og:title" />
-        <meta property="og:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." key="og:description" />
+        <meta property="og:title" content="PoupeJá — Folhetos, lista de compras e combustível mais barato" key="og:title" />
+        <meta property="og:description" content="Folhetos de 9 supermercados, lista de compras mais barata e combustível mais barato perto de ti. Grátis e sem registo." key="og:description" />
         <meta property="og:type" content="website" key="og:type" />
         <meta property="og:url" content={URL_SITE} key="og:url" />
         <meta property="og:image" content={`${URL_SITE}/og.png?v=2`} key="og:image" />
         <meta property="og:image:width" content="1200" key="og:image:width" />
         <meta property="og:image:height" content="630" key="og:image:height" />
-        <meta property="og:image:alt" content="PoupeJá — os folhetos de todos os supermercados num só sítio, grátis" key="og:image:alt" />
+        <meta property="og:image:alt" content="PoupeJá — folhetos, lista de compras e combustível mais barato" key="og:image:alt" />
         <meta property="og:image:type" content="image/png" key="og:image:type" />
         <meta property="og:locale" content="pt_PT" key="og:locale" />
 
         <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
-        <meta name="twitter:title" content="PoupeJá — Poupa nas compras do dia a dia 🐷" key="twitter:title" />
-        <meta name="twitter:description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." key="twitter:description" />
-        <meta name="twitter:image" content={`${URL_SITE}/og.png?v=2`} key="twitter:image" />
+        {/* Sem twitter:title/description/image: o X cai para og:*, que cada
+            página já substitui. Duplicar aqui mostrava o cartão genérico. */}
       </Head>
       <Component {...pageProps} />
     </>

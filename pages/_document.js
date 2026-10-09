@@ -13,7 +13,6 @@ export default function Document() {
             __html: `(function(){try{var p=JSON.parse(localStorage.getItem('poupeja_prefs')||'{}');if(p.temaEscuro===true){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
         />
-        <meta name="description" content="Guarda talões, descobre promoções e desafia-te a poupar mais este mês. A app de poupança portuguesa. 100% grátis." />
 
         {/* Fontes — preconnect + link (não bloqueia o primeiro render como @import) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
