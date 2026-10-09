@@ -305,7 +305,7 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
 }
 
 /* ─── Ecrã Início ─── */
-export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0, garantiasCount = 0 }) {
+export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, onEntrar, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0, garantiasCount = 0 }) {
   const [convPendente] = useState(() => {
     try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
   });
@@ -443,15 +443,12 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
               </p>
             </div>
           ) : (
-            <button onClick={onCriarConta} className="pj-tap w-full text-left flex items-center anim-up"
-              style={{ gap: 12, marginTop: 18, padding: "12px 14px", borderRadius: 14, background: "var(--pj-brand-wash)", border: "1.5px dashed var(--pj-brand-soft)" }}>
-              <UserPlus size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
-              <span style={{ flex: 1 }}>
-                <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--pj-text)" }}>A usar como convidado</span>
-                <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Cria conta grátis para guardares o progresso e receberes avisos</span>
-              </span>
-              <ChevronRight size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
-            </button>
+            <p className="anim-up" style={{ marginTop: 14, fontSize: 12, color: "var(--pj-text-faint)" }}>
+              Já tens conta?{" "}
+              <button onClick={onEntrar} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
+              {" · "}
+              <button onClick={onCriarConta} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
+            </p>
           )
         )}
 
