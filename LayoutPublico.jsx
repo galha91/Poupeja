@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { instalado } from "./lib/plataforma";
 import SubscreverFolhetos from "./SubscreverFolhetos";
+import PartilharPagina from "./PartilharPagina";
 
 /*
  * Estas páginas também abrem dentro da app Android e da PWA — e aí um
@@ -43,6 +44,7 @@ export default function LayoutPublico({ children }) {
 
       <main className="mx-auto px-5 pb-16" style={{ maxWidth: 720 }}>
         {children}
+        <PartilharPagina />
         <SoForaDaApp><SubscreverFolhetos origem="paginas-publicas" /></SoForaDaApp>
       </main>
 
