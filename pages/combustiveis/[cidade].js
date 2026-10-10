@@ -20,7 +20,7 @@ import { FONTES } from "../../lib/fontes";
  * trata-as como tal.
  */
 export default function CombustiveisConcelho({ dados }) {
-  const { municipio, destaques, amplitude, noConcelho, proximos, vizinhos, frescura } = dados;
+  const { municipio, destaques, amplitude, ranking, noConcelho, proximos, vizinhos, frescura } = dados;
   const idade = descreverFrescura(frescura);
 
   /*
@@ -139,6 +139,15 @@ export default function CombustiveisConcelho({ dados }) {
               entre atestar no posto mais barato e no mais caro do concelho.
             </p>
           </div>
+        )}
+
+        {ranking && (
+          <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--pj-text-muted)", marginTop: 14 }}>
+            Entre os <strong style={{ color: "var(--pj-text)" }}>{ranking.total} concelhos</strong> do distrito de {ranking.distrito} com
+            dados na DGEG, {municipio.nome} é o{" "}
+            <strong style={{ color: "var(--pj-text)" }}>{ranking.posicao}.º mais barato</strong> para o {ranking.tipo.toLowerCase()}
+            {ranking.posicao === 1 ? " — o melhor sítio do distrito para atestar" : ""}.
+          </p>
         )}
 
         {/* Postos do concelho — uma lista por combustível */}

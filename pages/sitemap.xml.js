@@ -2,6 +2,11 @@ import { LOJAS_SLUGS, RECEITAS_SLUGS } from '../lib/seo-slugs';
 import { listarMunicipios } from '../lib/municipios';
 import { URL_SITE } from '../lib/site';
 
+// Só os concelhos com mais postos entram no mapa: dezenas de páginas parecidas
+// de uma vez levam o Google a ignorá-las todas (273 de 280 ficaram por indexar).
+// As outras continuam a existir e a ter link a partir de /combustiveis.
+const MAX_CONCELHOS_NO_MAPA = 40;
+
 const FIXAS = [
   { path: '/',             changefreq: 'daily',   priority: '1.0' },
   { path: '/combustiveis', changefreq: 'daily',   priority: '0.9' },
@@ -36,7 +41,7 @@ export async function getServerSideProps({ res }) {
   // um sitemap cheio de URLs que respondem 404.
   let concelhos = [];
   try {
-    concelhos = (await listarMunicipios()).map(m => ({
+    concelhos = (await listarMunicipios()).slice(0, MAX_CONCELHOS_NO_MAPA).map(m => ({
       path: `/combustiveis/${m.slug}`, changefreq: 'daily', priority: '0.8',
     }));
   } catch {}
