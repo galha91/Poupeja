@@ -38,6 +38,8 @@ export default function Document() {
 
         {/* Google Search Console */}
         <meta name="google-site-verification" content="cttSk3-ygwGp1WFEaAoVoSrthAlBMSMmIItaYh5VpPc" />
+        {/* Segunda verificação: conta poupeja.portugal@gmail.com. Não remover a anterior. */}
+        <meta name="google-site-verification" content="SY73qFmuff5ggSF0GLbzuuhsR2SXyP88sozIbnDouWU" />
 
         {/* Google Analytics GA4 — script inline para ser detetável no HTML estático */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q3JQG95879"></script>
