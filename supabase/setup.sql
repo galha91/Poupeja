@@ -165,3 +165,45 @@ create unique index if not exists subscritores_combustivel_uq
   on public.subscritores_combustivel (lower(email), concelho);
 
 alter table public.subscritores_combustivel enable row level security;
+
+-- ── Contador de visitas sem cookies ─────────────────────────────────────────
+-- Páginas vistas por dia/página/origem + visitantes diários. O hash do
+-- visitante muda todos os dias e é apagado no fim do dia; só fica a contagem.
+-- Só a API (service role) lê/escreve — sem policies.
+create table if not exists public.visitas_dia (
+  dia     date not null,
+  caminho text not null,
+  origem  text not null,
+  n       integer not null default 0,
+  primary key (dia, caminho, origem)
+);
+create table if not exists public.visitas_unicos (
+  dia date primary key,
+  n   integer not null default 0
+);
+create table if not exists public.visitas_hash (
+  dia date not null,
+  h   text not null,
+  primary key (dia, h)
+);
+alter table public.visitas_dia enable row level security;
+alter table public.visitas_unicos enable row level security;
+alter table public.visitas_hash enable row level security;
+
+create or replace function public.registar_visita(p_caminho text, p_origem text, p_hash text)
+returns void language sql security definer set search_path = public as $fn$
+  delete from public.visitas_hash where dia < (now() at time zone 'Europe/Lisbon')::date;
+  insert into public.visitas_dia (dia, caminho, origem, n)
+  values ((now() at time zone 'Europe/Lisbon')::date, p_caminho, p_origem, 1)
+  on conflict (dia, caminho, origem) do update set n = visitas_dia.n + 1;
+  with novo as (
+    insert into public.visitas_hash (dia, h)
+    values ((now() at time zone 'Europe/Lisbon')::date, p_hash)
+    on conflict do nothing returning dia
+  )
+  insert into public.visitas_unicos (dia, n)
+  select dia, 1 from novo
+  on conflict (dia) do update set n = visitas_unicos.n + 1;
+$fn$;
+
+revoke all on function public.registar_visita(text, text, text) from public, anon, authenticated;

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { URL_SITE } from '../lib/site';
 import { modoExecucao } from '../lib/plataforma';
@@ -6,6 +7,29 @@ import AvisoCookies from '../AvisoCookies';
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
+  // Contador de visitas sem cookies (ver pages/api/visita.js). Só o caminho e,
+  // na primeira página da visita, o site de onde vieste.
+  useEffect(() => {
+    let primeira = true;
+    const contar = (url) => {
+      try {
+        const ref = primeira ? document.referrer : 'interno';
+        primeira = false;
+        fetch('/api/visita', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ caminho: url.split(/[?#]/)[0], ref }),
+          keepalive: true,
+        }).catch(() => {});
+      } catch (_) {}
+    };
+    contar(window.location.pathname);
+    router.events.on('routeChangeComplete', contar);
+    return () => router.events.off('routeChangeComplete', contar);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Tem de correr no primeiro carregamento: é o único momento em que o
   // referrer da app Android está disponível (ver lib/plataforma.js).
   // Aproveita-se para dizer ao GA de onde vem a sessão — sem isto, as
