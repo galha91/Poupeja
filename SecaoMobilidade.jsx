@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { idadeDoPreco } from "./lib/frescura";
 import dynamic from "next/dynamic";
 import CARROS_EV from "./data/carrosEV";
 import { Preco } from "./Preco";
@@ -638,11 +637,6 @@ function SubCombustiveis() {
                 {melhor.nome || melhor.posto}
                 {melhor.distancia && <span className="pj-num text-[color:var(--pj-text-faint)]">· {km(melhor.distancia)}</span>}
               </p>
-              {idadeDoPreco(melhor.dataPreco) && (
-                <p className="text-[11px] mt-1" style={{ color: idadeDoPreco(melhor.dataPreco).velho ? "var(--pj-warn)" : "var(--pj-text-faint)" }}>
-                  {idadeDoPreco(melhor.dataPreco).texto}{idadeDoPreco(melhor.dataPreco).velho ? " — confirma no posto" : ""}
-                </p>
-              )}
             </>
           ) : erro ? null : (
             <p className="text-[13px] text-[color:var(--pj-text-faint)] py-2">Sem preços para mostrar de momento.</p>
@@ -840,16 +834,7 @@ function SubCombustiveis() {
                         <span className="text-[9px] font-semibold bg-[color:var(--pj-accent-wash)] text-[color:var(--pj-accent)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
-                    {(c.municipio || idadeDoPreco(c.dataPreco)) && (
-                      <p className="text-[10px] mb-1" style={{ color: "var(--pj-text-faint)" }}>
-                        {c.municipio}
-                        {idadeDoPreco(c.dataPreco) && (
-                          <span style={{ color: idadeDoPreco(c.dataPreco).velho ? "var(--pj-warn)" : undefined }}>
-                            {c.municipio ? " · " : ""}{idadeDoPreco(c.dataPreco).texto}
-                          </span>
-                        )}
-                      </p>
-                    )}
+                    {c.municipio && <p className="text-[10px] text-[color:var(--pj-text-faint)] mb-1">{c.municipio}</p>}
                     <div className="h-1.5 bg-[color:var(--pj-subtle)] rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all"
                         style={{ width: `${pct}%`, backgroundColor: "var(--pj-text-muted)", opacity: 0.42 }} />
