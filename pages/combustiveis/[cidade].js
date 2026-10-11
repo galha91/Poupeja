@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { eur } from "../../lib/formato";
-import { descreverFrescura, idadeDoPreco } from "../../lib/frescura";
+import { descreverFrescura } from "../../lib/frescura";
 import { Preco, LinhaPreco } from "../../Preco";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { dadosMunicipio } from "../../lib/municipios";
@@ -22,9 +22,6 @@ import { FONTES } from "../../lib/fontes";
 export default function CombustiveisConcelho({ dados }) {
   const { municipio, destaques, amplitude, ranking, noConcelho, proximos, vizinhos, frescura } = dados;
   const idade = descreverFrescura(frescura);
-  // Cada posto comunica o preço quando o altera: mostra-se de quando é o de cada um.
-  const quando = e => idadeDoPreco(e.dataPreco);
-  const juntar = (...partes) => partes.filter(Boolean).join(" · ") || null;
 
   /*
    * A lista vinha com gasóleo e gasolina MISTURADOS e ordenada por preço,
@@ -117,11 +114,6 @@ export default function CombustiveisConcelho({ dados }) {
                 <Preco valor={d.preco} casas={3} tamanho={30} />
               </p>
               <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>{d.nome}</p>
-              {quando(d) && (
-                <p style={{ fontSize: 11.5, marginTop: 2, color: quando(d).velho ? "var(--pj-warn)" : "var(--pj-text-faint)" }}>
-                  {quando(d).texto}{quando(d).velho ? " — confirma no posto" : ""}
-                </p>
-              )}
               {d.mediaConcelho != null && (
                 <p style={{ fontSize: 12, marginTop: 6, color: "var(--pj-text-faint)" }}>
                   Média no concelho €{eur(d.mediaConcelho, 3)}
@@ -174,8 +166,7 @@ export default function CombustiveisConcelho({ dados }) {
                 <LinhaPreco
                   key={`${e.id}-${e.tipoLabel}`}
                   nome={e.nome || e.marca}
-                  contexto={juntar(e.marca && !(e.nome || "").toLowerCase().includes(e.marca.toLowerCase()) ? e.marca : null, quando(e)?.texto)}
-                  contextoVelho={!!quando(e)?.velho}
+                  contexto={e.marca && !(e.nome || "").toLowerCase().includes(e.marca.toLowerCase()) ? e.marca : null}
                   valor={e.preco}
                   min={grupo.min}
                   max={grupo.max}
@@ -205,8 +196,7 @@ export default function CombustiveisConcelho({ dados }) {
                 <LinhaPreco
                   key={`${e.id}-prox`}
                   nome={e.nome || e.marca}
-                  contexto={juntar(`${e.municipio} · a ${e.distancia} km`, quando(e)?.texto)}
-                  contextoVelho={!!quando(e)?.velho}
+                  contexto={`${e.municipio} · a ${e.distancia} km`}
                   valor={e.preco}
                   min={minProximos}
                   max={maxProximos}
