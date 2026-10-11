@@ -27,8 +27,8 @@ const SECOES = [
     texto: "Se usares a função de partilhar uma lista de compras, é gerado um link único. Qualquer pessoa com esse link pode ver e editar essa lista, sem necessidade de conta. Por isso, não incluas informação pessoal ou sensível numa lista partilhada e partilha o link apenas com quem confias.",
   },
   {
-    titulo: "7. Email semanal e notificações",
-    texto: "O resumo semanal por email e as notificações push são opcionais e baseados no teu consentimento. Podes desativar o email a qualquer momento em Definições → Resumo automático semanal, ou através da ligação \"cancelar subscrição\" presente em cada email. As notificações podem ser desativadas em Definições ou nas definições do teu dispositivo.",
+    titulo: "7. Emails semanais e notificações",
+    texto: "O resumo semanal de folhetos, o email semanal de combustível de um concelho (para quem o pede nas páginas públicas, sem conta; guardamos o email, o concelho e os últimos preços enviados, para dizer se subiram ou desceram) e as notificações push são opcionais e baseados no teu consentimento. Podes desativar o email a qualquer momento em Definições → Resumo automático semanal, ou através da ligação \"cancelar subscrição\" presente em cada email (também para quem subscreveu sem conta). As notificações podem ser desativadas em Definições ou nas definições do teu dispositivo.",
   },
   {
     titulo: "8. Os teus direitos (RGPD)",

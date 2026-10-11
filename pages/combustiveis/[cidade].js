@@ -6,6 +6,7 @@ import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { dadosMunicipio } from "../../lib/municipios";
 import { URL_SITE } from "../../lib/site";
 import { FONTES } from "../../lib/fontes";
+import SubscreverCombustivel from "../../SubscreverCombustivel";
 
 /*
  * Página pública SEO — combustíveis mais baratos num concelho.
@@ -237,6 +238,8 @@ export default function CombustiveisConcelho({ dados }) {
             </a>
           </>
         )}
+
+        <SubscreverCombustivel concelho={municipio.slug} nome={municipio.nome} />
 
         <CtaApp texto="Vê os postos mais baratos perto de ti — grátis" />
       </div>

@@ -9,6 +9,9 @@
     "pages/api/cron-validar-urls.js": {
       "maxDuration": 60
     },
+    "pages/api/cron-email-combustiveis.js": {
+      "maxDuration": 60
+    },
     "pages/api/push-enviar.js": {
       "maxDuration": 60
     },
@@ -29,6 +32,10 @@
     {
       "path": "/api/cron-email-semanal",
       "schedule": "0 8 * * 4"
+    },
+    {
+      "path": "/api/cron-email-combustiveis",
+      "schedule": "0 8 * * 1"
     },
     {
       "path": "/api/cron-validar-urls",
