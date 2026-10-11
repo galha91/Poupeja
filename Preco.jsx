@@ -62,6 +62,7 @@ export function Preco({
 export function LinhaPreco({
   nome,
   contexto,
+  contextoVelho = false,
   valor,
   min,
   max,
@@ -101,7 +102,7 @@ export function LinhaPreco({
           {nome}
         </span>
         {contexto && (
-          <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 2 }}>
+          <span style={{ display: "block", fontSize: 12, color: contextoVelho ? "var(--pj-warn)" : "var(--pj-text-faint)", marginTop: 2 }}>
             {contexto}
           </span>
         )}
