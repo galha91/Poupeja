@@ -145,3 +145,23 @@ create unique index if not exists subscritores_folhetos_email_uq
   on public.subscritores_folhetos (lower(email));
 
 alter table public.subscritores_folhetos enable row level security;
+
+-- ── Subscritores do email de combustível (sem conta) ────────────────────────
+-- Um email por semana (segundas) com o combustível mais barato do concelho
+-- escolhido. Guarda os últimos preços enviados para o email dizer se subiu
+-- ou desceu. Só a API (service role) lê/escreve — sem policies.
+create table if not exists public.subscritores_combustivel (
+  id              uuid primary key default gen_random_uuid(),
+  email           text not null,
+  concelho        text not null,
+  criado_em       timestamptz not null default now(),
+  cancelado_em    timestamptz,
+  ultimo_envio    timestamptz,
+  ultimo_gasoleo  numeric,
+  ultima_gasolina numeric
+);
+
+create unique index if not exists subscritores_combustivel_uq
+  on public.subscritores_combustivel (lower(email), concelho);
+
+alter table public.subscritores_combustivel enable row level security;

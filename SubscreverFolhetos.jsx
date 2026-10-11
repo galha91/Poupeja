@@ -36,12 +36,12 @@ export default function SubscreverFolhetos({ origem = "pagina" }) {
 
   return (
     <section className="mt-8 rounded-2xl px-5 py-5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }} aria-label="Receber os folhetos por email">
-      <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>Folhetos de segunda-feira no teu email</h2>
+      <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>Folhetos da semana no teu email</h2>
       <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.55, marginTop: 6 }}>
-        Um email por semana com os folhetos novos. Sem conta, grátis, cancelas num toque.
+        Um email por semana (à quinta-feira) com os folhetos novos. Sem conta, grátis, cancelas num toque.
       </p>
       {ok ? (
-        <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 12 }}>Feito! Recebes o próximo resumo na segunda-feira.</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 12 }}>Feito! Recebes o próximo resumo esta semana.</p>
       ) : (
         <form onSubmit={enviar} style={{ marginTop: 12 }}>
           <div style={{ display: "flex", gap: 8 }}>
