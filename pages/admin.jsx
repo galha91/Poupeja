@@ -8,6 +8,7 @@ export default function Admin() {
   const router = useRouter();
   const [estado, setEstado] = useState("a-carregar"); // a-carregar | negado | ok | erro
   const [stats, setStats] = useState(null);
+  const [trafego, setTrafego] = useState(null);
   const [erro, setErro] = useState("");
   const [sessaoEmail, setSessaoEmail] = useState(null);
   const [ordenarPor, setOrdenarPor] = useState("registo"); // "registo" | "login"
@@ -44,6 +45,10 @@ export default function Admin() {
       }
       setStats(data);
       setEstado("ok");
+      fetch("/api/admin-trafego", { headers: { Authorization: `Bearer ${session.access_token}` } })
+        .then(t => (t.ok ? t.json() : null))
+        .then(setTrafego)
+        .catch(() => {});
     } catch {
       setErro("Falha de ligação.");
       setEstado("erro");
@@ -178,6 +183,8 @@ export default function Admin() {
 
         {estado === "ok" && stats && (
           <>
+            <Trafego dados={trafego} />
+
             {/* Destaque: total de utilizadores */}
             <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-6 text-white shadow-lg mb-4">
               <div className="flex items-center gap-2 text-emerald-100 text-xs font-bold uppercase tracking-wide">
@@ -571,6 +578,129 @@ function Funil({ funil }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+const NOMES_ORIGEM = {
+  direto: "Direto / app", google: "Google", pesquisa: "Outros motores", facebook: "Facebook",
+  instagram: "Instagram", tiktok: "TikTok", whatsapp: "WhatsApp", outro: "Outros sites", interno: "Navegação interna",
+};
+
+function Lista({ titulo, itens }) {
+  if (!itens?.length) return null;
+  const max = Math.max(1, ...itens.map(i => i.n));
+  return (
+    <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-2">{titulo}</p>
+      <div className="flex flex-col gap-1.5">
+        {itens.map((i, k) => (
+          <div key={k}>
+            <div className="flex justify-between gap-2 text-[11px]">
+              <span className="font-bold text-slate-600 truncate">{i.rotulo}</span>
+              <span className="font-black text-slate-800 shrink-0">{i.n}{i.extra ? <span className="text-slate-400 font-medium"> {i.extra}</span> : null}</span>
+            </div>
+            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-0.5">
+              <div className="h-full rounded-full bg-sky-500" style={{ width: `${Math.round((i.n / max) * 100)}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Barras({ dados, cor = "from-sky-400 to-sky-500", legenda }) {
+  const max = Math.max(1, ...dados.map(d => d.n));
+  return (
+    <>
+      <div className="flex items-end justify-between gap-1 h-20">
+        {dados.map((d, i) => {
+          const dia = new Date(d.dia + "T12:00:00");
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1" title={`${d.dia}: ${d.n}`}>
+              <span className="text-[8px] font-black text-slate-400">{d.n || ""}</span>
+              <div className={`w-full rounded-t-md bg-gradient-to-t ${cor}`} style={{ height: `${d.n === 0 ? 3 : Math.max(6, (d.n / max) * 64)}px` }} />
+              <span className="text-[8px] text-slate-300 font-bold">{dia.getDate()}/{dia.getMonth() + 1}</span>
+            </div>
+          );
+        })}
+      </div>
+      {legenda && <p className="text-[11px] text-slate-400 font-medium mt-2 text-center">{legenda}</p>}
+    </>
+  );
+}
+
+function Trafego({ dados }) {
+  if (!dados) {
+    return <div className="bg-white rounded-2xl p-4 shadow-sm mb-4 text-sm text-slate-400 font-medium">A carregar visitas…</div>;
+  }
+  const { proprio: p, google: g } = dados;
+  const ga = g?.ga;
+  const sc = g?.sc;
+  const gaHoje = ga?.dias?.at(-1);
+  const ga7 = (ga?.dias || []).slice(-7).reduce((s, d) => s + d.utilizadores, 0);
+  const scCliques = (sc?.dias || []).reduce((s, d) => s + d.cliques, 0);
+  const scImpr = (sc?.dias || []).reduce((s, d) => s + d.impressoes, 0);
+
+  return (
+    <>
+      <div className="bg-gradient-to-br from-sky-500 to-indigo-600 rounded-3xl p-6 text-white shadow-lg mb-3">
+        <div className="text-sky-100 text-xs font-bold uppercase tracking-wide">Visitantes hoje · contador próprio</div>
+        <div className="text-5xl font-black mt-2">{p.hoje.visitantes}</div>
+        <div className="text-sky-100 text-sm font-medium mt-1">
+          {p.hoje.vistas} páginas vistas hoje · {p.sete.visitantes} visitantes-dia e {p.sete.vistas} vistas em 7 dias
+        </div>
+        <div className="text-sky-200 text-[11px] mt-2">Conta toda a gente (aceite ou não os cookies), sem bots. A contar desde {p.desdeDia}.</div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-2">Visitantes por dia (14 dias)</p>
+        <Barras dados={p.serie.map(s => ({ dia: s.dia, n: s.visitantes }))} legenda={`${p.trinta.vistas} páginas vistas em 30 dias`} />
+      </div>
+
+      <Lista titulo="De onde vêm (7 dias, páginas vistas)" itens={p.origens.filter(o => o.origem !== "interno").map(o => ({ rotulo: NOMES_ORIGEM[o.origem] || o.origem, n: o.n }))} />
+      <Lista titulo="Páginas mais vistas (7 dias)" itens={p.paginas.map(o => ({ rotulo: o.caminho === "/" ? "/ (app)" : o.caminho, n: o.n }))} />
+
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1 mt-4">Google Analytics</p>
+      {ga ? (
+        <>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <Cartao rotulo="Hoje" valor={gaHoje?.utilizadores ?? 0} cor="text-orange-600" />
+            <Cartao rotulo="7 dias" valor={ga7} cor="text-orange-600" />
+            <Cartao rotulo="Vistas hoje" valor={gaHoje?.vistas ?? 0} cor="text-orange-600" />
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm mb-3">
+            <Barras dados={ga.dias.map(d => ({ dia: d.dia, n: d.utilizadores }))} cor="from-orange-400 to-orange-500" legenda="Utilizadores por dia (só quem aceitou cookies)" />
+          </div>
+          <Lista titulo="Canais GA (7 dias, sessões)" itens={ga.canais.map(c => ({ rotulo: c.canal, n: c.sessoes }))} />
+        </>
+      ) : (
+        <SemGoogle erro={g?.gaErro} nome="Google Analytics" />
+      )}
+
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1 mt-4">Google Search Console (28 dias)</p>
+      {sc ? (
+        <>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Cartao rotulo="Cliques do Google" valor={scCliques} cor="text-emerald-600" />
+            <Cartao rotulo="Vezes que apareceu" valor={scImpr} cor="text-emerald-600" />
+          </div>
+          <Lista titulo="O que as pessoas pesquisaram" itens={sc.pesquisas.map(q => ({ rotulo: q.texto, n: q.impressoes, extra: `· ${q.cliques} cliques · pos. ${q.posicao}` }))} />
+          <Lista titulo="Páginas no Google" itens={sc.paginas.map(q => ({ rotulo: q.caminho, n: q.impressoes, extra: `· ${q.cliques} cliques` }))} />
+        </>
+      ) : (
+        <SemGoogle erro={g?.scErro} nome="Search Console" />
+      )}
+      <div className="h-4" />
+    </>
+  );
+}
+
+function SemGoogle({ erro, nome }) {
+  return (
+    <div className="bg-white rounded-2xl p-4 shadow-sm mb-3 text-[12px] text-slate-500 font-medium">
+      {erro ? `${nome}: erro a ler (${erro}). Confirma o acesso da conta de serviço.` : `${nome} ainda não está ligado ao admin.`}
     </div>
   );
 }
