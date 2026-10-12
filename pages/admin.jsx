@@ -15,6 +15,8 @@ export default function Admin() {
   // As listas de emails ficam fechadas por omissão: só abrem quando se quer ver.
   const [verPush, setVerPush] = useState(false);
   const [verUtilizadores, setVerUtilizadores] = useState(false);
+  const [aba, setAba] = useState("resumo"); // resumo | utilizadores | avisos
+  const [estadoRepor, setEstadoRepor] = useState(""); // "", "a-repor", "ok", "erro"
 
   // Push notification state
   const [pushTitulo, setPushTitulo] = useState("🏛️ Novidade no PoupeJá");
@@ -48,6 +50,8 @@ export default function Admin() {
       }
       setStats(data);
       setEstado("ok");
+      // Este dispositivo é do dono: deixa de contar nas visitas e nos convidados.
+      try { localStorage.setItem("poupeja_nao_contar", "1"); } catch {}
       fetch("/api/admin-trafego", { headers: { Authorization: `Bearer ${session.access_token}` } })
         .then(t => (t.ok ? t.json() : null))
         .then(setTrafego)
@@ -59,6 +63,17 @@ export default function Admin() {
   }
 
   useEffect(() => { carregar(); }, []);
+
+  async function reporVisitas() {
+    if (!window.confirm("Pôr o contador de visitas a zero? Apaga as visitas contadas até agora.")) return;
+    setEstadoRepor("a-repor");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const r = await fetch("/api/admin-repor-visitas", { method: "POST", headers: { Authorization: `Bearer ${session?.access_token}` } });
+      setEstadoRepor(r.ok ? "ok" : "erro");
+      if (r.ok) carregar();
+    } catch { setEstadoRepor("erro"); }
+  }
 
   async function enviarPush() {
     setPushEstado("a-enviar");
@@ -186,7 +201,33 @@ export default function Admin() {
 
         {estado === "ok" && stats && (
           <>
-            <Trafego dados={trafego} />
+            <div className="sticky top-0 z-10 -mx-4 px-4 pt-2 pb-3 bg-slate-50/95 backdrop-blur mb-2">
+              <div className="flex gap-1.5 bg-slate-200/70 p-1 rounded-xl">
+                {[["resumo", "Resumo"], ["utilizadores", "Utilizadores"], ["avisos", "Enviar aviso"]].map(([id, rot]) => (
+                  <button
+                    key={id}
+                    onClick={() => setAba(id)}
+                    className={`flex-1 text-xs font-black py-2 rounded-lg transition ${aba === id ? "bg-white text-slate-800 shadow-sm" : "text-slate-500"}`}
+                  >
+                    {rot}
+                  </button>
+                ))}
+                <button onClick={carregar} aria-label="Atualizar" className="px-2.5 text-slate-500">
+                  <RefreshCw size={15} />
+                </button>
+              </div>
+            </div>
+
+            {aba === "resumo" && (
+              <>
+                <Resumo stats={stats} trafego={trafego} />
+                <Trafego dados={trafego} />
+                <Dispositivo onRepor={reporVisitas} estadoRepor={estadoRepor} />
+              </>
+            )}
+
+            {aba === "utilizadores" && (
+              <>
 
             {/* Destaque: total de utilizadores */}
             <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-6 text-white shadow-lg mb-4">
@@ -461,10 +502,11 @@ export default function Admin() {
             </div>
             </>)}
 
-            <p className="text-center text-[11px] text-slate-300 font-medium mt-4">
-              Atualizado às {fmtData(stats.atualizadoEm)}
-            </p>
+              </>
+            )}
 
+            {aba === "avisos" && (
+              <>
             {/* Enviar notificação push */}
             <div className="bg-white rounded-2xl shadow-sm p-5 mt-5">
               <div className="flex items-center gap-2 mb-4">
@@ -526,6 +568,12 @@ export default function Admin() {
                 )}
               </div>
             </div>
+              </>
+            )}
+
+            <p className="text-center text-[11px] text-slate-300 font-medium mt-4">
+              Atualizado às {fmtData(stats.atualizadoEm)}
+            </p>
           </>
         )}
       </div>
@@ -677,6 +725,9 @@ function Trafego({ dados }) {
       <Lista titulo="De onde vêm (7 dias, páginas vistas)" itens={p.origens.filter(o => o.origem !== "interno").map(o => ({ rotulo: NOMES_ORIGEM[o.origem] || o.origem, n: o.n }))} />
       <Lista titulo="Páginas mais vistas (7 dias)" itens={p.paginas.map(o => ({ rotulo: o.caminho === "/" ? "/ (app)" : o.caminho, n: o.n }))} />
 
+      {!ga && !sc && !g?.gaErro && !g?.scErro ? (
+        <p className="text-[11px] text-slate-400 font-medium px-1 mt-2 mb-3">Google Analytics e Search Console ainda não estão ligados ao admin.</p>
+      ) : (<>
       <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1 mt-4">Google Analytics</p>
       {ga ? (
         <>
@@ -707,7 +758,8 @@ function Trafego({ dados }) {
       ) : (
         <SemGoogle erro={g?.scErro} nome="Search Console" />
       )}
-      <div className="h-4" />
+      </>)}
+      <div className="h-2" />
     </>
   );
 }
@@ -716,6 +768,52 @@ function SemGoogle({ erro, nome }) {
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm mb-3 text-[12px] text-slate-500 font-medium">
       {erro ? `${nome}: erro a ler (${erro}). Confirma o acesso da conta de serviço.` : `${nome} ainda não está ligado ao admin.`}
+    </div>
+  );
+}
+
+// Variação face à semana anterior: só aparece quando há com que comparar.
+function Variacao({ agora, antes }) {
+  if (!antes) return <span className="text-[10px] text-slate-300 font-bold">ainda sem semana passada</span>;
+  const pct = Math.round(((agora - antes) / antes) * 100);
+  const cor = pct > 0 ? "text-emerald-600" : pct < 0 ? "text-rose-500" : "text-slate-400";
+  return <span className={`text-[10px] font-black ${cor}`}>{pct > 0 ? "▲" : pct < 0 ? "▼" : "="} {Math.abs(pct)}% vs semana passada</span>;
+}
+
+function Resumo({ stats, trafego }) {
+  const p = trafego?.proprio;
+  const conv = stats.entradasConvidado;
+  const itens = [
+    { rotulo: "Visitantes", ajuda: "soma diária, 7 dias", valor: p ? p.sete.visitantes : "…", antes: p?.anteriores7, cor: "text-sky-600" },
+    { rotulo: "Novos na app", ajuda: "convidados, 7 dias", valor: conv?.novos7 ?? "—", antes: conv?.novosAnteriores7, cor: "text-amber-600" },
+    { rotulo: "Contas novas", ajuda: "7 dias", valor: stats.ultimos7, antes: stats.anteriores7, cor: "text-emerald-600" },
+    { rotulo: "Emails", ajuda: "folhetos + combustível", valor: (stats.subFolhetos ?? 0) + (stats.subCombustivel ?? 0), cor: "text-violet-600",
+      nota: `${stats.subFolhetos ?? 0} folhetos · ${stats.subCombustivel ?? 0} combustível` },
+  ];
+  return (
+    <>
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5 px-1">Esta semana</p>
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        {itens.map(i => (
+          <div key={i.rotulo} className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="text-[11px] font-black text-slate-500">{i.rotulo}</div>
+            <div className={`text-3xl font-black mt-1 ${i.cor}`}>{i.valor}</div>
+            <div className="text-[10px] text-slate-400 font-medium">{i.ajuda}</div>
+            <div className="mt-1">{i.nota ? <span className="text-[10px] text-slate-500 font-bold">{i.nota}</span> : <Variacao agora={typeof i.valor === "number" ? i.valor : 0} antes={i.antes} />}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function Dispositivo({ onRepor, estadoRepor }) {
+  return (
+    <div className="bg-white rounded-2xl p-4 shadow-sm mb-3 text-[12px] text-slate-500 font-medium">
+      <p><span className="font-black text-emerald-600">✓ Este dispositivo não conta</span> nas visitas nem nos convidados. As tuas contas também ficam de fora das estatísticas.</p>
+      <button onClick={onRepor} disabled={estadoRepor === "a-repor"} className="mt-2 text-[12px] font-black text-rose-500 underline">
+        {estadoRepor === "a-repor" ? "A repor…" : estadoRepor === "ok" ? "Contador reposto a zero ✓" : estadoRepor === "erro" ? "Erro — tenta de novo" : "Pôr contador de visitas a zero"}
+      </button>
     </div>
   );
 }
