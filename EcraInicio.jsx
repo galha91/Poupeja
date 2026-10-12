@@ -14,6 +14,8 @@ import { N_COMPARADAS } from "./lib/cobertura";
 import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
 import { mostrarIRS } from "./lib/atalhos";
+import { descreverFrescura } from "./lib/frescura";
+import { evento } from "./lib/analytics";
 
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
@@ -83,16 +85,26 @@ function useCountUp(target, ms = 1100) {
 }
 
 
-/* ─── Card de combustível na Home (dados reais DGEG) ─── */
-function CardCombustivelHome({ setTab }) {
-  const [dados, setDados] = useState(null);      // { preco, marca, nome?, distancia?, perto }
-  const [aLocalizar, setALocalizar] = useState(false);
+/* ─── Gasóleo mais barato (dados reais DGEG) ───
+ * Vive num hook porque serve dois sítios: o herói de quem chega pela
+ * primeira vez e o cartão de combustível mais abaixo. Um pedido só.
+ */
+function escolherGasoleo(lista, campoTipo) {
+  if (!lista?.length) return null;
+  const g = lista.filter(x => (x[campoTipo] || "").toLowerCase() === "gasóleo");
+  return (g.length ? g : lista).slice().sort((a, b) => a.preco - b.preco)[0] || null;
+}
 
-  function escolherGasoleo(lista, campoTipo) {
-    if (!lista?.length) return null;
-    const g = lista.filter(x => (x[campoTipo] || "").toLowerCase() === "gasóleo");
-    return (g.length ? g : lista).slice().sort((a, b) => a.preco - b.preco)[0] || null;
-  }
+// A rota chama-lhe atualizadoEm; lib/frescura chama-lhe obtidoEm. É a
+// mesma coisa: quando fomos buscar os preços à DGEG.
+function frescuraDe(j) {
+  return { obtidoEm: j.atualizadoEm, dataPreco: j.dataPreco, stale: j.stale };
+}
+
+function useGasoleoHoje() {
+  const [dados, setDados] = useState(null);      // { preco, marca, nome?, distancia?, perto, frescura }
+  const [aLocalizar, setALocalizar] = useState(false);
+  const [falhou, setFalhou] = useState(false);   // sem preço nacional: quem depende disto mostra outra coisa
 
   function buscarPerto(lat, lon) {
     setALocalizar(true);
@@ -102,7 +114,7 @@ function CardCombustivelHome({ setTab }) {
         setALocalizar(false);
         if (!j.success) return;
         const best = escolherGasoleo(j.estacoes, "tipoLabel");
-        if (best) setDados({ preco: best.preco, marca: best.marca || best.nome, nome: best.nome, distancia: best.distancia, perto: true });
+        if (best) setDados({ preco: best.preco, marca: best.marca || best.nome, nome: best.nome, distancia: best.distancia, perto: true, frescura: frescuraDe(j) });
       })
       .catch(() => setALocalizar(false));
   }
@@ -113,11 +125,12 @@ function CardCombustivelHome({ setTab }) {
     fetch("/api/combustiveis")
       .then(r => r.json())
       .then(j => {
-        if (!vivo || !j.success) return;
-        const best = escolherGasoleo(j.dados, "tipo");
-        if (best) setDados(prev => prev?.perto ? prev : { preco: best.preco, marca: best.posto, perto: false });
+        if (!vivo) return;
+        const best = j.success ? escolherGasoleo(j.dados, "tipo") : null;
+        if (best) setDados(prev => prev?.perto ? prev : { preco: best.preco, marca: best.posto, perto: false, frescura: frescuraDe(j) });
+        else setFalhou(true);
       })
-      .catch(() => {});
+      .catch(() => vivo && setFalhou(true));
     // Se a localização já foi autorizada antes, mostra logo o mais barato perto
     navigator.permissions?.query?.({ name: "geolocation" })
       .then(p => { if (vivo && p.state === "granted" && navigator.geolocation) {
@@ -127,7 +140,7 @@ function CardCombustivelHome({ setTab }) {
   }, []);
 
   function pedirLocalizacao(e) {
-    e.stopPropagation();
+    e?.stopPropagation();
     if (!navigator.geolocation) return;
     setALocalizar(true);
     navigator.geolocation.getCurrentPosition(
@@ -136,6 +149,12 @@ function CardCombustivelHome({ setTab }) {
     );
   }
 
+  return { dados, aLocalizar, falhou, pedirLocalizacao };
+}
+
+/* ─── Card de combustível na Home ─── */
+function CardCombustivelHome({ setTab, gasoleo }) {
+  const { dados, aLocalizar, pedirLocalizacao } = gasoleo;
   return (
     <div>
     <button onClick={() => setTab("mobilidade")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14 }}>
@@ -197,26 +216,110 @@ function LogoFolheto({ loja }) {
  *   2. já guardou, mas não este mês → o total de sempre, que é real
  *   3. tem poupança este mês → o número do mês (como sempre foi)
  * ─────────────────────────────────────────────────────────────── */
+const Rotulo = ({ children }) => (
+  <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+    {children}
+  </div>
+);
+
+// Número grande, no traço da casa — partilhado pelos dois heróis.
+// pj-num (algarismos tabulares) não é só alinhamento: sem ele a contagem
+// crescente faz o número mudar de largura a cada frame e o € dança.
+const Numero = ({ inteiro, decimais }) => (
+  <div className="font-display pj-num flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 16 }}>
+    <span style={{ fontSize: 38, color: "var(--pj-text-faint)", marginRight: 5, fontWeight: 400 }}>€</span>
+    {inteiro}
+    {decimais != null && <span style={{ fontSize: 38, color: "var(--pj-text-faint)", fontWeight: 400 }}>,{decimais}</span>}
+  </div>
+);
+
+const Streak = ({ streak }) => streak >= 2 && (
+  <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
+    <Flame size={13} /> {streak} dias
+  </div>
+);
+
+/* ─── Herói de quem chega para explorar ─────────────────────────
+ * Quem nunca guardou um talão nem começou uma lista não tem poupança
+ * para ver — e o convite "guarda um talão" pede trabalho antes de dar
+ * alguma coisa. O gasóleo é o único número que serve a qualquer pessoa,
+ * muda todos os dias e não pede nada. Por isso, para quem explora, é
+ * ele o número grande — com a origem e a hora à vista, como em todo o
+ * lado.
+ *
+ * A ação principal não tira a pessoa do ecrã: troca o "no país" por
+ * "perto de ti" ali mesmo. O talão fica como segunda linha, discreta —
+ * a história da poupança continua lá para quem a quiser.
+ *
+ * Se a DGEG falhar, quem chama mostra o herói da poupança: um número
+ * vazio no sítio mais visível da app era pior do que nenhum.
+ * ─────────────────────────────────────────────────────────────── */
+function HeroExplorar({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
+  const { dados, aLocalizar, pedirLocalizacao } = gasoleo;
+  const idade = dados ? descreverFrescura(dados.frescura) : null;
+
+  function localizar() {
+    evento("inicio_explorar", { acao: "localizar" });
+    pedirLocalizacao();
+  }
+  function verPostos() {
+    evento("inicio_explorar", { acao: "ver_postos" });
+    onVerPostos();
+  }
+  function guardarTalao() {
+    evento("inicio_explorar", { acao: "guardar_talao" });
+    onGuardarTalao();
+  }
+
+  return (
+    <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
+      <div className="flex items-center justify-between">
+        {/* "Hoje" só se a consulta à DGEG for mesmo de hoje. */}
+        <Rotulo>
+          {dados?.perto ? "Gasóleo mais barato perto de ti" : "Gasóleo mais barato no país"}
+          {idade?.deHoje ? " · hoje" : ""}
+        </Rotulo>
+        <Streak streak={streak} />
+      </div>
+
+      {dados ? (
+        // Inteiro: no gasóleo é sempre "1" — o que distingue um preço do
+        // outro são as milésimas, e essas não podem ficar a meia altura.
+        <Numero inteiro={eur(dados.preco, 3)} />
+      ) : (
+        // A carregar: o mesmo corpo de letra, para a página não saltar.
+        <div className="font-display" aria-hidden="true" style={{ fontSize: 78, lineHeight: 1, marginTop: 16, color: "var(--pj-border)" }}>€—</div>
+      )}
+
+      <p className="truncate" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12, fontWeight: 500 }}>
+        {dados ? (dados.marca || "—") : "A ver os preços de hoje…"}
+        {dados?.perto && dados.distancia ? ` · ${dados.distancia} km` : ""}
+      </p>
+
+      <button
+        onClick={dados?.perto ? verPostos : localizar}
+        disabled={aLocalizar}
+        className="pj-tap press inline-flex items-center"
+        style={{ gap: 7, marginTop: 18, padding: "10px 16px", borderRadius: 12, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 600 }}
+      >
+        <Fuel size={15} strokeWidth={1.9} />
+        {aLocalizar ? "A localizar…" : dados?.perto ? "Ver postos no mapa" : "Ver o mais barato perto de mim"}
+      </button>
+
+      {idade?.iso && (
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", marginTop: 10 }}>{idade.rotulo}</p>
+      )}
+
+      <button onClick={guardarTalao} className="pj-tap flex items-center" style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+        Guarda um talão e vê quanto poupas <ChevronRight size={14} />
+      </button>
+    </div>
+  );
+}
+
 function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak, resumo, onGuardarTalao }) {
   const nuncaGuardou = totalSempre <= 0;
   const semEsteMes   = totalMes <= 0;
-
-  const Rotulo = ({ children }) => (
-    <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-      {children}
-    </div>
-  );
-
-  // Número grande, no traço da casa — partilhado pelos estados 2 e 3.
-  // pj-num (algarismos tabulares) não é só alinhamento: sem ele a contagem
-  // crescente faz o número mudar de largura a cada frame e o € dança.
-  const Numero = ({ inteiro, decimais }) => (
-    <div className="font-display pj-num flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 16 }}>
-      <span style={{ fontSize: 38, color: "var(--pj-text-faint)", marginRight: 5, fontWeight: 400 }}>€</span>
-      {inteiro}
-      <span style={{ fontSize: 38, color: "var(--pj-text-faint)", fontWeight: 400 }}>,{decimais}</span>
-    </div>
-  );
 
   /*
    * O número maior da app estava órfão: €22,60 não dizia de onde vinha
@@ -262,11 +365,7 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
         <Rotulo>{nuncaGuardou || !semEsteMes ? `Poupança de ${mesNome}` : "Poupança total"}</Rotulo>
         {/* A streak conta visitas, não poupança. Só a mostramos quando já
             quer dizer alguma coisa — ao 1.º dia era uma medalha sem feito. */}
-        {streak >= 2 && (
-          <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
-            <Flame size={13} /> {streak} dias
-          </div>
-        )}
+        <Streak streak={streak} />
       </div>
 
       {nuncaGuardou ? (
@@ -320,6 +419,10 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const [lista, setLista]         = useState({ n: 0, resumo: null });
   const [irsUsado, setIrsUsado]   = useState(false);
   const [resumo, setResumo]       = useState({ nTaloesMes: 0, nTaloesTotal: 0, totalMesAnterior: 0, houveMesAnterior: false, nomeMesAnterior: "" });
+  // Até ler o localStorage não se sabe quem é quem: escolher o herói antes
+  // disso mostrava o de quem explora a toda a gente durante um instante.
+  const [lido, setLido]           = useState(false);
+  const gasoleo = useGasoleoHoje();
   useEffect(() => {
     try {
       const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
@@ -358,6 +461,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
     } catch {}
     setEstadoDesafio(calcularEstado());
     setStreak(calcStreak());
+    setLido(true);
     fetch("/api/folhetos").then(r => r.json()).then(d => setFolhetos(d.folhetos || [])).catch(() => {});
   }, []);
 
@@ -366,6 +470,10 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const inteiroMes = Math.floor(totalMes);
   const animMes   = useCountUp(inteiroMes, 1100);
   const decMes    = String(Math.round((totalMes - inteiroMes) * 100)).padStart(2, "0");
+
+  // Quem ainda não fez nada (nem talão, nem lista) está a explorar: vê
+  // primeiro o gasóleo de hoje, e o convite de conta espera por uma ação.
+  const explorar = lido && totalSempre <= 0 && lista.n === 0 && !retratoDisponivel && !gasoleo.falhou;
 
   /*
    * O que NÃO está na barra de baixo.
@@ -433,8 +541,11 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           </button>
         )}
 
-        {/* Convidado: convite a criar conta (ou lembrete de confirmação) */}
-        {user?.convidado && (
+        {/* Convidado: convite a criar conta (ou lembrete de confirmação).
+            A quem ainda está a explorar, o convite não aparece: pedir uma
+            conta antes de a pessoa ter guardado alguma coisa é pedir cedo
+            demais. O lembrete de confirmação fica sempre — já começou. */}
+        {user?.convidado && (convPendente || (lido && !explorar)) && (
           convPendente ? (
             <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
               <Bell size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
@@ -452,17 +563,29 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           )
         )}
 
-        {/* Poupança — o herói adapta-se ao que há para mostrar */}
-        <HeroPoupanca
-          mesNome={mesNome}
-          totalMes={totalMes}
-          totalSempre={totalSempre}
-          animMes={animMes}
-          decMes={decMes}
-          streak={streak}
-          resumo={resumo}
-          onGuardarTalao={() => setTab("taloes")}
-        />
+        {/* Herói: o gasóleo de hoje para quem explora, a poupança para os
+            outros. Antes de ler o localStorage, só o espaço — sem saltos. */}
+        {!lido ? (
+          <div style={{ marginTop: 44, minHeight: 190 }} />
+        ) : explorar ? (
+          <HeroExplorar
+            gasoleo={gasoleo}
+            streak={streak}
+            onVerPostos={() => setTab("mobilidade")}
+            onGuardarTalao={() => setTab("taloes")}
+          />
+        ) : (
+          <HeroPoupanca
+            mesNome={mesNome}
+            totalMes={totalMes}
+            totalSempre={totalSempre}
+            animMes={animMes}
+            decMes={decMes}
+            streak={streak}
+            resumo={resumo}
+            onGuardarTalao={() => setTab("taloes")}
+          />
+        )}
 
         {/* Lista de compras — com o resultado da lista otimizada, quando há */}
         <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />
@@ -480,8 +603,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
         <Divisoria />
 
-        {/* Desafio do mês (anel) — dados reais do desafio de € */}
-        {estadoDesafio && (() => {
+        {/* Desafio do mês (anel) — dados reais do desafio de €. Quem
+            explora ainda não guardou nada: um anel a 0% não lhe diz nada. */}
+        {estadoDesafio && !explorar && (() => {
           const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
           const falta = Math.max(0, estadoDesafio.desafio.meta - estadoDesafio.totalMes);
           const completo = estadoDesafio.completo;
@@ -505,7 +629,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           );
         })()}
 
-        <Divisoria />
+        {estadoDesafio && !explorar && <Divisoria />}
 
         {/* Folhetos a acabar */}
         {folhetos.length > 0 && (
@@ -545,12 +669,15 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
         <Divisoria />
 
-        {/* Combustível */}
-        <div className="anim-up anim-up-4">
-          <CardCombustivelHome setTab={setTab} />
-        </div>
-
-        <Divisoria />
+        {/* Combustível — quem explora já o tem no topo */}
+        {!explorar && (
+          <>
+            <div className="anim-up anim-up-4">
+              <CardCombustivelHome setTab={setTab} gasoleo={gasoleo} />
+            </div>
+            <Divisoria />
+          </>
+        )}
 
         {/* O resto — mesma gramática de linha dos folhetos, acima */}
         <div>
