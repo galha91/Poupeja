@@ -57,6 +57,10 @@ export default async function handler(req, res) {
     const total = todos.length;
     const hoje = todos.filter(u => u.created_at && new Date(u.created_at) >= inicioHoje).length;
     const ultimos7 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 7 * DIA).length;
+    const anteriores7 = todos.filter(u => {
+      const t = u.created_at ? agora - new Date(u.created_at).getTime() : Infinity;
+      return t >= 7 * DIA && t < 14 * DIA;
+    }).length;
     const ultimos30 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 30 * DIA).length;
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
     const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
@@ -79,6 +83,10 @@ export default async function handler(req, res) {
         novosHoje: deHoje("primeira_em"),
         novos7: desde("primeira_em", 7 * DIA),
         novos30: desde("primeira_em", 30 * DIA),
+        novosAnteriores7: linhas.filter(c => {
+          const t = c.primeira_em ? agora - new Date(c.primeira_em).getTime() : Infinity;
+          return t >= 7 * DIA && t < 14 * DIA;
+        }).length,
         abriramHoje: deHoje("ultima_em"),
         abriram7: desde("ultima_em", 7 * DIA),
         abriram30: desde("ultima_em", 30 * DIA),
@@ -168,6 +176,18 @@ export default async function handler(req, res) {
     } catch {}
     const emailAtivos = Math.max(0, confirmados - emailDesativado);
 
+    // Subscritores sem conta (formulários das páginas públicas)
+    const contarAtivos = async (tabela) => {
+      try {
+        const { count } = await admin.from(tabela).select("id", { count: "exact", head: true }).is("cancelado_em", null);
+        return count ?? 0;
+      } catch { return null; }
+    };
+    const [subFolhetos, subCombustivel] = await Promise.all([
+      contarAtivos("subscritores_folhetos"),
+      contarAtivos("subscritores_combustivel"),
+    ]);
+
     // Funil de conversão: Registou → Confirmou → Instalou app → Ativou push
     const totalPush = new Set((pushSubs || []).map(s => s.user_id)).size;
     const funil = {
@@ -199,6 +219,9 @@ export default async function handler(req, res) {
       hoje,
       ultimos7,
       ultimos30,
+      anteriores7,
+      subFolhetos,
+      subCombustivel,
       confirmados,
       totalPwa,
       porPlataforma,

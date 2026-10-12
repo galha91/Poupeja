@@ -46,8 +46,12 @@ export default async function handler(req, res) {
   const tentar = async (ativo, fn) => { if (!ativo) return { dados: null }; try { return { dados: await fn() }; } catch (e) { return { dados: null, erro: String(e.message || e).slice(0, 200) }; } };
   const [ga, sc] = await Promise.all([tentar(cfg.ga, lerAnalytics), tentar(cfg.sc, lerSearchConsole)]);
 
+  const lim14 = dia(new Date(Date.now() - 13 * 864e5));
+  const anteriores7 = (vu.data || []).filter(u => u.dia >= lim14 && u.dia < lim7).reduce((s, u) => s + u.n, 0);
+
   return res.status(200).json({
     proprio: {
+      anteriores7,
       desdeDia: serie.find(s => s.vistas > 0)?.dia || hoje,
       hoje: { vistas: porDia[hoje] || 0, visitantes: unicos[hoje] || 0 },
       sete: { vistas: soma("vistas", 7), visitantes: soma("visitantes", 7) },
