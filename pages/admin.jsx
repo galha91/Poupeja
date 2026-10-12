@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
-import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock, Bell, Send, Smartphone, Monitor } from "lucide-react";
+import { Users, ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Clock, Bell, Send, Smartphone, Monitor, ChevronDown } from "lucide-react";
 
 export default function Admin() {
   const router = useRouter();
@@ -12,6 +12,9 @@ export default function Admin() {
   const [erro, setErro] = useState("");
   const [sessaoEmail, setSessaoEmail] = useState(null);
   const [ordenarPor, setOrdenarPor] = useState("registo"); // "registo" | "login"
+  // As listas de emails ficam fechadas por omissão: só abrem quando se quer ver.
+  const [verPush, setVerPush] = useState(false);
+  const [verUtilizadores, setVerUtilizadores] = useState(false);
 
   // Push notification state
   const [pushTitulo, setPushTitulo] = useState("🏛️ Novidade no PoupeJá");
@@ -323,14 +326,19 @@ export default function Admin() {
             {/* Push subscritores */}
             {stats.pushSubscritores?.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-5">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+                <button
+                  onClick={() => setVerPush(v => !v)}
+                  aria-expanded={verPush}
+                  className={`w-full flex items-center gap-2 px-4 py-3 text-left ${verPush ? "border-b border-slate-100" : ""}`}
+                >
                   <Bell size={14} className="text-blue-500" />
                   <h2 className="text-sm font-black text-slate-700">Notificações push ativas</h2>
                   <span className="ml-auto text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                     {stats.pushSubscritores.length}
                   </span>
-                </div>
-                {stats.pushSubscritores.map((s, i) => (
+                  <ChevronDown size={16} className={`text-slate-400 transition-transform ${verPush ? "rotate-180" : ""}`} />
+                </button>
+                {verPush && stats.pushSubscritores.map((s, i) => (
                   <div key={i} className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-0">
                     <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
                       <span className="text-[10px] font-black text-blue-500">
@@ -343,11 +351,16 @@ export default function Admin() {
               </div>
             )}
 
-            {/* Cabeçalho da lista + ordenação */}
+            {/* Lista de utilizadores — fechada por omissão */}
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-black text-slate-700">
-                {ordenarPor === "login" ? "Por último login" : "Registos recentes"}
-              </h2>
+              <button
+                onClick={() => setVerUtilizadores(v => !v)}
+                aria-expanded={verUtilizadores}
+                className="inline-flex items-center gap-1.5 text-sm font-black text-slate-700"
+              >
+                {verUtilizadores ? (ordenarPor === "login" ? "Por último login" : "Registos recentes") : `Ver utilizadores (${stats.recentes.length})`}
+                <ChevronDown size={16} className={`text-slate-400 transition-transform ${verUtilizadores ? "rotate-180" : ""}`} />
+              </button>
               <button
                 onClick={carregar}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600"
@@ -356,6 +369,7 @@ export default function Admin() {
               </button>
             </div>
 
+            {verUtilizadores && (<>
             {/* Toggle ordenar por registo / último login */}
             <div className="flex gap-1.5 mb-2 bg-slate-100 p-1 rounded-xl">
               <button
@@ -445,6 +459,7 @@ export default function Admin() {
                 </div>
               )}
             </div>
+            </>)}
 
             <p className="text-center text-[11px] text-slate-300 font-medium mt-4">
               Atualizado às {fmtData(stats.atualizadoEm)}
