@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { URL_SITE } from '../lib/site';
 import { modoExecucao } from '../lib/plataforma';
+import { supabase, supabaseConfigurado } from '../lib/supabase';
 import AvisoCookies from '../AvisoCookies';
 import '../styles/globals.css'
 
@@ -12,17 +13,30 @@ function MyApp({ Component, pageProps }) {
   // Contador de visitas sem cookies (ver pages/api/visita.js). Só o caminho e,
   // na primeira página da visita, o site de onde vieste.
   useEffect(() => {
+    // Os dispositivos do dono ficam marcados e deixam de contar.
     let primeira = true;
-    const contar = (url) => {
+    const contar = async (url) => {
       try {
-        const ref = primeira ? document.referrer : 'interno';
-        primeira = false;
-        fetch('/api/visita', {
+        if (localStorage.getItem('poupeja_nao_contar') === '1') return;
+      } catch (_) {}
+      const ref = primeira ? document.referrer : 'interno';
+      const o = primeira ? new URLSearchParams(window.location.search).get('o') : null;
+      primeira = false;
+      const headers = { 'Content-Type': 'application/json' };
+      try {
+        if (supabaseConfigurado) {
+          const { data } = await supabase.auth.getSession();
+          if (data?.session?.access_token) headers.Authorization = `Bearer ${data.session.access_token}`;
+        }
+      } catch (_) {}
+      try {
+        const r = await fetch('/api/visita', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ caminho: url.split(/[?#]/)[0], ref }),
+          headers,
+          body: JSON.stringify({ caminho: url.split(/[?#]/)[0], ref, o }),
           keepalive: true,
-        }).catch(() => {});
+        });
+        if (r.headers.get('X-Nao-Contar') === '1') localStorage.setItem('poupeja_nao_contar', '1');
       } catch (_) {}
     };
     contar(window.location.pathname);

@@ -30,3 +30,11 @@ test("origens", () => {
   assert.equal(classificarOrigem("https://exemplo.pt/", eu), "outro");
   assert.equal(classificarOrigem("android-app://com.google.android.googlequicksearchbox", eu), "google");
 });
+
+test("etiquetas nos links", async () => {
+  const { origemEtiqueta } = await import("../lib/visitas.js");
+  assert.equal(origemEtiqueta("fb"), "facebook");
+  assert.equal(origemEtiqueta("IG"), "instagram");
+  assert.equal(origemEtiqueta("xpto"), null);
+  assert.equal(origemEtiqueta(undefined), null);
+});

@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
+import { EMAILS_EXCLUIDOS } from "../../lib/adminAuth";
 
 // Email autorizado a ver as estatísticas de administração.
 // Configurável por env var; fallback para o email do dono do site.
@@ -43,9 +44,9 @@ export default async function handler(req, res) {
       if (page > 100) break; // salvaguarda
     }
 
-    // Excluir a(s) conta(s) de administração de todas as estatísticas
+    // Excluir as contas do dono de todas as estatísticas
     const adminIds = new Set(
-      todos.filter(u => (u.email || "").toLowerCase() === ADMIN_EMAIL).map(u => u.id)
+      todos.filter(u => EMAILS_EXCLUIDOS.has((u.email || "").toLowerCase())).map(u => u.id)
     );
     todos = todos.filter(u => !adminIds.has(u.id));
 
