@@ -68,7 +68,7 @@ export default function Apoios({ apoios, categorias, atualizado }) {
                 </>
               )}
               {a.link && (
-                <a href={a.link} target="_blank" rel="noopener noreferrer" className="inline-block no-underline mt-3" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                <a href={a.link} target="_blank" rel="noopener noreferrer" className="pj-alvo inline-block no-underline mt-3" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
                   Ver no site oficial →
                 </a>
               )}

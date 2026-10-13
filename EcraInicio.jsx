@@ -287,7 +287,7 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
       )}
 
       {onGuardarTalao && (
-        <button onClick={guardarTalao} className="pj-tap flex items-center" style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+        <button onClick={guardarTalao} className="pj-tap pj-alvo flex items-center" style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
           Guarda um talão e vê quanto poupas <ChevronRight size={14} />
         </button>
       )}

@@ -37,8 +37,11 @@ export function Preco({
     >
       <span style={{ fontSize: tamanho * 0.62, fontWeight: 500, opacity: 0.5, marginRight: 2 }}>€</span>
       {inteiro}
+      {/* Combustível (3 casas): o inteiro é sempre "1" e o que distingue um
+          posto do outro são as milésimas — não podem ficar a meia altura.
+          Fica igual ao herói do Início. */}
       {decimais != null && (
-        <span style={{ fontSize: tamanho * 0.62, fontWeight: peso }}>,{decimais}</span>
+        <span style={{ fontSize: casas >= 3 ? tamanho : tamanho * 0.62, fontWeight: peso }}>,{decimais}</span>
       )}
     </span>
   );

@@ -23,6 +23,7 @@ export default function FonteOficial({ fontes, prefixo = "Fonte", className = ""
             href={f.href}
             target="_blank"
             rel="noopener noreferrer"
+            className="pj-alvo"
             style={{ color: "var(--pj-brand-ink)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 2, whiteSpace: "nowrap" }}
           >
             {f.curto}

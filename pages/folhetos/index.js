@@ -82,7 +82,7 @@ export default function Folhetos({ folhetos, semana, atualizadoEm }) {
                 href={f.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="no-underline flex-shrink-0"
+                className="pj-alvo no-underline flex-shrink-0"
                 style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}
               >
                 Ver →
