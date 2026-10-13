@@ -6,6 +6,8 @@ import LayoutPublico, { CtaApp } from "../../../LayoutPublico";
 import { dadosDistrito } from "../../../lib/municipios";
 import { URL_SITE } from "../../../lib/site";
 import { FONTES } from "../../../lib/fontes";
+import GraficoPreco from "../../../GraficoPreco";
+import { lerSerie } from "../../../lib/precosSnapshot";
 
 /*
  * Página pública SEO — combustíveis mais baratos num distrito.
@@ -16,7 +18,7 @@ import { FONTES } from "../../../lib/fontes";
  * contra o país, os concelhos ordenados) e liga a todos os concelhos do
  * distrito — é por aqui que o Google chega aos que não estão no sitemap.
  */
-export default function CombustiveisDistrito({ dados }) {
+export default function CombustiveisDistrito({ dados, serieGasoleo = [] }) {
   const { distrito, destaques, amplitude, concelhos, nPostos, outros, frescura } = dados;
   const idade = descreverFrescura(frescura);
   const canonical = `${URL_SITE}/combustiveis/distrito/${distrito.slug}`;
@@ -107,6 +109,9 @@ export default function CombustiveisDistrito({ dados }) {
           </div>
         )}
 
+        {/* 30 dias de gasóleo no distrito (resumo diário; só com 7+ dias) */}
+        <GraficoPreco serie={serieGasoleo} titulo={`Gasóleo no distrito de ${distrito.nome}, últimos 30 dias`} />
+
         {/* Todos os concelhos do distrito — o motivo de a página existir */}
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 6 }}>
           Gasóleo por concelho
@@ -152,9 +157,12 @@ export default function CombustiveisDistrito({ dados }) {
 }
 
 export async function getServerSideProps({ res, params }) {
-  const dados = await dadosDistrito(params.distrito);
+  const [dados, serieGasoleo] = await Promise.all([
+    dadosDistrito(params.distrito),
+    lerSerie({ escopo: "distrito", chave: params.distrito, tipo: "Gasóleo" }).catch(() => []),
+  ]);
   if (!dados) return { notFound: true };
   // 30 minutos secos, sem stale-while-revalidate — ver [cidade].js.
   res.setHeader("Cache-Control", "public, s-maxage=1800");
-  return { props: { dados } };
+  return { props: { dados, serieGasoleo } };
 }
