@@ -1,5 +1,5 @@
 import { LOJAS_SLUGS, RECEITAS_SLUGS } from '../lib/seo-slugs';
-import { listarMunicipios } from '../lib/municipios';
+import { listarMunicipios, frescuraDosPrecos } from '../lib/municipios';
 import { URL_SITE } from '../lib/site';
 
 // Só os concelhos com mais postos entram no mapa: dezenas de páginas parecidas
@@ -22,7 +22,8 @@ const FIXAS = [
 
 function xml(paginas) {
   const urls = paginas.map(p => `  <url>
-    <loc>${URL_SITE}${p.path}</loc>
+    <loc>${URL_SITE}${p.path}</loc>${p.lastmod ? `
+    <lastmod>${p.lastmod}</lastmod>` : ''}
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
   </url>`).join('\n');
@@ -40,15 +41,26 @@ export async function getServerSideProps({ res }) {
   // Se a DGEG estiver em baixo, sai o sitemap sem concelhos em vez de sair
   // um sitemap cheio de URLs que respondem 404.
   let concelhos = [];
+  // <lastmod> só nas páginas de combustível, e com a data REAL da última
+  // consulta à DGEG: é o que diz ao Google que vale a pena voltar todos os
+  // dias. Nas outras fica de fora — uma data inventada ("hoje", sempre)
+  // ensina o Google a ignorar o campo no site inteiro.
+  let lastmod = null;
+  try {
+    const f = await frescuraDosPrecos();
+    const ref = f?.obtidoEm ?? f?.dataPreco;
+    if (ref) lastmod = new Date(ref).toISOString().slice(0, 10);
+  } catch {}
   try {
     concelhos = (await listarMunicipios()).slice(0, MAX_CONCELHOS_NO_MAPA).map(m => ({
-      path: `/combustiveis/${m.slug}`, changefreq: 'daily', priority: '0.8',
+      path: `/combustiveis/${m.slug}`, changefreq: 'daily', priority: '0.8', lastmod,
     }));
   } catch {}
+  const fixas = FIXAS.map(p => p.path === '/combustiveis' ? { ...p, lastmod } : p);
 
   res.setHeader('Content-Type', 'text/xml');
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-  res.write(xml([...FIXAS, ...concelhos]));
+  res.write(xml([...fixas, ...concelhos]));
   res.end();
   return { props: {} };
 }

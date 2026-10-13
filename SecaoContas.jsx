@@ -528,6 +528,10 @@ function ContasFixasConteudo() {
     <div className="pb-28 pt-4">
 
       {/* ── Hero ── */}
+      {/* Sem contas, o herói dizia "€0,00 · Sem contas adicionadas" mesmo
+          por cima do estado vazio da lista, que diz o mesmo e tem o botão.
+          Fica só esse; o total aparece com a primeira conta. */}
+      {contas.length > 0 && (
       <div className="px-4 mb-4 anim-up">
         <div
           className="rounded-3xl px-6 pt-6 pb-5 relative overflow-hidden"
@@ -606,6 +610,7 @@ function ContasFixasConteudo() {
           )}
         </div>
       </div>
+      )}
 
       {/* ── Cartões de estatísticas (2×2) ── */}
       {contas.length > 0 && (
@@ -704,7 +709,8 @@ function ContasFixasConteudo() {
           <CalendarDays size={11} style={{ color: "var(--pj-text-faint)" }} /> As minhas contas
         </p>
         <div className="flex items-center gap-2">
-          {/* Ordenação */}
+          {/* Ordenação — só com contas para ordenar */}
+          {contas.length > 1 && (
           <div className="relative">
             <button
               onClick={() => setMostrarOrdenacao(v => !v)}
@@ -729,6 +735,7 @@ function ContasFixasConteudo() {
               </div>
             )}
           </div>
+          )}
           {/* Marcar todos */}
           {contas.length > 0 && esMesAtual && (
             <button
