@@ -17,7 +17,9 @@ export default function Partilha({ valor, ref_, variante, mes, taloes, streak })
   const ogImg = retrato
     ? `${SITE_URL}/api/og?v=retrato&total=${valor.toFixed(2)}&mes=${encodeURIComponent(mes)}&taloes=${taloes}&streak=${streak}`
     : `${SITE_URL}/api/og?v=poupanca&valor=${valor.toFixed(2)}`;
-  const titulo = retrato
+  const titulo = valor <= 0
+    ? "PoupeJá — poupa nas compras, no combustível e nas contas"
+    : retrato
     ? `O meu retrato de ${mes || "mês"}: €${valorFmt} poupados com o PoupeJá`
     : `Já poupei €${valorFmt} nas compras com o PoupeJá`;
 
@@ -42,7 +44,11 @@ export default function Partilha({ valor, ref_, variante, mes, taloes, streak })
           Poupança real com o PoupeJá
         </p>
         <h1 className="font-display mt-3" style={{ fontSize: 34, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em" }}>
-          {retrato
+          {/* Sem valor (link cortado, ou partilha a zero) dizia "Alguém já
+              poupou €0,00" — o contrário do que a página quer mostrar. */}
+          {valor <= 0
+            ? <>Poupa nas compras, no combustível e nas contas</>
+            : retrato
             ? <>Alguém poupou <span style={{ color: "var(--pj-brand-ink)" }}>€{valorFmt}</span> em {mes || "um mês"}</>
             : <>Alguém já poupou <span style={{ color: "var(--pj-brand-ink)" }}>€{valorFmt}</span> nas compras</>}
         </h1>
