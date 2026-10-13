@@ -453,7 +453,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const decMes    = String(Math.round((totalMes - inteiroMes) * 100)).padStart(2, "0");
 
   // Quem ainda não fez nada (nem talão, nem lista) está a explorar: o
-  // convite de conta e o desafio do mês esperam por uma primeira ação.
+  // desafio do mês espera por uma primeira ação.
   const explorar = lido && totalSempre <= 0 && lista.n === 0 && !retratoDisponivel;
 
   /*
@@ -522,26 +522,16 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           </button>
         )}
 
-        {/* Convidado: convite a criar conta (ou lembrete de confirmação).
-            A quem ainda está a explorar, o convite não aparece: pedir uma
-            conta antes de a pessoa ter guardado alguma coisa é pedir cedo
-            demais. O lembrete de confirmação fica sempre — já começou. */}
-        {user?.convidado && (convPendente || (lido && !explorar)) && (
-          convPendente ? (
-            <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
-              <Bell size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
-              <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>
-                Confirma o teu email para concluíres a conta — enviámos-te um link.
-              </p>
-            </div>
-          ) : (
-            <p className="anim-up" style={{ marginTop: 14, fontSize: 12, color: "var(--pj-text-faint)" }}>
-              Já tens conta?{" "}
-              <button onClick={onEntrar} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
-              {" · "}
-              <button onClick={onCriarConta} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
+        {/* Convidado que já pediu a conta: o lembrete de confirmação fica
+            no topo — já começou e falta-lhe um passo. O convite para criar
+            conta vai para o fim da página, para quem o quiser. */}
+        {user?.convidado && convPendente && (
+          <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+            <Bell size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+            <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>
+              Confirma o teu email para concluíres a conta — enviámos-te um link.
             </p>
-          )
+          </div>
         )}
 
         {/* Herói: o gasóleo de hoje, sempre primeiro. A poupança vem logo
@@ -688,6 +678,17 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             ))}
           </div>
         </div>
+
+        {/* Conta: opcional, no fim. Quem chega a explorar não precisa
+            dela para nada; quem quiser guardar na cloud encontra-a aqui. */}
+        {user?.convidado && !convPendente && (
+          <p style={{ marginTop: 28, fontSize: 12, color: "var(--pj-text-faint)", textAlign: "center" }}>
+            Queres guardar os teus dados noutros dispositivos?{" "}
+            <button onClick={onCriarConta} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
+            {" · "}
+            <button onClick={onEntrar} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
+          </p>
+        )}
 
       </div>
       {folhetoAberto && <FolhetoViewer folheto={folhetoAberto} onFechar={() => setFolhetoAberto(null)} />}
