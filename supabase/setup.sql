@@ -105,6 +105,25 @@ create table if not exists public.precos_supermercado_historico (
 alter table public.precos_supermercado_historico enable row level security;
 create index if not exists precos_supermercado_historico_q_dia on public.precos_supermercado_historico (q, dia desc);
 
+-- ─────────────────────────────────────────────────────────────
+-- Resumo diário dos combustíveis (DGEG): média e mínimo por combustível e
+-- por marca ("*" = país). Serve a página "Combustíveis esta semana".
+-- Só o servidor escreve e lê (service role); sem políticas públicas.
+-- (Migração criar_precos_dgeg_diario.)
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.precos_dgeg_diario (
+  dia     date          not null,
+  tipo    text          not null,
+  marca   text          not null,
+  media   numeric(6,3)  not null,
+  minimo  numeric(6,3)  not null,
+  n       integer       not null,
+  atualizado_em timestamptz not null default now(),
+  primary key (dia, tipo, marca)
+);
+alter table public.precos_dgeg_diario enable row level security;
+create index if not exists precos_dgeg_diario_dia on public.precos_dgeg_diario (dia desc);
+
 -- ── Convidados do site ──────────────────────────────────────────────────────
 -- Uma linha por browser que entrou no modo convidado (id aleatório guardado
 -- no localStorage). Só a API (service role) escreve/lê — sem policies.

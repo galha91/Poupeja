@@ -10,6 +10,7 @@ const MAX_CONCELHOS_NO_MAPA = 40;
 const FIXAS = [
   { path: '/',             changefreq: 'daily',   priority: '1.0' },
   { path: '/combustiveis', changefreq: 'daily',   priority: '0.9' },
+  { path: '/combustiveis/esta-semana', changefreq: 'daily', priority: '0.85' },
   { path: '/folhetos',     changefreq: 'weekly',  priority: '0.9' },
   { path: '/receitas',     changefreq: 'weekly',  priority: '0.9' },
   { path: '/apoios',       changefreq: 'monthly', priority: '0.8' },
@@ -56,7 +57,7 @@ export async function getServerSideProps({ res }) {
       path: `/combustiveis/${m.slug}`, changefreq: 'daily', priority: '0.8', lastmod,
     }));
   } catch {}
-  const fixas = FIXAS.map(p => p.path === '/combustiveis' ? { ...p, lastmod } : p);
+  const fixas = FIXAS.map(p => p.path.startsWith('/combustiveis') ? { ...p, lastmod } : p);
   // Os 18 distritos entram todos: são poucos, cada um diferente, e ligam
   // a todos os concelhos — incluindo os que não cabem no mapa.
   const distritos = DISTRITOS_SLUGS.map(d => ({ path: `/combustiveis/distrito/${d.slug}`, changefreq: 'daily', priority: '0.85', lastmod }));

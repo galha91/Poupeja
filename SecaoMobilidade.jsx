@@ -4,6 +4,8 @@ import CARROS_EV from "./data/carrosEV";
 import { Preco } from "./Preco";
 import { eur } from "./lib/formato";
 import { FONTES } from "./lib/fontes";
+import DescontosCombustivel from "./DescontosCombustivel";
+import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontosCombustivel";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -465,6 +467,8 @@ function SubCombustiveis() {
   const [ordenar, setOrdenar]       = useState("preco");   // "preco" | "distancia"
   const [favoritos, setFavoritos]   = useState([]);
   const [soFavoritos, setSoFavoritos] = useState(false);
+  const [descontos, setDescontos]   = useState({});        // "o meu desconto", por marca (lib/descontosCombustivel)
+  useEffect(() => { setDescontos(lerDescontos()); }, []);
   const [vista, setVista]           = useState("lista");   // "lista" | "mapa"
 
   useEffect(() => { setHistorico(lerHistorico()); }, []);
@@ -553,7 +557,13 @@ function SubCombustiveis() {
 
   const tiposDisponiveis = tipos.length ? tipos : [...new Set(estacoes.map(e => e.tipoLabel || e.tipo).filter(Boolean))];
   const tipoAtivo   = tiposDisponiveis.includes(tipo) ? tipo : (tiposDisponiveis[0] || "Gasolina 95");
+  /*
+   * Com desconto, `preco` passa a ser o que a pessoa paga (e o afixado fica
+   * em `precoAfixado`): a ordenação, o "mais barato", o cartão de cima e o
+   * mapa usam todos o mesmo número. No modo nacional a marca vem em `posto`.
+   */
   const doTipo = estacoes
+    .map(e => aplicarDesconto({ ...e, marca: e.marca || e.posto }, descontos))
     .filter(e => (e.tipoLabel || e.tipo) === tipoAtivo)
     .filter(e => !soFavoritos || ehFavorito(e));
 
@@ -625,6 +635,11 @@ function SubCombustiveis() {
                 <Preco valor={melhor.preco} casas={3} tamanho={34} cor="var(--pj-text)" />
                 <span className="text-sm font-semibold text-[color:var(--pj-text-faint)] ml-1">por litro</span>
               </p>
+              {melhor.desconto ? (
+                <p className="pj-num text-[11px] font-semibold text-[color:var(--pj-brand-ink)] mt-1">
+                  Com o teu desconto de {String(melhor.desconto).replace(".", ",")} cênt. · afixado €{eur(melhor.precoAfixado, 3)}
+                </p>
+              ) : null}
               {/*
                 Sem localização isto não é um posto — é a marca com o
                 preço mais baixo do país. O pino de mapa ao lado de
@@ -755,6 +770,15 @@ function SubCombustiveis() {
         </div>
       )}
 
+      {/* O meu desconto — por cima da lista, discreto */}
+      {!loading && !erro && doTipo.length > 0 && (
+        <DescontosCombustivel
+          marcas={[...new Set(doTipo.map(e => e.marca).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt"))}
+          descontos={descontos}
+          onChange={d => setDescontos(guardarDescontos(d))}
+        />
+      )}
+
       {/* Ordenar + favoritos (só na vista de lista) */}
       {!loading && !erro && vista === "lista" && doTipo.length > 0 && (
         <div className="px-4 mb-3 flex items-center gap-2">
@@ -849,7 +873,13 @@ function SubCombustiveis() {
                       Passa pelo componente de preço, que compõe €1,661.
                     */}
                     <Preco valor={c.preco} casas={3} tamanho={20} cor="var(--pj-text)" />
-                    <p className="text-[9px] text-[color:var(--pj-text-faint)] mt-0.5">por litro</p>
+                    {c.desconto ? (
+                      <p className="pj-num text-[9px] text-[color:var(--pj-brand-ink)] font-semibold mt-0.5">
+                        com desconto · afixado €{eur(c.precoAfixado, 3)}
+                      </p>
+                    ) : (
+                      <p className="text-[9px] text-[color:var(--pj-text-faint)] mt-0.5">por litro</p>
+                    )}
                     {c.distancia && (
                       <p className="text-[10px] text-[color:var(--pj-text-faint)] flex items-center gap-0.5 justify-end mt-0.5">
                         <MapPin size={9} /> <span className="pj-num">{km(c.distancia)}</span>
