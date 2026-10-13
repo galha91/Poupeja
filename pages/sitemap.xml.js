@@ -1,5 +1,5 @@
 import { LOJAS_SLUGS, RECEITAS_SLUGS } from '../lib/seo-slugs';
-import { listarMunicipios, frescuraDosPrecos } from '../lib/municipios';
+import { listarMunicipios, frescuraDosPrecos, DISTRITOS_SLUGS } from '../lib/municipios';
 import { URL_SITE } from '../lib/site';
 
 // Só os concelhos com mais postos entram no mapa: dezenas de páginas parecidas
@@ -57,10 +57,13 @@ export async function getServerSideProps({ res }) {
     }));
   } catch {}
   const fixas = FIXAS.map(p => p.path === '/combustiveis' ? { ...p, lastmod } : p);
+  // Os 18 distritos entram todos: são poucos, cada um diferente, e ligam
+  // a todos os concelhos — incluindo os que não cabem no mapa.
+  const distritos = DISTRITOS_SLUGS.map(d => ({ path: `/combustiveis/distrito/${d.slug}`, changefreq: 'daily', priority: '0.85', lastmod }));
 
   res.setHeader('Content-Type', 'text/xml');
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-  res.write(xml([...fixas, ...concelhos]));
+  res.write(xml([...fixas, ...distritos, ...concelhos]));
   res.end();
   return { props: {} };
 }

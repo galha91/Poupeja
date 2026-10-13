@@ -25,6 +25,9 @@ import { N_COMPARADAS } from "./lib/cobertura";
 const LS_RECENTES = "poupeja_pesquisas_precos";
 const LS_LISTA = "poupeja_lista_compras";
 const SUGESTOES = ["laranjas", "leite meio gordo", "ovos", "arroz agulha", "azeite", "bananas", "frango", "café moído"];
+// Os exemplos que abrem o Mercado a quem chega (um por dia, à vez): artigos
+// que toda a gente compra e que existem nas cadeias comparadas.
+const EXEMPLOS = ["leite meio gordo", "ovos", "azeite", "arroz agulha"];
 // Nota ao lado do nome da loja, onde o preço não é o da loja online.
 const NOTA_LOJA = { lidl: "só promoções em loja", aldi: "preço de loja" };
 
@@ -320,11 +323,32 @@ export default function SecaoComparar() {
   const [marca, setMarca] = useState("todas"); // todas | propria | outras
   const [verOutros, setVerOutros] = useState(false);
   const [naLista, setNaLista] = useState(false);
+  const [exemplo, setExemplo] = useState(false); // o resultado à vista é o exemplo do dia
   const pedido = useRef(0);
 
   const [listaCompras, setListaCompras] = useState([]);
   const [focado, setFocado] = useState(false);
-  useEffect(() => { setRecentes(lerRecentes()); setListaCompras(lerListaPendente()); }, []);
+  /*
+   * Quem abre o Mercado pela primeira vez via uma caixa de pesquisa e um
+   * ecrã vazio. Sem pesquisas anteriores, sem lista para comparar e sem
+   * vir de um alerta, mostra-se já uma comparação feita — o exemplo do
+   * dia. É o mesmo para toda a gente nesse dia, por isso sai da cache da
+   * CDN e não pesa nos supermercados. Não conta como pesquisa da pessoa
+   * (nem fica nos recentes, nem no evento comparar_pesquisa).
+   */
+  useEffect(() => {
+    const rec = lerRecentes();
+    const lista = lerListaPendente();
+    setRecentes(rec);
+    setListaCompras(lista);
+    let vemDeAlerta = false;
+    try { vemDeAlerta = new URLSearchParams(window.location.search).has("q"); } catch {}
+    if (!rec.length && lista.length < 2 && !vemDeAlerta) {
+      const dia = Math.floor(Date.now() / 86400000);
+      procurar(EXEMPLOS[dia % EXEMPLOS.length], { exemplo: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Aberto por uma notificação de alerta (/?atalho=mercados&q=azeite):
   // mostra logo essa pesquisa e limpa o q do endereço.
@@ -342,10 +366,12 @@ export default function SecaoComparar() {
   }, []);
   const sugestoes = focado && normalizar(texto) !== pesquisa ? sugerir(texto) : [];
 
-  async function procurar(termo) {
+  async function procurar(termo, { exemplo: eExemplo = false } = {}) {
     const q = normalizar(termo);
     if (q.length < 2) return;
-    setTexto(q);
+    // O exemplo não escreve na caixa: fica vazia, a convidar a pesquisar.
+    if (!eExemplo) setTexto(q);
+    setExemplo(eExemplo);
     setPesquisa(q);
     setEstado("a-carregar");
     setErro("");
@@ -353,7 +379,7 @@ export default function SecaoComparar() {
     setVerOutros(false);
     setNaLista(false);
     const n = ++pedido.current;
-    evento("comparar_pesquisa", { q });
+    evento(eExemplo ? "comparar_exemplo" : "comparar_pesquisa", { q });
     try {
       const r = await fetch(`/api/precos-supermercado?q=${encodeURIComponent(q)}`);
       const j = await r.json();
@@ -361,9 +387,11 @@ export default function SecaoComparar() {
       if (!r.ok && !j.produtos) throw new Error(j.erro || "Não foi possível pesquisar agora.");
       setDados(j);
       setEstado("pronto");
-      setRecentes(guardarRecente(q));
+      if (!eExemplo) setRecentes(guardarRecente(q));
     } catch (e) {
       if (n !== pedido.current) return;
+      // Um exemplo que falha não vira um erro no ecrã de quem nada pediu.
+      if (eExemplo) { setExemplo(false); setEstado("inicio"); return; }
       setErro(e.message || "Não foi possível pesquisar agora.");
       setEstado("erro");
     }
@@ -486,6 +514,12 @@ export default function SecaoComparar() {
             </button>
           </div>
         </div>
+      )}
+
+      {exemplo && estado === "pronto" && (
+        <p className="px-4 mt-4" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>
+          Exemplo de hoje: <strong style={{ color: "var(--pj-text-muted)", fontWeight: 600 }}>{pesquisa}</strong>. Escreve outro produto acima.
+        </p>
       )}
 
       {estado === "pronto" && vista && dados.produtos.some((p) => p.marcaPropria) && dados.produtos.some((p) => !p.marcaPropria) && (

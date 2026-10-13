@@ -9,6 +9,7 @@ import { listarMunicipios, frescuraDosPrecos, precosPorMarca, TIPOS_DESTAQUE } f
 const MARCAS_VISIVEIS = 12;
 import { URL_SITE as SITE_URL } from "../../lib/site";
 import { FONTES } from "../../lib/fontes";
+import { slugify } from "../../lib/slug";
 
 /*
  * Página pública SEO — preços dos combustíveis hoje em Portugal.
@@ -194,9 +195,12 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
             </p>
             {porDistrito.map(([distrito, lista]) => (
               <div key={distrito} style={{ marginBottom: 22 }}>
-                <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 9 }}>
-                  {distrito}
-                </p>
+                {/* O nome do distrito leva à página do distrito (o mais barato
+                    de cada concelho, por ordem). */}
+                <a href={`/combustiveis/distrito/${slugify(distrito)}`} className="pj-alvo inline-block no-underline"
+                  style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 9 }}>
+                  {distrito} →
+                </a>
                 <div className="flex flex-wrap gap-2">
                   {lista.map(c => (
                     <a
