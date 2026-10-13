@@ -31,10 +31,14 @@ await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(600);
 await p.screenshot({path:'assets/play/feature-graphic.png'}); await b.close();})()"
 ```
 
-> **Capturas.** `inicio.png` e `combustiveis.png` foram refeitas: a de
-> Início mostrava "Convidado" (modo que já não existe na app) e a de
-> Combustíveis mostrava o ecrã de erro "Preços indisponíveis". As novas usam
-> uma conta de exemplo ("Ana") e os preços reais da DGEG de 26/09/2026.
+> **Capturas — refazer antes de submeter (13/10/2026).** As de
+> `public/screenshots/` são de setembro: o Início já não abre na poupança
+> (abre no gasóleo de hoje, "perto de <cidade>") e o modo convidado voltou
+> a existir. Tira-as no telemóvel, com preços reais, por esta ordem — é a
+> ordem que vende: 1) Início com o gasóleo perto de ti; 2) Comparar preços
+> com um resultado (ex.: «azeite»); 3) Lista de compras otimizada; 4)
+> Folhetos; 5) Talões e garantias; 6) Leitor de código de barras (depois do
+> merge do PR #93). 1080×2400 ou 780×1688, sem barra de notificações.
 
 ---
 
@@ -49,51 +53,58 @@ PoupeJá
 ### Descrição curta (máx. 80)
 
 ```
-Folhetos, combustível e a poupança real dos teus talões.
+Compara preços do supermercado, gasóleo mais barato, folhetos e talões. Grátis.
 ```
+
+*(79 caracteres. "Sem anúncios" ficou de fora de propósito: a app tem
+ligações a lojas e serviços parceiros com comissão, e a Google pode ler isso
+como publicidade. As palavras que as pessoas pesquisam na loja — "comparar
+preços", "supermercado", "gasóleo", "folhetos" — estão logo aqui: é o texto
+que mais pesa na pesquisa da Play Store, a seguir ao nome.)*
 
 ### Descrição completa (máx. 4000)
 
+*(O código de barras só existe depois do merge do PR #93; se submeteres antes, tira "— ou aponta a câmara ao código de barras —".)*
+
 ```
 O PoupeJá junta num só sítio as contas que se fazem todas as semanas em
-Portugal: quanto custa o supermercado, quanto custa atestar o carro, e
-quanto é que já poupaste sem dar por isso.
+Portugal: onde fica mais barato o supermercado, onde atestar o carro, e
+quanto é que já poupaste. Grátis e sem precisares de criar conta.
 
-FOLHETOS DE TODOS OS SUPERMERCADOS
-Continente, Pingo Doce, Lidl, Auchan, Aldi, Intermarché, E.Leclerc,
-Froiz, El Corte Inglés e mais. Actualizados à segunda-feira, sem teres
-de andar a abrir nove apps diferentes.
+COMPARAR PREÇOS NO SUPERMERCADO
+Escreve um produto — ou aponta a câmara ao código de barras — e vês onde
+está mais barato no Continente, Pingo Doce, Auchan, Aldi e Lidl (no Lidl,
+as promoções da semana). Comparamos como se compra: ao kg, ao litro, à
+unidade. Nunca inventamos preços: o que não está online, não comparamos.
+
+A LISTA DE COMPRAS QUE DIZ ONDE COMPRAR
+Junta os artigos e o PoupeJá diz em que supermercado a lista fica mais
+barata, e quanto poupas face ao mais caro. Partilha a lista com a família.
 
 COMBUSTÍVEL AO PREÇO DE HOJE
-Os postos mais baratos perto de ti, com os preços oficiais da DGEG.
-Vês a diferença em cêntimos por litro entre o mais barato e os outros,
-e a distância a que ficam.
+O gasóleo e a gasolina mais baratos perto de ti, com os preços oficiais
+da DGEG. Tens desconto numa marca (cartão de frota, de supermercado, da
+empresa)? Diz quanto e a lista ordena pelo preço que pagas mesmo.
 
-A TUA POUPANÇA, CALCULADA DOS TALÕES
-Fotografa o talão e o PoupeJá lê o valor poupado que já lá vem escrito.
-Ao fim do mês tens um número real — não uma estimativa — e a comparação
-com o mês anterior.
+FOLHETOS DA SEMANA
+Continente, Pingo Doce, Lidl, Auchan, Aldi, Intermarché, E.Leclerc,
+Froiz e El Corte Inglés, num só sítio, sem abrires nove apps.
 
-CONTAS E GARANTIAS
-As contas da casa com data de vencimento, e as garantias dos aparelhos
-que compraste, com aviso antes de expirarem.
+TALÕES E GARANTIAS
+Fotografa o talão e o PoupeJá lê o valor poupado. Guarda as garantias
+dos aparelhos que compraste e recebe aviso antes de expirarem.
 
-APOIOS DO ESTADO
-O que existe, a quem se destina e como se pede. Sem linguagem de
-Diário da República.
-
-LISTA DE COMPRAS E EMENTAS
-A lista organizada por corredor, e ideias de refeições com o que está
-em folheto esta semana.
+CONTAS DA CASA E APOIOS DO ESTADO
+As contas fixas com data de vencimento, os prazos do IRS e do IMI, e os
+apoios a que podes ter direito, com o link para o site oficial.
 
 —
 
-Feito em Portugal, para preços portugueses. Entras com a conta Google ou
-com email, e os teus dados acompanham-te de telemóvel para telemóvel.
+Feito em Portugal, para preços portugueses. Funciona logo, sem conta. Se
+quiseres os dados noutro telemóvel, crias conta com email ou Google.
 
-Os preços de combustível são os publicados pela DGEG. O PoupeJá não tem
-qualquer ligação às cadeias de supermercados nem às marcas de
-combustível mencionadas.
+O PoupeJá não tem qualquer ligação às cadeias de supermercados nem às
+marcas de combustível mencionadas.
 
 FONTES OFICIAIS
 O PoupeJá é uma aplicação independente: não é um serviço do Estado nem
@@ -120,7 +131,9 @@ de remoção posterior.
 | dado | o que acontece | onde está no código |
 |---|---|---|
 | **Email** | conta e autenticação | `lib/supabase.js` |
-| **Localização aproximada** | só quando pedes postos perto de ti; não é guardada | `SecaoMobilidade.jsx`, `EcraInicio.jsx` |
+| **Localização aproximada** | (1) a cidade deduzida do IP pelo Vercel, para o gasóleo "perto de"; não é guardada (`pages/api/onde-estou.js`); (2) GPS só quando tocas em "localização exata"; não é guardado | `pages/api/onde-estou.js`, `SecaoMobilidade.jsx`, `EcraInicio.jsx` |
+| **Email para avisos semanais** | só se pedires o email de folhetos ou de combustível; guardado (email + concelho) até cancelares | `pages/api/subscrever.js`, `pages/api/subscrever-combustivel.js` |
+| **Código de barras** | a imagem da câmara é lida no telemóvel; só o número vai à Open Food Facts para saber o nome do produto; nada é guardado | `LeitorCodigoBarras.jsx` (PR #93) |
 | **Fotografia do talão** | **enviada uma vez** para `/api/ler-talao`, que a reencaminha para a **API da Anthropic** para extrair loja, data, total e poupança. Depois fica só no dispositivo — **não é sincronizada** | `SecaoTaloes.jsx`, `pages/api/ler-talao.js`, `lib/sync.js` (`TRANSFORMA.poupeja_taloes`) |
 | **Talões guardados (sem a imagem)** | `localStorage` e, com sessão iniciada, sincronizados para o Supabase (`dados_utilizador`) | `lib/sync.js` |
 | **Utilização do site** | Google Analytics em todas as páginas | `pages/_document.js` |
@@ -144,7 +157,7 @@ apagam a conta e, em cascata, todos os dados dela no Supabase.
 
 | tipo de dados | recolhido | partilhado | finalidade |
 |---|---|---|---|
-| Email | Sim | Não | Gestão de conta |
+| Email | Sim | Não | Gestão de conta; Comunicações (só quem pede o email semanal) |
 | Nome | Sim | Não | Gestão de conta |
 | IDs de utilizador | Sim | Não | Gestão de conta |
 | Localização aproximada | Sim | Não | Funcionalidade da app |
@@ -215,21 +228,16 @@ regras das Famílias, que são mais exigentes e não trazem nada a esta app.
 
 ## Acesso à app (App access)
 
-Na app Android **é preciso conta** — não há modo convidado (no site
-continua a haver). Por isso, no Play Console:
+A app abre **sem conta** (modo convidado automático, também na app
+Android): tudo funciona sem login. Criar conta só serve para ter os dados
+noutro telemóvel. Por isso, no Play Console:
 
-1. Escolhe **"Todas ou algumas funcionalidades estão restritas"**.
-2. **Adiciona instruções** com uma conta de teste que funcione sempre,
-   para o revisor da Google entrar:
-   - Nome: `Conta de teste`
-   - Utilizador: o email da conta de teste (ver abaixo)
-   - Palavra-passe: a dessa conta
-   - Instruções: `Abrir a app, tocar em "Já tenho conta", entrar com este
-     email e palavra-passe. Não é preciso mais nenhum passo.`
+1. Escolhe **"Todas as funcionalidades estão disponíveis sem acesso especial"**.
+2. Não é preciso conta de teste. *(A secção antiga pedia uma, porque a app
+   Android obrigava a entrar — já não é assim. Declarar acesso restrito
+   sem o haver só atrasa a revisão.)*
 
-**Criar a conta de teste:** no site, "Criar conta" com um email teu com
-`+` — por exemplo `poupeja.portugal+revisor@gmail.com` (o Gmail entrega em
-`poupeja.portugal@gmail.com`). Confirma o email, entra uma vez, e mete
-lá um talão e uma lista de compras para o revisor ver a app com conteúdo.
-Não uses "Continuar com Google" para esta conta: o revisor precisa de
-email e palavra-passe.
+Se um dia a app voltar a exigir conta, cria uma de teste com email e
+palavra-passe (ex.: `poupeja.portugal+revisor@gmail.com`) e escolhe
+"Algumas funcionalidades estão restritas".
+

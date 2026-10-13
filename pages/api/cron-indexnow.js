@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
 
-  const caminhos = ["/combustiveis", ...DISTRITOS_SLUGS.map(d => `/combustiveis/distrito/${d.slug}`)];
+  const caminhos = ["/combustiveis", "/combustiveis/esta-semana", ...DISTRITOS_SLUGS.map(d => `/combustiveis/distrito/${d.slug}`)];
   try {
     const concelhos = (await listarMunicipios()).slice(0, MAX_CONCELHOS);
     caminhos.push(...concelhos.map(m => `/combustiveis/${m.slug}`));

@@ -183,6 +183,12 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
           </>
         )}
 
+        {/* A variação da semana, por marca — página própria */}
+        <a href="/combustiveis/esta-semana" className="pj-tap no-underline flex items-center justify-between rounded-2xl px-4 py-3 mt-8"
+          style={{ background: "var(--pj-brand-wash)", border: "1px solid var(--pj-border)", color: "var(--pj-text)", fontWeight: 600, fontSize: 14 }}>
+          O que subiu e desceu esta semana, por marca <span aria-hidden="true">→</span>
+        </a>
+
         {/* Páginas por concelho, agrupadas por distrito — é também o caminho
             de rastreio: sem isto o Google não chega às páginas de concelho. */}
         {porDistrito.length > 0 && (
