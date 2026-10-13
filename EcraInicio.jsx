@@ -7,13 +7,14 @@ import {
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
 import { embutivel } from "./lib/folhetos-embed";
-import { Preco } from "./Preco";
 import Divisoria from "./Divisoria";
 import { calcularEstado } from "./lib/desafios";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
 import { mostrarIRS } from "./lib/atalhos";
+import { descreverFrescura } from "./lib/frescura";
+import { evento } from "./lib/analytics";
 
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
@@ -83,98 +84,85 @@ function useCountUp(target, ms = 1100) {
 }
 
 
-/* ─── Card de combustível na Home (dados reais DGEG) ─── */
-function CardCombustivelHome({ setTab }) {
-  const [dados, setDados] = useState(null);      // { preco, marca, nome?, distancia?, perto }
+/* ─── Gasóleo mais barato (dados reais DGEG) ─── */
+function escolherGasoleo(lista, campoTipo) {
+  if (!lista?.length) return null;
+  const g = lista.filter(x => (x[campoTipo] || "").toLowerCase() === "gasóleo");
+  return (g.length ? g : lista).slice().sort((a, b) => a.preco - b.preco)[0] || null;
+}
+
+// A rota chama-lhe atualizadoEm; lib/frescura chama-lhe obtidoEm. É a
+// mesma coisa: quando fomos buscar os preços à DGEG.
+function frescuraDe(j) {
+  return { obtidoEm: j.atualizadoEm, dataPreco: j.dataPreco, stale: j.stale };
+}
+
+/*
+ * Três níveis de "perto", do melhor para o pior. Um resultado só
+ * substitui outro se for melhor — os pedidos correm em paralelo e o
+ * nacional (que chega primeiro) não pode tapar o local.
+ *
+ *   exata      — GPS, com autorização dada (agora ou antes)
+ *   aproximada — a cidade do IP (/api/onde-estou), sem pedir nada
+ *   pais       — o mínimo nacional, para quem nem isso tem
+ */
+const NIVEL = { pais: 0, aproximada: 1, exata: 2 };
+
+function useGasoleoHoje() {
+  const [dados, setDados] = useState(null);      // { preco, marca, distancia?, nivel, cidade?, frescura }
   const [aLocalizar, setALocalizar] = useState(false);
+  const [falhou, setFalhou] = useState(false);   // sem preço nacional: quem depende disto mostra outra coisa
 
-  function escolherGasoleo(lista, campoTipo) {
-    if (!lista?.length) return null;
-    const g = lista.filter(x => (x[campoTipo] || "").toLowerCase() === "gasóleo");
-    return (g.length ? g : lista).slice().sort((a, b) => a.preco - b.preco)[0] || null;
-  }
+  const melhor = (novo) => setDados(prev => (prev && NIVEL[prev.nivel] > NIVEL[novo.nivel]) ? prev : novo);
 
-  function buscarPerto(lat, lon) {
-    setALocalizar(true);
-    fetch(`/api/combustiveis?lat=${lat}&lon=${lon}&raio=15`)
+  function buscarPerto(lat, lon, nivel, cidade = null) {
+    if (nivel === "exata") setALocalizar(true);
+    return fetch(`/api/combustiveis?lat=${lat}&lon=${lon}&raio=15`)
       .then(r => r.json())
       .then(j => {
-        setALocalizar(false);
         if (!j.success) return;
         const best = escolherGasoleo(j.estacoes, "tipoLabel");
-        if (best) setDados({ preco: best.preco, marca: best.marca || best.nome, nome: best.nome, distancia: best.distancia, perto: true });
+        if (best) melhor({ preco: best.preco, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, frescura: frescuraDe(j) });
       })
-      .catch(() => setALocalizar(false));
+      .catch(() => {})
+      .finally(() => nivel === "exata" && setALocalizar(false));
   }
 
   useEffect(() => {
     let vivo = true;
-    // Preço nacional mais barato — imediato, sem pedir localização
+    // Preço nacional mais barato — a rede de segurança, sem pedir nada
     fetch("/api/combustiveis")
       .then(r => r.json())
       .then(j => {
-        if (!vivo || !j.success) return;
-        const best = escolherGasoleo(j.dados, "tipo");
-        if (best) setDados(prev => prev?.perto ? prev : { preco: best.preco, marca: best.posto, perto: false });
+        if (!vivo) return;
+        const best = j.success ? escolherGasoleo(j.dados, "tipo") : null;
+        if (best) melhor({ preco: best.preco, marca: best.posto, nivel: "pais", frescura: frescuraDe(j) });
+        else setFalhou(true);
       })
+      .catch(() => vivo && setFalhou(true));
+    // A cidade pelo IP — "perto de Braga" logo à entrada, sem janela de permissão
+    fetch("/api/onde-estou")
+      .then(r => r.json())
+      .then(j => { if (vivo && j.ok) buscarPerto(j.lat, j.lon, "aproximada", j.cidade); })
       .catch(() => {});
-    // Se a localização já foi autorizada antes, mostra logo o mais barato perto
+    // Se a localização já foi autorizada antes, usa logo a exata
     navigator.permissions?.query?.({ name: "geolocation" })
       .then(p => { if (vivo && p.state === "granted" && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => vivo && buscarPerto(pos.coords.latitude, pos.coords.longitude), () => {});
+        navigator.geolocation.getCurrentPosition(pos => vivo && buscarPerto(pos.coords.latitude, pos.coords.longitude, "exata"), () => {});
       }}).catch(() => {});
     return () => { vivo = false; };
   }, []);
 
-  function pedirLocalizacao(e) {
-    e.stopPropagation();
+  function pedirLocalizacao() {
     if (!navigator.geolocation) return;
     setALocalizar(true);
     navigator.geolocation.getCurrentPosition(
-      pos => buscarPerto(pos.coords.latitude, pos.coords.longitude),
+      pos => buscarPerto(pos.coords.latitude, pos.coords.longitude, "exata"),
       () => setALocalizar(false)
     );
   }
 
-  return (
-    <div>
-    <button onClick={() => setTab("mobilidade")} className="pj-tap flex items-center w-full text-left" style={{ gap: 14 }}>
-      <div className="flex items-center justify-center flex-none" style={{ width: 40, height: 40, borderRadius: 12, background: "var(--pj-subtle)", color: "var(--pj-text-strong)" }}>
-        <Fuel size={19} strokeWidth={1.8} />
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", fontWeight: 500 }}>
-          {/*
-            Antes dizia só "Gasóleo mais barato" nos dois casos. Sem
-            localização, este preço é o mínimo em TODO o país — pode ser
-            uma estação a 300 km. Dizer "perto de ti" ao lado de um preço
-            assim (mesmo como convite para clicar) lia-se como se o
-            preço já fosse local, e não é: é por isso que parecia
-            "errado" ao comparar com o ecrã da Mobilidade, que mostra
-            mesmo a estação e a distância reais.
-          */}
-          {dados?.perto ? "Gasóleo mais barato perto de ti" : "Gasóleo mais barato no país"}
-        </div>
-        <div className="truncate" style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)", marginTop: 3 }}>
-          {dados ? (dados.marca || "—") : "Ver postos e preços"}
-          {dados?.perto && dados.distancia ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> · {dados.distancia} km</span> : null}
-          {dados && !dados.perto ? <span onClick={pedirLocalizacao} style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}> · {aLocalizar ? "a localizar…" : "ver perto de ti"}</span> : null}
-        </div>
-      </div>
-      {/*
-        Escrevia 1,49€ — duas casas, € no fim — enquanto a Mobilidade e as
-        páginas de concelho escrevem €1,494. O mesmo litro com dois
-        números diferentes era o que fazia a Início parecer "errada" ao
-        lado do ecrã de detalhe. Passa pelo mesmo componente que os outros.
-      */}
-      {dados
-        ? <span className="flex-none"><Preco valor={dados.preco} casas={3} tamanho={22} /></span>
-        : <ChevronRight size={20} className="flex-none" style={{ color: "var(--pj-text-faint)" }} />}
-    </button>
-    {/* Preço oficial: o link para a origem fica à vista, fora do botão (não se aninham links em botões). */}
-    <FonteOficial fontes="dgeg" style={{ marginTop: 6, paddingLeft: 54 }} />
-    </div>
-  );
+  return { dados, aLocalizar, falhou, pedirLocalizacao };
 }
 
 
@@ -197,26 +185,122 @@ function LogoFolheto({ loja }) {
  *   2. já guardou, mas não este mês → o total de sempre, que é real
  *   3. tem poupança este mês → o número do mês (como sempre foi)
  * ─────────────────────────────────────────────────────────────── */
-function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak, resumo, onGuardarTalao }) {
+const Rotulo = ({ children }) => (
+  <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
+    {children}
+  </div>
+);
+
+// Número grande, no traço da casa — partilhado pelos dois heróis.
+// pj-num (algarismos tabulares) não é só alinhamento: sem ele a contagem
+// crescente faz o número mudar de largura a cada frame e o € dança.
+// `tamanho` encolhe o número da poupança quando o gasóleo já está por
+// cima: dois números de 78px seguidos competiam um com o outro.
+const Numero = ({ inteiro, decimais, tamanho = 78 }) => (
+  <div className="font-display pj-num flex items-baseline" style={{ fontWeight: 500, fontSize: tamanho, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: tamanho * 0.2 }}>
+    <span style={{ fontSize: tamanho * 0.49, color: "var(--pj-text-faint)", marginRight: 5, fontWeight: 400 }}>€</span>
+    {inteiro}
+    {decimais != null && <span style={{ fontSize: tamanho * 0.49, color: "var(--pj-text-faint)", fontWeight: 400 }}>,{decimais}</span>}
+  </div>
+);
+
+const Streak = ({ streak }) => streak >= 2 && (
+  <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
+    <Flame size={13} /> {streak} dias
+  </div>
+);
+
+/* ─── Herói do Início: o gasóleo de hoje ────────────────────────
+ * O primeiro número da app é o gasóleo: serve a qualquer pessoa, muda
+ * todos os dias e não pede nada. Chega já "perto de" uma cidade (pelo
+ * IP); quem quiser o posto exato toca no botão. A origem e a hora estão
+ * sempre à vista, como em todo o lado.
+ *
+ * O rótulo diz sempre de onde vem o "perto": "perto de ti" só com GPS;
+ * pelo IP diz o nome da cidade — se estiver errada (rede móvel cai
+ * muitas vezes em Lisboa), a pessoa vê-o logo e corrige com um toque.
+ *
+ * Se a DGEG falhar, quem chama não mostra este herói: um número vazio
+ * no sítio mais visível da app era pior do que nenhum.
+ * ─────────────────────────────────────────────────────────────── */
+function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
+  const { dados, aLocalizar, pedirLocalizacao } = gasoleo;
+  const idade = dados ? descreverFrescura(dados.frescura) : null;
+  const exata = dados?.nivel === "exata";
+
+  const onde = !dados || dados.nivel === "pais" ? "no país"
+    : exata ? "perto de ti"
+    : dados.cidade ? `perto de ${dados.cidade}` : "perto de ti (aprox.)";
+
+  function localizar() {
+    evento("inicio_combustivel", { acao: "localizar", nivel: dados?.nivel || "nenhum" });
+    pedirLocalizacao();
+  }
+  function verPostos() {
+    evento("inicio_combustivel", { acao: "ver_postos", nivel: dados?.nivel || "nenhum" });
+    onVerPostos();
+  }
+  function guardarTalao() {
+    evento("inicio_combustivel", { acao: "guardar_talao" });
+    onGuardarTalao();
+  }
+
+  return (
+    <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
+      <div className="flex items-center justify-between" style={{ gap: 12 }}>
+        {/* "Hoje" só se a consulta à DGEG for mesmo de hoje. */}
+        <Rotulo>Gasóleo mais barato {onde}{idade?.deHoje ? " · hoje" : ""}</Rotulo>
+        <Streak streak={streak} />
+      </div>
+
+      {dados ? (
+        // Inteiro: no gasóleo é sempre "1" — o que distingue um preço do
+        // outro são as milésimas, e essas não podem ficar a meia altura.
+        <Numero inteiro={eur(dados.preco, 3)} />
+      ) : (
+        // A carregar: o mesmo corpo de letra, para a página não saltar.
+        <div className="font-display" aria-hidden="true" style={{ fontSize: 78, lineHeight: 1, marginTop: 16, color: "var(--pj-border)" }}>€—</div>
+      )}
+
+      <p className="truncate" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12, fontWeight: 500 }}>
+        {dados ? (dados.marca || "—") : "A ver os preços de hoje…"}
+        {/* Distância só com GPS: a partir do centro de uma cidade adivinhada não quer dizer nada. */}
+        {exata && dados.distancia ? ` · ${dados.distancia} km` : ""}
+      </p>
+
+      <button
+        onClick={exata ? verPostos : localizar}
+        disabled={aLocalizar}
+        className="pj-tap press inline-flex items-center"
+        style={{ gap: 7, marginTop: 18, padding: "10px 16px", borderRadius: 12, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 600 }}
+      >
+        <Fuel size={15} strokeWidth={1.9} />
+        {aLocalizar ? "A localizar…" : exata ? "Ver postos no mapa" : dados?.nivel === "aproximada" ? "Usar a minha localização exata" : "Ver o mais barato perto de mim"}
+      </button>
+
+      {/* Hora da consulta e link para a origem, na mesma linha discreta. */}
+      {idade?.iso && (
+        <div className="flex flex-wrap items-baseline" style={{ columnGap: 6, marginTop: 10, fontSize: 11, color: "var(--pj-text-faint)" }}>
+          <span>{idade.rotulo.replace(/^Preços DGEG · c/, "C")} ·</span>
+          <FonteOficial fontes="dgeg" />
+        </div>
+      )}
+
+      {onGuardarTalao && (
+        <button onClick={guardarTalao} className="pj-tap flex items-center" style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+          Guarda um talão e vê quanto poupas <ChevronRight size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+// `compacto`: por baixo do gasóleo — o número desce para 52px e a streak
+// fica só no herói de cima.
+function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak, resumo, onGuardarTalao, compacto = false }) {
+  const tam = compacto ? 52 : 78;
   const nuncaGuardou = totalSempre <= 0;
   const semEsteMes   = totalMes <= 0;
-
-  const Rotulo = ({ children }) => (
-    <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-      {children}
-    </div>
-  );
-
-  // Número grande, no traço da casa — partilhado pelos estados 2 e 3.
-  // pj-num (algarismos tabulares) não é só alinhamento: sem ele a contagem
-  // crescente faz o número mudar de largura a cada frame e o € dança.
-  const Numero = ({ inteiro, decimais }) => (
-    <div className="font-display pj-num flex items-baseline" style={{ fontWeight: 500, fontSize: 78, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 16 }}>
-      <span style={{ fontSize: 38, color: "var(--pj-text-faint)", marginRight: 5, fontWeight: 400 }}>€</span>
-      {inteiro}
-      <span style={{ fontSize: 38, color: "var(--pj-text-faint)", fontWeight: 400 }}>,{decimais}</span>
-    </div>
-  );
 
   /*
    * O número maior da app estava órfão: €22,60 não dizia de onde vinha
@@ -257,16 +341,12 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
   );
 
   return (
-    <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
+    <div style={{ marginTop: compacto ? 36 : 44 }} className="anim-up anim-up-1">
       <div className="flex items-center justify-between">
         <Rotulo>{nuncaGuardou || !semEsteMes ? `Poupança de ${mesNome}` : "Poupança total"}</Rotulo>
         {/* A streak conta visitas, não poupança. Só a mostramos quando já
             quer dizer alguma coisa — ao 1.º dia era uma medalha sem feito. */}
-        {streak >= 2 && (
-          <div className="flex items-center" style={{ gap: 4, fontSize: 12, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
-            <Flame size={13} /> {streak} dias
-          </div>
-        )}
+        {!compacto && <Streak streak={streak} />}
       </div>
 
       {nuncaGuardou ? (
@@ -283,7 +363,7 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
       ) : semEsteMes ? (
         /* 2. Já poupou antes — mostramos o que é real, não o zero do mês. */
         <>
-          <Numero inteiro={Math.floor(totalSempre)} decimais={String(Math.round((totalSempre - Math.floor(totalSempre)) * 100)).padStart(2, "0")} />
+          <Numero inteiro={Math.floor(totalSempre)} decimais={String(Math.round((totalSempre - Math.floor(totalSempre)) * 100)).padStart(2, "0")} tamanho={tam} />
           <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 10 }}>
             De {resumo.nTaloesTotal} {resumo.nTaloesTotal === 1 ? "talão" : "talões"}. Ainda sem talões em {mesNome}.
           </p>
@@ -292,7 +372,7 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
       ) : (
         /* 3. Há poupança este mês — o número manda, e diz de onde vem. */
         <>
-          <Numero inteiro={Math.floor(animMes)} decimais={decMes} />
+          <Numero inteiro={Math.floor(animMes)} decimais={decMes} tamanho={tam} />
           <Evidencia
             nTaloes={resumo.nTaloesMes}
             delta={resumo.houveMesAnterior ? totalMes - resumo.totalMesAnterior : null}
@@ -320,6 +400,10 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const [lista, setLista]         = useState({ n: 0, resumo: null });
   const [irsUsado, setIrsUsado]   = useState(false);
   const [resumo, setResumo]       = useState({ nTaloesMes: 0, nTaloesTotal: 0, totalMesAnterior: 0, houveMesAnterior: false, nomeMesAnterior: "" });
+  // Até ler o localStorage não se sabe quem é quem: escolher o herói antes
+  // disso mostrava o de quem explora a toda a gente durante um instante.
+  const [lido, setLido]           = useState(false);
+  const gasoleo = useGasoleoHoje();
   useEffect(() => {
     try {
       const taloes = JSON.parse(localStorage.getItem("poupeja_taloes") || "[]");
@@ -358,6 +442,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
     } catch {}
     setEstadoDesafio(calcularEstado());
     setStreak(calcStreak());
+    setLido(true);
     fetch("/api/folhetos").then(r => r.json()).then(d => setFolhetos(d.folhetos || [])).catch(() => {});
   }, []);
 
@@ -366,6 +451,10 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const inteiroMes = Math.floor(totalMes);
   const animMes   = useCountUp(inteiroMes, 1100);
   const decMes    = String(Math.round((totalMes - inteiroMes) * 100)).padStart(2, "0");
+
+  // Quem ainda não fez nada (nem talão, nem lista) está a explorar: o
+  // desafio do mês espera por uma primeira ação.
+  const explorar = lido && totalSempre <= 0 && lista.n === 0 && !retratoDisponivel;
 
   /*
    * O que NÃO está na barra de baixo.
@@ -433,36 +522,58 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           </button>
         )}
 
-        {/* Convidado: convite a criar conta (ou lembrete de confirmação) */}
-        {user?.convidado && (
-          convPendente ? (
-            <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
-              <Bell size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
-              <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>
-                Confirma o teu email para concluíres a conta — enviámos-te um link.
-              </p>
-            </div>
-          ) : (
-            <p className="anim-up" style={{ marginTop: 14, fontSize: 12, color: "var(--pj-text-faint)" }}>
-              Já tens conta?{" "}
-              <button onClick={onEntrar} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
-              {" · "}
-              <button onClick={onCriarConta} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
+        {/* Convidado que já pediu a conta: o lembrete de confirmação fica
+            no topo — já começou e falta-lhe um passo. O convite para criar
+            conta vai para o fim da página, para quem o quiser. */}
+        {user?.convidado && convPendente && (
+          <div className="flex items-center anim-up" style={{ gap: 10, marginTop: 18, padding: "11px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+            <Bell size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+            <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>
+              Confirma o teu email para concluíres a conta — enviámos-te um link.
             </p>
-          )
+          </div>
         )}
 
-        {/* Poupança — o herói adapta-se ao que há para mostrar */}
-        <HeroPoupanca
-          mesNome={mesNome}
-          totalMes={totalMes}
-          totalSempre={totalSempre}
-          animMes={animMes}
-          decMes={decMes}
-          streak={streak}
-          resumo={resumo}
-          onGuardarTalao={() => setTab("taloes")}
-        />
+        {/* Herói: o gasóleo de hoje, sempre primeiro. A poupança vem logo
+            a seguir, mais pequena, para quem já a tem. Se a DGEG falhar,
+            fica só a poupança, como antes. Antes de ler o localStorage,
+            só o espaço — sem saltos. */}
+        {!lido ? (
+          <div style={{ marginTop: 44, minHeight: 190 }} />
+        ) : !gasoleo.falhou ? (
+          <>
+            <HeroCombustivel
+              gasoleo={gasoleo}
+              streak={streak}
+              onVerPostos={() => setTab("mobilidade")}
+              onGuardarTalao={totalSempre <= 0 ? () => setTab("taloes") : null}
+            />
+            {totalSempre > 0 && (
+              <HeroPoupanca
+                compacto
+                mesNome={mesNome}
+                totalMes={totalMes}
+                totalSempre={totalSempre}
+                animMes={animMes}
+                decMes={decMes}
+                streak={streak}
+                resumo={resumo}
+                onGuardarTalao={() => setTab("taloes")}
+              />
+            )}
+          </>
+        ) : (
+          <HeroPoupanca
+            mesNome={mesNome}
+            totalMes={totalMes}
+            totalSempre={totalSempre}
+            animMes={animMes}
+            decMes={decMes}
+            streak={streak}
+            resumo={resumo}
+            onGuardarTalao={() => setTab("taloes")}
+          />
+        )}
 
         {/* Lista de compras — com o resultado da lista otimizada, quando há */}
         <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />
@@ -480,8 +591,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
         <Divisoria />
 
-        {/* Desafio do mês (anel) — dados reais do desafio de € */}
-        {estadoDesafio && (() => {
+        {/* Desafio do mês (anel) — dados reais do desafio de €. Quem
+            explora ainda não guardou nada: um anel a 0% não lhe diz nada. */}
+        {estadoDesafio && !explorar && (() => {
           const pct = Math.min(Math.round(estadoDesafio.progresso * 100), 100);
           const falta = Math.max(0, estadoDesafio.desafio.meta - estadoDesafio.totalMes);
           const completo = estadoDesafio.completo;
@@ -505,7 +617,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           );
         })()}
 
-        <Divisoria />
+        {estadoDesafio && !explorar && <Divisoria />}
 
         {/* Folhetos a acabar */}
         {folhetos.length > 0 && (
@@ -545,13 +657,6 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
         <Divisoria />
 
-        {/* Combustível */}
-        <div className="anim-up anim-up-4">
-          <CardCombustivelHome setTab={setTab} />
-        </div>
-
-        <Divisoria />
-
         {/* O resto — mesma gramática de linha dos folhetos, acima */}
         <div>
           <div className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em", marginBottom: 6 }}>Mais no PoupeJá</div>
@@ -573,6 +678,17 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             ))}
           </div>
         </div>
+
+        {/* Conta: opcional, no fim. Quem chega a explorar não precisa
+            dela para nada; quem quiser guardar na cloud encontra-a aqui. */}
+        {user?.convidado && !convPendente && (
+          <p style={{ marginTop: 28, fontSize: 12, color: "var(--pj-text-faint)", textAlign: "center" }}>
+            Queres guardar os teus dados noutros dispositivos?{" "}
+            <button onClick={onCriarConta} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
+            {" · "}
+            <button onClick={onEntrar} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
+          </p>
+        )}
 
       </div>
       {folhetoAberto && <FolhetoViewer folheto={folhetoAberto} onFechar={() => setFolhetoAberto(null)} />}

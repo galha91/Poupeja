@@ -8,7 +8,7 @@ const SECOES = [
   },
   {
     titulo: "2. Que dados recolhemos",
-    texto: "• Dados de conta: nome e endereço de email (a password é guardada de forma encriptada pelo nosso fornecedor de autenticação e nunca é acessível a nós).\n• Dados que tu introduzes: talões, poupanças, listas de compras, contas fixas, garantias e preferências.\n• Fotografias de talões: a imagem é enviada uma vez para ser lida automaticamente (ver ponto 5) e depois fica guardada apenas no teu dispositivo. Não é sincronizada com a tua conta nem com os teus outros dispositivos.\n• Dados técnicos: tipo de dispositivo (iOS, Android ou computador) e se instalaste a aplicação no ecrã principal.\n• Subscrição de notificações: caso ative as notificações push.\nNão recolhemos dados que não precises de nos dar para usar o serviço, e não fazemos qualquer rastreamento publicitário.",
+    texto: "• Dados de conta: nome e endereço de email (a password é guardada de forma encriptada pelo nosso fornecedor de autenticação e nunca é acessível a nós).\n• Dados que tu introduzes: talões, poupanças, listas de compras, contas fixas, garantias e preferências.\n• Fotografias de talões: a imagem é enviada uma vez para ser lida automaticamente (ver ponto 5) e depois fica guardada apenas no teu dispositivo. Não é sincronizada com a tua conta nem com os teus outros dispositivos.\n• Dados técnicos: tipo de dispositivo (iOS, Android ou computador) e se instalaste a aplicação no ecrã principal.\n• Subscrição de notificações: caso ative as notificações push.\nNão recolhemos dados que não precises de nos dar para usar o serviço, e não fazemos qualquer rastreamento publicitário.\n• Localização aproximada: para mostrar o gasóleo mais barato perto de ti sem pedir nada, o Início usa a cidade aproximada que o nosso alojamento (Vercel) deduz do endereço IP. Serve só para essa consulta e não é guardada. A localização exata (GPS) só é usada se tocares no botão e autorizares no teu dispositivo.",
   },
   {
     titulo: "3. Onde ficam os dados",
@@ -86,7 +86,7 @@ export default function Privacidade() {
             <h1 className="text-2xl font-black text-white">Política de Privacidade</h1>
           </div>
         </div>
-        <p className="text-white/60 text-[12px] mt-2">Última atualização: 22 de setembro de 2026</p>
+        <p className="text-white/60 text-[12px] mt-2">Última atualização: 13 de outubro de 2026</p>
       </div>
 
       {/* Content */}
