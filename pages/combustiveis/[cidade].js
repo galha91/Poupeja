@@ -6,6 +6,7 @@ import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { dadosMunicipio } from "../../lib/municipios";
 import { URL_SITE } from "../../lib/site";
 import { FONTES } from "../../lib/fontes";
+import { slugify } from "../../lib/slug";
 import SubscreverCombustivel from "../../SubscreverCombustivel";
 
 /*
@@ -91,7 +92,7 @@ export default function CombustiveisConcelho({ dados }) {
         </h1>
         <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           <strong style={{ color: "var(--pj-text)" }}>{municipio.nPostos} postos</strong> no concelho
-          de {municipio.nome}{municipio.distrito ? `, distrito de ${municipio.distrito}` : ""}, com os preços
+          de {municipio.nome}{municipio.distrito && <>, <a href={`/combustiveis/distrito/${slugify(municipio.distrito)}`} style={{ color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>distrito de {municipio.distrito}</a></>}, com os preços
           comunicados à Direção-Geral de Energia e Geologia. Na app PoupeJá vês os postos{" "}
           <strong style={{ color: "var(--pj-text)" }}>à tua volta</strong> e crias avisos de preço.
         </p>
