@@ -8,6 +8,8 @@ import { URL_SITE } from "../../lib/site";
 import { FONTES } from "../../lib/fontes";
 import { slugify } from "../../lib/slug";
 import SubscreverCombustivel from "../../SubscreverCombustivel";
+import GraficoPreco from "../../GraficoPreco";
+import { lerSerie } from "../../lib/precosSnapshot";
 
 /*
  * Página pública SEO — combustíveis mais baratos num concelho.
@@ -21,7 +23,7 @@ import SubscreverCombustivel from "../../SubscreverCombustivel";
  * postos concretos — senão são centenas de páginas iguais e o Google
  * trata-as como tal.
  */
-export default function CombustiveisConcelho({ dados }) {
+export default function CombustiveisConcelho({ dados, serieGasoleo = [] }) {
   const { municipio, destaques, amplitude, ranking, noConcelho, proximos, vizinhos, frescura } = dados;
   const idade = descreverFrescura(frescura);
 
@@ -143,6 +145,9 @@ export default function CombustiveisConcelho({ dados }) {
           </div>
         )}
 
+        {/* 30 dias de gasóleo no concelho (resumo diário; só com 7+ dias) */}
+        <GraficoPreco serie={serieGasoleo} titulo={`Gasóleo em ${municipio.nome}, últimos 30 dias`} />
+
         {ranking && (
           <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--pj-text-muted)", marginTop: 14 }}>
             Entre os <strong style={{ color: "var(--pj-text)" }}>{ranking.total} concelhos</strong> do distrito de {ranking.distrito} com
@@ -249,7 +254,10 @@ export default function CombustiveisConcelho({ dados }) {
 }
 
 export async function getServerSideProps({ res, params }) {
-  const dados = await dadosMunicipio(params.cidade);
+  const [dados, serieGasoleo] = await Promise.all([
+    dadosMunicipio(params.cidade),
+    lerSerie({ escopo: "concelho", chave: params.cidade, tipo: "Gasóleo" }).catch(() => []),
+  ]);
   // Concelho sem dados suficientes na DGEG não ganha página — melhor um 404
   // do que uma página vazia a dizer que não há preços.
   if (!dados) return { notFound: true };
@@ -266,5 +274,5 @@ export async function getServerSideProps({ res, params }) {
    * Com 30 minutos secos, o erro possível é de 30 minutos.
    */
   res.setHeader("Cache-Control", "public, s-maxage=1800");
-  return { props: { dados } };
+  return { props: { dados, serieGasoleo } };
 }
