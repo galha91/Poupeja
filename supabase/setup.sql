@@ -232,3 +232,44 @@ returns void language sql security definer set search_path = public as $fn$
 $fn$;
 
 revoke all on function public.registar_visita(text, text, text) from public, anon, authenticated;
+
+-- Perfil anónimo por dia: distrito, tipo de aparelho, modo (browser/PWA/app) e
+-- novo/recorrente. Conta-se uma vez por visitante-dia (só quando o hash é novo)
+-- e não fica ligado ao hash nem à página.
+create table if not exists public.visitas_perfil (
+  dia      date not null,
+  dimensao text not null,
+  valor    text not null,
+  n        integer not null default 0,
+  primary key (dia, dimensao, valor)
+);
+alter table public.visitas_perfil enable row level security;
+
+create or replace function public.registar_visita(
+  p_caminho text, p_origem text, p_hash text,
+  p_regiao text, p_dispositivo text,
+  p_modo text, p_recorrencia text
+)
+returns void language sql security definer set search_path = public as $fn$
+  delete from public.visitas_hash where dia < (now() at time zone 'Europe/Lisbon')::date;
+  insert into public.visitas_dia (dia, caminho, origem, n)
+  values ((now() at time zone 'Europe/Lisbon')::date, p_caminho, p_origem, 1)
+  on conflict (dia, caminho, origem) do update set n = visitas_dia.n + 1;
+  with novo as (
+    insert into public.visitas_hash (dia, h)
+    values ((now() at time zone 'Europe/Lisbon')::date, p_hash)
+    on conflict do nothing returning dia
+  ), perfil as (
+    insert into public.visitas_perfil (dia, dimensao, valor, n)
+    select novo.dia, t.d, t.v, 1
+    from novo, (values ('regiao', p_regiao), ('dispositivo', p_dispositivo),
+                       ('modo', p_modo), ('recorrencia', p_recorrencia)) as t(d, v)
+    where t.v is not null
+    on conflict (dia, dimensao, valor) do update set n = visitas_perfil.n + 1
+  )
+  insert into public.visitas_unicos (dia, n)
+  select dia, 1 from novo
+  on conflict (dia) do update set n = visitas_unicos.n + 1;
+$fn$;
+
+revoke all on function public.registar_visita(text, text, text, text, text, text, text) from public, anon, authenticated;

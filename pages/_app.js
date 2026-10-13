@@ -28,6 +28,15 @@ function MyApp({ Component, pageProps }) {
         if (localStorage.getItem('poupeja_nao_contar') === '1') return;
       } catch (_) {}
       const ref = primeira ? document.referrer : 'interno';
+      // Novo ou recorrente: só um bit, calculado neste aparelho (o primeiro dia
+      // fica guardado aqui; o servidor nunca recebe a data).
+      let rec = null;
+      try {
+        const hoje = new Date().toLocaleDateString('sv-SE');
+        let primeiroDia = localStorage.getItem('poupeja_primeira_visita');
+        if (!primeiroDia) { primeiroDia = hoje; localStorage.setItem('poupeja_primeira_visita', hoje); }
+        rec = primeiroDia === hoje ? 'novo' : 'recorrente';
+      } catch (_) {}
       const o = primeira ? new URLSearchParams(window.location.search).get('o') : null;
       primeira = false;
       const headers = { 'Content-Type': 'application/json' };
@@ -51,7 +60,7 @@ function MyApp({ Component, pageProps }) {
         const r = await fetch('/api/visita', {
           method: 'POST',
           headers,
-          body: JSON.stringify({ caminho: url.split(/[?#]/)[0], ref, o }),
+          body: JSON.stringify({ caminho: url.split(/[?#]/)[0], ref, o, modo: modoExecucao(), rec }),
           keepalive: true,
         });
         if (r.headers.get('X-Nao-Contar') === '1') localStorage.setItem('poupeja_nao_contar', '1');
