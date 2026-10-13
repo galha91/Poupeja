@@ -106,22 +106,28 @@ alter table public.precos_supermercado_historico enable row level security;
 create index if not exists precos_supermercado_historico_q_dia on public.precos_supermercado_historico (q, dia desc);
 
 -- ─────────────────────────────────────────────────────────────
--- Resumo diário dos combustíveis (DGEG): média e mínimo por combustível e
--- por marca ("*" = país). Serve a página "Combustíveis esta semana".
+-- Resumo diário dos combustíveis (DGEG): média e mínimo por combustível,
+-- para o país, cada marca, cada distrito e cada concelho. Serve a página
+-- "Combustíveis esta semana" e o gráfico de 30 dias de distritos/concelhos.
+-- escopo: 'pais' | 'marca' | 'distrito' | 'concelho'; chave: '*' para o
+-- país, a marca em minúsculas, ou o slug do distrito/concelho.
 -- Só o servidor escreve e lê (service role); sem políticas públicas.
 -- (Migração criar_precos_dgeg_diario.)
 -- ─────────────────────────────────────────────────────────────
 create table if not exists public.precos_dgeg_diario (
   dia     date          not null,
   tipo    text          not null,
-  marca   text          not null,
+  escopo  text          not null check (escopo in ('pais','marca','distrito','concelho')),
+  chave   text          not null,
+  nome    text          not null,
   media   numeric(6,3)  not null,
   minimo  numeric(6,3)  not null,
   n       integer       not null,
   atualizado_em timestamptz not null default now(),
-  primary key (dia, tipo, marca)
+  primary key (dia, tipo, escopo, chave)
 );
 alter table public.precos_dgeg_diario enable row level security;
+create index if not exists precos_dgeg_diario_serie on public.precos_dgeg_diario (escopo, chave, tipo, dia desc);
 create index if not exists precos_dgeg_diario_dia on public.precos_dgeg_diario (dia desc);
 
 -- ── Convidados do site ──────────────────────────────────────────────────────
