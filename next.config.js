@@ -3,6 +3,9 @@ const withPWA = require("next-pwa")({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
+  // O leitor de códigos de barras (1 MB de WebAssembly) não vai para a
+  // cache de toda a gente: só se descarrega quando alguém o usa.
+  publicExcludes: ["!noprecache/**", "!zxing/**"],
 });
 
 /*
@@ -25,7 +28,7 @@ const csp = [
   "default-src 'self'",
   // GA e Awin. O 'unsafe-inline' é preciso porque o Next injeta scripts
   // inline para a hidratação e o gtag é configurado inline no _document.
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.dwin1.com https://www.awin1.com",
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://www.dwin1.com https://www.awin1.com",
   // A app inteira usa style={{…}} e o Leaflet injeta estilos próprios.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -34,7 +37,7 @@ const csp = [
   // As fotos dos produtos em "Comparar preços" vêm dos próprios supermercados.
   "img-src 'self' data: blob: https://logo.clearbit.com https://www.google.com https://*.tile.openstreetmap.org https://www.continente.pt https://static.pingodoce.pt https://www.pingodoce.pt https://www.auchan.pt https://www.lidl.pt https://prd.an-pcm.com",
   // Supabase (dados e auth) e os beacons do GA.
-  "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
+  "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://world.openfoodfacts.org",
   // Folhetos que se abrem dentro da app (ver lib/folhetos-embed).
   "frame-src https://folhetos.aldi.pt https://folhetos.pingodoce.pt https://folhetos.intermarche.pt",
   "frame-ancestors 'self'",

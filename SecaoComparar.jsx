@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, ExternalLink, Plus, Check, RefreshCw, Store, ChevronDown, Info } from "lucide-react";
+import { Search, ExternalLink, Plus, Check, RefreshCw, Store, ChevronDown, Info, ScanBarcode } from "lucide-react";
+import dynamic from "next/dynamic";
 import LogoLoja from "./LogoLoja";
 import { Preco } from "./Preco";
 import { eur } from "./lib/formato";
@@ -13,6 +14,9 @@ import { ITENS, CATEGORIAS as CATS_CATALOGO, itemPorNome } from "./data/catalogo
 const NOME_CATEGORIA = Object.fromEntries(CATS_CATALOGO.map((c) => [c.id, c.nome]));
 import { NotaCobertura } from "./Cobertura";
 import { N_COMPARADAS } from "./lib/cobertura";
+
+// A câmara e o leitor só se descarregam quando alguém toca no botão.
+const LeitorCodigoBarras = dynamic(() => import("./LeitorCodigoBarras"), { ssr: false });
 
 /*
  * "Onde está mais barato?" — escreve-se o artigo, a app pergunta aos
@@ -324,6 +328,10 @@ export default function SecaoComparar() {
   const [verOutros, setVerOutros] = useState(false);
   const [naLista, setNaLista] = useState(false);
   const [exemplo, setExemplo] = useState(false); // o resultado à vista é o exemplo do dia
+  const [temCamara, setTemCamara] = useState(false);
+  const [lerCodigo, setLerCodigo] = useState(false);
+  const [lido, setLido] = useState(null); // { nome, codigo } do último código lido
+  useEffect(() => { setTemCamara(!!navigator.mediaDevices?.getUserMedia); }, []);
   const pedido = useRef(0);
 
   const [listaCompras, setListaCompras] = useState([]);
@@ -452,12 +460,32 @@ export default function SecaoComparar() {
               aria-label="Produto a comparar"
               style={{ flex: 1, minWidth: 0, background: "transparent", border: 0, outline: "none", fontSize: 16, padding: "12px 0", color: "var(--pj-text)" }}
             />
+            {/* Na loja: ler o código de barras em vez de escrever */}
+            {temCamara && (
+              <button type="button" onClick={() => { setLerCodigo(true); evento("codigo_barras", { acao: "abrir" }); }}
+                aria-label="Ler código de barras" className="pj-tap flex items-center justify-center flex-none rounded-lg"
+                style={{ width: 36, height: 36, marginRight: -6, color: "var(--pj-text-muted)", background: "transparent", border: 0 }}>
+                <ScanBarcode size={19} />
+              </button>
+            )}
           </label>
           <button type="submit" disabled={normalizar(texto).length < 2 || estado === "a-carregar"} className="pj-tap press"
             style={{ flexShrink: 0, background: "var(--pj-brand)", color: "#fff", border: 0, borderRadius: 14, padding: "0 16px", fontSize: 14, fontWeight: 600, opacity: normalizar(texto).length < 2 ? 0.5 : 1 }}>
             Comparar
           </button>
         </form>
+
+        {lerCodigo && (
+          <LeitorCodigoBarras
+            onFechar={() => setLerCodigo(false)}
+            onNome={(nome, codigo) => { setLerCodigo(false); setLido({ nome, codigo }); procurar(nome); }}
+          />
+        )}
+        {lido && lido.nome === pesquisa && (
+          <p className="mt-2" style={{ fontSize: 12, color: "var(--pj-text-faint)" }}>
+            Código {lido.codigo} · a comparar «{lido.nome}». Se não for bem isto, escreve o nome.
+          </p>
+        )}
 
         {sugestoes.length > 0 && (
           <div className="mt-2" role="listbox" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 14, overflow: "hidden" }}>
