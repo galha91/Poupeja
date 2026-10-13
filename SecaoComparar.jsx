@@ -386,6 +386,9 @@ export default function SecaoComparar() {
       if (n !== pedido.current) return; // chegou uma pesquisa mais recente
       // Sem lista de produtos não há nada para mostrar (e o ecrã partia ao tentar).
       if (!Array.isArray(j.produtos)) throw new Error(j.erro || "Não foi possível pesquisar agora.");
+      // O exemplo só aparece se tiver resultados: um "Não encontrámos" no
+      // ecrã de quem nada pesquisou parecia um erro da app.
+      if (eExemplo && !j.produtos.length) throw new Error("exemplo vazio");
       setDados(j);
       setEstado("pronto");
       if (!eExemplo) setRecentes(guardarRecente(q));

@@ -5,7 +5,8 @@ import { supabase } from "./lib/supabase";
 import { partilharApp } from "./lib/partilhar";
 import { emAppNativa } from "./lib/plataforma";
 
-const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan","Minipreço"];
+// Sem Minipreço: as lojas passaram para a Auchan (ver lib/cobertura).
+const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan"];
 const COMBUSTIVEIS  = ["Gasolina 95","Gasóleo","GPL"];
 
 const LABEL_STYLE = {
