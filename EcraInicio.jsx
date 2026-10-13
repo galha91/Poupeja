@@ -16,6 +16,7 @@ import { mostrarIRS } from "./lib/atalhos";
 import { descreverFrescura } from "./lib/frescura";
 import { evento } from "./lib/analytics";
 import { slugify } from "./lib/slug";
+import { lerDescontos, aplicarDescontos } from "./lib/descontosCombustivel";
 import SubscreverCombustivel from "./SubscreverCombustivel";
 
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
@@ -123,13 +124,14 @@ function useGasoleoHoje() {
       .then(r => r.json())
       .then(j => {
         if (!j.success) return;
-        const best = escolherGasoleo(j.estacoes, "tipoLabel");
+        // O mesmo "o meu desconto" da Mobilidade: o herói mostra o que a pessoa paga.
+        const best = escolherGasoleo(aplicarDescontos(j.estacoes, lerDescontos()), "tipoLabel");
         // O concelho do posto mais PERTO (não o do mais barato, que pode ser
         // o concelho vizinho): é o do email semanal que se oferece.
         const maisPerto = (j.estacoes || []).filter(e => e.municipio && e.distancia != null)
           .sort((a, b) => a.distancia - b.distancia)[0];
         const concelho = maisPerto ? { slug: slugify(maisPerto.municipio), nome: maisPerto.municipio } : null;
-        if (best) melhor({ preco: best.preco, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, concelho, frescura: frescuraDe(j) });
+        if (best) melhor({ preco: best.preco, desconto: best.desconto, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, concelho, frescura: frescuraDe(j) });
       })
       .catch(() => {})
       .finally(() => nivel === "exata" && setALocalizar(false));
@@ -142,8 +144,8 @@ function useGasoleoHoje() {
       .then(r => r.json())
       .then(j => {
         if (!vivo) return;
-        const best = j.success ? escolherGasoleo(j.dados, "tipo") : null;
-        if (best) melhor({ preco: best.preco, marca: best.posto, nivel: "pais", frescura: frescuraDe(j) });
+        const best = j.success ? escolherGasoleo(aplicarDescontos(j.dados, lerDescontos(), "posto"), "tipo") : null;
+        if (best) melhor({ preco: best.preco, desconto: best.desconto, marca: best.posto, nivel: "pais", frescura: frescuraDe(j) });
         else setFalhou(true);
       })
       .catch(() => vivo && setFalhou(true));
@@ -278,6 +280,7 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
         {dados ? (dados.marca || "—") : "A ver os preços de hoje…"}
         {/* Distância só com GPS: a partir do centro de uma cidade adivinhada não quer dizer nada. */}
         {exata && dados.distancia ? ` · ${dados.distancia} km` : ""}
+        {dados?.desconto ? " · com o teu desconto" : ""}
       </p>
 
       <button
