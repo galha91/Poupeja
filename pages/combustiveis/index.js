@@ -89,7 +89,10 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
     <LayoutPublico>
       <Head>
         <title>Preços dos Combustíveis Hoje em Portugal — Gasóleo e Gasolina mais baratos | PoupeJá</title>
-        <meta name="description" content={`Preços de hoje por marca (dados oficiais DGEG): gasóleo desde €${eur(porTipo["Gasóleo"]?.preco, 3)}, gasolina 95 desde €${eur(porTipo["Gasolina 95"]?.preco, 3)}. Vê os postos mais baratos perto de ti, grátis.`} />
+        {/* Sem preços (DGEG em baixo), a descrição dizia "gasóleo desde €—" — e era isso que o Google guardava. */}
+        <meta name="description" content={porTipo["Gasóleo"]?.preco && porTipo["Gasolina 95"]?.preco
+          ? `Preços de hoje por marca (dados oficiais DGEG): gasóleo desde €${eur(porTipo["Gasóleo"].preco, 3)}, gasolina 95 desde €${eur(porTipo["Gasolina 95"].preco, 3)}. Vê os postos mais baratos perto de ti, grátis.`
+          : "Preços de hoje do gasóleo e da gasolina por marca, com dados oficiais da DGEG. Vê os postos mais baratos perto de ti, grátis."} />
         <link rel="canonical" href={`${SITE_URL}/combustiveis`} />
         <meta property="og:title" content="Preços dos combustíveis hoje em Portugal" key="og:title" />
         <meta property="og:description" content="Gasóleo e gasolina mais baratos por marca, com dados oficiais da DGEG. Atualizado diariamente." key="og:description" />

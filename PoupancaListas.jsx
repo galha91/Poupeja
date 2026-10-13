@@ -9,7 +9,9 @@ import { TEXTO_COBERTURA } from "./lib/cobertura";
  * Separado da poupança dos talões (que é real, lida do talão): isto é uma
  * estimativa e diz-se. O cartão partilhável só é carregado ao tocar.
  */
-export default function PoupancaListas({ setTab }) {
+// `semVazio`: não mostra o convite quando ainda não há valor (no ecrã de
+// quem começa, repetia o atalho da lista que está logo abaixo).
+export default function PoupancaListas({ setTab, semVazio = false }) {
   const [soma, setSoma] = useState(null);
   const [verComo, setVerComo] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -31,6 +33,7 @@ export default function PoupancaListas({ setTab }) {
   const rotulo = { fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" };
 
   if (soma.total <= 0) {
+    if (semVazio) return null;
     return (
       <div className="px-6 mb-6">
         <p style={rotulo}>Com a lista otimizada</p>

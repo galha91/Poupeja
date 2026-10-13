@@ -50,11 +50,17 @@ export default function Receita({ receita, outras }) {
 
       <div style={{ paddingTop: 24 }}>
         <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
-          <a href="/receitas" style={{ color: "var(--pj-text-faint)" }}>Receitas baratas</a>
+          <a href="/receitas" className="pj-alvo" style={{ color: "var(--pj-text-faint)" }}>Receitas baratas</a>
         </p>
-        <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
-          {receita.emoji} {receita.nome}
-        </h1>
+        {/* O emoji fica fora do <h1>: o texto do título é o que o Google lê
+            e mostra, e "🍲 Caldo verde" não é o nome da receita. À vista
+            continua igual, ao lado. */}
+        <div className="flex items-baseline" style={{ gap: 8, marginTop: 10 }}>
+          <span aria-hidden="true" style={{ fontSize: 28, lineHeight: 1.15 }}>{receita.emoji}</span>
+          <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em" }}>
+            {receita.nome}
+          </h1>
+        </div>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12 }}>
           <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {receita.tempoMin} min</span>
           <span className="inline-flex items-center gap-1.5"><Users size={13} /> 4 pessoas</span>

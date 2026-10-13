@@ -15,6 +15,8 @@ import { eur } from "./lib/formato";
 import { mostrarIRS } from "./lib/atalhos";
 import { descreverFrescura } from "./lib/frescura";
 import { evento } from "./lib/analytics";
+import { slugify } from "./lib/slug";
+import SubscreverCombustivel from "./SubscreverCombustivel";
 
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
@@ -122,7 +124,12 @@ function useGasoleoHoje() {
       .then(j => {
         if (!j.success) return;
         const best = escolherGasoleo(j.estacoes, "tipoLabel");
-        if (best) melhor({ preco: best.preco, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, frescura: frescuraDe(j) });
+        // O concelho do posto mais PERTO (não o do mais barato, que pode ser
+        // o concelho vizinho): é o do email semanal que se oferece.
+        const maisPerto = (j.estacoes || []).filter(e => e.municipio && e.distancia != null)
+          .sort((a, b) => a.distancia - b.distancia)[0];
+        const concelho = maisPerto ? { slug: slugify(maisPerto.municipio), nome: maisPerto.municipio } : null;
+        if (best) melhor({ preco: best.preco, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, concelho, frescura: frescuraDe(j) });
       })
       .catch(() => {})
       .finally(() => nivel === "exata" && setALocalizar(false));
@@ -223,8 +230,13 @@ const Streak = ({ streak }) => streak >= 2 && (
  * Se a DGEG falhar, quem chama não mostra este herói: um número vazio
  * no sítio mais visível da app era pior do que nenhum.
  * ─────────────────────────────────────────────────────────────── */
+const LS_EMAIL_COMB = "poupeja_email_combustivel"; // concelho já subscrito neste browser
+
 function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
   const { dados, aLocalizar, pedirLocalizacao } = gasoleo;
+  const [emailAberto, setEmailAberto] = useState(false);
+  const [subscrito, setSubscrito] = useState(null);
+  useEffect(() => { try { setSubscrito(localStorage.getItem(LS_EMAIL_COMB)); } catch {} }, []);
   const idade = dados ? descreverFrescura(dados.frescura) : null;
   const exata = dados?.nivel === "exata";
 
@@ -286,8 +298,32 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
         </div>
       )}
 
+      {/*
+        Voltar sem conta: as notificações push só existem para contas (a
+        subscrição fica presa ao user_id). O que já funciona sem conta é o
+        email semanal do concelho — oferece-se aqui, com o concelho que a
+        pessoa está a ver, e só depois de haver um "perto".
+      */}
+      {dados?.concelho && dados.nivel !== "pais" && subscrito !== dados.concelho.slug && (
+        emailAberto ? (
+          <SubscreverCombustivel
+            concelho={dados.concelho.slug}
+            nome={dados.concelho.nome}
+            onFeito={() => { try { localStorage.setItem(LS_EMAIL_COMB, dados.concelho.slug); } catch {} }}
+          />
+        ) : (
+          <button
+            onClick={() => { evento("inicio_combustivel", { acao: "email_abrir", nivel: dados.nivel }); setEmailAberto(true); }}
+            className="pj-tap pj-alvo flex items-center"
+            style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}
+          >
+            Receber o gasóleo de {dados.concelho.nome} por email, às segundas <ChevronRight size={14} />
+          </button>
+        )
+      )}
+
       {onGuardarTalao && (
-        <button onClick={guardarTalao} className="pj-tap flex items-center" style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+        <button onClick={guardarTalao} className="pj-tap pj-alvo flex items-center" style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
           Guarda um talão e vê quanto poupas <ChevronRight size={14} />
         </button>
       )}

@@ -424,3 +424,16 @@ html.dark body {
 @media (prefers-reduced-motion: reduce) {
   .pj-folha-painel, .pj-folha-fundo { animation: none; }
 }
+
+/*
+ * Alvo de toque maior sem mexer no desenho.
+ *
+ * Links de texto pequenos ("Ver →", "Fonte: DGEG ↗") tinham 14–20px de
+ * altura — abaixo dos ~44px que um dedo precisa. Um ::after invisível
+ * alarga a área que responde ao toque; o texto e o espaçamento ficam
+ * exatamente onde estavam. Só para links soltos: em listas apertadas as
+ * áreas vizinhas iam sobrepor-se.
+ */
+.pj-alvo { position: relative; }
+.pj-alvo::after { content: ""; position: absolute; inset: -12px -8px; }
+.pj-rodape a { padding: 12px 0; }

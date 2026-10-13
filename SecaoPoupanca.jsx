@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  ChevronRight, Zap, BarChart, TrendingUp, Plus, ListChecks,
+  ChevronRight, BarChart, TrendingUp, Plus, ListChecks,
   Share2, TrendingDown, Lightbulb, Gift,
 } from "lucide-react";
 import DesafiosMensais from "./DesafiosMensais";
@@ -30,27 +30,6 @@ function SectionLabel({ children, icon: Icon, className = "" }) {
 }
 
 /* ─── Converter convidado em conta — updateUser mantém o user_id, zero migração ─── */
-
-function EmptyState({ icon: Icon, titulo, sub, cta, onCta }) {
-  return (
-    <div className="mx-4 rounded-2xl p-8 flex flex-col items-center text-center" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "var(--pj-subtle)" }}>
-        <Icon size={30} style={{ color: "var(--pj-text-faint)" }} />
-      </div>
-      <p className="font-display text-sm font-semibold" style={{ color: "var(--pj-text)" }}>{titulo}</p>
-      <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>{sub}</p>
-      {cta && (
-        <button
-          onClick={onCta}
-          className="pj-tap press mt-4 px-5 py-2.5 rounded-xl text-white text-xs font-semibold"
-          style={{ background: "var(--pj-brand)" }}
-        >
-          {cta}
-        </button>
-      )}
-    </div>
-  );
-}
 
 /* ─── Convite a instalar — leva à página /instalar (ou instala já no Android) ─── */
 
@@ -124,6 +103,16 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
   }, []);
 
   const semDados = !dados || dados.totalGeral === 0;
+  /*
+   * Quem ainda não guardou nenhum talão via aqui "€0,00" a 64px e, por
+   * baixo, quatro convites seguidos para o mesmo talão, uma meta, um
+   * histórico vazio, oito conquistas trancadas e um desafio a 0%. Para
+   * essa pessoa fica um convite só (no sítio do número) e o atalho da
+   * lista; o resto aparece com o primeiro talão. `carregado` evita que
+   * quem já tem talões veja o ecrã de quem começa durante um instante.
+   */
+  const carregado = !!dados;
+  const novo = carregado && dados.totalGeral === 0;
   const mesesVisiveis = dados ? (mostrar12 ? dados.meses12 : dados.meses12.slice(6)) : [];
 
   return (
@@ -134,16 +123,30 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         <div style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
           A tua poupança total
         </div>
-        <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 14 }}>
-          <span style={{ fontSize: 32, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>
-          {dados ? Math.floor(dados.totalGeral) : 0}
-          <span style={{ fontSize: 32, color: "#b0b8b0", fontWeight: 400 }}>,{dados ? String(Math.round((dados.totalGeral % 1) * 100)).padStart(2, "0") : "00"}</span>
-        </div>
-        <div style={{ fontSize: 13.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 12, lineHeight: 1.5 }}>
-          {dados && dados.totalGeral > 0
-            ? <>Poupança real somada em <span style={{ color: "var(--pj-text)", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.</>
-            : <>Guarda talões com o valor poupado para veres a tua poupança a crescer aqui.</>}
-        </div>
+        {!carregado ? (
+          <div style={{ minHeight: 100 }} />
+        ) : novo ? (
+          /* O mesmo convite do Início: sem número nenhum até haver um. */
+          <>
+            <p className="font-display" style={{ fontSize: 29, fontWeight: 500, lineHeight: 1.15, letterSpacing: "-0.02em", color: "var(--pj-text)", marginTop: 14 }}>
+              A tua poupança começa<br />no próximo talão.
+            </p>
+            <div style={{ fontSize: 13.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 8, lineHeight: 1.5 }}>
+              Guarda o talão da compra e o PoupeJá faz as contas por ti.
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 14 }}>
+              <span style={{ fontSize: 32, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>
+              {Math.floor(dados.totalGeral)}
+              <span style={{ fontSize: 32, color: "#b0b8b0", fontWeight: 400 }}>,{String(Math.round((dados.totalGeral % 1) * 100)).padStart(2, "0")}</span>
+            </div>
+            <div style={{ fontSize: 13.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 12, lineHeight: 1.5 }}>
+              Poupança real somada em <span style={{ color: "var(--pj-text)", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.
+            </div>
+          </>
+        )}
         {dados && dados.totalGeral > 0 && Math.abs(dados.tendencia) >= 0.01 && dados.totalAnterior > 0 && (
           <div className="inline-flex items-center" style={{ gap: 9, marginTop: 20, padding: "10px 14px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
             {dados.tendencia > 0 ? <TrendingUp size={16} style={{ color: "var(--pj-brand-ink)" }} /> : <TrendingDown size={16} style={{ color: "var(--pj-danger)" }} />}
@@ -170,11 +173,12 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
       </div>
       <div className="px-6"><Divisoria /></div>
 
-      {/* Quanto poupaste com a lista otimizada (estimativa) */}
-      <PoupancaListas setTab={setTab} />
+      {/* Quanto poupaste com a lista otimizada (estimativa). A quem começa
+          só aparece se já houver valor: o convite repetia o atalho da lista. */}
+      {carregado && <PoupancaListas setTab={setTab} semVazio={novo} />}
 
       {/* Meta de poupança — "estou a poupar para…" */}
-      <MetaPoupanca />
+      {carregado && !novo && <MetaPoupanca />}
 
       {dados && dados.totalGeral > 0 ? (<>
 
@@ -300,18 +304,7 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
           </div>
         </div>
 
-      </>) : (
-        <div className="px-4 mb-5 anim-up anim-up-1">
-          <SectionLabel icon={Zap}>Histórico</SectionLabel>
-          <EmptyState
-            icon={BarChart}
-            titulo="Ainda sem dados de poupança"
-            sub="Quando guardares talões com o valor poupado, o teu histórico aparece aqui."
-            cta="Guardar talão"
-            onCta={() => setTab("taloes")}
-          />
-        </div>
-      )}
+      </>) : null}
 
       {/* Lista de compras shortcut */}
       <div className="px-4 mb-5 anim-up anim-up-2">
@@ -332,7 +325,10 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         </button>
       </div>
 
-      {/* Poupa nas contas */}
+      {/* Desafios — conquistas e metas só fazem sentido depois do primeiro talão */}
+      {carregado && !novo && <DesafiosMensais setTab={setTab} />}
+
+      {/* Poupa nas contas — parceiros, sempre no fim */}
       <div className="px-4 mb-5 anim-up anim-up-3">
         <SectionLabel icon={Lightbulb}>Poupa também nas contas</SectionLabel>
         <div className="flex flex-col gap-3">
@@ -381,8 +377,6 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
         </p>
       </div>
 
-      {/* Desafios */}
-      <DesafiosMensais setTab={setTab} />
 
     </div>
   );

@@ -50,7 +50,9 @@ export default function LayoutPublico({ children }) {
 
       <footer className="mx-auto px-5 pb-12" style={{ maxWidth: 720 }}>
         <div style={{ height: 1, background: "var(--pj-border)", marginBottom: 20 }} />
-        <nav className="flex flex-wrap gap-x-5 gap-y-2" style={{ fontSize: 13, fontWeight: 500 }}>
+        {/* Cada link com 12px por cima e por baixo: alvos de ~44px. Sem
+            gap vertical, para as áreas de toque não se sobreporem. */}
+        <nav className="pj-rodape flex flex-wrap gap-x-5" style={{ fontSize: 13, fontWeight: 500 }}>
           <a href="/" style={{ color: "var(--pj-brand-ink)" }}>Abrir o PoupeJá</a>
           <SoForaDaApp>
             <a href="/instalar" style={{ color: "var(--pj-text-muted)" }}>Instalar a app</a>

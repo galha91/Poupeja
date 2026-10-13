@@ -6,7 +6,8 @@ import { evento } from "./lib/analytics";
  * Consentimento explícito (caixa por marcar); cancelamento num toque em
  * cada email. É um pedido diferente do dos folhetos, e vai noutro dia.
  */
-export default function SubscreverCombustivel({ concelho, nome }) {
+// `onFeito`: avisa quem a usa (o Início guarda-o para não voltar a oferecer).
+export default function SubscreverCombustivel({ concelho, nome, onFeito }) {
   const [email, setEmail] = useState("");
   const [ok, setOk] = useState(false);
   const [aceito, setAceito] = useState(false);
@@ -28,6 +29,7 @@ export default function SubscreverCombustivel({ concelho, nome }) {
       if (!r.ok) throw new Error(j.erro || "Não foi possível guardar.");
       evento("subscrever_combustivel", { concelho });
       setOk(true);
+      onFeito?.();
     } catch (err) {
       setErro(err.message);
     } finally {

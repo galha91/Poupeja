@@ -61,7 +61,7 @@ export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm }) {
             href={folheto.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block no-underline mt-4"
+            className="pj-alvo inline-block no-underline mt-4"
             style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}
           >
             Ver folheto oficial →
