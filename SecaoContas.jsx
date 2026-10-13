@@ -536,12 +536,13 @@ function ContasFixasConteudo() {
 
           {/* Navegação de mês */}
           <div className="flex items-center justify-between mb-4 relative z-10">
-            <button onClick={() => setMesOff(o => o - 1)} className="press pj-tap w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+            <button onClick={() => setMesOff(o => o - 1)} aria-label="Mês anterior" className="press pj-tap w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
               <ChevronLeft size={16} style={{ color: "var(--pj-text-strong)" }} />
             </button>
             <p className="text-[11px] uppercase capitalize" style={{ fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>{mesLabel}</p>
             <button
               onClick={() => setMesOff(o => Math.min(0, o + 1))}
+              aria-label="Mês seguinte"
               className={`press pj-tap w-8 h-8 rounded-xl flex items-center justify-center ${mesOff === 0 ? "opacity-30 pointer-events-none" : ""}`}
               style={{ background: "var(--pj-subtle)" }}
             >
@@ -707,6 +708,7 @@ function ContasFixasConteudo() {
           <div className="relative">
             <button
               onClick={() => setMostrarOrdenacao(v => !v)}
+              aria-label="Ordenar contas"
               className="press pj-tap w-7 h-7 rounded-xl flex items-center justify-center"
               style={{ background: "var(--pj-subtle)" }}
             >

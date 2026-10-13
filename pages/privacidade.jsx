@@ -1,5 +1,7 @@
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import { URL_SITE } from "../lib/site";
 
 const SECOES = [
   {
@@ -65,6 +67,12 @@ export default function Privacidade() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Sem isto a página herdava o título e a descrição da página inicial. */}
+      <Head>
+        <title>Política de Privacidade | PoupeJá</title>
+        <meta name="description" content="Que dados o PoupeJá recolhe, onde ficam e com quem são partilhados. Listas, talões e preferências ficam no teu dispositivo." />
+        <link rel="canonical" href={`${URL_SITE}/privacidade`} />
+      </Head>
       {/* Header */}
       <div
         className="px-4 pt-12 pb-6 relative overflow-hidden"

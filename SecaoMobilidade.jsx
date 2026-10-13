@@ -608,7 +608,7 @@ function SubCombustiveis() {
                 {locNome ? `Melhor preço · ${raio} km` : "Melhor preço · DGEG"}
               </span>
             </div>
-            <button onClick={() => carregar()} className="press w-8 h-8 bg-[color:var(--pj-subtle)] rounded-xl flex items-center justify-center">
+            <button onClick={() => carregar()} aria-label="Atualizar preços" className="press w-8 h-8 bg-[color:var(--pj-subtle)] rounded-xl flex items-center justify-center">
               <RefreshCw size={14} className={`text-[color:var(--pj-text-muted)] ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
@@ -771,6 +771,8 @@ function SubCombustiveis() {
           </div>
           <button
             onClick={() => setSoFavoritos(v => !v)}
+            aria-label={soFavoritos ? "Mostrar todos os postos" : "Mostrar só os favoritos"}
+            aria-pressed={soFavoritos}
             className={`press px-3 py-2 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 border transition-all ${soFavoritos ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-accent)] border-[color:var(--pj-border)]" : "bg-[color:var(--pj-card)] text-[color:var(--pj-text-muted)] border-[color:var(--pj-border)]"}`}
           >
             <Star size={13} className={soFavoritos ? "fill-[color:var(--pj-accent)] text-[color:var(--pj-accent)]" : ""} />
@@ -1010,7 +1012,7 @@ function SubPostosEV() {
               </div>
               <span className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em]">Postos de carregamento</span>
             </div>
-            <button onClick={carregar} className="press w-8 h-8 bg-[color:var(--pj-subtle)] rounded-xl flex items-center justify-center">
+            <button onClick={carregar} aria-label="Atualizar postos" className="press w-8 h-8 bg-[color:var(--pj-subtle)] rounded-xl flex items-center justify-center">
               <RefreshCw size={14} className={`text-[color:var(--pj-text-muted)] ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
