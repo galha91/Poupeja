@@ -645,6 +645,7 @@ function Funil({ funil }) {
   );
 }
 
+const NOMES_MODO = { "app-android": "App Android", pwa: "App instalada (PWA)", browser: "Browser" };
 const NOMES_ORIGEM = {
   direto: "Direto / app", google: "Google", pesquisa: "Outros motores", facebook: "Facebook",
   instagram: "Instagram", tiktok: "TikTok", whatsapp: "WhatsApp", outro: "Outros sites", interno: "Navegação interna",
@@ -723,6 +724,10 @@ function Trafego({ dados }) {
       </div>
 
       <Lista titulo="De onde vêm (7 dias, páginas vistas)" itens={p.origens.filter(o => o.origem !== "interno").map(o => ({ rotulo: NOMES_ORIGEM[o.origem] || o.origem, n: o.n }))} />
+      <Lista titulo="Distrito (7 dias, visitantes-dia · aproximado pelo IP)" itens={(p.perfil?.regiao || []).map(o => ({ rotulo: o.valor, n: o.n }))} />
+      <Lista titulo="Aparelho (7 dias, visitantes-dia)" itens={(p.perfil?.dispositivo || []).map(o => ({ rotulo: o.valor, n: o.n }))} />
+      <Lista titulo="Como usam (7 dias, visitantes-dia)" itens={(p.perfil?.modo || []).map(o => ({ rotulo: NOMES_MODO[o.valor] || o.valor, n: o.n }))} />
+      <Lista titulo="Novos e recorrentes (7 dias, visitantes-dia)" itens={(p.perfil?.recorrencia || []).map(o => ({ rotulo: o.valor === "novo" ? "Primeira visita" : "Já cá tinham vindo", n: o.n }))} />
       <Lista titulo="Páginas mais vistas (7 dias)" itens={p.paginas.map(o => ({ rotulo: o.caminho === "/" ? "/ (app)" : o.caminho, n: o.n }))} />
 
       {!ga && !sc && !g?.gaErro && !g?.scErro ? (

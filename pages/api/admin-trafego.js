@@ -13,10 +13,20 @@ export default async function handler(req, res) {
   const desde = dia(new Date(Date.now() - 29 * 864e5));
   const hoje = dia(new Date());
 
-  const [vd, vu] = await Promise.all([
+  const [vd, vu, vp] = await Promise.all([
     admin.from("visitas_dia").select("dia, caminho, origem, n").gte("dia", desde).limit(50000),
     admin.from("visitas_unicos").select("dia, n").gte("dia", desde),
+    admin.from("visitas_perfil").select("dia, dimensao, valor, n").gte("dia", desde),
   ]);
+
+  // Perfil dos visitantes-dia dos últimos 7 dias, por dimensão.
+  const limPerfil = dia(new Date(Date.now() - 6 * 864e5));
+  const perfil = {};
+  for (const l of vp.data || []) {
+    if (l.dia < limPerfil) continue;
+    (perfil[l.dimensao] ||= {})[l.valor] = ((perfil[l.dimensao] || {})[l.valor] || 0) + l.n;
+  }
+  const topo = (d) => Object.entries(perfil[d] || {}).sort((a, b) => b[1] - a[1]).map(([valor, n]) => ({ valor, n }));
 
   const linhas = vd.data || [];
   const unicos = Object.fromEntries((vu.data || []).map(u => [u.dia, u.n]));
@@ -59,6 +69,7 @@ export default async function handler(req, res) {
       serie,
       paginas: agrupar("caminho"),
       origens: agrupar("origem"),
+      perfil: { regiao: topo("regiao").slice(0, 10), dispositivo: topo("dispositivo"), modo: topo("modo"), recorrencia: topo("recorrencia") },
       erro: vd.error ? "Tabela de visitas indisponível." : null,
     },
     google: { configurado: cfg, ga: ga.dados, gaErro: ga.erro || null, sc: sc.dados, scErro: sc.erro || null },

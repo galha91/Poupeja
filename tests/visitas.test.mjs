@@ -38,3 +38,25 @@ test("etiquetas nos links", async () => {
   assert.equal(origemEtiqueta("xpto"), null);
   assert.equal(origemEtiqueta(undefined), null);
 });
+
+import { regiaoDe, tipoDispositivo, modoValido, recorrenciaValida } from "../lib/visitas.js";
+test("região: distrito, estrangeiro, desconhecida", () => {
+  assert.equal(regiaoDe("PT", "11"), "Lisboa");
+  assert.equal(regiaoDe("PT", "PT-13"), "Porto");
+  assert.equal(regiaoDe("PT", "99"), "Portugal (outra)");
+  assert.equal(regiaoDe("ES", "M"), "Estrangeiro");
+  assert.equal(regiaoDe(undefined, undefined), "Desconhecida");
+});
+test("aparelho", () => {
+  assert.equal(tipoDispositivo("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) Safari"), "telemóvel");
+  assert.equal(tipoDispositivo("Mozilla/5.0 (Linux; Android 14; Pixel 8) Mobile Safari"), "telemóvel");
+  assert.equal(tipoDispositivo("Mozilla/5.0 (Linux; Android 14; SM-X900) Safari"), "tablet");
+  assert.equal(tipoDispositivo("Mozilla/5.0 (iPad; CPU OS 17_0) Safari"), "tablet");
+  assert.equal(tipoDispositivo("Mozilla/5.0 (Windows NT 10.0) Chrome"), "computador");
+});
+test("modo e recorrência: só valores conhecidos", () => {
+  assert.equal(modoValido("pwa"), "pwa");
+  assert.equal(modoValido("x"), null);
+  assert.equal(recorrenciaValida("novo"), "novo");
+  assert.equal(recorrenciaValida("<script>"), null);
+});
