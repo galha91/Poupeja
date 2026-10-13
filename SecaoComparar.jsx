@@ -384,7 +384,8 @@ export default function SecaoComparar() {
       const r = await fetch(`/api/precos-supermercado?q=${encodeURIComponent(q)}`);
       const j = await r.json();
       if (n !== pedido.current) return; // chegou uma pesquisa mais recente
-      if (!r.ok && !j.produtos) throw new Error(j.erro || "Não foi possível pesquisar agora.");
+      // Sem lista de produtos não há nada para mostrar (e o ecrã partia ao tentar).
+      if (!Array.isArray(j.produtos)) throw new Error(j.erro || "Não foi possível pesquisar agora.");
       setDados(j);
       setEstado("pronto");
       if (!eExemplo) setRecentes(guardarRecente(q));

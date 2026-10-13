@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { instalado } from "./lib/plataforma";
 import SubscreverFolhetos from "./SubscreverFolhetos";
 import PartilharPagina from "./PartilharPagina";
+import { SECOES_APP } from "./lib/secoesApp";
 
 /*
  * Estas páginas também abrem dentro da app Android e da PWA — e aí um
@@ -63,6 +64,16 @@ export default function LayoutPublico({ children }) {
           <a href="/apoios" style={{ color: "var(--pj-text-muted)" }}>Apoios do Estado</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
+        </nav>
+        {/* A app inteira, por secção — sem conta. Quem chega por uma página
+            de SEO tem aqui caminho para o resto (lista, talões, contas…). */}
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase", marginTop: 14 }}>
+          Na app, grátis e sem conta
+        </p>
+        <nav className="pj-rodape flex flex-wrap gap-x-5" style={{ fontSize: 13, fontWeight: 500 }}>
+          {SECOES_APP.map(s => (
+            <a key={s.atalho} href={`/?atalho=${s.atalho}`} style={{ color: "var(--pj-text-muted)" }}>{s.curto}</a>
+          ))}
         </nav>
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 14 }}>
           PoupeJá — folhetos, lista de compras e combustível mais barato. Grátis. Alguns links levam a lojas parceiras e podemos receber comissão; isso não altera os resultados.
