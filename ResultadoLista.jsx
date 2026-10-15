@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { ChevronDown, RefreshCw, Bell, BellRing, Check } from "lucide-react";
 import LogoLoja from "./LogoLoja";
+import DeslocacaoLista from "./DeslocacaoLista";
 import { Preco } from "./Preco";
 import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
@@ -162,6 +163,7 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
                   {divisao.atribuicao[s].map((id) => linhas.find((l) => String(l.item.id) === id)?.item.nome).filter(Boolean).join(", ")}
                 </p>
               ))}
+              <DeslocacaoLista unica={unica} divisao={divisao} />
             </div>
           )}
 
