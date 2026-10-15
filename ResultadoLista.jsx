@@ -161,12 +161,30 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
       const lojasCom = Object.keys(l.custos);
       if (!lojasCom.length) continue;
       const manual = atribManual[id];
-      const auto = mostrarDivisao ? divisao.lojas.find((s) => divisao.atribuicao[s].includes(id)) : null;
-      const barata = lojasCom.sort((a, b) => l.custos[a].custo - l.custos[b].custo)[0];
+      const auto = null;
+      // Em empate (ou quase), fica na loja principal: não vale ir a outra por nada.
+      const barata = lojasCom.sort((a, b) => (Math.abs(l.custos[a].custo - l.custos[b].custo) < 0.005
+        ? (a === unica.loja ? -1 : b === unica.loja ? 1 : 0)
+        : l.custos[a].custo - l.custos[b].custo))[0];
       atrib[id] = [manual, auto, barata].find((s) => s && l.custos[s]);
     }
-    const ordem = porLoja.map((t) => t.loja);
-    const lojas = ordem.filter((s) => Object.values(atrib).includes(s));
+    // Uma loja extra só vale a viagem se poupar pelo menos 0,50 € face à
+    // principal; senão, os artigos dela (não escolhidos à mão) voltam.
+    const ganho = {};
+    for (const l of linhas) {
+      const id = String(l.item.id), s = atrib[id];
+      if (!s || s === unica.loja || atribManual[id] || !l.custos[unica.loja]) continue;
+      ganho[s] = (ganho[s] || 0) + l.custos[unica.loja].custo - l.custos[s].custo;
+    }
+    for (const l of linhas) {
+      const id = String(l.item.id), s = atrib[id];
+      if (s && s !== unica.loja && !atribManual[id] && l.custos[unica.loja] && (ganho[s] || 0) < 0.5) atrib[id] = unica.loja;
+    }
+    // Todas as lojas onde ficou algum artigo, incluindo as que não têm a
+    // lista toda (o Pingo Doce sem maracujá também conta para dividir).
+    const usadas = new Set(Object.values(atrib));
+    const ordem = [...porLoja.map((t) => t.loja), ...LOJAS.filter((s) => !porLoja.some((t) => t.loja === s))];
+    const lojas = ordem.filter((s) => usadas.has(s));
     const cent = (n) => Math.round(n * 100);
     let total = 0, ref = 0;
     for (const l of linhas) {
@@ -175,7 +193,13 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
       total += cent(l.custos[s].custo);
       ref += cent((l.custos[unica.loja] || l.custos[s]).custo);
     }
-    return { atrib, lojas, total: total / 100, ref: ref / 100, poupanca: (ref - total) / 100 };
+    // Quanto se pouparia levando cada artigo à loja mais barata dele (sem regra dos 0,50 €).
+    let maximo = 0;
+    for (const l of linhas) {
+      const v = Object.values(l.custos).map((c) => c.custo);
+      if (v.length && l.custos[unica.loja]) maximo += cent(l.custos[unica.loja].custo) - cent(Math.min(...v));
+    }
+    return { atrib, lojas, total: total / 100, ref: ref / 100, poupanca: (ref - total) / 100, maximo: maximo / 100 };
   }, [linhas, atribManual, unica, porLoja, mostrarDivisao, divisao]);
   const dividido = dv && dv.lojas.length > 1;
 
@@ -262,7 +286,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
               Trocar
             </button>
           )}
-          {l.dados && (
+          {l.dados && !eDivisao && (
             <button onClick={() => alternarVigia(l)} aria-pressed={!!alerta} aria-label={alerta ? `Deixar de vigiar ${l.item.nome}` : `Avisar quando ${l.item.nome} descer de preço`}
               className="pj-tap flex items-center justify-center flex-none"
               style={{ width: 30, height: 30, borderRadius: 999, border: 0, background: alerta ? "var(--pj-brand-wash)" : "transparent", color: alerta ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
@@ -273,7 +297,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
         {eDivisao && Object.keys(l.custos).length > 1 && (
           // Em que loja comprar este artigo: um toque muda-o de lado.
           <div className="flex gap-1.5 flex-wrap" style={{ marginTop: 6 }} role="radiogroup" aria-label={`Onde comprar ${l.item.nome}`}>
-            {porLoja.map((t) => t.loja).filter((s) => l.custos[s]).map((s) => {
+            {[...porLoja.map((t) => t.loja), ...LOJAS.filter((s) => !porLoja.some((t) => t.loja === s))].filter((s) => l.custos[s]).map((s) => {
               const sel = s === loja;
               return (
                 <button key={s} role="radio" aria-checked={sel} onClick={() => setAtribManual((m) => ({ ...m, [String(l.item.id)]: s }))}
@@ -342,7 +366,9 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
                 </p>
                 <p style={{ fontSize: 12.5, fontWeight: 600, marginTop: 3, color: aMais > 0.005 || (eDivisao && poupanca < 0.01) ? "var(--pj-text-muted)" : "var(--pj-brand-ink)" }}>
                   {eDivisao
-                    ? (!dividido ? "Toca na loja de cada artigo para o mudar de lado"
+                    ? (!dividido ? (dv.maximo >= 0.01
+                        ? `Dividir só poupava ${eur(dv.maximo, 2)} €, por isso fica tudo no ${nomeCadeia(unica.loja)}. Toca noutra loja para mudar um artigo.`
+                        : `Fica tudo mais barato no ${nomeCadeia(unica.loja)}. Toca noutra loja para mudar um artigo.`)
                       : poupanca >= 0.01 ? `Poupas ${eur(poupanca, 2)} € face a tudo no ${nomeCadeia(unica.loja)}${carroDivisao ? ", já com o carro" : ""}`
                       : `Fica ${eur(-poupanca, 2)} € mais caro que tudo no ${nomeCadeia(unica.loja)}`)
                     : aMais > 0.005 ? `+${eur(aMais, 2)} € que no ${nomeCadeia(maisBarata)}`
@@ -358,7 +384,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
             )}
             {eDivisao && dividido && (
               <p className="pj-num" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 4 }}>
-                {porLojaDivisao.map((g) => `${nomeCadeia(g.loja)}: ${g.n} ${g.n === 1 ? "artigo" : "artigos"} · ${eur(g.total, 2)} €`).join("  ·  ")}
+                {porLojaDivisao.map((g) => `${nomeCadeia(g.loja)}: ${g.n}\u00a0${g.n === 1 ? "artigo" : "artigos"} ·\u00a0${eur(g.total, 2)}\u00a0€`).join("  ·  ")}
               </p>
             )}
             {eDivisao && carroDivisao && (
@@ -391,9 +417,9 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
           {/* 3. A ação. */}
           <div style={{ padding: "12px 16px 14px" }}>
             {!escolha ? (
-              <button onClick={() => (eDivisao ? escolher("divisao", null, dv) : escolher("unica", atual))} disabled={eDivisao && !dividido} className="pj-tap press w-full"
+              <button onClick={() => (eDivisao && dividido ? escolher("divisao", null, dv) : escolher("unica", eDivisao ? unica.loja : atual))} className="pj-tap press w-full"
                 style={{ background: "var(--pj-brand)", color: "#fff", border: 0, borderRadius: 12, padding: "13px 0", fontSize: 14.5, fontWeight: 600 }}>
-                {eDivisao ? (dividido ? `Vou dividir por ${juntarNomes(dv.lojas)}` : "Muda um artigo de loja para dividir") : `Vou comprar no ${nomeCadeia(atual)}`}
+                {eDivisao ? (dividido ? `Vou dividir por ${juntarNomes(dv.lojas)}` : `Vou comprar tudo no ${nomeCadeia(unica.loja)}`) : `Vou comprar no ${nomeCadeia(atual)}`}
               </button>
             ) : (
               <p role="status" className="flex items-start gap-2" style={{ fontSize: 13, color: "var(--pj-text)", lineHeight: 1.5 }}>
