@@ -9,18 +9,12 @@ const withPWA = require("next-pwa")({
 });
 
 /*
- * Content-Security-Policy — a defesa que faltava contra XSS.
+ * Content-Security-Policy — a defesa contra XSS. APLICADA (já não é
+ * Report-Only): o browser bloqueia o que não estiver aqui.
  *
- * Vai em REPORT-ONLY de propósito. Um CSP a bloquear, mal afinado, parte o
- * site em silêncio: deixa de carregar o Google Analytics, o Awin, os
- * logótipos das lojas ou o mapa, e nada disso dá erro visível. Em
- * report-only o browser aplica tudo na mesma, mas limita-se a escrever na
- * consola o que TERIA bloqueado.
- *
- * Como passar a bloquear (quando estiveres à vontade): abre o site com a
- * consola aberta, percorre Início, Mercado, Mobilidade (mapa), Lojas e
- * Poupança, e vê se aparece alguma queixa de CSP. Se não aparecer nenhuma,
- * troca a chave para "Content-Security-Policy" e fica a valer.
+ * Antes de mudar alguma coisa: abre o site com a consola aberta, percorre
+ * Início, Mercado, Lista, Mobilidade (mapa), Lojas e Poupança, e vê se
+ * aparece "Refused to …" de CSP.
  *
  * Cada linha existe por causa de algo concreto que o site carrega mesmo:
  */
@@ -28,35 +22,25 @@ const csp = [
   "default-src 'self'",
   // GA e Awin. O 'unsafe-inline' é preciso porque o Next injeta scripts
   // inline para a hidratação e o gtag é configurado inline no _document.
+  // Mesmo assim, um script vindo de qualquer outro domínio é recusado.
   "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://www.dwin1.com https://www.awin1.com",
   // A app inteira usa style={{…}} e o Leaflet injeta estilos próprios.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  // Logótipos das lojas (Clearbit e o serviço de favicons da Google),
-  // tiles do mapa (OpenStreetMap) e as imagens dos talões em base64/blob.
-  // As fotos dos produtos em "Comparar preços" vêm dos próprios supermercados.
-  "img-src 'self' data: blob: https://logo.clearbit.com https://www.google.com https://*.tile.openstreetmap.org https://www.continente.pt https://static.pingodoce.pt https://www.pingodoce.pt https://www.auchan.pt https://www.lidl.pt https://prd.an-pcm.com",
-  // Supabase (dados e auth) e os beacons do GA.
-  "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://world.openfoodfacts.org",
+  // Imagens de qualquer sítio em HTTPS: as fotos dos produtos vêm dos CDNs
+  // de cada supermercado (mudam sem aviso), os logótipos da Clearbit e da
+  // Google, os tiles do mapa do OpenStreetMap. Uma imagem não corre código,
+  // por isso abrir aqui não abre uma porta a XSS.
+  "img-src 'self' data: blob: https:",
+  // Supabase (dados, auth e tempo real), GA4 e o Awin.
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.awin1.com https://*.dwin1.com https://world.openfoodfacts.org",
   // Folhetos que se abrem dentro da app (ver lib/folhetos-embed).
   "frame-src https://folhetos.aldi.pt https://folhetos.pingodoce.pt https://folhetos.intermarche.pt",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
-  /*
-   * Sem "upgrade-insecure-requests": a política está em Report-Only, e
-   * nesse modo o browser ignora esta directiva — e diz isso na consola,
-   * em TODAS as páginas:
-   *
-   *   The Content Security Policy directive 'upgrade-insecure-requests'
-   *   is ignored when delivered in a report-only policy.
-   *
-   * Ou seja, não fazia nada e só enchia a consola de ruído. Quando a
-   * política passar a ser aplicada a sério (header sem o -Report-Only),
-   * volta a fazer sentido acrescentá-la aqui. Entretanto o site já força
-   * HTTPS pelo Strict-Transport-Security mais abaixo.
-   */
+  "upgrade-insecure-requests",
 ].join("; ");
 
 const securityHeaders = [
@@ -66,7 +50,6 @@ const securityHeaders = [
   { key: "Referrer-Policy",           value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy",        value: "camera=self, geolocation=self, microphone=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-  { key: "Content-Security-Policy-Report-Only", value: csp },
 ];
 
 /** @type {import('next').NextConfig} */
@@ -74,7 +57,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      /*
+       * A CSP fica fora do service worker (sw.js, workbox-*, worker-*). Lá,
+       * cada fetch conta como connect-src: com a lista acima, o SW deixava
+       * de ir buscar as fotos dos produtos às lojas e as imagens partiam.
+       */
+      { source: "/((?!sw\\.js|workbox-|worker-).*)", headers: [{ key: "Content-Security-Policy", value: csp }] },
+    ];
   },
 };
 
