@@ -3,12 +3,14 @@ import { MapPin, Car } from "lucide-react";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { nomeCadeia, juntarNomes } from "./lib/cobertura";
-import { maisPertoPorCadeia, avaliarDeslocacao, CONSUMO_PADRAO } from "./lib/rota";
+import { maisPertoPorCadeia, avaliarDeslocacao, lojasComDeslocacao, CONSUMO_PADRAO } from "./lib/rota";
 
 /*
- * "Compensa ir a mais um supermercado?" — dentro do bloco da divisão da
- * lista. Só pede a localização quando se toca no botão. O carro (consumo
- * e combustível) fica guardado neste aparelho.
+ * "Compensa a deslocação?" — o total de cada supermercado já com a ida e
+ * volta de carro (a loja mais barata pode ficar longe) e, quando a app
+ * sugere dividir a lista, se a segunda loja compensa. Só pede a
+ * localização quando se toca no botão. O carro (consumo e combustível)
+ * fica guardado neste aparelho.
  */
 
 const LS_CARRO = "poupeja_carro";
@@ -35,7 +37,7 @@ function posicao() {
   });
 }
 
-export default function DeslocacaoLista({ unica, divisao }) {
+export default function DeslocacaoLista({ unica, divisao, porLoja = [] }) {
   const [estado, setEstado] = useState("inicio"); // inicio | a-ver | pronto | erro
   const [erro, setErro] = useState("");
   const [dados, setDados] = useState(null); // { pos, perto, combustivel }
@@ -51,7 +53,7 @@ export default function DeslocacaoLista({ unica, divisao }) {
       if (!r.ok) throw new Error(j.erro || "falhou");
       setDados({ pos, perto: maisPertoPorCadeia(j.lojas, pos), combustivel: j.combustivel });
       setEstado("pronto");
-      evento("lista_deslocacao", { lojas: divisao.lojas.join("+") });
+      evento("lista_deslocacao", { lojas: porLoja.length, divisao: !!divisao });
     } catch (e) {
       setErro(e.message === "recusado" || e.message === "sem-gps"
         ? "Sem a localização não dá para saber a que distância ficam as lojas."
@@ -68,7 +70,9 @@ export default function DeslocacaoLista({ unica, divisao }) {
   }
 
   const precoLitro = dados?.combustivel?.preco;
-  const r = dados && avaliarDeslocacao({ pos: dados.pos, perto: dados.perto, unica, divisao, consumo: carro.consumo, precoLitro });
+  const r = dados && divisao && avaliarDeslocacao({ pos: dados.pos, perto: dados.perto, unica, divisao, consumo: carro.consumo, precoLitro });
+  const cl = dados && lojasComDeslocacao({ pos: dados.pos, perto: dados.perto, porLoja, consumo: carro.consumo, precoLitro });
+  const melhor = cl?.lojas[0];
 
   const pequeno = { fontSize: 12, color: "var(--pj-text-muted)", lineHeight: 1.5 };
 
@@ -94,29 +98,36 @@ export default function DeslocacaoLista({ unica, divisao }) {
     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--pj-border)" }}>
       {!precoLitro ? (
         <p style={pequeno}>Sem o preço do combustível de hoje, não dá para fazer a conta. Tenta mais logo.</p>
-      ) : r?.faltam ? (
-        <p style={pequeno}>
-          <MapPin size={13} aria-hidden style={{ display: "inline", verticalAlign: "-2px" }} /> Não encontrámos {juntarNomes(r.faltam)} a menos de 15 km.
-        </p>
-      ) : r ? (
+      ) : (
         <>
-          <p style={{ fontSize: 13.5, color: "var(--pj-text)", lineHeight: 1.5 }}>
-            {r.compensa ? (
-              <>Compensa: ficas com <strong className="pj-num" style={{ color: "var(--pj-brand-ink)" }}>{eur(r.saldo, 2)} €</strong> a mais, já descontado o combustível.</>
-            ) : (
-              <>Não compensa: o combustível a mais come a poupança e perdes <strong className="pj-num">{eur(-r.saldo, 2)} €</strong>. Compra tudo no {nomeCadeia(unica.loja)}.</>
-            )}
-          </p>
-          <p style={{ ...pequeno, marginTop: 4 }}>
-            Poupas <span className="pj-num">{eur(r.poupancaCompras, 2)} €</span> nas compras, gastas <span className="pj-num">{eur(r.combustivelExtra, 2)} €</span> em {carro.tipo.toLowerCase()} ({eur(r.kmExtra, 1)} km a mais)
-            {r.minutosExtra > 0 ? ` e cerca de ${r.minutosExtra} min.` : "."}
-          </p>
-          <p style={{ ...pequeno, marginTop: 4 }}>
-            Lojas mais perto: {[unica.loja, ...divisao.lojas].filter((c, i, a) => a.indexOf(c) === i)
-              .map((c) => `${nomeCadeia(c)} a ${eur(dados.perto[c].km, 1)} km`).join(" · ")}.
-          </p>
+          {melhor && (
+            <p style={{ fontSize: 13.5, color: "var(--pj-text)", lineHeight: 1.5 }}>
+              {melhor.loja === unica.loja
+                ? <>Contando o combustível, o <strong>{nomeCadeia(melhor.loja)}</strong> continua a compensar.</>
+                : <>Contando o combustível, compensa mais o <strong>{nomeCadeia(melhor.loja)}</strong>: fica mais perto e sai <strong className="pj-num" style={{ color: "var(--pj-brand-ink)" }}>{eur(cl.lojas.find((l) => l.loja === unica.loja)?.total - melhor.total, 2)} €</strong> mais barato.</>}
+            </p>
+          )}
+          {cl?.lojas.map((l) => (
+            <p key={l.loja} className="flex justify-between gap-2" style={{ ...pequeno, marginTop: 4 }}>
+              <span>{nomeCadeia(l.loja)} · {eur(l.km, 1)} km ida e volta</span>
+              <span className="pj-num">{eur(l.compras, 2)} + {eur(l.combustivel, 2)} = <strong style={{ color: "var(--pj-text)" }}>{eur(l.total, 2)} €</strong></span>
+            </p>
+          ))}
+          {cl?.faltam.length > 0 && (
+            <p style={{ ...pequeno, marginTop: 4 }}>
+              <MapPin size={13} aria-hidden style={{ display: "inline", verticalAlign: "-2px" }} /> Sem {juntarNomes(cl.faltam)} a menos de 15 km.
+            </p>
+          )}
+          {r && !r.faltam && (
+            <p style={{ fontSize: 13, color: "var(--pj-text)", lineHeight: 1.5, marginTop: 8 }}>
+              Dividir por {juntarNomes(divisao.lojas)}:{" "}
+              {r.compensa
+                ? <>compensa, ficas com <strong className="pj-num" style={{ color: "var(--pj-brand-ink)" }}>{eur(r.saldo, 2)} €</strong> a mais (poupas {eur(r.poupancaCompras, 2)} €, gastas {eur(r.combustivelExtra, 2)} € em combustível{r.minutosExtra > 0 ? ` e cerca de ${r.minutosExtra} min` : ""}).</>
+                : <>não compensa, o combustível a mais come a poupança (perdes <strong className="pj-num">{eur(-r.saldo, 2)} €</strong>).</>}
+            </p>
+          )}
         </>
-      ) : null}
+      )}
 
       <div className="flex flex-wrap items-center gap-2" style={{ marginTop: 8 }}>
         <label style={{ ...pequeno, display: "flex", alignItems: "center", gap: 6 }}>

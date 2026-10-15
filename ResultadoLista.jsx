@@ -6,7 +6,7 @@ import { Preco } from "./Preco";
 import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { melhoresPorLoja } from "./lib/comparacao";
+import { melhoresPorLoja, custoPorLoja, alternativas } from "./lib/comparacao";
 import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
 import { resumoAtual, avaliarVigia } from "./lib/alertas";
@@ -42,7 +42,27 @@ function atualDe(dados) {
   return { ...resumoAtual(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade };
 }
 
-export default function ResultadoLista({ linhas, nota = true, onAtualizar, onResumo, moldura = true }) {
+export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtualizar, onResumo, onEscolher, moldura = true }) {
+  // Produto escolhido à mão por artigo (id do artigo → { loja, id, nome }).
+  // Começa no que vem guardado na lista e muda aqui sem voltar a pesquisar.
+  const [escolhas, setEscolhas] = useState(() => Object.fromEntries(
+    linhasOrig.filter((l) => l.item.escolha).map((l) => [String(l.item.id), l.item.escolha])));
+  const [aEscolher, setAEscolher] = useState(null);
+  useEffect(() => {
+    setEscolhas(Object.fromEntries(linhasOrig.filter((l) => l.item.escolha).map((l) => [String(l.item.id), l.item.escolha])));
+  }, [linhasOrig]);
+  const linhas = useMemo(() => linhasOrig.map((l) => {
+    const esc = escolhas[String(l.item.id)] || null;
+    if (!l.dados || (esc || null) === (l.item.escolha || null)) return l;
+    return { ...l, ...custoPorLoja(l.dados, l.item.qty || 1, esc), item: { ...l.item, escolha: esc || undefined } };
+  }), [linhasOrig, escolhas]);
+  function escolherProduto(l, p) {
+    const esc = p ? { loja: p.loja, id: String(p.id), nome: p.nome } : null;
+    setEscolhas((e) => { const n = { ...e }; if (esc) n[String(l.item.id)] = esc; else delete n[String(l.item.id)]; return n; });
+    setAEscolher(null);
+    onEscolher?.(l.item.id, esc);
+    evento("lista_escolher_produto", { loja: p?.loja || "mais-barato" });
+  }
   const [verDetalhe, setVerDetalhe] = useState(false);
   const [verDivisao, setVerDivisao] = useState(false);
   const [escolha, setEscolha] = useState(null);
@@ -163,7 +183,6 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
                   {divisao.atribuicao[s].map((id) => linhas.find((l) => String(l.item.id) === id)?.item.nome).filter(Boolean).join(", ")}
                 </p>
               ))}
-              <DeslocacaoLista unica={unica} divisao={divisao} />
             </div>
           )}
 
@@ -186,6 +205,12 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
               </div>
             ))}
           </div>
+
+          {porLoja.length > 0 && (
+            <div style={{ padding: "2px 16px 10px" }}>
+              <DeslocacaoLista unica={unica} divisao={mostrarDivisao ? divisao : null} porLoja={porLoja.filter((t) => !t.emFalta.length)} />
+            </div>
+          )}
 
           <div style={{ padding: "10px 16px 14px", borderTop: "1px solid var(--pj-subtle)" }}>
             {!escolha ? (
@@ -254,14 +279,18 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
           {linhas.map((l, i) => {
             const opcoes = Object.entries(l.custos).map(([s, v]) => ({ loja: s, ...v })).sort((a, b) => a.custo - b.custo);
             const top = opcoes[0];
+            const escolhida = opcoes.find((o) => o.escolhido);
             const alerta = alertas.find((a) => a.q === l.q);
             const atual = alerta?.tipo === "vigiar" ? atualDe(l.dados) : null;
             const aviso = atual && atual.unidade === alerta.unidade ? avaliarVigia(alerta, atual) : null;
             const lojasCom = parcialDe[String(l.item.id)];
             const so = lojasCom && COMPLETAS.some((s) => !lojasCom.includes(s)) ? lojasCom : null;
             return (
-              <div key={l.item.id || i} className="flex items-center gap-3" style={linha}>
-                <span className="flex-1 min-w-0">
+              <div key={l.item.id || i} style={linha}>
+              <div className="flex items-center gap-3">
+                <button onClick={() => setAEscolher((a) => (a === l.item.id ? null : l.item.id))} disabled={!l.dados}
+                  aria-expanded={aEscolher === l.item.id} className="pj-tap flex-1 min-w-0 text-left"
+                  style={{ background: "transparent", border: 0, padding: 0 }}>
                   <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "var(--pj-text)" }}>
                     {l.item.nome}{l.item.qty > 1 ? ` ×${l.item.qty}` : ""}
                   </span>
@@ -275,7 +304,17 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
                       {aviso.motivo === "desceu" ? `Desceu desde que vigias (era ${eur(alerta.referencia, 2)} €)` : "Entrou em promoção"}
                     </span>
                   )}
-                </span>
+                  {escolhida && (
+                    <span style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                      Escolheste: {escolhida.produto.nome} no {nomeCadeia(escolhida.loja)} ({eur(escolhida.custo, 2)} €)
+                    </span>
+                  )}
+                  {l.dados && (
+                    <span style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 2 }}>
+                      {aEscolher === l.item.id ? "Fechar" : escolhida ? "Mudar o produto" : "Escolher outro produto"}
+                    </span>
+                  )}
+                </button>
                 {top && <span className="pj-num" style={{ fontSize: 13.5, fontWeight: 700, color: "var(--pj-text)" }}>{eur(top.custo, 2)} €</span>}
                 {top && l.dados && (
                   <button onClick={() => alternarVigia(l)} aria-pressed={!!alerta} aria-label={alerta ? `Deixar de vigiar ${l.item.nome}` : `Vigiar o preço de ${l.item.nome}`}
@@ -284,6 +323,10 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
                     {alerta ? <BellRing size={15} /> : <Bell size={15} />}
                   </button>
                 )}
+              </div>
+              {aEscolher === l.item.id && (
+                <EscolherProduto dados={l.dados} escolha={escolhas[String(l.item.id)]} onEscolher={(p) => escolherProduto(l, p)} />
+              )}
               </div>
             );
           })}
@@ -298,6 +341,45 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
           style={{ padding: "10px 0", fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)", background: "transparent", border: 0 }}>
           <RefreshCw size={13} /> Atualizar
         </button>
+      </div>
+    </div>
+  );
+}
+
+/*
+ * Lista de produtos para um artigo: os que são mesmo o artigo, ordenados
+ * pelo preço ao kg / L / unidade. Tocar num fixa-o para essa loja.
+ */
+function EscolherProduto({ dados, escolha, onEscolher }) {
+  const lista = alternativas(dados);
+  const modo = dados.modo || "unidade";
+  if (!lista.length) return <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 8 }}>Sem outros produtos para escolher.</p>;
+  return (
+    <div style={{ marginTop: 8, borderRadius: 12, border: "1px solid var(--pj-border)", overflow: "hidden" }}>
+      <button onClick={() => onEscolher(null)} className="pj-tap w-full text-left"
+        style={{ display: "block", padding: "9px 12px", background: !escolha ? "var(--pj-brand-wash)" : "transparent", border: 0, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+        {!escolha ? "✓ " : ""}O mais barato de cada loja
+      </button>
+      <div style={{ maxHeight: 280, overflowY: "auto" }}>
+        {lista.map((p) => {
+          const ativo = escolha && escolha.loja === p.loja && String(escolha.id) === String(p.id);
+          return (
+            <button key={`${p.loja}-${p.id}`} onClick={() => onEscolher(p)} aria-pressed={!!ativo} className="pj-tap w-full text-left flex items-center gap-2"
+              style={{ padding: "8px 12px", borderTop: "1px solid var(--pj-subtle)", background: ativo ? "var(--pj-brand-wash)" : "transparent", border: 0 }}>
+              <span className="flex-1 min-w-0">
+                <span style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {ativo ? "✓ " : ""}{p.nome}
+                </span>
+                <span style={{ display: "block", fontSize: 11, color: "var(--pj-text-faint)" }}>
+                  {[nomeCadeia(p.loja), p.marca, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ")}
+                </span>
+              </span>
+              <span className="pj-num text-right flex-none" style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text)" }}>
+                {modo === "embalagem" ? `${eur(p.preco, 2)} €` : `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

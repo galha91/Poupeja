@@ -23,6 +23,12 @@ function limparItens(itens) {
     ...(it?.categoria ? { categoria: String(it.categoria).slice(0, 40) } : {}),
     // Termo de pesquisa do preço (catálogo da lista), para a comparação.
     ...(it?.q ? { q: String(it.q).slice(0, 60) } : {}),
+    // Produto escolhido à mão (loja + id), em vez do mais barato.
+    ...(it?.escolha?.loja && it?.escolha?.id ? { escolha: {
+      loja: String(it.escolha.loja).slice(0, 30),
+      id: String(it.escolha.id).slice(0, 80),
+      nome: String(it.escolha.nome ?? "").slice(0, MAX_NOME),
+    } } : {}),
   }));
 }
 

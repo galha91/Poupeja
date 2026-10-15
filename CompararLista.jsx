@@ -45,7 +45,7 @@ export async function compararArtigos(itens, aoAvancar = () => {}) {
       const q = it.q || doCat?.q || termoDePesquisa(it.nome);
       try {
         const { dados, guardado } = await pesquisarComRecurso(q);
-        resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1) };
+        resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1, it.escolha) };
       } catch {
         resultado[i] = { item: it, q, custos: {}, erro: true };
       }
