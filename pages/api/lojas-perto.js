@@ -14,31 +14,55 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
  * mesma zona dê o mesmo URL (cache da CDN). Nada é guardado.
  */
 
-const OVERPASS = "https://overpass-api.de/api/interpreter";
-const MARCAS = "Continente|Pingo Doce|Auchan|Lidl|Aldi";
-const TIPOS = ["Gasóleo", "Gasolina 95"];
+/*
+ * Três servidores Overpass públicos, ao mesmo tempo: ganha o primeiro que
+ * responder. O principal (overpass-api.de) anda muitas vezes sobrecarregado
+ * e chegava a passar dos 12 s — o pedido era cancelado e a pessoa via
+ * "não conseguimos ver as lojas".
+ */
+const OVERPASS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+];
+const PRAZO_MS = 9000;
 
 const r2 = (n) => Math.round(n * 100) / 100;
 
+/*
+ * Pesquisa leve: só "supermercados numa caixa", sem expressões regulares
+ * sobre nomes (eram elas que tornavam o pedido lento). A marca escolhe-se
+ * aqui, com cadeiaDe. Lojas de conveniência só com marca (Pingo Doce & Go,
+ * My Auchan, Continente Bom Dia).
+ */
+function consulta(lat, lon) {
+  const dLat = RAIO_KM / 111;
+  const dLon = RAIO_KM / (111 * Math.cos((lat * Math.PI) / 180));
+  const bbox = [lat - dLat, lon - dLon, lat + dLat, lon + dLon].map((n) => n.toFixed(4)).join(",");
+  return `[out:json][timeout:8][bbox:${bbox}];(nwr["shop"="supermarket"];nwr["shop"="convenience"]["brand"];);out tags center qt 1500;`;
+}
+
+async function pedir(url, q, sinal) {
+  const r = await fetch(url, {
+    method: "POST",
+    body: "data=" + encodeURIComponent(q),
+    headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "PoupeJa/1.0 (https://xn--poupej-uta.com)" },
+    signal: sinal,
+  });
+  if (!r.ok) throw new Error(`Overpass ${r.status}`);
+  const j = await r.json();
+  if (!Array.isArray(j.elements)) throw new Error("Overpass sem elementos");
+  return j.elements;
+}
+
 async function lojasOsm(lat, lon) {
-  const raio = RAIO_KM * 1000;
-  const q = `[out:json][timeout:12];(
-    nwr["shop"~"supermarket|convenience"]["brand"~"${MARCAS}",i](around:${raio},${lat},${lon});
-    nwr["shop"~"supermarket|convenience"]["name"~"${MARCAS}",i](around:${raio},${lat},${lon});
-  );out center 300;`;
+  const q = consulta(lat, lon);
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 12000);
+  const t = setTimeout(() => ctrl.abort(), PRAZO_MS);
   try {
-    const r = await fetch(OVERPASS, {
-      method: "POST",
-      body: "data=" + encodeURIComponent(q),
-      headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "PoupeJa/1.0 (https://poupejá.com)" },
-      signal: ctrl.signal,
-    });
-    if (!r.ok) throw new Error(`Overpass ${r.status}`);
-    const j = await r.json();
+    const elementos = await Promise.any(OVERPASS.map((u) => pedir(u, q, ctrl.signal)));
     const vistos = new Set();
-    return (j.elements || []).map((e) => {
+    return elementos.map((e) => {
       const la = e.lat ?? e.center?.lat, lo = e.lon ?? e.center?.lon;
       const cadeia = cadeiaDe(e.tags);
       const id = `${e.type}/${e.id}`;
@@ -46,8 +70,12 @@ async function lojasOsm(lat, lon) {
       vistos.add(id);
       return { cadeia, nome: e.tags?.name || null, lat: la, lon: lo };
     }).filter(Boolean);
+  } catch (e) {
+    // Promise.any falha com AggregateError: mostrar a razão de cada servidor.
+    throw new Error(e?.errors ? e.errors.map((x) => x.message).join(" | ") : e.message);
   } finally {
     clearTimeout(t);
+    ctrl.abort(); // os que perderam a corrida deixam de esperar
   }
 }
 
