@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { ChevronDown, RefreshCw, Bell, BellRing, Check } from "lucide-react";
+import { RefreshCw, Bell, BellRing, Check } from "lucide-react";
 import LogoLoja from "./LogoLoja";
-import DeslocacaoLista from "./DeslocacaoLista";
+import { useDeslocacao, BotaoCombustivel } from "./DeslocacaoLista";
 import { Preco } from "./Preco";
 import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { melhoresPorLoja } from "./lib/comparacao";
+import { melhoresPorLoja, custoPorLoja, alternativas } from "./lib/comparacao";
 import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
 import { resumoAtual, avaliarVigia } from "./lib/alertas";
@@ -24,7 +24,6 @@ import { estadoPush, ativarPush, temConta } from "./lib/push";
 
 const LOJAS = COMPARADAS.map((c) => c.id);
 // Com sortido completo: faltar numa destas é notícia; faltar no Lidl (só promoções) não.
-const COMPLETAS = COMPARADAS.filter((c) => c.estado === "incluida").map((c) => c.id);
 const MAX_ARTIGOS = 25;
 const EM_PARALELO = 3;
 
@@ -42,9 +41,27 @@ function atualDe(dados) {
   return { ...resumoAtual(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade };
 }
 
-export default function ResultadoLista({ linhas, nota = true, onAtualizar, onResumo, moldura = true }) {
-  const [verDetalhe, setVerDetalhe] = useState(false);
-  const [verDivisao, setVerDivisao] = useState(false);
+export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtualizar, onResumo, onEscolher, moldura = true }) {
+  // Produto escolhido à mão por artigo (id do artigo → { loja, id, nome }).
+  // Começa no que vem guardado na lista e muda aqui sem voltar a pesquisar.
+  const [escolhas, setEscolhas] = useState(() => Object.fromEntries(
+    linhasOrig.filter((l) => l.item.escolha).map((l) => [String(l.item.id), l.item.escolha])));
+  const [aEscolher, setAEscolher] = useState(null);
+  useEffect(() => {
+    setEscolhas(Object.fromEntries(linhasOrig.filter((l) => l.item.escolha).map((l) => [String(l.item.id), l.item.escolha])));
+  }, [linhasOrig]);
+  const linhas = useMemo(() => linhasOrig.map((l) => {
+    const esc = escolhas[String(l.item.id)] || null;
+    if (!l.dados || (esc || null) === (l.item.escolha || null)) return l;
+    return { ...l, ...custoPorLoja(l.dados, l.item.qty || 1, esc), item: { ...l.item, escolha: esc || undefined } };
+  }), [linhasOrig, escolhas]);
+  function escolherProduto(l, p) {
+    const esc = p ? { loja: p.loja, id: String(p.id), nome: p.nome } : null;
+    setEscolhas((e) => { const n = { ...e }; if (esc) n[String(l.item.id)] = esc; else delete n[String(l.item.id)]; return n; });
+    setAEscolher(null);
+    onEscolher?.(l.item.id, esc);
+    evento("lista_escolher_produto", { loja: p?.loja || "mais-barato" });
+  }
   const [escolha, setEscolha] = useState(null);
   const [alertas, setAlertas] = useState([]);
   const [avisoVigiar, setAvisoVigiar] = useState("");
@@ -75,7 +92,6 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
   const guardados = linhas.filter((l) => l.guardado);
   const maisAntigo = guardados.map((l) => l.dados?.obtidoEm).filter(Boolean).sort()[0];
   const mostrarDivisao = divisao && divisao.poupancaExtra >= 0.1;
-  const parcialDe = Object.fromEntries(parciais.map((p) => [p.id, p.lojas]));
   // Lojas que não responderam a nenhum artigo (e não por falta de rede).
   const caladas = LOJAS.filter((s) => linhas.some((l) => l.dados?.lojas) &&
     linhas.every((l) => !l.dados?.lojas || l.dados.lojas.some((x) => x.id === s && !x.ok)));
@@ -87,9 +103,12 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
     return atual && atual.unidade === a.unidade && avaliarVigia(a, atual).motivo;
   });
 
-  function escolher(plano) {
-    const valor = poupancaDaEscolha(r, plano);
-    const lojasEscolha = plano === "divisao" ? divisao.lojas : [unica.loja];
+  function escolher(plano, loja = unica.loja) {
+    // Outra loja que não a mais barata (ganhou com o combustível): poupança face à mais cara.
+    const valor = plano === "unica" && loja !== unica.loja
+      ? Math.max(0, Math.round((maisCara.total - (porLoja.find((t) => t.loja === loja)?.total ?? maisCara.total)) * 100) / 100)
+      : poupancaDaEscolha(r, plano);
+    const lojasEscolha = plano === "divisao" ? divisao.lojas : [loja];
     registarEscolha({ plano, lojas: lojasEscolha, valor, artigos: comparaveis.length, lista: chaveLista(linhas.map((l) => l.item.nome)) });
     evento("lista_escolha", { plano, lojas: lojasEscolha.join("+"), poupanca: valor });
     setEscolha({ plano, valor, semana: somarPeriodos(lerRegistos()).semana });
@@ -121,99 +140,207 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
     setAlertas(lerAlertas());
   }
 
-  const linha = { padding: "10px 16px", borderTop: "1px solid var(--pj-subtle)" };
   const pequeno = { fontSize: 11.5, color: "var(--pj-text-faint)", lineHeight: 1.5 };
+  const comparaveisLoja = porLoja.filter((t) => !t.emFalta.length);
+  const d = useDeslocacao({ unica, divisao: mostrarDivisao ? divisao : null, porLoja: comparaveisLoja });
+
+  // Com o combustível ligado, a ordem e o mais barato passam a ser os do total com carro.
+  const lojasVistas = d.ligado
+    ? [...porLoja].sort((a, b) => (d.porCadeia[a.loja]?.total ?? Infinity) - (d.porCadeia[b.loja]?.total ?? Infinity))
+    : porLoja;
+  const totalDe = (loja) => {
+    const t = porLoja.find((x) => x.loja === loja);
+    if (!t) return null;
+    return d.ligado && d.porCadeia[loja] ? d.porCadeia[loja].total : t.total;
+  };
+  const maisBarata = lojasVistas[0]?.loja;
+  const maisCaraVista = lojasVistas[lojasVistas.length - 1]?.loja;
+
+  // O plano à vista: uma loja (a mais barata, por omissão) ou "divisao".
+  // Tocar noutra loja mostra a lista nessa loja — a mais perto, a do costume.
+  const [plano, setPlano] = useState(null);
+  useEffect(() => { setPlano(null); }, [linhasOrig]);
+  const atual = plano && (plano === "divisao" ? mostrarDivisao : porLoja.some((t) => t.loja === plano)) ? plano : maisBarata;
+  const eDivisao = atual === "divisao";
+  const totalAtual = eDivisao
+    ? divisao.total + (d.divisaoCarro && !d.divisaoCarro.faltam ? d.divisaoCarro.combustivelExtra + (d.porCadeia[unica.loja]?.combustivel || 0) : 0)
+    : totalDe(atual);
+  const totalMaisBarata = maisBarata ? totalDe(maisBarata) : null;
+  const poupanca = maisCaraVista && totalAtual != null ? Math.max(0, totalDe(maisCaraVista) - totalAtual) : 0;
+  const aMais = !eDivisao && totalAtual != null && totalMaisBarata != null ? totalAtual - totalMaisBarata : 0;
+
+  // A lista de compras do plano: em cada loja, o produto e o preço a pegar.
+  const gruposLista = eDivisao
+    ? divisao.lojas.map((s) => ({ loja: s, ids: new Set(divisao.atribuicao[s]) }))
+    : [{ loja: atual, ids: null }];
+  const naoHa = eDivisao
+    ? linhas.filter((l) => !divisao.lojas.some((s) => divisao.atribuicao[s].includes(String(l.item.id))))
+    : linhas.filter((l) => !l.custos[atual]);
+
+  const notas = [
+    semPreco.length > 0 && `sem preço: ${semPreco.map((l) => l.nome).join(", ")}`,
+    guardados.length > 0 && `${guardados.length === total ? "preços" : `${guardados.length} preços`} guardados${maisAntigo ? ` de ${quando(maisAntigo)}` : ""}`,
+    caladas.length > 0 && `${juntarNomes(caladas)} não ${caladas.length > 1 ? "responderam" : "respondeu"}`,
+  ].filter(Boolean);
+
+  const chip = (ativo) => ({
+    flex: "none", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 8px 8px", borderRadius: 14,
+    border: ativo ? "2px solid var(--pj-brand)" : "1px solid var(--pj-border)", margin: ativo ? 0 : 1,
+    background: ativo ? "var(--pj-brand-wash)" : "var(--pj-card)", textAlign: "left",
+  });
+
+  function LinhaArtigo({ l, loja }) {
+    const c = l.custos[loja];
+    const alerta = alertas.find((a) => a.q === l.q);
+    const atualV = alerta?.tipo === "vigiar" ? atualDe(l.dados) : null;
+    const aviso = atualV && atualV.unidade === alerta.unidade ? avaliarVigia(alerta, atualV) : null;
+    const desceu = aviso && (aviso.motivo === "desceu" || aviso.motivo === "promo");
+    const aberto = aEscolher === `${l.item.id}|${loja}`;
+    return (
+      <div style={{ padding: "10px 0", borderTop: "1px solid var(--pj-subtle)" }}>
+        <div className="flex items-center gap-2">
+          <span className="flex-1 min-w-0">
+            <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
+              {l.item.nome}{l.item.qty > 1 ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> ×{l.item.qty}</span> : null}
+              {c?.escolhido && <span style={etiqueta}>a tua escolha</span>}
+              {desceu && <span style={etiqueta}>{aviso.motivo === "desceu" ? "desceu" : "promoção"}</span>}
+            </span>
+            <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {c.produto.nome}{c.produto.quantidade && !c.produto.aoPeso ? ` · ${c.produto.quantidade}` : c.produto.aoPeso ? " · ao peso" : ""}
+            </span>
+          </span>
+          <span className="pj-num" style={{ fontSize: 14, fontWeight: 700, color: "var(--pj-text)" }}>{eur(c.custo, 2)} €</span>
+          {l.dados && (
+            <button onClick={() => setAEscolher(aberto ? null : `${l.item.id}|${loja}`)} aria-expanded={aberto} aria-label={`Trocar ${l.item.nome} por outro produto do ${nomeCadeia(loja)}`}
+              className="pj-tap flex items-center justify-center flex-none"
+              style={{ height: 30, padding: "0 10px", borderRadius: 999, border: 0, fontSize: 12, fontWeight: 600, background: aberto ? "var(--pj-text)" : "var(--pj-subtle)", color: aberto ? "var(--pj-card)" : "var(--pj-text)" }}>
+              Trocar
+            </button>
+          )}
+          {l.dados && (
+            <button onClick={() => alternarVigia(l)} aria-pressed={!!alerta} aria-label={alerta ? `Deixar de vigiar ${l.item.nome}` : `Avisar quando ${l.item.nome} descer de preço`}
+              className="pj-tap flex items-center justify-center flex-none"
+              style={{ width: 30, height: 30, borderRadius: 999, border: 0, background: alerta ? "var(--pj-brand-wash)" : "transparent", color: alerta ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
+              {alerta ? <BellRing size={15} /> : <Bell size={15} />}
+            </button>
+          )}
+        </div>
+        {aberto && <EscolherProduto dados={l.dados} loja={loja} atualId={c.produto.id} onEscolher={(p) => escolherProduto(l, p)} />}
+      </div>
+    );
+  }
 
   return (
     <div style={moldura ? { borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)", overflow: "hidden" } : { background: "var(--pj-card)" }}>
-      {unica ? (
+      {unica && maisBarata ? (
         <>
-          <div style={{ background: "var(--pj-brand)", color: "#fff", padding: "12px 16px" }}>
-            <p style={{ fontSize: 12, fontWeight: 600, opacity: 0.85 }}>{maiuscula(TEXTO_COBERTURA.maisBarato)}</p>
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="font-display" style={{ fontSize: 22, fontWeight: 600, marginTop: 2 }}>{nomeCadeia(unica.loja)}</p>
-              <Preco valor={unica.total} casas={2} tamanho={20} cor="#fff" />
-            </div>
-          </div>
-
-          <div style={{ padding: "12px 16px 4px" }}>
-            {grupo.length > 1 ? (
-              <p style={{ fontSize: 13.5, color: "var(--pj-text)", lineHeight: 1.5 }}>
-                Poupas <strong className="pj-num">{eur(r.poupancaUnica, 2)} €</strong> face ao {nomeCadeia(maisCara.loja)}, a opção mais cara.
-              </p>
-            ) : (
-              <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>Só este supermercado tem estes artigos todos.</p>
+          {/* 1. As lojas, lado a lado. Toca numa para ver a lista lá. */}
+          <div className="flex gap-2" style={{ overflowX: "auto", padding: "14px 16px 4px", scrollbarWidth: "none" }} role="tablist" aria-label="Onde comprar">
+            {lojasVistas.map((t) => {
+              const ativo = atual === t.loja;
+              const tot = totalDe(t.loja);
+              return (
+                <button key={t.loja} role="tab" aria-selected={ativo} onClick={() => setPlano(t.loja)} className="pj-tap press" style={chip(ativo)}>
+                  <LogoLoja loja={nomeCadeia(t.loja)} size={28} radius={8} />
+                  <span>
+                    <span style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)", whiteSpace: "nowrap" }}>{nomeCadeia(t.loja)}</span>
+                    <span className="pj-num" style={{ display: "block", fontSize: 12, fontWeight: 700, color: t.loja === maisBarata ? "var(--pj-brand-ink)" : "var(--pj-text-muted)", whiteSpace: "nowrap" }}>
+                      {t.loja === maisBarata ? `${eur(tot, 2)} €` : `+${eur(tot - totalMaisBarata, 2)} €`}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+            {mostrarDivisao && (
+              <button role="tab" aria-selected={eDivisao} onClick={() => setPlano("divisao")} className="pj-tap press" style={chip(eDivisao)}>
+                <span className="flex" style={{ marginLeft: 2 }}>
+                  {divisao.lojas.map((s, i) => <span key={s} style={{ marginLeft: i ? -10 : 0 }}><LogoLoja loja={nomeCadeia(s)} size={24} radius={7} /></span>)}
+                </span>
+                <span>
+                  <span style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)", whiteSpace: "nowrap" }}>Dividir</span>
+                  <span className="pj-num" style={{ display: "block", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap", color: d.divisaoCarro && !d.divisaoCarro.faltam && !d.divisaoCarro.compensa ? "var(--pj-text-faint)" : "var(--pj-brand-ink)" }}>
+                    {d.divisaoCarro && !d.divisaoCarro.faltam
+                      ? (d.divisaoCarro.compensa ? `−${eur(d.divisaoCarro.saldo, 2)} €` : "não compensa")
+                      : `−${eur(divisao.poupancaExtra, 2)} €`}
+                  </span>
+                </span>
+              </button>
             )}
           </div>
 
-          {mostrarDivisao && (
-            <div style={{ margin: "8px 16px 4px", padding: "10px 12px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
-              <p style={{ fontSize: 13.5, color: "var(--pj-text)", lineHeight: 1.5 }}>
-                Dividindo por <strong>{juntarNomes(divisao.lojas)}</strong>: <strong className="pj-num">{eur(divisao.total, 2)} €</strong>,
-                poupas mais <strong className="pj-num" style={{ color: "var(--pj-brand-ink)" }}>{eur(divisao.poupancaExtra, 2)} €</strong>
-                {" "}({eur(maisCara.total - divisao.total, 2)} € face à mais cara).
-              </p>
-              <button onClick={() => setVerDivisao((v) => !v)} aria-expanded={verDivisao} className="pj-tap"
-                style={{ background: "transparent", border: 0, padding: "6px 0 0", fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-                {verDivisao ? "Esconder" : "O que comprar em cada"}
-              </button>
-              {verDivisao && divisao.lojas.map((s) => (
-                <p key={s} style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.5 }}>
-                  <strong style={{ color: "var(--pj-text)" }}>{nomeCadeia(s)}:</strong>{" "}
-                  {divisao.atribuicao[s].map((id) => linhas.find((l) => String(l.item.id) === id)?.item.nome).filter(Boolean).join(", ")}
-                </p>
-              ))}
-              <DeslocacaoLista unica={unica} divisao={divisao} />
-            </div>
-          )}
+          {comparaveisLoja.length > 0 && <BotaoCombustivel d={d} />}
 
-          <div style={{ padding: "4px 0" }}>
-            {porLoja.map((t, i) => (
-              <div key={t.loja} className="flex items-center gap-3" style={{ padding: "9px 16px", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
-                <LogoLoja loja={nomeCadeia(t.loja)} size={30} radius={8} />
-                <span className="flex-1 min-w-0">
-                  <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{nomeCadeia(t.loja)}</span>
-                  {t.emFalta.length > 0 && (
-                    <span style={{ display: "block", fontSize: 11.5, color: "var(--pj-text-faint)" }}>
-                      Não tem {t.emFalta.length === 1 ? "1 artigo" : `${t.emFalta.length} artigos`} da lista
-                    </span>
-                  )}
-                </span>
-                <span className="text-right">
-                  <Preco valor={t.total} casas={2} tamanho={17} cor={i === 0 ? "var(--pj-brand-ink)" : "var(--pj-text)"} />
-                  {i > 0 && <span className="pj-num" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "var(--pj-text-faint)" }}>+{eur(t.total - unica.total, 2)} €</span>}
-                </span>
+          {/* 2. O plano escolhido: onde, quanto, e a lista para levar. */}
+          <div style={{ padding: "6px 16px 0" }}>
+            <div className="flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-display" style={{ fontSize: 22, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.15 }}>
+                  {eDivisao ? juntarNomes(divisao.lojas) : nomeCadeia(atual)}
+                </p>
+                <p style={{ fontSize: 12.5, fontWeight: 600, marginTop: 3, color: aMais > 0.005 ? "var(--pj-text-muted)" : "var(--pj-brand-ink)" }}>
+                  {aMais > 0.005 ? `+${eur(aMais, 2)} € que no ${nomeCadeia(maisBarata)}`
+                    : poupanca >= 0.01 ? `Poupas ${eur(poupanca, 2)} €${d.ligado ? ", já com o carro" : ""}` : "O mais barato"}
+                </p>
               </div>
-            ))}
+              <Preco valor={totalAtual} casas={2} tamanho={28} />
+            </div>
+            {d.ligado && !eDivisao && d.porCadeia[atual] && (
+              <p className="pj-num" style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 2 }}>
+                {eur(totalDe(atual) - d.porCadeia[atual].combustivel, 2)} € de compras + {eur(d.porCadeia[atual].combustivel, 2)} € de carro ({eur(d.porCadeia[atual].km, 1)} km)
+              </p>
+            )}
+            {eDivisao && d.divisaoCarro && !d.divisaoCarro.faltam && (
+              <p className="pj-num" style={{ fontSize: 11.5, color: d.divisaoCarro.compensa ? "var(--pj-text-faint)" : "var(--pj-text-muted)", marginTop: 2 }}>
+                {d.divisaoCarro.compensa
+                  ? `Com o carro: +${eur(d.divisaoCarro.kmExtra, 1)} km e cerca de ${d.divisaoCarro.minutosExtra} min a mais`
+                  : `Não compensa: o carro gasta ${eur(d.divisaoCarro.combustivelExtra, 2)} € a mais do que poupas`}
+              </p>
+            )}
+
+            {avisoVigiar && <p role="status" style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>{avisoVigiar}</p>}
+            {desceram.length > 0 && (
+              <p style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                {desceram.length === 1 ? `«${desceram[0].item.nome}» desceu de preço ou está em promoção.` : `${desceram.length} artigos que vigias desceram ou estão em promoção.`}
+              </p>
+            )}
+
+            <div style={{ marginTop: 10 }}>
+              {gruposLista.map((g) => {
+                const daLoja = linhas.filter((l) => l.custos[g.loja] && (!g.ids || g.ids.has(String(l.item.id))));
+                return (
+                  <div key={g.loja} style={{ marginBottom: eDivisao ? 8 : 0 }}>
+                    {eDivisao && (
+                      <p className="flex items-center gap-2" style={{ fontSize: 12, fontWeight: 700, color: "var(--pj-text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", padding: "8px 0 4px" }}>
+                        <LogoLoja loja={nomeCadeia(g.loja)} size={18} radius={5} /> {nomeCadeia(g.loja)}
+                      </p>
+                    )}
+                    {daLoja.map((l) => <LinhaArtigo key={l.item.id} l={l} loja={g.loja} />)}
+                  </div>
+                );
+              })}
+              {naoHa.length > 0 && (
+                <p style={{ fontSize: 12, color: "var(--pj-text-faint)", padding: "10px 0", borderTop: "1px solid var(--pj-subtle)" }}>
+                  Não há {eDivisao ? "aqui" : `no ${nomeCadeia(atual)}`}: {naoHa.map((l) => l.item.nome).join(", ")}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div style={{ padding: "10px 16px 14px", borderTop: "1px solid var(--pj-subtle)" }}>
+          {/* 3. A ação. */}
+          <div style={{ padding: "12px 16px 14px" }}>
             {!escolha ? (
-              <>
-                <button onClick={() => escolher("unica")} className="pj-tap press w-full"
-                  style={{ background: "var(--pj-brand)", color: "#fff", border: 0, borderRadius: 12, padding: "12px 0", fontSize: 14, fontWeight: 600 }}>
-                  Vou comprar no {nomeCadeia(unica.loja)}
-                </button>
-                {mostrarDivisao && (
-                  <button onClick={() => escolher("divisao")} className="pj-tap w-full"
-                    style={{ background: "transparent", border: 0, padding: "10px 0 2px", fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-                    Vou dividir por {juntarNomes(divisao.lojas)}
-                  </button>
-                )}
-              </>
+              <button onClick={() => (eDivisao ? escolher("divisao") : escolher("unica", atual))} className="pj-tap press w-full"
+                style={{ background: "var(--pj-brand)", color: "#fff", border: 0, borderRadius: 12, padding: "13px 0", fontSize: 14.5, fontWeight: 600 }}>
+                {eDivisao ? `Vou dividir por ${juntarNomes(divisao.lojas)}` : `Vou comprar no ${nomeCadeia(atual)}`}
+              </button>
             ) : (
               <p role="status" className="flex items-start gap-2" style={{ fontSize: 13, color: "var(--pj-text)", lineHeight: 1.5 }}>
                 <Check size={16} style={{ color: "var(--pj-brand-ink)", flexShrink: 0, marginTop: 2 }} />
                 <span>
-                  Registámos uma poupança estimada de <strong className="pj-num">{eur(escolha.valor, 2)} €</strong>.
-                  {" "}Esta semana já vais em <strong className="pj-num">{eur(escolha.semana, 2)} €</strong> — vê o total em Poupança.
+                  Poupança de <strong className="pj-num">{eur(escolha.valor, 2)} €</strong> registada. Esta semana: <strong className="pj-num">{eur(escolha.semana, 2)} €</strong>.
                 </span>
               </p>
             )}
-            <p style={{ ...pequeno, marginTop: 8 }}>
-              Total dos {comparaveis.length} artigos que estas lojas têm, na mesma quantidade em todas.
-              {comparaveis.length < total - semPreco.length && ` ${total - semPreco.length - comparaveis.length} ficaram de fora da soma por não estarem em todas.`}
-            </p>
           </div>
         </>
       ) : (
@@ -222,83 +349,52 @@ export default function ResultadoLista({ linhas, nota = true, onAtualizar, onRes
         </p>
       )}
 
-      {semPreco.length > 0 && (
-        <p style={{ ...linha, fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
-          <strong style={{ color: "var(--pj-text)" }}>Sem preço disponível:</strong> {semPreco.map((l) => l.nome).join(", ")}.
-        </p>
-      )}
-
-      {guardados.length > 0 && (
-        <p style={{ ...linha, ...pequeno }}>
-          Sem ligação: {guardados.length === total ? "todos os preços são" : `${guardados.length} preços são`} os últimos que guardámos{maisAntigo ? ` (de ${quando(maisAntigo)})` : ""}.
-        </p>
-      )}
-      {caladas.length > 0 && (
-        <p style={{ ...linha, ...pequeno }}>{juntarNomes(caladas)} {caladas.length > 1 ? "não responderam agora e ficaram" : "não respondeu agora e ficou"} de fora desta comparação.</p>
-      )}
-
-      {desceram.length > 0 && (
-        <p style={{ ...linha, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-          {desceram.length === 1 ? `«${desceram[0].item.nome}», que vigias, desceu de preço ou está em promoção.` : `${desceram.length} artigos que vigias desceram de preço ou estão em promoção.`}
-        </p>
-      )}
-
-      <button onClick={() => setVerDetalhe((v) => !v)} aria-expanded={verDetalhe} className="pj-tap press w-full flex items-center justify-center gap-1"
-        style={{ padding: "12px 0", fontSize: 12.5, fontWeight: 600, color: "var(--pj-text-muted)", background: "var(--pj-surface)", border: 0, borderTop: "1px solid var(--pj-subtle)" }}>
-        {verDetalhe ? "Esconder" : "Ver"} artigo a artigo
-        <ChevronDown size={14} style={{ transform: verDetalhe ? "rotate(180deg)" : "none" }} />
-      </button>
-      {verDetalhe && (
-        <div>
-          {avisoVigiar && <p role="status" style={{ ...linha, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>{avisoVigiar}</p>}
-          {linhas.map((l, i) => {
-            const opcoes = Object.entries(l.custos).map(([s, v]) => ({ loja: s, ...v })).sort((a, b) => a.custo - b.custo);
-            const top = opcoes[0];
-            const alerta = alertas.find((a) => a.q === l.q);
-            const atual = alerta?.tipo === "vigiar" ? atualDe(l.dados) : null;
-            const aviso = atual && atual.unidade === alerta.unidade ? avaliarVigia(alerta, atual) : null;
-            const lojasCom = parcialDe[String(l.item.id)];
-            const so = lojasCom && COMPLETAS.some((s) => !lojasCom.includes(s)) ? lojasCom : null;
-            return (
-              <div key={l.item.id || i} className="flex items-center gap-3" style={linha}>
-                <span className="flex-1 min-w-0">
-                  <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "var(--pj-text)" }}>
-                    {l.item.nome}{l.item.qty > 1 ? ` ×${l.item.qty}` : ""}
-                  </span>
-                  <span style={{ display: "block", fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {top ? `${nomeCadeia(top.loja)} · ${top.produto.nome}${l.referencia ? ` · ${String(l.referencia.qtd).replace(".", ",")} ${l.referencia.unidade}` : ""}`
-                      : l.erro ? "Sem ligação e sem preços guardados" : "Sem preço disponível"}
-                  </span>
-                  {top && so && <span style={{ display: "block", fontSize: 11.5, color: "var(--pj-text-faint)" }}>Só no {juntarNomes(so)}</span>}
-                  {aviso && (aviso.motivo === "desceu" || aviso.motivo === "promo") && (
-                    <span style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-                      {aviso.motivo === "desceu" ? `Desceu desde que vigias (era ${eur(alerta.referencia, 2)} €)` : "Entrou em promoção"}
-                    </span>
-                  )}
-                </span>
-                {top && <span className="pj-num" style={{ fontSize: 13.5, fontWeight: 700, color: "var(--pj-text)" }}>{eur(top.custo, 2)} €</span>}
-                {top && l.dados && (
-                  <button onClick={() => alternarVigia(l)} aria-pressed={!!alerta} aria-label={alerta ? `Deixar de vigiar ${l.item.nome}` : `Vigiar o preço de ${l.item.nome}`}
-                    className="pj-tap flex items-center justify-center flex-none"
-                    style={{ width: 36, height: 36, borderRadius: 10, border: 0, background: alerta ? "var(--pj-brand-wash)" : "var(--pj-subtle)", color: alerta ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>
-                    {alerta ? <BellRing size={15} /> : <Bell size={15} />}
-                  </button>
-                )}
-              </div>
-            );
-          })}
-          <p style={{ ...linha, ...pequeno }}>
-            O sino vigia o preço: avisamos quando descer ou entrar em promoção. Os artigos vigiados ficam guardados neste dispositivo (e na tua conta, se tiveres sessão iniciada).
-          </p>
-        </div>
-      )}
       <div className="flex items-center justify-between gap-2" style={{ padding: "0 16px", borderTop: "1px solid var(--pj-subtle)" }}>
-        {nota ? <NotaCobertura /> : <span />}
-        <button onClick={onAtualizar} className="pj-tap flex items-center gap-1.5 flex-none"
-          style={{ padding: "10px 0", fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)", background: "transparent", border: 0 }}>
-          <RefreshCw size={13} /> Atualizar
+        <span style={{ ...pequeno, padding: "10px 0" }}>
+          Mesma quantidade em todas as lojas{notas.length ? ` · ${notas.join(" · ")}` : ""}
+        </span>
+        <button onClick={onAtualizar} aria-label="Atualizar preços" className="pj-tap flex items-center justify-center flex-none"
+          style={{ width: 36, height: 36, color: "var(--pj-brand-ink)", background: "transparent", border: 0 }}>
+          <RefreshCw size={15} />
         </button>
       </div>
+      {nota && <div style={{ padding: "0 16px 10px" }}><NotaCobertura /></div>}
+    </div>
+  );
+}
+
+const etiqueta = { marginLeft: 6, padding: "1px 6px", borderRadius: 999, background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)", fontSize: 10.5, fontWeight: 700, verticalAlign: "1px" };
+
+/*
+ * Lista de produtos para um artigo: os que são mesmo o artigo, ordenados
+ * pelo preço ao kg / L / unidade. Tocar num fixa-o para essa loja.
+ */
+function EscolherProduto({ dados, loja, atualId, onEscolher }) {
+  const modo = dados.modo || "unidade";
+  const valor = (p) => (modo === "embalagem" ? p.preco : p.precoUnidade);
+  const lista = alternativas(dados).filter((p) => !loja || p.loja === loja).sort((a, b) => valor(a) - valor(b));
+  if (lista.length < 2) return <p style={{ fontSize: 12, color: "var(--pj-text-faint)", padding: "8px 0 0" }}>Não há outro produto destes no {nomeCadeia(loja)}.</p>;
+  return (
+    <div style={{ marginTop: 8, borderRadius: 12, border: "1px solid var(--pj-border)", overflow: "hidden", maxHeight: 300, overflowY: "auto" }}>
+      {lista.map((p, i) => {
+        const ativo = String(p.id) === String(atualId);
+        return (
+          // O primeiro é o mais barato: escolhê-lo é voltar ao normal.
+          <button key={`${p.loja}-${p.id}`} onClick={() => onEscolher(i === 0 ? null : p)} aria-pressed={ativo} className="pj-tap w-full text-left flex items-center gap-2"
+            style={{ padding: "9px 12px", borderTop: i ? "1px solid var(--pj-subtle)" : 0, borderLeft: 0, borderRight: 0, borderBottom: 0, background: ativo ? "var(--pj-brand-wash)" : "transparent" }}>
+            <span className="flex items-center justify-center flex-none" style={{ width: 16, color: "var(--pj-brand-ink)" }}>{ativo ? <Check size={15} /> : null}</span>
+            <span className="flex-1 min-w-0">
+              <span style={{ display: "block", fontSize: 13, fontWeight: ativo ? 700 : 500, color: "var(--pj-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.nome}</span>
+              <span style={{ display: "block", fontSize: 11, color: "var(--pj-text-faint)" }}>
+                {[i === 0 ? "o mais barato" : null, p.marca, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ")}
+              </span>
+            </span>
+            <span className="pj-num text-right flex-none" style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>
+              {modo === "embalagem" ? `${eur(p.preco, 2)} €` : `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

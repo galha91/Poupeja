@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { MapPin, Car } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Car, Check, Loader2, SlidersHorizontal } from "lucide-react";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { nomeCadeia, juntarNomes } from "./lib/cobertura";
-import { maisPertoPorCadeia, avaliarDeslocacao, CONSUMO_PADRAO } from "./lib/rota";
+import { maisPertoPorCadeia, avaliarDeslocacao, lojasComDeslocacao, CONSUMO_PADRAO } from "./lib/rota";
 
 /*
- * "Compensa ir a mais um supermercado?" — dentro do bloco da divisão da
- * lista. Só pede a localização quando se toca no botão. O carro (consumo
- * e combustível) fica guardado neste aparelho.
+ * "Contar o combustível" no resultado da lista. Ligado, cada supermercado
+ * passa a mostrar o total com a ida e volta de carro (a loja mais barata
+ * pode ficar longe) e a divisão por 2 lojas diz se compensa.
+ *
+ * useDeslocacao guarda o estado; o ResultadoLista desenha os números nas
+ * próprias linhas das lojas, sem um bloco de texto à parte. Só pede a
+ * localização quando se liga. O carro fica guardado neste aparelho.
  */
 
 const LS_CARRO = "poupeja_carro";
@@ -17,8 +20,8 @@ const TIPOS = ["Gasóleo", "Gasolina 95"];
 function lerCarro() {
   try {
     const c = JSON.parse(localStorage.getItem(LS_CARRO) || "{}");
-    return { consumo: c.consumo > 0 ? c.consumo : CONSUMO_PADRAO, tipo: TIPOS.includes(c.tipo) ? c.tipo : "Gasóleo" };
-  } catch { return { consumo: CONSUMO_PADRAO, tipo: "Gasóleo" }; }
+    return { consumo: c.consumo > 0 ? c.consumo : CONSUMO_PADRAO, tipo: TIPOS.includes(c.tipo) ? c.tipo : "Gasóleo", auto: !!c.auto };
+  } catch { return { consumo: CONSUMO_PADRAO, tipo: "Gasóleo", auto: false }; }
 }
 function guardarCarro(c) {
   try { localStorage.setItem(LS_CARRO, JSON.stringify(c)); } catch {}
@@ -35,13 +38,13 @@ function posicao() {
   });
 }
 
-export default function DeslocacaoLista({ unica, divisao }) {
-  const [estado, setEstado] = useState("inicio"); // inicio | a-ver | pronto | erro
+export function useDeslocacao({ unica, divisao, porLoja }) {
+  const [estado, setEstado] = useState("desligado"); // desligado | a-ver | ligado | erro
   const [erro, setErro] = useState("");
   const [dados, setDados] = useState(null); // { pos, perto, combustivel }
   const [carro, setCarro] = useState(lerCarro);
 
-  async function ver(tipo = carro.tipo) {
+  async function ligar(tipo = carro.tipo) {
     setEstado("a-ver");
     setErro("");
     try {
@@ -49,92 +52,93 @@ export default function DeslocacaoLista({ unica, divisao }) {
       const r = await fetch(`/api/lojas-perto?lat=${pos.lat.toFixed(2)}&lon=${pos.lon.toFixed(2)}&tipo=${encodeURIComponent(tipo)}`);
       const j = await r.json();
       if (!r.ok) throw new Error(j.erro || "falhou");
+      if (!(j.combustivel?.preco > 0)) throw new Error("Sem o preço do combustível de hoje. Tenta mais logo.");
       setDados({ pos, perto: maisPertoPorCadeia(j.lojas, pos), combustivel: j.combustivel });
-      setEstado("pronto");
-      evento("lista_deslocacao", { lojas: divisao.lojas.join("+") });
+      setEstado("ligado");
+      evento("lista_deslocacao", { lojas: porLoja.length, divisao: !!divisao });
     } catch (e) {
       setErro(e.message === "recusado" || e.message === "sem-gps"
-        ? "Sem a localização não dá para saber a que distância ficam as lojas."
-        : e.message === "falhou" ? "Não foi possível calcular agora. Tenta daqui a pouco." : e.message);
+        ? "Precisamos da localização para saber a que distância ficam as lojas."
+        : e.message === "falhou" ? "Não foi possível calcular agora." : e.message);
       setEstado("erro");
     }
+  }
+
+  // Quem ligou da última vez encontra-o já ligado — mas só se a
+  // localização já estiver autorizada: nunca se pede sem um toque.
+  useEffect(() => {
+    if (!carro.auto || !navigator.permissions?.query) return;
+    navigator.permissions.query({ name: "geolocation" })
+      .then((p) => { if (p.state === "granted") ligar(); })
+      .catch(() => {});
+  }, []);
+
+  function alternar() {
+    if (estado === "ligado") { setEstado("desligado"); mudarCarro({ auto: false }); }
+    else if (estado !== "a-ver") { ligar(); mudarCarro({ auto: true }); }
   }
 
   function mudarCarro(novo) {
     const c = { ...carro, ...novo };
     setCarro(c);
     guardarCarro(c);
-    if (novo.tipo && novo.tipo !== carro.tipo && dados) ver(novo.tipo);
+    if (novo.tipo && novo.tipo !== carro.tipo && dados) ligar(novo.tipo);
   }
 
+  const ligado = estado === "ligado" && dados;
   const precoLitro = dados?.combustivel?.preco;
-  const r = dados && avaliarDeslocacao({ pos: dados.pos, perto: dados.perto, unica, divisao, consumo: carro.consumo, precoLitro });
+  const lojas = ligado ? lojasComDeslocacao({ pos: dados.pos, perto: dados.perto, porLoja, consumo: carro.consumo, precoLitro }) : null;
+  const divisaoCarro = ligado && divisao ? avaliarDeslocacao({ pos: dados.pos, perto: dados.perto, unica, divisao, consumo: carro.consumo, precoLitro }) : null;
+  // loja → { km, combustivel, total } para desenhar nas linhas.
+  const porCadeia = lojas ? Object.fromEntries(lojas.lojas.map((l) => [l.loja, l])) : {};
 
-  const pequeno = { fontSize: 12, color: "var(--pj-text-muted)", lineHeight: 1.5 };
+  return { estado, erro, ligado, alternar, carro, mudarCarro, precoLitro, lojas, porCadeia, divisaoCarro };
+}
 
-  if (estado === "inicio" || estado === "a-ver") {
-    return (
-      <button onClick={() => ver()} disabled={estado === "a-ver"} className="pj-tap flex items-center gap-1.5"
-        style={{ background: "transparent", border: 0, padding: "8px 0 0", fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-        <Car size={14} aria-hidden /> {estado === "a-ver" ? "A calcular…" : "Compensa a deslocação? Contar o combustível"}
-      </button>
-    );
-  }
-
-  if (estado === "erro") {
-    return (
-      <p style={{ ...pequeno, marginTop: 8 }}>
-        {erro}{" "}
-        <button onClick={() => ver()} className="pj-tap" style={{ background: "transparent", border: 0, padding: 0, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Tentar de novo</button>
-      </p>
-    );
-  }
-
+/* O interruptor "Contar o combustível" e, ligado, o carro (editável). */
+export function BotaoCombustivel({ d }) {
+  const [editar, setEditar] = useState(false);
+  const ativo = d.estado === "ligado";
   return (
-    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--pj-border)" }}>
-      {!precoLitro ? (
-        <p style={pequeno}>Sem o preço do combustível de hoje, não dá para fazer a conta. Tenta mais logo.</p>
-      ) : r?.faltam ? (
-        <p style={pequeno}>
-          <MapPin size={13} aria-hidden style={{ display: "inline", verticalAlign: "-2px" }} /> Não encontrámos {juntarNomes(r.faltam)} a menos de 15 km.
-        </p>
-      ) : r ? (
-        <>
-          <p style={{ fontSize: 13.5, color: "var(--pj-text)", lineHeight: 1.5 }}>
-            {r.compensa ? (
-              <>Compensa: ficas com <strong className="pj-num" style={{ color: "var(--pj-brand-ink)" }}>{eur(r.saldo, 2)} €</strong> a mais, já descontado o combustível.</>
-            ) : (
-              <>Não compensa: o combustível a mais come a poupança e perdes <strong className="pj-num">{eur(-r.saldo, 2)} €</strong>. Compra tudo no {nomeCadeia(unica.loja)}.</>
-            )}
-          </p>
-          <p style={{ ...pequeno, marginTop: 4 }}>
-            Poupas <span className="pj-num">{eur(r.poupancaCompras, 2)} €</span> nas compras, gastas <span className="pj-num">{eur(r.combustivelExtra, 2)} €</span> em {carro.tipo.toLowerCase()} ({eur(r.kmExtra, 1)} km a mais)
-            {r.minutosExtra > 0 ? ` e cerca de ${r.minutosExtra} min.` : "."}
-          </p>
-          <p style={{ ...pequeno, marginTop: 4 }}>
-            Lojas mais perto: {[unica.loja, ...divisao.lojas].filter((c, i, a) => a.indexOf(c) === i)
-              .map((c) => `${nomeCadeia(c)} a ${eur(dados.perto[c].km, 1)} km`).join(" · ")}.
-          </p>
-        </>
-      ) : null}
-
-      <div className="flex flex-wrap items-center gap-2" style={{ marginTop: 8 }}>
-        <label style={{ ...pequeno, display: "flex", alignItems: "center", gap: 6 }}>
-          Consumo
-          <input type="number" inputMode="decimal" min="2" max="20" step="0.1" value={carro.consumo}
-            onChange={(e) => { const v = parseFloat(e.target.value); if (v > 0 && v <= 30) mudarCarro({ consumo: v }); }}
-            className="pj-num" style={{ width: 60, padding: "4px 6px", borderRadius: 8, border: "1px solid var(--pj-border)", background: "var(--pj-card)", color: "var(--pj-text)", fontSize: 13 }} />
-          L/100 km
-        </label>
-        <select value={carro.tipo} onChange={(e) => mudarCarro({ tipo: e.target.value })} aria-label="Combustível"
-          style={{ padding: "4px 6px", borderRadius: 8, border: "1px solid var(--pj-border)", background: "var(--pj-card)", color: "var(--pj-text)", fontSize: 13 }}>
-          {TIPOS.map((t) => <option key={t}>{t}</option>)}
-        </select>
+    <div style={{ padding: "4px 16px 10px" }}>
+      <div className="flex items-center gap-2 flex-wrap">
+        <button onClick={d.alternar} aria-pressed={ativo} className="pj-tap press flex items-center gap-1.5"
+          style={{ padding: "7px 12px", borderRadius: 999, fontSize: 12.5, fontWeight: 600,
+            border: ativo ? "1px solid var(--pj-brand)" : "1px solid var(--pj-border)",
+            background: ativo ? "var(--pj-brand-wash)" : "var(--pj-card)", color: ativo ? "var(--pj-brand-ink)" : "var(--pj-text)" }}>
+          {d.estado === "a-ver" ? <Loader2 size={14} className="animate-spin" aria-hidden /> : ativo ? <Check size={14} aria-hidden /> : <Car size={14} aria-hidden />}
+          Contar o combustível
+        </button>
+        {ativo && (
+          <button onClick={() => setEditar((e) => !e)} aria-expanded={editar} className="pj-tap flex items-center gap-1"
+            style={{ padding: "7px 4px", border: 0, background: "transparent", fontSize: 12, color: "var(--pj-text-muted)" }}>
+            <SlidersHorizontal size={13} aria-hidden /> {String(d.carro.consumo).replace(".", ",")} L/100 · {d.carro.tipo}
+          </button>
+        )}
       </div>
-      <p style={{ fontSize: 11, color: "var(--pj-text-faint)", marginTop: 6, lineHeight: 1.5 }}>
-        Estimativa: distância em linha reta + 30 % de estrada, a partir de onde estás.
-        {precoLitro ? ` ${carro.tipo} a ${eur(precoLitro, 3)} €/L (média nacional DGEG).` : ""} Lojas do OpenStreetMap.
-      </p>
+      {d.estado === "erro" && <p style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 6 }}>{d.erro}</p>}
+      {ativo && editar && (
+        <div className="flex items-center gap-2 flex-wrap" style={{ marginTop: 8 }}>
+          <label className="flex items-center gap-1.5" style={{ fontSize: 12, color: "var(--pj-text-muted)" }}>
+            <input type="number" inputMode="decimal" min="2" max="20" step="0.1" value={d.carro.consumo} aria-label="Consumo em litros aos 100 km"
+              onChange={(e) => { const v = parseFloat(e.target.value); if (v > 0 && v <= 30) d.mudarCarro({ consumo: v }); }}
+              className="pj-num" style={{ width: 58, padding: "5px 6px", borderRadius: 8, border: "1px solid var(--pj-border)", background: "var(--pj-card)", color: "var(--pj-text)", fontSize: 13 }} />
+            L/100 km
+          </label>
+          {["Gasóleo", "Gasolina 95"].map((t) => (
+            <button key={t} onClick={() => d.mudarCarro({ tipo: t })} aria-pressed={d.carro.tipo === t} className="pj-tap"
+              style={{ padding: "5px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, border: 0,
+                background: d.carro.tipo === t ? "var(--pj-text)" : "var(--pj-subtle)", color: d.carro.tipo === t ? "var(--pj-card)" : "var(--pj-text)" }}>
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
+      {ativo && (
+        <p style={{ fontSize: 11, color: "var(--pj-text-faint)", marginTop: 6 }}>
+          Ida e volta à loja mais perto · {d.carro.tipo} a {eur(d.precoLitro, 3)} €/L · estimativa
+        </p>
+      )}
     </div>
   );
 }

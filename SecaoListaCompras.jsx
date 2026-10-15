@@ -568,6 +568,7 @@ export default function SecaoListaCompras({ onVoltar }) {
       {verResultado && comparacao.linhas && createPortal(
         <Folha titulo="Onde fica mais barata" onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
           <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo}
+            onEscolher={(id, escolha) => setItens(prev => prev.map(x => x.id === id ? (escolha ? { ...x, escolha } : (({ escolha: _, ...resto }) => resto)(x)) : x))}
             onAtualizar={() => comparar(true)} />
         </Folha>,
         document.body,

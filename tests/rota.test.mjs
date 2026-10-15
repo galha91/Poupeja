@@ -71,3 +71,15 @@ test("sem a loja perto, diz qual falta em vez de inventar", () => {
 test("dados em falta: null", () => {
   assert.equal(avaliarDeslocacao({ pos: casa, perto, precoLitro: 0, unica: { loja: "lidl", total: 1 }, divisao: { lojas: ["lidl"], total: 1 } }), null);
 });
+
+test("cada loja com o combustível: a mais perto pode ganhar", async () => {
+  const { lojasComDeslocacao } = await import("../lib/rota.js");
+  const r = lojasComDeslocacao({
+    pos: casa, consumo: 7, precoLitro: 1.7,
+    perto: { continente: norte(0.1), auchan: norte(0.01) },
+    porLoja: [{ loja: "continente", total: 18.01 }, { loja: "auchan", total: 18.51 }, { loja: "lidl", total: 17 }],
+  });
+  assert.equal(r.lojas[0].loja, "auchan"); // 0,50 € mais cara, mas a 1 km em vez de 11
+  assert.ok(r.lojas[1].combustivel > 2);
+  assert.deepEqual(r.faltam, ["lidl"]);
+});

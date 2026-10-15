@@ -67,13 +67,19 @@ function guardarRecente(q) {
 }
 
 /* A lista de compras vive no localStorage (ver SecaoListaCompras). */
-function juntarALista(nome) {
+/*
+ * Com `produto`, o artigo fica com esse produto escolhido (loja + id) e
+ * com o termo da pesquisa onde ele apareceu, para a comparação da lista o
+ * voltar a encontrar.
+ */
+function juntarALista(nome, produto = null, q = null) {
   try {
     const itens = JSON.parse(localStorage.getItem(LS_LISTA) || "[]");
+    const escolha = produto?.id ? { escolha: { loja: produto.loja, id: String(produto.id), nome: produto.nome }, ...(q ? { q } : {}) } : {};
     const existe = itens.find((i) => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
     const novos = existe
-      ? itens.map((i) => (i === existe ? { ...i, qty: (i.qty || 1) + 1 } : i))
-      : [{ id: Date.now() + Math.random(), nome: itemPorNome(nome)?.nome || nome, emoji: "", categoria: NOME_CATEGORIA[itemPorNome(nome)?.cat] || "", qty: 1, feito: false, ...(itemPorNome(nome) ? { q: itemPorNome(nome).q } : {}) }, ...itens];
+      ? itens.map((i) => (i === existe ? { ...i, ...(produto ? escolha : { qty: (i.qty || 1) + 1 }) } : i))
+      : [{ id: Date.now() + Math.random(), nome: itemPorNome(nome)?.nome || nome, emoji: "", categoria: NOME_CATEGORIA[itemPorNome(nome)?.cat] || "", qty: 1, feito: false, ...(itemPorNome(nome) ? { q: itemPorNome(nome).q } : {}), ...escolha }, ...itens];
     localStorage.setItem(LS_LISTA, JSON.stringify(novos));
     return true;
   } catch { return false; }
@@ -306,12 +312,13 @@ function PorLoja({ lojas, melhores, modo, min, empate = false }) {
   );
 }
 
-function LinhaProduto({ p, primeira, modo }) {
+function LinhaProduto({ p, primeira, modo, onLista, naLista }) {
   const desc = descontoPct(p);
   return (
+    <div className="flex items-center" style={{ borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
     <a href={p.url || undefined} target="_blank" rel="noopener noreferrer"
-      className="pj-tap no-underline flex items-center gap-3"
-      style={{ padding: "10px 14px", borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
+      className="pj-tap no-underline flex items-center gap-3 flex-1 min-w-0"
+      style={{ padding: "10px 4px 10px 14px" }}>
       <Foto p={p} size={44} radius={8} />
       <span className="min-w-0 flex-1">
         <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
@@ -335,6 +342,14 @@ function LinhaProduto({ p, primeira, modo }) {
         </span>
       </span>
     </a>
+    {onLista && p.id && (
+      <button onClick={() => onLista(p)} disabled={naLista} aria-label={naLista ? `${p.nome} está na lista` : `Pôr ${p.nome} na lista`}
+        className="pj-tap flex items-center justify-center flex-none"
+        style={{ width: 36, height: 36, margin: "0 10px 0 4px", borderRadius: 10, border: 0, background: naLista ? "var(--pj-brand-wash)" : "var(--pj-subtle)", color: naLista ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>
+        {naLista ? <Check size={15} /> : <Plus size={15} />}
+      </button>
+    )}
+    </div>
   );
 }
 
@@ -360,6 +375,15 @@ export default function SecaoComparar() {
   const [marca, setMarca] = useState("todas"); // todas | propria | outras
   const [verOutros, setVerOutros] = useState(false);
   const [naLista, setNaLista] = useState(false);
+  const [produtosNaLista, setProdutosNaLista] = useState(() => new Set());
+  // "+" num resultado: este produto, mesmo que não seja o mais barato.
+  function produtoParaLista(p) {
+    const nome = pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1);
+    if (!juntarALista(nome, p, pesquisa)) return;
+    setProdutosNaLista((s) => new Set(s).add(`${p.loja}|${p.id}`));
+    setNaLista(true);
+    evento("comparar_produto_para_lista", { loja: p.loja });
+  }
   const [exemplo, setExemplo] = useState(false); // o resultado à vista é o exemplo do dia
   const [temCamara, setTemCamara] = useState(false);
   const [lerCodigo, setLerCodigo] = useState(false);
@@ -419,6 +443,7 @@ export default function SecaoComparar() {
     setFiltro(null);
     setVerOutros(false);
     setNaLista(false);
+    setProdutosNaLista(new Set());
     const n = ++pedido.current;
     evento(eExemplo ? "comparar_exemplo" : "comparar_pesquisa", { q });
     try {
@@ -639,7 +664,7 @@ export default function SecaoComparar() {
                 ))}
               </div>
               <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
-                {vista.principais.map((p, i) => <LinhaProduto key={`${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} />)}
+                {vista.principais.map((p, i) => <LinhaProduto key={`${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} onLista={produtoParaLista} naLista={produtosNaLista.has(`${p.loja}|${p.id}`)} />)}
                 {!vista.principais.length && (
                   <p style={{ padding: 14, fontSize: 13, color: "var(--pj-text-faint)" }}>Sem resultados diretos nesta loja.</p>
                 )}
