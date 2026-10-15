@@ -53,7 +53,10 @@ export function useDeslocacao({ unica, divisao, porLoja }) {
       const j = await r.json();
       if (!r.ok) throw new Error(j.erro || "falhou");
       if (!(j.combustivel?.preco > 0)) throw new Error("Sem o preço do combustível de hoje. Tenta mais logo.");
-      setDados({ pos, perto: maisPertoPorCadeia(j.lojas, pos), combustivel: j.combustivel });
+      // O servidor escolhe a loja mais perto de cada cadeia por estrada e dá
+      // as distâncias reais (a partir da posição arredondada a ~1 km).
+      const perto = j.perto || maisPertoPorCadeia(j.lojas || [], pos);
+      setDados({ pos: j.matriz ? { lat: j.lat, lon: j.lon } : pos, perto, matriz: j.matriz || null, fonte: j.fonte || "estimativa", combustivel: j.combustivel });
       setEstado("ligado");
       evento("lista_deslocacao", { lojas: porLoja.length, divisao: !!divisao });
     } catch (e) {
@@ -88,12 +91,13 @@ export function useDeslocacao({ unica, divisao, porLoja }) {
 
   const ligado = estado === "ligado" && dados;
   const precoLitro = dados?.combustivel?.preco;
-  const lojas = ligado ? lojasComDeslocacao({ pos: dados.pos, perto: dados.perto, porLoja, consumo: carro.consumo, precoLitro }) : null;
-  const divisaoCarro = ligado && divisao ? avaliarDeslocacao({ pos: dados.pos, perto: dados.perto, unica, divisao, consumo: carro.consumo, precoLitro }) : null;
+  const matriz = dados?.matriz || null;
+  const lojas = ligado ? lojasComDeslocacao({ pos: dados.pos, perto: dados.perto, porLoja, consumo: carro.consumo, precoLitro, matriz }) : null;
+  const divisaoCarro = ligado && divisao ? avaliarDeslocacao({ pos: dados.pos, perto: dados.perto, unica, divisao, consumo: carro.consumo, precoLitro, matriz }) : null;
   // loja → { km, combustivel, total } para desenhar nas linhas.
   const porCadeia = lojas ? Object.fromEntries(lojas.lojas.map((l) => [l.loja, l])) : {};
 
-  return { estado, erro, ligado, alternar, carro, mudarCarro, precoLitro, lojas, porCadeia, divisaoCarro };
+  return { estado, erro, ligado, alternar, carro, mudarCarro, precoLitro, lojas, porCadeia, divisaoCarro, fonte: dados?.fonte, perto: dados?.perto };
 }
 
 /*
@@ -158,7 +162,7 @@ export function BotaoCombustivel({ d }) {
         </div>
       )}
       <p style={{ fontSize: 11, color: "var(--pj-text-faint)", marginTop: 5 }}>
-        Ida e volta à loja mais perto de ti · {d.carro.tipo} a {eur(d.precoLitro, 3)} €/L · estimativa
+        Ida e volta à loja mais perto de ti, {d.fonte === "estrada" ? "por estrada" : "estimativa"} · {d.carro.tipo} a {eur(d.precoLitro, 3)} €/L (média de hoje, DGEG)
       </p>
     </div>
   );

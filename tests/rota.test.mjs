@@ -83,3 +83,18 @@ test("cada loja com o combustível: a mais perto pode ganhar", async () => {
   assert.ok(r.lojas[1].combustivel > 2);
   assert.deepEqual(r.faltam, ["lidl"]);
 });
+
+test("com distâncias reais por estrada, usa-as em vez da estimativa", async () => {
+  const { lojasComDeslocacao, avaliarDeslocacao } = await import("../lib/rota.js");
+  const perto = { continente: norte(0.01), lidl: norte(0.02) };
+  const matriz = { ids: ["casa", "continente", "lidl"], km: [[0, 5.6, 3.6], [5.5, 0, 3.4], [4.6, 3.7, 0]], min: [[0, 9, 7], [9, 0, 6], [7, 5, 0]] };
+  const r = lojasComDeslocacao({ pos: casa, perto, matriz, consumo: 10, precoLitro: 2, porLoja: [{ loja: "continente", total: 10 }] });
+  assert.equal(r.lojas[0].km, 11.1); // 5,6 ida + 5,5 volta
+  assert.equal(r.lojas[0].combustivel, 2.22); // 11,1 km × 0,10 L × 2 €
+  const d = avaliarDeslocacao({ pos: casa, perto, matriz, consumo: 10, precoLitro: 2,
+    unica: { loja: "continente", total: 10 }, divisao: { lojas: ["continente", "lidl"], total: 8 } });
+  // casa→lidl 3,6 + lidl→continente 3,7 + continente→casa 5,5 = 12,8 km; só o Continente: 11,1 km.
+  assert.equal(d.kmDivisao, 12.8);
+  assert.equal(d.kmExtra, 1.7);
+  assert.equal(d.minutosExtra, 7 + 5 + 9 - 18 + 10);
+});

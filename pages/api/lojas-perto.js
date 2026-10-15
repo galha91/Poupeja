@@ -1,5 +1,5 @@
 import { excedeuLimite } from "../../lib/protecao-api";
-import { cadeiaDe } from "../../lib/rota";
+import { cadeiaDe, maisPertoPorCadeia, RAIO_KM } from "../../lib/rota";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 
 /*
@@ -30,7 +30,7 @@ const TIPOS = ["Gasóleo", "Gasolina 95"];
 const r2 = (n) => Math.round(n * 100) / 100;
 
 async function lojasDaCadeia(nome, lat, lon, sinal) {
-  const url = `${PHOTON}?q=${encodeURIComponent(nome)}&lat=${lat}&lon=${lon}&limit=10&osm_tag=shop:supermarket&location_bias_scale=0.1`;
+  const url = `${PHOTON}?q=${encodeURIComponent(nome)}&lat=${lat}&lon=${lon}&limit=15&osm_tag=shop:supermarket&location_bias_scale=0.1`;
   const r = await fetch(url, { headers: { "User-Agent": "PoupeJa/1.0 (https://xn--poupej-uta.com)" }, signal: sinal });
   if (!r.ok) throw new Error(`Photon ${r.status}`);
   const j = await r.json();
@@ -55,6 +55,61 @@ async function lojasPerto(lat, lon) {
   } finally {
     clearTimeout(t);
   }
+}
+
+/*
+ * Distâncias reais por estrada (OSRM, router.project-osrm.org).
+ *   1. casa → todas as lojas encontradas: escolhe a mais perto de cada
+ *      cadeia POR ESTRADA (a mais perto em linha reta pode ficar do outro
+ *      lado do rio);
+ *   2. matriz completa entre casa e as escolhidas, para a volta da divisão.
+ * Se o OSRM falhar, fica a escolha em linha reta e a app estima.
+ */
+const OSRM = "https://router.project-osrm.org/table/v1/driving/";
+
+async function tabelaOsrm(pontos, extra = "") {
+  const coords = pontos.map((p) => `${p.lon.toFixed(5)},${p.lat.toFixed(5)}`).join(";");
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 6000);
+  try {
+    const r = await fetch(`${OSRM}${coords}?annotations=distance,duration${extra}`, {
+      headers: { "User-Agent": "PoupeJa/1.0 (https://xn--poupej-uta.com)" }, signal: ctrl.signal,
+    });
+    const j = await r.json();
+    if (!r.ok || j.code !== "Ok") throw new Error(`OSRM ${r.status} ${j.code || ""}`);
+    return j;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function distancias(casa, lojas) {
+  let perto = maisPertoPorCadeia(lojas, casa, RAIO_KM * 2);
+  let fonte = "estimativa";
+  let matriz = null;
+  try {
+    const cand = lojas.slice(0, 90); // o OSRM público aceita até 100 pontos
+    const t1 = await tabelaOsrm([casa, ...cand], "&sources=0");
+    const porEstrada = {};
+    cand.forEach((l, i) => {
+      const m = t1.distances?.[0]?.[i + 1];
+      if (!Number.isFinite(m) || m / 1000 > RAIO_KM * 2) return;
+      if (!porEstrada[l.cadeia] || m < porEstrada[l.cadeia].m) porEstrada[l.cadeia] = { ...l, m };
+    });
+    if (Object.keys(porEstrada).length) perto = porEstrada;
+    const ids = ["casa", ...Object.keys(perto)];
+    const t2 = await tabelaOsrm([casa, ...ids.slice(1).map((c) => perto[c])]);
+    matriz = {
+      ids,
+      km: t2.distances.map((linha) => linha.map((m) => (Number.isFinite(m) ? Math.round(m / 100) / 10 : null))),
+      min: t2.durations.map((linha) => linha.map((s) => (Number.isFinite(s) ? Math.round(s / 6) / 10 : null))),
+    };
+    fonte = "estrada";
+  } catch (e) {
+    console.warn("lojas-perto: OSRM falhou, fica a estimativa:", e.message);
+  }
+  const limpo = Object.fromEntries(Object.entries(perto).map(([c, l]) => [c, { cadeia: c, nome: l.nome, lat: l.lat, lon: l.lon }]));
+  return { perto: limpo, matriz, fonte };
 }
 
 async function precoCombustivel(tipo) {
@@ -93,5 +148,6 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", combustivel
     ? "public, s-maxage=86400, stale-while-revalidate=3600"
     : "public, s-maxage=600");
-  return res.status(200).json({ lat, lon, lojas, combustivel });
+  const { perto, matriz, fonte } = await distancias({ lat, lon }, lojas);
+  return res.status(200).json({ lat, lon, perto, matriz, fonte, combustivel });
 }
