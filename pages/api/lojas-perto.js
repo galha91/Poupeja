@@ -1,12 +1,11 @@
 import { excedeuLimite } from "../../lib/protecao-api";
-import { cadeiaDe, RAIO_KM } from "../../lib/rota";
+import { cadeiaDe } from "../../lib/rota";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 
 /*
  * GET /api/lojas-perto?lat=38.71&lon=-9.14&tipo=Gasóleo
  *
- * Supermercados das cadeias comparadas num raio de 15 km (OpenStreetMap,
- * via Overpass) e o preço médio do combustível no país hoje (DGEG, tabela
+ * Supermercados das cadeias comparadas perto (OpenStreetMap, via Photon) e o preço médio do combustível no país hoje (DGEG, tabela
  * precos_dgeg_diario). Serve o "Compensa ir a dois supermercados?".
  *
  * A posição chega arredondada a 2 casas (~1 km): chega para escolher a
@@ -15,68 +14,46 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
  */
 
 /*
- * Três servidores Overpass públicos, ao mesmo tempo: ganha o primeiro que
- * responder. O principal (overpass-api.de) anda muitas vezes sobrecarregado
- * e chegava a passar dos 12 s — o pedido era cancelado e a pessoa via
- * "não conseguimos ver as lojas".
+ * Lojas perto pelo Photon (photon.komoot.io): pesquisa de lugares sobre os
+ * dados do OpenStreetMap, com os resultados ordenados pela proximidade.
+ * Uma pesquisa por cadeia, as cinco em paralelo.
+ *
+ * Antes era o Overpass: os servidores públicos andam sobrecarregados e
+ * recusam pedidos vindos da nuvem (502 "at capacity" e 500 nos três
+ * espelhos), e a pessoa via sempre "não conseguimos ver as lojas".
  */
-const OVERPASS = [
-  "https://overpass-api.de/api/interpreter",
-  "https://overpass.kumi.systems/api/interpreter",
-  "https://overpass.private.coffee/api/interpreter",
-];
-const PRAZO_MS = 9000;
+const PHOTON = "https://photon.komoot.io/api/";
+const CADEIAS = ["Continente", "Pingo Doce", "Auchan", "Lidl", "Aldi"];
+const PRAZO_MS = 8000;
 const TIPOS = ["Gasóleo", "Gasolina 95"];
 
 const r2 = (n) => Math.round(n * 100) / 100;
 
-/*
- * Pesquisa leve: só "supermercados numa caixa", sem expressões regulares
- * sobre nomes (eram elas que tornavam o pedido lento). A marca escolhe-se
- * aqui, com cadeiaDe. Lojas de conveniência só com marca (Pingo Doce & Go,
- * My Auchan, Continente Bom Dia).
- */
-function consulta(lat, lon) {
-  const dLat = RAIO_KM / 111;
-  const dLon = RAIO_KM / (111 * Math.cos((lat * Math.PI) / 180));
-  const bbox = [lat - dLat, lon - dLon, lat + dLat, lon + dLon].map((n) => n.toFixed(4)).join(",");
-  return `[out:json][timeout:8][bbox:${bbox}];(nwr["shop"="supermarket"];nwr["shop"="convenience"]["brand"];);out tags center qt 1500;`;
-}
-
-async function pedir(url, q, sinal) {
-  const r = await fetch(url, {
-    method: "POST",
-    body: "data=" + encodeURIComponent(q),
-    headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "PoupeJa/1.0 (https://xn--poupej-uta.com)" },
-    signal: sinal,
-  });
-  if (!r.ok) throw new Error(`Overpass ${r.status}`);
+async function lojasDaCadeia(nome, lat, lon, sinal) {
+  const url = `${PHOTON}?q=${encodeURIComponent(nome)}&lat=${lat}&lon=${lon}&limit=10&osm_tag=shop:supermarket&location_bias_scale=0.1`;
+  const r = await fetch(url, { headers: { "User-Agent": "PoupeJa/1.0 (https://xn--poupej-uta.com)" }, signal: sinal });
+  if (!r.ok) throw new Error(`Photon ${r.status}`);
   const j = await r.json();
-  if (!Array.isArray(j.elements)) throw new Error("Overpass sem elementos");
-  return j.elements;
+  return (j.features || []).map((f) => {
+    const [lo, la] = f.geometry?.coordinates || [];
+    const cadeia = cadeiaDe({ name: f.properties?.name, brand: f.properties?.brand });
+    if (!cadeia || !Number.isFinite(la) || !Number.isFinite(lo)) return null;
+    return { cadeia, nome: f.properties?.name || null, lat: la, lon: lo, id: `${f.properties?.osm_type}${f.properties?.osm_id}` };
+  }).filter(Boolean);
 }
 
-async function lojasOsm(lat, lon) {
-  const q = consulta(lat, lon);
+async function lojasPerto(lat, lon) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), PRAZO_MS);
   try {
-    const elementos = await Promise.any(OVERPASS.map((u) => pedir(u, q, ctrl.signal)));
+    // Uma cadeia que falhe não estraga as outras; só falha se falharem todas.
+    const res = await Promise.allSettled(CADEIAS.map((c) => lojasDaCadeia(c, lat, lon, ctrl.signal)));
+    const ok = res.filter((x) => x.status === "fulfilled");
+    if (!ok.length) throw new Error(res.map((x) => x.reason?.message).join(" | "));
     const vistos = new Set();
-    return elementos.map((e) => {
-      const la = e.lat ?? e.center?.lat, lo = e.lon ?? e.center?.lon;
-      const cadeia = cadeiaDe(e.tags);
-      const id = `${e.type}/${e.id}`;
-      if (!cadeia || !Number.isFinite(la) || !Number.isFinite(lo) || vistos.has(id)) return null;
-      vistos.add(id);
-      return { cadeia, nome: e.tags?.name || null, lat: la, lon: lo };
-    }).filter(Boolean);
-  } catch (e) {
-    // Promise.any falha com AggregateError: mostrar a razão de cada servidor.
-    throw new Error(e?.errors ? e.errors.map((x) => x.message).join(" | ") : e.message);
+    return ok.flatMap((x) => x.value).filter((l) => (vistos.has(l.id) ? false : vistos.add(l.id)));
   } finally {
     clearTimeout(t);
-    ctrl.abort(); // os que perderam a corrida deixam de esperar
   }
 }
 
@@ -104,7 +81,7 @@ export default async function handler(req, res) {
   }
 
   const [lojas, combustivel] = await Promise.all([
-    lojasOsm(lat, lon).catch((e) => { console.warn("lojas-perto:", e.message); return null; }),
+    lojasPerto(lat, lon).catch((e) => { console.warn("lojas-perto:", e.message); return null; }),
     precoCombustivel(tipo).catch(() => null),
   ]);
   if (!lojas) {
