@@ -18,7 +18,7 @@ function limparItens(itens) {
     id: typeof it?.id === "number" || typeof it?.id === "string" ? it.id : Date.now(),
     nome: String(it?.nome ?? "").slice(0, MAX_NOME),
     emoji: String(it?.emoji ?? "").slice(0, 8),
-    qty: Number.isFinite(it?.qty) ? Math.max(1, Math.min(99, Math.floor(it.qty))) : 1,
+    qty: Number.isFinite(it?.qty) ? Math.max(1, Math.min(999, Math.floor(it.qty))) : 1,
     feito: !!it?.feito,
     ...(it?.categoria ? { categoria: String(it.categoria).slice(0, 40) } : {}),
     // Termo de pesquisa do preço (catálogo da lista), para a comparação.

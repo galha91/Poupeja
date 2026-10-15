@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agruparPorCategoria, adicionar as adicionarSem, alterarQty, retirar, repor, categoriaDe, OUTROS, CATEGORIAS, jaComparados, sugestoesIniciais, FREQUENTES, DA_EPOCA, daEpoca } from "../lib/listaCompras.js";
+import { agruparPorCategoria, adicionar as adicionarSem, alterarQty, definirQty, retirar, repor, categoriaDe, OUTROS, CATEGORIAS, jaComparados, sugestoesIniciais, FREQUENTES, DA_EPOCA, daEpoca } from "../lib/listaCompras.js";
 import { sugerir, doCatalogo, preencherCategorias, CATEGORIAS as DO_CATALOGO } from "../lib/catalogoLista.js";
 
 const adicionar = (itens, nome, id) => adicionarSem(itens, nome, { id, doCatalogo });
@@ -71,12 +71,24 @@ test("adicionar: um artigo já comprado não conta — entra outra vez por compr
   assert.equal(l[0].feito, false);
 });
 
-test("quantidade fica entre 1 e 99", () => {
+test("quantidade fica entre 1 e 999", () => {
   let l = [it(1, "Ovos")];
   l = alterarQty(l, 1, -1);
   assert.equal(l[0].qty, 1);
-  l = alterarQty(l, 1, 200);
-  assert.equal(l[0].qty, 99);
+  l = alterarQty(l, 1, 2000);
+  assert.equal(l[0].qty, 999);
+});
+
+test("quantidade escrita à mão", () => {
+  let l = [it(1, "Ovos"), it(2, "Leite")];
+  l = definirQty(l, 1, "130");
+  assert.equal(l[0].qty, 130);
+  assert.equal(l[1].qty, 1);
+  assert.equal(definirQty(l, 1, "")[0].qty, 1);
+  assert.equal(definirQty(l, 1, "abc")[0].qty, 1);
+  assert.equal(definirQty(l, 1, "0")[0].qty, 1);
+  assert.equal(definirQty(l, 1, "5000")[0].qty, 999);
+  assert.equal(definirQty(l, 1, "12.7")[0].qty, 12);
 });
 
 test("anular remoção: o artigo volta ao mesmo sítio", () => {

@@ -5,7 +5,7 @@ import { ArrowLeft, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, X } f
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
+import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 
 /*
@@ -72,9 +72,15 @@ function gerarShareId() {
 const rotulo = { fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--pj-text-faint)" };
 
 /* ── Uma linha da lista ─────────────────────────────────────────── */
-function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onRemover }) {
+function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onDefinirQty, onRemover }) {
   const feito = item.feito;
   const qty = item.qty || 1;
+  // Rascunho do campo: deixa apagar tudo e escrever "130" sem saltar para 1 a meio.
+  const [rascunho, setRascunho] = useState(null);
+  const confirmar = () => {
+    if (rascunho !== null) onDefinirQty(limitarQty(rascunho));
+    setRascunho(null);
+  };
   return (
     <li className="flex items-center" style={{ listStyle: "none", minHeight: 52, borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
       <button onClick={editando ? onEditar : onMarcar} className="pj-tap flex items-center flex-1 min-w-0 text-left"
@@ -95,7 +101,14 @@ function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onRemover 
             style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: qty <= 1 ? 0.4 : 1 }}>
             <Minus size={16} />
           </button>
-          <span className="pj-num text-center" aria-live="polite" style={{ width: 30, fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{qty}</span>
+          <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={3} enterKeyHint="done"
+            value={rascunho ?? String(qty)} aria-label={`Quantidade de ${item.nome}`}
+            onFocus={e => e.target.select()}
+            onChange={e => setRascunho(e.target.value.replace(/\D/g, "").slice(0, 3))}
+            onBlur={confirmar}
+            onKeyDown={e => { if (e.key === "Enter") { confirmar(); e.currentTarget.blur(); } }}
+            className="pj-num text-center"
+            style={{ width: 48, height: 40, fontSize: 16, fontWeight: 600, color: "var(--pj-text)", background: "transparent", border: "1.5px solid var(--pj-subtle)", borderRadius: 10, padding: 0 }} />
           <button onClick={() => onQty(1)} aria-label={`Mais ${item.nome}`} className="pj-tap flex items-center justify-center"
             style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)" }}>
             <Plus size={16} />
@@ -472,6 +485,7 @@ export default function SecaoListaCompras({ onVoltar }) {
                 onMarcar={() => marcar(it.id)}
                 onEditar={() => setEditando(e => e === it.id ? null : it.id)}
                 onQty={d => setItens(prev => alterarQty(prev, it.id, d))}
+                onDefinirQty={n => setItens(prev => definirQty(prev, it.id, n))}
                 onRemover={() => tirar([it.id], `«${it.nome}» removido`)} />
             ))}
           </ul>
@@ -495,7 +509,7 @@ export default function SecaoListaCompras({ onVoltar }) {
           {verComprados && (
             <ul>
               {feitos.map((it, i) => (
-                <Linha key={it.id} item={it} primeira={!i} editando={false} onMarcar={() => marcar(it.id)} onEditar={() => {}} onQty={() => {}}
+                <Linha key={it.id} item={it} primeira={!i} editando={false} onMarcar={() => marcar(it.id)} onEditar={() => {}} onQty={() => {}} onDefinirQty={() => {}}
                   onRemover={() => tirar([it.id], `«${it.nome}» removido`)} />
               ))}
             </ul>
