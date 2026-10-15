@@ -26,6 +26,7 @@ const OVERPASS = [
   "https://overpass.private.coffee/api/interpreter",
 ];
 const PRAZO_MS = 9000;
+const TIPOS = ["Gasóleo", "Gasolina 95"];
 
 const r2 = (n) => Math.round(n * 100) / 100;
 
