@@ -1,6 +1,7 @@
 import { pesquisarTudo } from "../../lib/supermercados";
 import { excedeuLimite } from "../../lib/protecao-api";
-import { registar, resumo } from "../../lib/supermercados/historico";
+import { registar, resumo, registarEmbalagens, reduflacaoDe } from "../../lib/supermercados/historico";
+import { armadilhasEmbalagem } from "../../lib/reduflacao";
 
 // O histórico é um extra: nunca pode atrasar a resposta mais do que isto.
 const comPrazo = (p, ms) => Promise.race([p, new Promise((ok) => setTimeout(() => ok(null), ms))]).catch(() => null);
@@ -48,11 +49,22 @@ export default async function handler(req, res) {
   if (falhas.length) console.warn("precos-supermercado:", q, falhas.map((f) => `${f.id}: ${f.erro}`).join("; "));
 
   let historico = null;
+  let encolheram = null;
   if (falhas.length < r.lojas.length) {
-    await comPrazo(registar(r), 1500);
-    historico = await comPrazo(resumo(q, r.modo === "embalagem" ? "embalagem" : r.nomeUnidade), 1500);
+    await comPrazo(Promise.all([registar(r), registarEmbalagens(r)]), 1500);
+    [historico, encolheram] = await Promise.all([
+      comPrazo(resumo(q, r.modo === "embalagem" ? "embalagem" : r.nomeUnidade), 1500),
+      comPrazo(reduflacaoDe(r.produtos), 1500),
+    ]);
   }
-  const dados = { ...r, historico, obtidoEm: new Date().toISOString() };
+  // Avisos de embalagem: "encolheu" (precisa de histórico) ganha a "família".
+  const familia = armadilhasEmbalagem(r.produtos);
+  const produtos = r.produtos.map((p) => {
+    const k = `${p.loja}|${p.id}`;
+    const aviso = encolheram?.get(k) || familia.get(k);
+    return aviso ? { ...p, aviso } : p;
+  });
+  const dados = { ...r, produtos, historico, obtidoEm: new Date().toISOString() };
 
   if (falhas.length === r.lojas.length) {
     // Tudo em baixo: nunca guardar isto em cache.

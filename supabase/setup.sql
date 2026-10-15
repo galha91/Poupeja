@@ -273,3 +273,25 @@ returns void language sql security definer set search_path = public as $fn$
 $fn$;
 
 revoke all on function public.registar_visita(text, text, text, text, text, text, text) from public, anon, authenticated;
+
+-- ─────────────────────────────────────────────────────────────
+-- Reduflação: cada tamanho de embalagem visto por produto (loja + id).
+-- Quando o mesmo produto aparece com menos quantidade e o preço ao kg
+-- sobe, o "Comparar preços" avisa (lib/reduflacao). primeiro_dia entra
+-- pelo default e o upsert nunca o envia, por isso não muda.
+-- Só o servidor escreve e lê (service role); sem políticas públicas.
+-- (Migração criar_produtos_embalagem.)
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.produtos_embalagem (
+  loja         text          not null,
+  produto_id   text          not null,
+  qtd          numeric(10,3) not null,
+  unidade      text          not null,
+  preco        numeric(10,2) not null,
+  nome         text,
+  primeiro_dia date          not null default (now() at time zone 'Europe/Lisbon')::date,
+  ultimo_dia   date          not null,
+  primary key (loja, produto_id, qtd)
+);
+alter table public.produtos_embalagem enable row level security;
+create index if not exists produtos_embalagem_produto on public.produtos_embalagem (produto_id);

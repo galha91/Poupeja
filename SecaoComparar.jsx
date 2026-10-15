@@ -143,6 +143,36 @@ function Etiqueta({ children, tom = "brand" }) {
   );
 }
 
+/*
+ * Aviso de embalagem (lib/reduflacao): "encolheu" quando o mesmo produto
+ * passou a trazer menos e se paga mais por kg; "familia" quando a
+ * embalagem grande sai mais cara ao kg do que a pequena.
+ */
+function textoAvisoEmbalagem(aviso, unidade) {
+  if (!aviso) return null;
+  const u = unidade || "unidade";
+  if (aviso.tipo === "encolheu") {
+    return {
+      rotulo: "Embalagem encolheu",
+      texto: `Era ${aviso.antes.qtd}, agora ${aviso.agora.qtd}. Pagas +${aviso.pct}% por ${u}.`,
+    };
+  }
+  return {
+    rotulo: "Grande não compensa",
+    texto: `Esta embalagem sai ${aviso.pct}% mais cara por ${u} do que a de ${aviso.alternativa.qtd}.`,
+  };
+}
+
+function AvisoEmbalagem({ p, grande = false }) {
+  const a = textoAvisoEmbalagem(p.aviso, p.nomeUnidade || p.unidade);
+  if (!a) return null;
+  return (
+    <span role="note" style={{ display: "block", marginTop: grande ? 10 : 5, padding: grande ? "8px 10px" : "5px 8px", borderRadius: 10, background: "var(--pj-warn-wash)", color: "var(--pj-warn)", fontSize: grande ? 12.5 : 11.5, lineHeight: 1.35 }}>
+      <strong style={{ fontWeight: 700 }}>{a.rotulo}.</strong> {a.texto}
+    </span>
+  );
+}
+
 function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, historico }) {
   const [alertaAberto, setAlertaAberto] = useState(false);
   const [alerta, setAlerta] = useState(() => alertaDe(q));
@@ -190,6 +220,8 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
             </p>
           )}
         </div>
+
+        <AvisoEmbalagem p={p} grande />
 
         <LinhaHistorico historico={historico} valorAtual={v} unidade={modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade} />
 
@@ -291,6 +323,7 @@ function LinhaProduto({ p, primeira, modo }) {
           {desc ? <Etiqueta tom="promo">−{desc}%</Etiqueta> : null}
           {p.onde === "loja" ? <Etiqueta tom="loja">Na loja</Etiqueta> : null}
         </span>
+        <AvisoEmbalagem p={p} />
       </span>
       <span className="text-right flex-none">
         <span className="pj-num" style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--pj-text)" }}>{textoPreco(p, modo)}</span>
