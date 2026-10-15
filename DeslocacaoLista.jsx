@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Car, Check, Loader2, SlidersHorizontal } from "lucide-react";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
@@ -20,8 +20,8 @@ const TIPOS = ["Gasóleo", "Gasolina 95"];
 function lerCarro() {
   try {
     const c = JSON.parse(localStorage.getItem(LS_CARRO) || "{}");
-    return { consumo: c.consumo > 0 ? c.consumo : CONSUMO_PADRAO, tipo: TIPOS.includes(c.tipo) ? c.tipo : "Gasóleo" };
-  } catch { return { consumo: CONSUMO_PADRAO, tipo: "Gasóleo" }; }
+    return { consumo: c.consumo > 0 ? c.consumo : CONSUMO_PADRAO, tipo: TIPOS.includes(c.tipo) ? c.tipo : "Gasóleo", auto: !!c.auto };
+  } catch { return { consumo: CONSUMO_PADRAO, tipo: "Gasóleo", auto: false }; }
 }
 function guardarCarro(c) {
   try { localStorage.setItem(LS_CARRO, JSON.stringify(c)); } catch {}
@@ -64,9 +64,18 @@ export function useDeslocacao({ unica, divisao, porLoja }) {
     }
   }
 
+  // Quem ligou da última vez encontra-o já ligado — mas só se a
+  // localização já estiver autorizada: nunca se pede sem um toque.
+  useEffect(() => {
+    if (!carro.auto || !navigator.permissions?.query) return;
+    navigator.permissions.query({ name: "geolocation" })
+      .then((p) => { if (p.state === "granted") ligar(); })
+      .catch(() => {});
+  }, []);
+
   function alternar() {
-    if (estado === "ligado") setEstado("desligado");
-    else if (estado !== "a-ver") ligar();
+    if (estado === "ligado") { setEstado("desligado"); mudarCarro({ auto: false }); }
+    else if (estado !== "a-ver") { ligar(); mudarCarro({ auto: true }); }
   }
 
   function mudarCarro(novo) {
