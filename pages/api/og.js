@@ -25,7 +25,7 @@ export default function handler(req) {
 
   const statsRetrato = [taloesRaw > 0 ? `${taloesRaw} tal${taloesRaw !== 1 ? "ões" : "ão"}` : null, streakRaw >= 2 ? `${streakRaw} semanas seguidas` : null].filter(Boolean).join(" · ");
   const eyebrow = lista ? "Lista de compras partilhada"
-    : receita ? "Receita económica · 4 pessoas"
+    : receita ? "Receita económica"
     : retrato ? `O meu retrato de ${mesRaw || "mês"}`
     : poupanca ? "Poupança real, medida talão a talão"
     : "A app de poupança portuguesa";
@@ -34,7 +34,7 @@ export default function handler(req) {
     : poupanca ? `${retrato ? "Poupei" : "Já poupei"} €${valorFmt}`
     : "Poupa nas compras";
   const titulo2 = lista ? "de compras"
-    : receita ? `${tempoRaw ? `${tempoRaw} min · ` : ""}${"€".repeat(custoRaw)} 🍲`
+    : receita ? `${tempoRaw ? `${tempoRaw < 60 ? `${tempoRaw} min` : `${Math.floor(tempoRaw / 60)} h${tempoRaw % 60 ? ` ${String(tempoRaw % 60).padStart(2, "0")}` : ""}`} · ` : ""}${"€".repeat(custoRaw)} 🍲`
     : retrato ? "num só mês 🐷"
     : poupanca ? "nas compras 🐷"
     : "do dia a dia";

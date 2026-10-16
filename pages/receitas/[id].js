@@ -1,7 +1,11 @@
 import Head from "next/head";
 import { Clock, Users, Leaf, ChefHat } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
-import { EMENTAS, emojiIngrediente } from "../../lib/ementas-data";
+import { receitas, emojiIngrediente, formatarTempo, rendimento } from "../../lib/receitas/motor";
+
+const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
+
+const EMENTAS = receitas();
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -11,9 +15,17 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * O JSON-LD Recipe torna-a elegível para rich results do Google (cartões de receita).
  */
 export default function Receita({ receita, outras }) {
-  const descricao = `Receita económica de ${receita.nome} para 4 pessoas, pronta em ${receita.tempoMin} minutos. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
+  const rende = rendimento(receita.porcoes, receita.un);
+  const porUm = rendimento(1, receita.un).slice(2);
+  const descricao = `Receita económica de ${receita.nome} (${rende}), pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
   const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}`;
 
+  const dietasLd = [
+    receita.vegano && "https://schema.org/VeganDiet",
+    receita.veg && "https://schema.org/VegetarianDiet",
+    receita.dietas.includes("sem-gluten") && "https://schema.org/GlutenFreeDiet",
+    receita.dietas.includes("sem-lactose") && "https://schema.org/LowLactoseDiet",
+  ].filter(Boolean);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Recipe",
@@ -21,27 +33,36 @@ export default function Receita({ receita, outras }) {
     description: descricao,
     image: [ogImage],
     author: { "@type": "Organization", name: "PoupeJá", url: SITE_URL },
-    recipeYield: "4 pessoas",
+    recipeYield: rende,
     totalTime: `PT${receita.tempoMin}M`,
     recipeCuisine: "Portuguesa",
-    recipeCategory: "Prato principal",
-    keywords: `receita barata, receita económica, ${receita.nome.toLowerCase()}, jantar para 4 pessoas`,
+    recipeCategory: CATEGORIA[receita.tipo],
+    keywords: `receita barata, receita económica, ${receita.nome.toLowerCase()}, ${CATEGORIA[receita.tipo].toLowerCase()}`,
     recipeIngredient: receita.ingredientes.map(i => `${i.nome} — ${i.qtd}`),
     recipeInstructions: receita.passos.map((p, i) => ({
       "@type": "HowToStep",
       position: i + 1,
       text: p,
     })),
-    ...(receita.veg ? { suitableForDiet: "https://schema.org/VegetarianDiet" } : {}),
+    nutrition: {
+      "@type": "NutritionInformation",
+      servingSize: `1 ${porUm}`,
+      calories: `${receita.nutricao.kcal} kcal`,
+      proteinContent: `${receita.nutricao.p} g`,
+      carbohydrateContent: `${receita.nutricao.hc} g`,
+      fatContent: `${receita.nutricao.g} g`,
+      fiberContent: `${receita.nutricao.fib} g`,
+    },
+    ...(dietasLd.length ? { suitableForDiet: dietasLd } : {}),
   };
 
   return (
     <LayoutPublico>
       <Head>
-        <title>{`${receita.nome} — receita barata para 4 pessoas (${receita.tempoMin} min) | PoupeJá`}</title>
+        <title>{`${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/receitas/${receita.id}`} />
-        <meta property="og:title" content={`${receita.nome} — receita barata para 4 pessoas`} key="og:title" />
+        <meta property="og:title" content={`${receita.nome} — receita barata (${rende})`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/receitas/${receita.id}`} key="og:url" />
         <meta property="og:image" content={ogImage} key="og:image" />
@@ -62,14 +83,31 @@ export default function Receita({ receita, outras }) {
           </h1>
         </div>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12 }}>
-          <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {receita.tempoMin} min</span>
-          <span className="inline-flex items-center gap-1.5"><Users size={13} /> 4 pessoas</span>
+          <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {formatarTempo(receita.tempoMin)}</span>
+          <span className="inline-flex items-center gap-1.5"><Users size={13} /> {rende}</span>
           <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>
             {"€".repeat(receita.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - receita.custo)}</span>
             {" "}{receita.custo === 1 ? "muito barata" : "barata"}
           </span>
           {receita.airfryer && <span className="inline-flex items-center gap-1.5"><ChefHat size={13} /> air fryer</span>}
           {receita.veg && <span className="inline-flex items-center gap-1.5"><Leaf size={13} /> vegetariano</span>}
+        </p>
+
+        <div className="grid grid-cols-4 gap-1 text-center rounded-2xl" style={{ marginTop: 20, padding: "14px 8px", background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+          {[
+            [receita.nutricao.kcal, "kcal"],
+            [`${receita.nutricao.p} g`, "proteína"],
+            [`${receita.nutricao.hc} g`, "hidratos"],
+            [`${receita.nutricao.g} g`, "gordura"],
+          ].map(([v, l]) => (
+            <div key={l}>
+              <p className="font-display" style={{ fontSize: 19, fontWeight: 600 }}>{v}</p>
+              <p style={{ fontSize: 11.5, color: "var(--pj-text-muted)" }}>{l}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 8 }}>
+          Por {porUm}, valores aproximados calculados a partir dos ingredientes.
         </p>
 
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>
