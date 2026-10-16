@@ -1,7 +1,9 @@
 import Head from "next/head";
 import { Clock, ChefHat, Leaf } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
-import { EMENTAS } from "../../lib/ementas-data";
+import { receitas } from "../../lib/receitas/motor";
+
+const EMENTAS = receitas();
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
