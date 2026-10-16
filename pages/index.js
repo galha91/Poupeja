@@ -724,7 +724,7 @@ function PoupeJa() {
                 {tab === "taloes"     && <SecaoTaloes inicioAba={subTabTaloes} />}
                 {tab === "lista" && (
                   <div className="pt-2">
-                    <SecaoListaCompras onVoltar={() => go("inicio")} />
+                    <SecaoListaCompras onVoltar={() => go("inicio")} onCriarConta={user?.convidado ? () => setModalConta(true) : null} />
                   </div>
                 )}
               </div>

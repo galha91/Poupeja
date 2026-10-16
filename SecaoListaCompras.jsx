@@ -131,7 +131,7 @@ function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onDefinirQ
 }
 
 /* ── O ecrã ─────────────────────────────────────────────────────── */
-export default function SecaoListaCompras({ onVoltar }) {
+export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   const [itens, setItens]       = useState(lerItens);
   const [texto, setTexto]       = useState("");
   const [focado, setFocado]     = useState(false);
@@ -567,7 +567,7 @@ export default function SecaoListaCompras({ onVoltar }) {
       {/* Resultado — folha por cima da lista */}
       {verResultado && comparacao.linhas && createPortal(
         <Folha titulo="Onde fica mais barata" onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
-          <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo}
+          <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo} onCriarConta={onCriarConta ? () => { setVerResultado(false); onCriarConta(); } : null}
             onEscolher={(id, escolha) => setItens(prev => prev.map(x => x.id === id ? (escolha ? { ...x, escolha } : (({ escolha: _, ...resto }) => resto)(x)) : x))}
             onAtualizar={() => comparar(true)} />
         </Folha>,

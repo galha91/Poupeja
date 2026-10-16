@@ -41,7 +41,7 @@ function atualDe(dados) {
   return { ...resumoAtual(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade };
 }
 
-export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtualizar, onResumo, onEscolher, moldura = true }) {
+export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtualizar, onResumo, onEscolher, onCriarConta = null, moldura = true }) {
   // Produto escolhido à mão por artigo (id do artigo → { loja, id, nome }).
   // Começa no que vem guardado na lista e muda aqui sem voltar a pesquisar.
   const [escolhas, setEscolhas] = useState(() => Object.fromEntries(
@@ -65,6 +65,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
   const [escolha, setEscolha] = useState(null);
   const [alertas, setAlertas] = useState([]);
   const [avisoVigiar, setAvisoVigiar] = useState("");
+  const [pedirContaVigia, setPedirContaVigia] = useState(false);
   useEffect(() => { setAlertas(lerAlertas()); }, []);
   // Ao atualizar chegam linhas novas: a escolha anterior deixa de valer.
   useEffect(() => { setEscolha(null); }, [linhas]);
@@ -121,6 +122,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
     if (ativo) {
       deixarDeVigiar(l.q);
       setAvisoVigiar("");
+      setPedirContaVigia(false);
     } else {
       const atual = atualDe(l.dados);
       if (!atual) return;
@@ -133,6 +135,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
         push = await estadoPush();
         if (push === "inativo") push = await ativarPush().catch(() => "inativo");
       }
+      setPedirContaVigia(push === "sem-conta" && !!onCriarConta);
       setAvisoVigiar(push === "ativo"
         ? `A vigiar «${l.item.nome}». Mandamos uma notificação quando descer ou entrar em promoção.`
         : push === "sem-conta"
@@ -395,7 +398,17 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
               </p>
             )}
 
-            {avisoVigiar && <p role="status" style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>{avisoVigiar}</p>}
+            {avisoVigiar && (
+              <p role="status" style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+                {avisoVigiar}
+                {pedirContaVigia && (
+                  <button onClick={() => { evento("pedir_conta", { onde: "sino" }); onCriarConta(); }} className="pj-tap press"
+                    style={{ display: "block", marginTop: 6, padding: "7px 14px", borderRadius: 999, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 12.5, fontWeight: 700 }}>
+                    Criar conta grátis · 10 segundos
+                  </button>
+                )}
+              </p>
+            )}
             {desceram.length > 0 && (
               <p style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
                 {desceram.length === 1 ? `«${desceram[0].item.nome}» desceu de preço ou está em promoção.` : `${desceram.length} artigos que vigias desceram ou estão em promoção.`}
@@ -428,6 +441,21 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
                   Poupança de <strong className="pj-num">{eur(escolha.valor, 2)} €</strong> registada. Esta semana: <strong className="pj-num">{eur(escolha.semana, 2)} €</strong>.
                 </span>
               </p>
+            )}
+            {escolha && onCriarConta && (
+              // O momento certo: acabou de poupar. Guardar isto é o que a conta dá.
+              <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+                <p style={{ fontSize: 13.5, fontWeight: 700, color: "var(--pj-text)", lineHeight: 1.35 }}>
+                  Não percas esta poupança
+                </p>
+                <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.4, marginTop: 2 }}>
+                  Com conta guardamos a tua lista, o histórico do que poupas e avisamos-te no telemóvel quando algo baixar de preço. Grátis, sem cartão.
+                </p>
+                <button onClick={() => { evento("pedir_conta", { onde: "poupanca", valor: escolha.valor }); onCriarConta(); }} className="pj-tap press"
+                  style={{ marginTop: 10, padding: "10px 16px", borderRadius: 12, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 700 }}>
+                  Criar conta grátis
+                </button>
+              </div>
             )}
           </div>
         </>
