@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Clock, ChefHat, Leaf, Lock, Unlock, RefreshCw, ShoppingCart, Check, Sparkles, SlidersHorizontal, ChevronDown, Star, CalendarDays } from "lucide-react";
+import { Clock, ChefHat, Leaf, Lock, Unlock, RefreshCw, ShoppingCart, Check, Sparkles, SlidersHorizontal, ChevronDown, Star, CalendarDays, RotateCcw } from "lucide-react";
 import {
   receitas, receitaPorId, compativel, gerarPlano, regenerar, trocarDia, alternarFixa, comprasDoPlano,
   mediaDoPlano, porcoesNoPlano, sugestaoDaSemana, formatarTempo, DIAS, DIETAS, VONTADES, EQUIPAMENTOS,
@@ -172,6 +172,29 @@ export default function SecaoEmentas({ setTab }) {
     setNaLista(0);
   }
 
+  /*
+   * Começar do zero: apaga o plano E as escolhas do assistente (pessoas,
+   * orçamento, restrições, aparelhos), para voltar à apresentação inicial.
+   * As estrelas das receitas ficam — são o gosto da pessoa, não o plano.
+   * Dois toques, para um toque sem querer não deitar a semana fora.
+   */
+  const [confirmar, setConfirmar] = useState(false);
+  useEffect(() => {
+    if (!confirmar) return;
+    const t = setTimeout(() => setConfirmar(false), 4000);
+    return () => clearTimeout(t);
+  }, [confirmar]);
+  function recomecar() {
+    if (!confirmar) { setConfirmar(true); return; }
+    setConfirmar(false);
+    guardarPlano(null);
+    setPrefs(null);
+    gravar(LS_PREFS, null);
+    setSoMinhas(true);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+    evento("ementas_plano", { acao: "recomecar" });
+  }
+
   function concluirAssistente(p) {
     setPrefs(p);
     gravar(LS_PREFS, p);
@@ -243,7 +266,14 @@ export default function SecaoEmentas({ setTab }) {
           {plano ? "O teu plano da semana" : "Ementas da semana"}
         </p>
         {plano ? (
-          <p className="text-xs mt-1" style={{ color: "var(--pj-text-muted)" }}>{resumoPrefs(plano.prefs)}</p>
+          <div className="flex items-start justify-between gap-3 mt-1">
+            <p className="text-xs" style={{ color: "var(--pj-text-muted)" }}>{resumoPrefs(plano.prefs)}</p>
+            <button onClick={recomecar} className="pj-tap press flex-shrink-0 inline-flex items-center gap-1 text-[12px] font-semibold"
+              style={{ minHeight: 32, padding: "0 10px", borderRadius: 10, border: 0,
+                background: confirmar ? "var(--pj-danger-wash)" : "var(--pj-subtle)", color: confirmar ? "var(--pj-danger-strong)" : "var(--pj-text-strong)" }}>
+              <RotateCcw size={12} /> {confirmar ? "Tocar de novo para apagar" : "Começar do zero"}
+            </button>
+          </div>
         ) : (
           <p className="text-xs mt-1" style={{ color: "var(--pj-text-muted)" }}>Receitas baratas, à medida da tua casa — e as compras entram na lista num toque.</p>
         )}
@@ -407,9 +437,9 @@ export default function SecaoEmentas({ setTab }) {
             São embalagens inteiras: parte do arroz, da massa ou das especiarias fica para as semanas seguintes.
           </p>
 
-          <button onClick={() => { guardarPlano(null); evento("ementas_plano", { acao: "apagar" }); }}
-            className="pj-tap mt-5 text-[12.5px] font-semibold" style={{ minHeight: 40, background: "none", border: 0, color: "var(--pj-text-faint)" }}>
-            Apagar este plano
+          <button onClick={recomecar}
+            className="pj-tap mt-5 text-[12.5px] font-semibold" style={{ minHeight: 40, background: "none", border: 0, color: confirmar ? "var(--pj-danger-strong)" : "var(--pj-text-faint)" }}>
+            {confirmar ? "Tocar de novo para apagar o plano e as escolhas" : "Apagar o plano e começar do zero"}
           </button>
         </div>
       )}

@@ -165,6 +165,12 @@ export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
             <div className="flex-1 overflow-y-auto no-scrollbar pt-6 pb-4" style={{ minHeight: 0 }}>
               {id === "casa" && (
                 <>
+                  {inicial && (
+                    <button type="button" onClick={() => setP({ ...PREFS_PADRAO })}
+                      className="pj-tap mb-4 text-[12.5px] font-semibold" style={{ minHeight: 36, background: "none", border: 0, padding: 0, color: "var(--pj-brand-ink)" }}>
+                      ↺ Limpar as escolhas anteriores
+                    </button>
+                  )}
                   <Titulo sub="Ajustamos as quantidades de cada receita.">Para quantas pessoas cozinhas?</Titulo>
                   <Contador valor={p.pessoas} min={1} max={8} onChange={(v) => set("pessoas", v)} rotulo="pessoas" />
 
