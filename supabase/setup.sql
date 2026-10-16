@@ -295,3 +295,28 @@ create table if not exists public.produtos_embalagem (
 );
 alter table public.produtos_embalagem enable row level security;
 create index if not exists produtos_embalagem_produto on public.produtos_embalagem (produto_id);
+
+-- ─────────────────────────────────────────────────────────────
+-- Percurso do convidado: o que fez antes de criar conta (ou de sair).
+-- Cada marco guarda a primeira vez que aconteceu, para o funil do /admin:
+-- entrou → comparou a lista → escolheu onde comprar → ligou o sino →
+-- tocou em "criar conta" → criou conta. Sem dados pessoais, só datas.
+-- (Migração percurso_convidado.)
+-- ─────────────────────────────────────────────────────────────
+alter table public.convidados_site
+  add column if not exists comparou_em    timestamptz,
+  add column if not exists escolheu_em    timestamptz,
+  add column if not exists alerta_em      timestamptz,
+  add column if not exists pediu_conta_em timestamptz;
+
+create or replace function public.marcar_convidado(p_id uuid, p_marco text)
+returns void language sql security definer set search_path = public as $$
+  update public.convidados_site set
+    comparou_em    = case when p_marco = 'comparou'    then coalesce(comparou_em, now())    else comparou_em end,
+    escolheu_em    = case when p_marco = 'escolheu'    then coalesce(escolheu_em, now())    else escolheu_em end,
+    alerta_em      = case when p_marco = 'alerta'      then coalesce(alerta_em, now())      else alerta_em end,
+    pediu_conta_em = case when p_marco = 'pediu_conta' then coalesce(pediu_conta_em, now()) else pediu_conta_em end
+  where id = p_id;
+$$;
+
+revoke all on function public.marcar_convidado(uuid, text) from public, anon, authenticated;
