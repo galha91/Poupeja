@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { Clock, ChefHat, Leaf } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
+import { DestaqueEmentasPublico } from "../../DestaqueEmentas";
 import { receitas, formatarTempo } from "../../lib/receitas/motor";
 
 const EMENTAS = receitas();
@@ -32,7 +33,7 @@ export default function Receitas() {
     })),
   };
   return (
-    <LayoutPublico>
+    <LayoutPublico destaqueEmentas={false}>
       <Head>
         <title>{`Receitas Baratas — ${EMENTAS.length} jantares, sopas, pequenos-almoços e sobremesas | PoupeJá`}</title>
         <meta name="description" content={`${EMENTAS.length} receitas portuguesas baratas, com ingredientes, quantidades e passo a passo. Jantares, sopas, pequenos-almoços e sobremesas, para todos os aparelhos da cozinha — grátis, sem registo.`} />
@@ -56,6 +57,9 @@ export default function Receitas() {
           <strong style={{ color: "var(--pj-text)" }}>lista de compras num toque</strong> — e vês os folhetos
           antes de ir às compras.
         </p>
+
+        {/* O planeador logo no topo: é o que distingue estas receitas. */}
+        <DestaqueEmentasPublico />
 
         {GRUPOS.map((g) => {
           const doGrupo = EMENTAS.filter((e) => e.tipo === g.tipo);
@@ -102,7 +106,7 @@ export default function Receitas() {
           antes de sair de casa.
         </p>
 
-        <CtaApp texto="Mete os ingredientes na lista de compras num toque — grátis" />
+        <CtaApp href="/?atalho=ementas" texto="Cria o teu plano da semana na app — grátis, sem conta" />
       </div>
     </LayoutPublico>
   );

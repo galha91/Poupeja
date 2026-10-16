@@ -6,6 +6,7 @@ import {
 } from "./lib/receitas/motor";
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes } from "./ReceitaDetalhe";
 import EmentasAssistente from "./EmentasAssistente";
+import { marcarEmentasVistas, Azulejos } from "./DestaqueEmentas";
 import CompararLista from "./CompararLista";
 import { MAX_ARTIGOS } from "./lib/listaCompras";
 import { evento } from "./lib/analytics";
@@ -159,6 +160,7 @@ export default function SecaoEmentas({ setTab }) {
   const [naLista, setNaLista] = useState(0);
 
   useEffect(() => {
+    marcarEmentasVistas();
     setPrefs(ler(LS_PREFS));
     setPlano(ler(LS_PLANO));
     setAval(lerAvaliacoes());
@@ -250,7 +252,9 @@ export default function SecaoEmentas({ setTab }) {
 
       {/* Sem plano: o convite */}
       {!plano && (
-        <div className="mx-4 mb-6 rounded-3xl p-5" style={{ background: "var(--pj-brand)" }}>
+        <div className="mx-4 mb-6 rounded-3xl overflow-hidden" style={{ background: "var(--pj-brand)", boxShadow: "0 8px 24px rgba(11,107,79,0.25)" }}>
+          <Azulejos altura={28} />
+          <div className="p-5">
           <div className="flex gap-1.5 text-[26px]" aria-hidden="true">🥕🍗🐟🫘🥣</div>
           <p className="font-display mt-3" style={{ fontSize: 21, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>Planeia os jantares da semana em 1 minuto</p>
           <ul className="mt-3 flex flex-col gap-1.5" style={{ fontSize: 13, color: "#d5e7de", paddingLeft: 0, listStyle: "none" }}>
@@ -262,6 +266,7 @@ export default function SecaoEmentas({ setTab }) {
             style={{ minHeight: 52, borderRadius: 16, fontSize: 15, fontWeight: 600, background: "#fff", color: "var(--pj-brand-ink)", border: 0 }}>
             <CalendarDays size={17} /> Criar o meu plano
           </button>
+          </div>
         </div>
       )}
 

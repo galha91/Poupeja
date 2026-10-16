@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CartaoEmentasInicio } from "./DestaqueEmentas";
 import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
@@ -518,9 +519,6 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
    */
   const MAIS = [
     { icon: Receipt,    label: "Talões e garantias", desc: garantiasCount > 0 ? `${garantiasCount} ${garantiasCount === 1 ? "garantia a acabar" : "garantias a acabar"}` : "Compras guardadas e prazos de garantia", ir: garantiasCount > 0 ? goGarantias : () => setTab("taloes") },
-    // Ia para "mercados" e abria em Folhetos — o rótulo prometia receitas
-    // e entregava o folheto do Aldi. Agora abre mesmo no separador certo.
-    { icon: ChefHat,    label: "Ementas económicas", desc: "Receitas baratas, com lista num toque", ir: () => (abrirEmentas ? abrirEmentas() : setTab("mercados")) },
     { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e prazos (IRS, IMI, abono…)",   ir: () => setTab("apoios"), soMovel: true },
     { icon: Store,      label: "Lojas",              desc: "Moda, eletrónica e desporto",          ir: () => setTab("lojas"), soMovel: true },
     ...(mostrarIRS(new Date(), irsUsado) ? [{ icon: Calculator, label: "Simulador de IRS", desc: "Estima o teu IRS antes da hora", ir: () => setTab("irs") }] : []),
@@ -613,6 +611,10 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             onGuardarTalao={() => setTab("taloes")}
           />
         )}
+
+        {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
+            ou o convite para planear a semana. */}
+        <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />
 
         {/* Lista de compras — com o resultado da lista otimizada, quando há */}
         <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />
