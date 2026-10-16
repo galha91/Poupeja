@@ -24,6 +24,9 @@ const SecaoIRS         = dynamic(() => import("../SecaoIRS"), { loading: carrega
 const SecaoPoupanca    = dynamic(() => import("../SecaoPoupanca"), { loading: carregandoSeccao });
 import EcraInicio from "../EcraInicio";
 import ModalCriarConta from "../ModalCriarConta";
+import PedirNotificacoes from "../PedirNotificacoes";
+import { ativarPush } from "../lib/push";
+import { podeMostrar, adiar, lerEstado, guardarEstado } from "../lib/pushSoft";
 import { ModalInstalar, useInstallDetect, BarraInstalacao } from "../InstalarApp";
 import PainelAvisos from "../PainelAvisos";
 import RetratoMes from "../RetratoMes";
@@ -173,6 +176,7 @@ function PoupeJa() {
   const [garantiasAviso, setGarantiasAviso] = useState([]);
   const [syncTick, setSyncTick]         = useState(0);
   const [modalInstalarAberto, setModalInstalarAberto] = useState(false);
+  const [pedirPush, setPedirPush] = useState(false);
   const [modalConta, setModalConta] = useState(false);
   const [ecraEntrar, setEcraEntrar] = useState(false);
   const [retrato, setRetrato] = useState(null);          // retrato do mês anterior, se houver dados
@@ -279,7 +283,22 @@ function PoupeJa() {
     } catch {}
   }, [user?.id]);
 
-  /* Pede permissão de push automaticamente ao fazer login (se ainda não foi pedida) */
+  async function ativarAvisos() {
+    evento("push_soft", { passo: "ativar" });
+    let r = "bloqueado";
+    try { r = await ativarPush(); } catch {}
+    evento("push_soft", { passo: "resultado", resultado: r });
+    if (r === "ativo") evento("push_subscribed");
+    else guardarEstado(adiar(lerEstado()));
+    setPedirPush(false);
+  }
+  function adiarAvisos() {
+    evento("push_soft", { passo: "agora_nao" });
+    guardarEstado(adiar(lerEstado()));
+    setPedirPush(false);
+  }
+
+  /* Avisos: se já autorizou, subscreve em silêncio; senão, convite com motivo (ver PedirNotificacoes) */
   useEffect(() => {
     if (!user?.id) return;
     if (user?.convidado) return; // push personalizado é exclusivo de contas registadas
@@ -315,45 +334,18 @@ function PoupeJa() {
 
     if (Notification.permission !== "default") return;
 
+    // Sem pedido nativo à pressa: mostra-se primeiro o convite com o motivo
+    // (PedirNotificacoes) e só o toque em "Ativar avisos" abre o pedido do navegador.
+    let cancelado = false;
     const timer = setTimeout(async () => {
       try {
-        // Se já foi pedido mas não há subscrição ativa, pede de novo
-        const jaAtivou = localStorage.getItem("poupeja_push_pedido");
-        if (jaAtivou) {
-          const regAtual = await navigator.serviceWorker.ready;
-          const subAtual = await regAtual.pushManager.getSubscription().catch(() => null);
-          if (subAtual) return;
-          localStorage.removeItem("poupeja_push_pedido");
-        }
-        localStorage.setItem("poupeja_push_pedido", "1");
-
-        const perm = await Notification.requestPermission();
-        if (perm !== "granted") return;
+        if (!podeMostrar(lerEstado())) return;
         const reg = await navigator.serviceWorker.ready;
-        const jaSubscrito = await reg.pushManager.getSubscription();
-        if (jaSubscrito) return;
-        function urlBase64ToUint8Array(b) {
-          const pad = "=".repeat((4 - (b.length % 4)) % 4);
-          const base64 = (b + pad).replace(/-/g, "+").replace(/_/g, "/");
-          const raw = atob(base64);
-          return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-        }
-        const sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
-        });
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) {
-          await fetch("/api/push-subscribe", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-            body: JSON.stringify({ subscription: sub }),
-          });
-          evento("push_subscribed");
-        }
+        if (await reg.pushManager.getSubscription().catch(() => null)) return;
+        if (!cancelado) { setPedirPush(true); evento("push_soft", { passo: "mostrado" }); }
       } catch {}
-    }, 3000); // pequeno delay para não assustar logo ao abrir a app
-    return () => clearTimeout(timer); // evita disparar após desmontar/trocar de utilizador
+    }, 8000);
+    return () => { cancelado = true; clearTimeout(timer); };
   }, [user?.id]);
 
   /* Convite a instalar: logo na 1ª visita e depois a relembrar (3ª e a cada 5) */
@@ -790,6 +782,10 @@ function PoupeJa() {
             onEntrar={() => { setModalConta(false); setEcraEntrar(true); }}
             onConvertido={(nome, email) => setUser(u => ({ ...u, nome, email }))}
           />
+        )}
+
+        {pedirPush && !modalConta && !modalInstalarAberto && !user?.convidado && (
+          <PedirNotificacoes onAtivar={ativarAvisos} onAdiar={adiarAvisos} />
         )}
 
         {modalInstalarAberto && installModo && installModo !== "instalado" && (
