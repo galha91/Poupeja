@@ -7,6 +7,7 @@ import {
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes } from "./ReceitaDetalhe";
 import EmentasAssistente from "./EmentasAssistente";
 import CompararLista from "./CompararLista";
+import { MAX_ARTIGOS } from "./lib/listaCompras";
 import { evento } from "./lib/analytics";
 
 /*
@@ -99,10 +100,12 @@ function DiaPlano({ rotulo, r, entrada, nota, onAbrir, onFixar, onTrocar }) {
   const fixa = !!entrada.fixa;
   return (
     <div>
-      <p className="flex items-center gap-2 mb-1.5 px-1" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-strong)" }}>
-        {rotulo}
-        {entrada.repetida && <span className="text-[10.5px] font-semibold" style={{ padding: "2px 8px", borderRadius: 8, background: "var(--pj-accent-wash)", color: "var(--pj-accent)" }}>repete · cozinha a dobrar</span>}
-      </p>
+      {(rotulo || entrada.repetida) && (
+        <p className="flex items-center gap-2 mb-1.5 px-1" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-strong)" }}>
+          {rotulo}
+          {entrada.repetida && <span className="text-[10.5px] font-semibold" style={{ padding: "2px 8px", borderRadius: 8, background: "var(--pj-accent-wash)", color: "var(--pj-accent)" }}>repete · cozinha a dobrar</span>}
+        </p>
+      )}
       <div className="rounded-2xl flex items-center" style={{ background: "var(--pj-card)", border: `1px solid ${fixa ? "var(--pj-brand)" : "var(--pj-border)"}` }}>
         <button onClick={() => onAbrir(r)} className="pj-tap press flex-1 text-left flex items-center gap-3 p-3" style={{ minWidth: 0, background: "none", border: 0 }}>
           <span className="flex items-center justify-center flex-shrink-0" style={{ fontSize: 26, width: 48, height: 48, borderRadius: 14, background: "var(--pj-surface)" }}>{r.emoji}</span>
@@ -127,6 +130,13 @@ function DiaPlano({ rotulo, r, entrada, nota, onAbrir, onFixar, onTrocar }) {
   );
 }
 
+/* "Rende 10 fatias", "Para 3 dias" — por baixo de um pequeno-almoço ou sobremesa no plano. */
+function notaExtra(r, alvo) {
+  if (!r) return null;
+  if (r.un !== "pessoas") return `Rende ${r.porcoes} ${r.un}`;
+  return alvo === "manha" ? "Para 2 ou 3 manhãs" : null;
+}
+
 function resumoPrefs(p) {
   const partes = [`${p.pessoas} pessoa${p.pessoas > 1 ? "s" : ""}`, `${p.jantares} jantares`, `até ${p.orcamento} €`];
   const nomes = [
@@ -143,6 +153,7 @@ export default function SecaoEmentas({ setTab }) {
   const [assistente, setAssistente] = useState(false);
   const [aberta, setAberta] = useState(null); // { r, legenda, pessoas }
   const [filtro, setFiltro] = useState("todas");
+  const [categoria, setCategoria] = useState("todas");
   const [soMinhas, setSoMinhas] = useState(true);
   const [verCompras, setVerCompras] = useState(false);
   const [naLista, setNaLista] = useState(0);
@@ -183,7 +194,9 @@ export default function SecaoEmentas({ setTab }) {
   }
 
   function abrir(r, extra = {}) {
-    setAberta({ r, pessoas: prefs?.pessoas || 4, ...extra });
+    // Bolos, pão, iogurtes: abrem com o que a receita rende; o resto, para as pessoas da casa.
+    const pessoas = r.un === "pessoas" ? prefs?.pessoas || r.porcoes : r.porcoes;
+    setAberta({ r, pessoas, ...extra });
   }
   function fecharDetalhe() {
     setAberta(null);
@@ -196,13 +209,20 @@ export default function SecaoEmentas({ setTab }) {
     { id: "baratas", label: "€ mais baratas" },
     { id: "rapidas", label: "≤ 25 min" },
     { id: "leves", label: "Leves" },
-    { id: "sopas", label: "Sopas" },
     { id: "veg", label: "Vegetariano" },
     { id: "airfryer", label: "Air fryer" },
   ];
   const sugestao = sugestaoDaSemana();
+  const CATEGORIAS = [
+    { id: "todas", label: "Todas" },
+    { id: "prato", label: "Jantares" },
+    { id: "sopa", label: "Sopas" },
+    { id: "pequeno-almoco", label: "Pequeno-almoço" },
+    { id: "sobremesa", label: "Sobremesas" },
+  ];
   const visiveis = receitas().filter((r) => {
     if (prefs && soMinhas && !compativel(r, prefs)) return false;
+    if (categoria !== "todas" && r.tipo !== categoria) return false;
     if (filtro === "baratas") return r.custo === 1;
     if (filtro === "rapidas") return r.tempoMin <= 25;
     if (filtro === "leves") return r.vontades.includes("leve");
@@ -291,6 +311,20 @@ export default function SecaoEmentas({ setTab }) {
                 onFixar={() => guardarPlano(alternarFixa(plano, "sopa"))}
                 onTrocar={() => guardarPlano(trocarDia(plano, "sopa", { avaliacoes: aval }))} />
             )}
+            {(plano.manha || []).map((m, i) => (
+              <DiaPlano key={`manha-${i}`} rotulo={i === 0 ? "Pequenos-almoços (alterna entre estes)" : null} r={receitaPorId(m.id)} entrada={m}
+                nota={notaExtra(receitaPorId(m.id), "manha")}
+                onAbrir={(r) => abrir(r, { legenda: "Pequeno-almoço", pessoas: porcoesNoPlano(plano, "manha", r) })}
+                onFixar={() => guardarPlano(alternarFixa(plano, `manha-${i}`))}
+                onTrocar={() => guardarPlano(trocarDia(plano, `manha-${i}`, { avaliacoes: aval }))} />
+            ))}
+            {plano.sobremesa && (
+              <DiaPlano rotulo="Sobremesa do fim de semana" r={receitaPorId(plano.sobremesa.id)} entrada={plano.sobremesa}
+                nota={notaExtra(receitaPorId(plano.sobremesa.id), "sobremesa")}
+                onAbrir={(r) => abrir(r, { legenda: "Sobremesa do fim de semana", pessoas: r.porcoes })}
+                onFixar={() => guardarPlano(alternarFixa(plano, "sobremesa"))}
+                onTrocar={() => guardarPlano(trocarDia(plano, "sobremesa", { avaliacoes: aval }))} />
+            )}
           </div>
 
           <div className="flex gap-2 mt-5">
@@ -309,7 +343,12 @@ export default function SecaoEmentas({ setTab }) {
           <p className={`${ROT} mt-8 mb-2`} style={{ color: "var(--pj-text-faint)" }}>Compras do plano</p>
           <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
             <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5 }}>
-              <strong>{aComprar.length} artigos</strong> para {plano.dias.filter((d) => d.id).length} jantares{plano.sopa ? " e a sopa" : ""} — já somados entre receitas.
+              <strong>{aComprar.length} artigos</strong> para {[
+                `${plano.dias.filter((d) => d.id).length} jantares`,
+                plano.sopa && "a sopa",
+                plano.manha?.length && "os pequenos-almoços",
+                plano.sobremesa && "a sobremesa",
+              ].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1")} — já somados entre receitas.
             </p>
             {naLista !== 0 ? (
               <div className="mt-3">
@@ -359,6 +398,7 @@ export default function SecaoEmentas({ setTab }) {
           {/* key: um plano novo começa uma comparação nova */}
           <CompararLista key={aComprar.map((c) => c.key).join()} itens={aComprar.map((c, i) => ({ id: `plano-${i}`, nome: c.compra || c.nome, qty: 1 }))} />
           <p className="mt-2" style={{ fontSize: 11, color: "var(--pj-text-faint)", lineHeight: 1.55 }}>
+            {aComprar.length > MAX_ARTIGOS && `A comparação vê os primeiros ${MAX_ARTIGOS} artigos (o limite das lojas por minuto). `}
             São embalagens inteiras: parte do arroz, da massa ou das especiarias fica para as semanas seguintes.
           </p>
 
@@ -383,11 +423,21 @@ export default function SecaoEmentas({ setTab }) {
         )}
       </div>
 
-      {!plano && filtro === "todas" && (
+      {!plano && filtro === "todas" && categoria === "todas" && (
         <div className="mx-4 mb-3">
           <CartaoReceita r={sugestao} destaque onAbrir={(r) => abrir(r)} estrelas={aval[sugestao.id]?.estrelas} />
         </div>
       )}
+
+      <div className="mx-4 mb-3 flex gap-1 p-1 rounded-2xl overflow-x-auto no-scrollbar" style={{ background: "var(--pj-subtle)" }} role="tablist" aria-label="Tipo de receita">
+        {CATEGORIAS.map((c) => (
+          <button key={c.id} role="tab" aria-selected={categoria === c.id} onClick={() => setCategoria(c.id)}
+            className="pj-tap press flex-shrink-0 px-3 py-2 rounded-xl text-[12px] font-semibold"
+            style={categoria === c.id ? { background: "var(--pj-card)", color: "var(--pj-text)" } : { color: "var(--pj-text-faint)" }}>
+            {c.label}
+          </button>
+        ))}
+      </div>
 
       <div className="px-4 mb-4 flex gap-2 overflow-x-auto no-scrollbar">
         {FILTROS.map((f) => (
@@ -400,7 +450,7 @@ export default function SecaoEmentas({ setTab }) {
       </div>
 
       <div className="mx-4 flex flex-col gap-2.5 pb-4">
-        {visiveis.filter((r) => plano || filtro !== "todas" || r.id !== sugestao.id).map((r) => (
+        {visiveis.filter((r) => plano || filtro !== "todas" || categoria !== "todas" || r.id !== sugestao.id).map((r) => (
           <CartaoReceita key={r.id} r={r} onAbrir={(x) => abrir(x)} estrelas={aval[r.id]?.estrelas} />
         ))}
         {!visiveis.length && (

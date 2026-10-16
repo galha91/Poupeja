@@ -25,7 +25,7 @@ export default function handler(req) {
 
   const statsRetrato = [taloesRaw > 0 ? `${taloesRaw} tal${taloesRaw !== 1 ? "ões" : "ão"}` : null, streakRaw >= 2 ? `${streakRaw} semanas seguidas` : null].filter(Boolean).join(" · ");
   const eyebrow = lista ? "Lista de compras partilhada"
-    : receita ? "Receita económica · 4 pessoas"
+    : receita ? "Receita económica"
     : retrato ? `O meu retrato de ${mesRaw || "mês"}`
     : poupanca ? "Poupança real, medida talão a talão"
     : "A app de poupança portuguesa";

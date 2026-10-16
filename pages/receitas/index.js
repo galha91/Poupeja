@@ -4,6 +4,12 @@ import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { receitas, formatarTempo } from "../../lib/receitas/motor";
 
 const EMENTAS = receitas();
+const GRUPOS = [
+  { tipo: "prato", titulo: "Jantares", ancora: "jantares" },
+  { tipo: "sopa", titulo: "Sopas", ancora: "sopas" },
+  { tipo: "pequeno-almoco", titulo: "Pequeno-almoço e lanche", ancora: "pequeno-almoco" },
+  { tipo: "sobremesa", titulo: "Sobremesas", ancora: "sobremesas" },
+];
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -16,7 +22,7 @@ export default function Receitas() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Receitas baratas para 4 pessoas",
+    name: "Receitas baratas",
     numberOfItems: EMENTAS.length,
     itemListElement: EMENTAS.map((e, i) => ({
       "@type": "ListItem",
@@ -28,10 +34,10 @@ export default function Receitas() {
   return (
     <LayoutPublico>
       <Head>
-        <title>{`Receitas Baratas para 4 Pessoas — ${EMENTAS.length} refeições económicas | PoupeJá`}</title>
-        <meta name="description" content={`${EMENTAS.length} receitas portuguesas baratas para 4 pessoas, com ingredientes, quantidades e passo a passo. Sopas, massas, arroz, frango e pratos vegetarianos — grátis, sem registo.`} />
+        <title>{`Receitas Baratas — ${EMENTAS.length} jantares, sopas, pequenos-almoços e sobremesas | PoupeJá`}</title>
+        <meta name="description" content={`${EMENTAS.length} receitas portuguesas baratas, com ingredientes, quantidades e passo a passo. Jantares, sopas, pequenos-almoços e sobremesas, para todos os aparelhos da cozinha — grátis, sem registo.`} />
         <link rel="canonical" href={`${SITE_URL}/receitas`} />
-        <meta property="og:title" content="Receitas baratas para 4 pessoas" key="og:title" />
+        <meta property="og:title" content="Receitas baratas" key="og:title" />
         <meta property="og:description" content={`${EMENTAS.length} refeições económicas portuguesas com passo a passo — e os ingredientes entram na lista de compras num toque.`} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/receitas`} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -42,17 +48,24 @@ export default function Receitas() {
           Cozinha económica
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
-          Receitas baratas para 4 pessoas
+          Receitas baratas
         </h1>
         <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
-          {EMENTAS.length} receitas portuguesas económicas, com quantidades certas e passo a passo simples.
+          {EMENTAS.length} receitas portuguesas económicas — jantares, sopas, pequenos-almoços e sobremesas — com quantidades certas e passo a passo simples.
           Na app PoupeJá os ingredientes de cada receita entram na tua{" "}
           <strong style={{ color: "var(--pj-text)" }}>lista de compras num toque</strong> — e vês os folhetos
           antes de ir às compras.
         </p>
 
-        <div className="mt-8 rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-          {EMENTAS.map((e, i) => (
+        {GRUPOS.map((g) => {
+          const doGrupo = EMENTAS.filter((e) => e.tipo === g.tipo);
+          return (
+            <section key={g.tipo}>
+              <h2 id={g.ancora} className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>
+                {g.titulo} <span style={{ fontSize: 14, fontWeight: 500, color: "var(--pj-text-faint)" }}>· {doGrupo.length}</span>
+              </h2>
+              <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+          {doGrupo.map((e, i) => (
             <a
               key={e.id}
               href={`/receitas/${e.id}`}
@@ -73,6 +86,10 @@ export default function Receitas() {
             </a>
           ))}
         </div>
+
+            </section>
+          );
+        })}
 
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36 }}>
           Comer bem por pouco — como funciona

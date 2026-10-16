@@ -17,7 +17,8 @@ test("dados: ids únicos, ingredientes conhecidos, artigos do catálogo", () => 
   assert.equal(new Set(ids).size, ids.length, "ids repetidos");
   for (const r of RECEITAS) {
     assert.match(r.id, /^[a-z0-9-]+$/);
-    assert.ok(["prato", "sopa"].includes(r.tipo), r.id);
+    assert.ok(["prato", "sopa", "pequeno-almoco", "sobremesa"].includes(r.tipo), r.id);
+    if (r.porcoes) assert.ok(r.un, `${r.id}: porcoes sem un`);
     assert.ok([1, 2, 3].includes(r.custo), r.id);
     assert.ok(r.passos.length >= 3, r.id);
     for (const [k, q] of r.ing) {
@@ -38,7 +39,7 @@ test("cada aparelho tem receitas; quase todos chegam sozinhos para um jantar", (
     const usam = receitas().filter((r) => r.equip.flat().includes(e.id));
     assert.ok(usam.length >= 1, `nenhuma receita usa ${e.id}`);
     // Só com este aparelho em casa há pelo menos uma receita (a picadora precisa de algo que coza).
-    if (e.id !== "processador") {
+    {
       const sozinho = receitas().filter((r) => compativel(r, prefs({ equip: [e.id] })));
       assert.ok(sozinho.length >= 1, `só com ${e.id} não há receitas`);
     }
@@ -54,8 +55,8 @@ test("cada aparelho tem receitas; quase todos chegam sozinhos para um jantar", (
 test("nutrição: plausível por pessoa", () => {
   for (const r of receitas()) {
     const n = r.nutricao;
-    const min = r.tipo === "sopa" ? 120 : 250;
-    assert.ok(n.kcal >= min && n.kcal <= 900, `${r.id}: ${n.kcal} kcal`);
+    const [min, max] = { sopa: [120, 600], prato: [250, 900], "pequeno-almoco": [50, 650], sobremesa: [80, 600] }[r.tipo];
+    assert.ok(n.kcal >= min && n.kcal <= max, `${r.id}: ${n.kcal} kcal`);
     // As calorias batem certo com os macronutrientes (±25%).
     const calc = n.p * 4 + n.hc * 4 + n.g * 9;
     assert.ok(Math.abs(calc - n.kcal) / n.kcal < 0.25, `${r.id}: ${calc} vs ${n.kcal}`);
@@ -184,6 +185,49 @@ test("quantidades: escala e formato", () => {
   const dois = ingredientesPara(r, 2);
   assert.equal(dois.find((i) => i.key === "ovo").qtd, "3 un");
   assert.equal(dois.find((i) => i.key === "batata").qtd, "300 g");
+});
+
+test("há receitas de tudo: jantares, sopas, pequenos-almoços e sobremesas", () => {
+  const de = (t) => receitas().filter((r) => r.tipo === t).length;
+  assert.ok(de("prato") >= 45);
+  assert.ok(de("sopa") >= 8);
+  assert.ok(de("pequeno-almoco") >= 15);
+  assert.ok(de("sobremesa") >= 15);
+  // Também para quem é vegano ou sem glúten há pequenos-almoços e sobremesas.
+  for (const d of ["vegano", "sem-gluten", "sem-lactose"]) {
+    for (const t of ["pequeno-almoco", "sobremesa"]) {
+      const n = receitas().filter((r) => r.tipo === t && r.dietas.includes(d)).length;
+      assert.ok(n >= 1, `${d}/${t}: ${n}`);
+    }
+  }
+  // O mel não é vegano.
+  assert.ok(!receitaPorId("papas-aveia-banana").vegano);
+  assert.ok(receitaPorId("batido-frutos-vermelhos").vegano);
+});
+
+test("plano com pequenos-almoços e sobremesa", () => {
+  const p = gerarPlano(prefs({ pequenoAlmoco: true, sobremesa: true, pessoas: 2 }), { semente: 4 });
+  assert.equal(p.manha.length, 3);
+  assert.equal(new Set(p.manha.map((m) => m.id)).size, 3);
+  for (const m of p.manha) assert.equal(receitaPorId(m.id).tipo, "pequeno-almoco");
+  assert.equal(receitaPorId(p.sobremesa.id).tipo, "sobremesa");
+
+  const f = alternarFixa(alternarFixa(p, "manha-1"), "sobremesa");
+  const r = regenerar(f, { semente: 77 });
+  assert.equal(r.manha[1].id, p.manha[1].id);
+  assert.equal(r.sobremesa.id, p.sobremesa.id);
+
+  const t = trocarDia(p, "manha-0", { semente: 3 });
+  assert.notEqual(t.manha[0].id, p.manha[0].id);
+  const t2 = trocarDia(p, "sobremesa", { semente: 3 });
+  assert.notEqual(t2.sobremesa.id, p.sobremesa.id);
+
+  const nomes = comprasDoPlano(p).flatMap((c) => c.receitas);
+  assert.ok(nomes.includes(receitaPorId(p.sobremesa.id).nome));
+  // Sem pedir, não entram.
+  const s = gerarPlano(prefs(), { semente: 4 });
+  assert.equal(s.manha.length, 0);
+  assert.equal(s.sobremesa, null);
 });
 
 test("temporizador do passo", () => {

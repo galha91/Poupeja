@@ -13,7 +13,7 @@ import { contarCompativeis, EQUIPAMENTOS, receitas } from "./lib/receitas/motor"
  * ecrã, quem prefere ler) e leva a cozinha até ao aparelho tocado.
  */
 
-const LARGURA = 1040;
+const LARGURA = 1370;
 const ESCALA = 0.95;
 
 /* Centro de cada aparelho no desenho, para levar a vista até ele. */
@@ -21,11 +21,12 @@ const CENTRO = {
   fogao: 94, forno: 94, "panela-pressao": 220, chaleira: 282, microondas: 379, torradeira: 479,
   sanduicheira: 550, varinha: 617, liquidificadora: 675, robo: 758, airfryer: 854, slowcooker: 956,
   processador: 241, fritadeira: 350, grelhador: 490,
+  batedeira: 1060, "maquina-pao": 1155, iogurteira: 1239, waffles: 1317,
 };
 
+/* Todas as receitas (jantares, sopas, pequenos-almoços, sobremesas) que dá para fazer. */
 function total(prefs) {
-  const c = contarCompativeis(prefs);
-  return c.pratos + (prefs.sopa ? c.sopas : 0);
+  return contarCompativeis(prefs).total;
 }
 
 /* Área de toque de cada aparelho (x, y, largura, altura): o desenho tem
@@ -36,6 +37,7 @@ const AREA = {
   varinha: [592, 84, 52, 118], liquidificadora: [646, 96, 58, 106], robo: [712, 86, 94, 116],
   airfryer: [808, 92, 96, 110], slowcooker: [906, 132, 102, 70],
   processador: [204, 216, 74, 80], fritadeira: [298, 230, 112, 66], grelhador: [416, 236, 160, 60],
+  batedeira: [1016, 106, 92, 96], "maquina-pao": [1108, 130, 96, 72], iogurteira: [1204, 140, 70, 62], waffles: [1276, 150, 92, 52],
 };
 
 function Aparelho({ id, ligado, onToggle, nome, children }) {
@@ -177,6 +179,11 @@ export default function CozinhaInterativa({ prefs, onChange }) {
             <rect x="796" y="24" width="14" height="16" rx="3" fill="#c96f3b" />
             <circle cx="930" cy="30" r="9" fill="#7a9a4b" />
             <rect x="925" y="30" width="10" height="10" rx="2" fill="#b0623b" />
+            <rect x="1110" y="62" width="180" height="7" rx="2" fill="#a77b4f" />
+            <rect x="1122" y="40" width="22" height="22" rx="4" fill="#e9d9b8" stroke="#b9a37c" />
+            <rect x="1150" y="44" width="16" height="18" rx="3" fill="#c96f3b" />
+            <circle cx="1196" cy="52" r="10" fill="#e3b341" />
+            <rect x="1230" y="38" width="40" height="24" rx="3" fill="#2f5d9e" />
             <rect x="586" y="66" width="2" height="16" fill="#8b6b4a" />
             <circle cx="587" cy="96" r="13" fill="#5f6f7a" stroke="#3f4a52" strokeWidth="2" />
 
@@ -185,7 +192,7 @@ export default function CozinhaInterativa({ prefs, onChange }) {
             {/* nicho aberto por baixo da bancada */}
             <rect x="186" y="216" width="394" height="80" rx="4" fill="#d6c7a8" />
             <rect x="186" y="292" width="394" height="4" fill="#b8a582" />
-            {[592, 702, 812, 922].map((x) => (
+            {[592, 702, 812, 922, 1032, 1142, 1252].map((x) => (
               <g key={x}>
                 <rect x={x} y="220" width="102" height="72" rx="4" fill="#ddd1b8" stroke="#c9bb9d" />
                 <rect x={x + 46} y="250" width="10" height="3" rx="1.5" fill="#9b8a6a" />
@@ -358,6 +365,64 @@ export default function CozinhaInterativa({ prefs, onChange }) {
               <Led x={986} y={188} ligado={on("slowcooker")} />
             </Aparelho>
 
+
+            {/* BATEDEIRA */}
+            <Aparelho {...ap("batedeira")}>
+              <rect x="1022" y="190" width="80" height="10" rx="4" fill="#4f8fd6" />
+              <rect x="1082" y="128" width="18" height="64" rx="7" fill="#4f8fd6" />
+              <rect x="1030" y="116" width="72" height="28" rx="14" fill="#4f8fd6" />
+              <rect x="1038" y="126" width="30" height="3" rx="1.5" fill="#fff" opacity="0.6" />
+              <path d="M1034 158 h44 l-5 32 h-34 Z" fill="#c7cbcf" stroke="#8d949a" strokeWidth="1.5" />
+              <ellipse className="pj-so-on" cx="1056" cy="162" rx="20" ry="4" fill="#fff6e0" />
+              <g className="pj-vibra">
+                <rect x="1054" y="144" width="4" height="22" fill="#8d949a" />
+                <ellipse cx="1056" cy="172" rx="6" ry="8" fill="none" stroke="#8d949a" strokeWidth="2" />
+              </g>
+              <g className="pj-so-on">
+                <path d="M1024 122 l-7 -3 M1024 130 l-8 0 M1024 138 l-7 3" stroke="#4f8fd6" strokeWidth="2" strokeLinecap="round" />
+              </g>
+              <Led x={1092} y={195} ligado={on("batedeira")} />
+            </Aparelho>
+
+            {/* MÁQUINA DE PÃO */}
+            <Aparelho {...ap("maquina-pao")}>
+              <rect x="1112" y="136" width="88" height="64" rx="12" fill="#e6e1d6" stroke="#b9b2a3" strokeWidth="1.5" />
+              <rect x="1122" y="142" width="52" height="22" rx="5" fill="#2a2d30" />
+              <rect className="pj-so-on pj-brilho" x="1122" y="142" width="52" height="22" rx="5" fill="#ffcf8a" />
+              <path className="pj-so-on" d="M1130 162 q18 -16 36 0 Z" fill="#c98a3f" />
+              <Visor x={1162} y={172} w={30} on={on("maquina-pao")} texto="2:55" />
+              <circle cx="1124" cy="178" r="3" fill="#b9b2a3" />
+              <circle cx="1134" cy="178" r="3" fill="#b9b2a3" />
+              <circle cx="1144" cy="178" r="3" fill="#b9b2a3" />
+              <Vapor xs={[1148]} y={132} alto={10} />
+              <Led x={1188} y={150} ligado={on("maquina-pao")} />
+            </Aparelho>
+
+            {/* IOGURTEIRA */}
+            <Aparelho {...ap("iogurteira")}>
+              <rect x="1208" y="184" width="62" height="16" rx="6" fill="#f2f2f0" stroke="#c7cbcf" strokeWidth="1.5" />
+              {[0, 1, 2].map((i) => (
+                <g key={i}>
+                  <rect x={1216 + i * 16} y="160" width="12" height="24" rx="3" fill="#ffffff" fillOpacity="0.5" stroke="#c7cbcf" />
+                  <rect className="pj-so-on" x={1217 + i * 16} y="166" width="10" height="17" rx="2" fill="#fffbea" />
+                </g>
+              ))}
+              <path d="M1210 184 Q1210 146 1239 146 Q1268 146 1268 184 Z" fill="#ffffff" fillOpacity="0.4" stroke="#9aa2a9" strokeWidth="1.5" />
+              <Visor x={1214} y={187} w={22} h={11} on={on("iogurteira")} texto="8h" />
+              <Led x={1260} y={192} ligado={on("iogurteira")} />
+            </Aparelho>
+
+            {/* MÁQUINA DE WAFFLES */}
+            <Aparelho {...ap("waffles")}>
+              <rect x="1282" y="186" width="72" height="14" rx="6" fill="#2e3236" />
+              <rect className="pj-so-on" x="1286" y="183" width="64" height="4" rx="2" fill="#e3b341" />
+              <rect x="1280" y="170" width="76" height="15" rx="7" fill="#3a3f44" />
+              {[1292, 1304, 1316, 1328, 1340].map((x) => <line key={x} x1={x} y1="173" x2={x} y2="182" stroke="#55595d" strokeWidth="1.5" />)}
+              <rect x="1354" y="175" width="10" height="5" rx="2" fill="#1e2124" />
+              <Vapor xs={[1300, 1330]} y={166} alto={10} />
+              <Led x={1290} y={193} ligado={on("waffles")} />
+            </Aparelho>
+
             {/* No nicho: PICADORA, FRITADEIRA, GRELHADOR */}
             <Aparelho {...ap("processador")}>
               <rect x="208" y="264" width="66" height="28" rx="6" fill="#f2f2f0" stroke="#c7cbcf" strokeWidth="1.5" />
@@ -424,7 +489,7 @@ export default function CozinhaInterativa({ prefs, onChange }) {
         })}
       </div>
       <p style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 8, lineHeight: 1.5 }}>
-        <strong style={{ color: "var(--pj-accent)" }}>+N</strong> = receitas novas que esse aparelho desbloqueia. Muitos substituem-se uns aos outros: o forno e a air fryer, a varinha e a liquidificadora, a tosteira e o grelhador.
+        <strong style={{ color: "var(--pj-accent)" }}>+N</strong> = receitas novas que esse aparelho desbloqueia. Muitos substituem-se uns aos outros: o forno e a air fryer, a varinha e a liquidificadora, a batedeira e o robô.
       </p>
     </div>
   );

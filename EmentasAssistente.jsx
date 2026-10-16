@@ -67,6 +67,23 @@ function Contador({ valor, min, max, onChange, rotulo }) {
   );
 }
 
+function Extra({ ativo, onClick, emoji, titulo, desc }) {
+  return (
+    <button type="button" onClick={onClick} aria-pressed={!!ativo}
+      className="pj-tap press w-full text-left flex items-center gap-3 rounded-2xl p-4"
+      style={{ border: `1.5px solid ${ativo ? "var(--pj-brand)" : "var(--pj-border)"}`, background: ativo ? "var(--pj-brand-wash)" : "var(--pj-card)" }}>
+      <span style={{ fontSize: 28 }}>{emoji}</span>
+      <span className="flex-1">
+        <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>{titulo}</span>
+        <span className="block" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>{desc}</span>
+      </span>
+      <span className="flex items-center justify-center flex-shrink-0" style={{ width: 24, height: 24, borderRadius: 8, background: ativo ? "var(--pj-brand)" : "var(--pj-subtle)" }}>
+        {ativo && <Check size={14} color="#fff" strokeWidth={3} />}
+      </span>
+    </button>
+  );
+}
+
 const alternar = (lista, id) => (lista.includes(id) ? lista.filter((x) => x !== id) : [...lista, id]);
 
 export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
@@ -166,24 +183,21 @@ export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
                   </div>
                   <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 8 }}>A começar à segunda-feira.</p>
 
-                  <button type="button" onClick={() => set("sopa", !p.sopa)} aria-pressed={p.sopa}
-                    className="pj-tap press w-full text-left flex items-center gap-3 mt-8 rounded-2xl p-4"
-                    style={{ border: `1.5px solid ${p.sopa ? "var(--pj-brand)" : "var(--pj-border)"}`, background: p.sopa ? "var(--pj-brand-wash)" : "var(--pj-card)" }}>
-                    <span style={{ fontSize: 28 }}>🥣</span>
-                    <span className="flex-1">
-                      <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>Juntar uma sopa para a semana</span>
-                      <span className="block" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>Uma panela que dá para todos os jantares — barata e enche.</span>
-                    </span>
-                    <span className="flex items-center justify-center flex-shrink-0" style={{ width: 24, height: 24, borderRadius: 8, background: p.sopa ? "var(--pj-brand)" : "var(--pj-subtle)" }}>
-                      {p.sopa && <Check size={14} color="#fff" strokeWidth={3} />}
-                    </span>
-                  </button>
+                  <p className="font-display mt-9" style={{ fontSize: 18, fontWeight: 600, color: "var(--pj-text)" }}>Queres juntar mais alguma coisa?</p>
+                  <div className="flex flex-col gap-2.5 mt-3">
+                    <Extra ativo={p.sopa} onClick={() => set("sopa", !p.sopa)} emoji="🥣"
+                      titulo="Uma sopa para a semana" desc="Uma panela que dá para todos os jantares — barata e enche." />
+                    <Extra ativo={p.pequenoAlmoco} onClick={() => set("pequenoAlmoco", !p.pequenoAlmoco)} emoji="🥞"
+                      titulo="Pequenos-almoços" desc="Três ideias para ir alternando durante a semana." />
+                    <Extra ativo={p.sobremesa} onClick={() => set("sobremesa", !p.sobremesa)} emoji="🍮"
+                      titulo="Uma sobremesa para o fim de semana" desc="Doçaria de casa: arroz-doce, bolo de laranja, pudim…" />
+                  </div>
                 </>
               )}
 
               {id === "orcamento" && (
                 <>
-                  <Titulo sub="Quanto queres gastar, no máximo, nas compras destes jantares.">Qual é o teu orçamento semanal?</Titulo>
+                  <Titulo sub="Quanto queres gastar, no máximo, nas compras do plano.">Qual é o teu orçamento semanal?</Titulo>
                   <div className="text-center mt-8">
                     <p className="font-display tabular-nums" style={{ fontSize: 52, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1 }}>{p.orcamento} €</p>
                     <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 6 }}>esta semana</p>

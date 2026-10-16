@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, Clock, ShoppingCart, Check, ChefHat, Minus, Plus, Star, ChevronLeft, ChevronRight, Timer, Pause, Play, RotateCcw, Info } from "lucide-react";
-import { ingredientesPara, minutosDoPasso, emojiIngrediente, formatarTempo, DIETAS } from "./lib/receitas/motor";
+import { ingredientesPara, minutosDoPasso, emojiIngrediente, formatarTempo, rendimento, DIETAS } from "./lib/receitas/motor";
 import { evento } from "./lib/analytics";
 
 /*
@@ -325,7 +325,7 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
             ))}
           </div>
           <p className="mt-3 text-center" style={{ fontSize: 11, color: "var(--pj-text-faint)", lineHeight: 1.5 }}>
-            Por pessoa · {String(n.fib).replace(".", ",")} g de fibra · valores aproximados, calculados a partir dos ingredientes
+            Por {rendimento(1, receita.un).slice(2)} · {String(n.fib).replace(".", ",")} g de fibra · valores aproximados, calculados a partir dos ingredientes
           </p>
         </div>
 
@@ -348,12 +348,12 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
         {/* Ingredientes */}
         <div className="flex items-center justify-between mt-6 mb-2">
           <p className={ROT} style={{ color: "var(--pj-text-faint)" }}>Ingredientes</p>
-          <div className="flex items-center gap-1" role="group" aria-label="Pessoas">
-            <button onClick={() => setPessoas(Math.max(1, pessoas - 1))} aria-label="Menos uma pessoa" className="pj-tap flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: 11, background: "var(--pj-subtle)", border: 0 }}>
+          <div className="flex items-center gap-1" role="group" aria-label="Quantidade">
+            <button onClick={() => setPessoas(Math.max(1, pessoas - 1))} aria-label="Menos uma porção" className="pj-tap flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: 11, background: "var(--pj-subtle)", border: 0 }}>
               <Minus size={14} style={{ color: "var(--pj-text-strong)" }} />
             </button>
-            <span className="tabular-nums text-center" style={{ minWidth: 74, fontSize: 13, fontWeight: 600, color: "var(--pj-text)" }}>{pessoas} pessoa{pessoas > 1 ? "s" : ""}</span>
-            <button onClick={() => setPessoas(Math.min(12, pessoas + 1))} aria-label="Mais uma pessoa" className="pj-tap flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: 11, background: "var(--pj-subtle)", border: 0 }}>
+            <span className="tabular-nums text-center" style={{ minWidth: 74, fontSize: 13, fontWeight: 600, color: "var(--pj-text)" }}>{rendimento(pessoas, receita.un)}</span>
+            <button onClick={() => setPessoas(Math.min(40, pessoas + 1))} aria-label="Mais uma porção" className="pj-tap flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: 11, background: "var(--pj-subtle)", border: 0 }}>
               <Plus size={14} style={{ color: "var(--pj-text-strong)" }} />
             </button>
           </div>
