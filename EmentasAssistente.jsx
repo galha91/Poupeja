@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, X, Minus, Plus, Search, Check, Sparkles } from "lucide-react";
+import { ArrowLeft, X, Minus, Plus, Search, Check } from "lucide-react";
 import {
-  DIETAS, VONTADES, MAX_VONTADES, EQUIPAMENTOS, INGREDIENTES, PREFS_PADRAO,
+  DIETAS, VONTADES, MAX_VONTADES, INGREDIENTES, PREFS_PADRAO,
   contarCompativeis, porRefeicao, faixaMaxima, emojiIngrediente,
 } from "./lib/receitas/motor";
 import { EVITAR_POPULARES } from "./lib/receitas/ingredientes";
+import CozinhaInterativa from "./CozinhaInterativa";
 
 /*
  * "Planeia a minha semana" — seis perguntas curtas, uma por ecrã, e o
@@ -283,19 +284,13 @@ export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
 
               {id === "cozinha" && (
                 <>
-                  <Titulo sub="Escolhe tudo o que tens. O forno e a air fryer substituem-se um ao outro.">O que tens na cozinha?</Titulo>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {EQUIPAMENTOS.map((e) => (
-                      <Cartao key={e.id} ativo={p.equip.includes(e.id)} emoji={e.emoji} titulo={e.nome}
-                        onClick={() => set("equip", alternar(p.equip, e.id))} />
-                    ))}
-                  </div>
-                  <p className="mt-5 flex items-center gap-2" style={{ fontSize: 13, color: semPratos ? "var(--pj-danger)" : "var(--pj-text-muted)" }}>
-                    <Sparkles size={14} />
-                    {semPratos
-                      ? "Nenhuma receita serve a esta combinação — tira uma restrição ou junta um aparelho."
-                      : `${compat.pratos} pratos${p.sopa ? ` e ${compat.sopas} sopas` : ""} servem à tua casa.`}
-                  </p>
+                  <Titulo sub="Liga os aparelhos que tens — só entram receitas que consegues fazer.">O que tens na cozinha?</Titulo>
+                  <CozinhaInterativa prefs={p} onChange={(equip) => set("equip", equip)} />
+                  {semPratos && (
+                    <p className="mt-3" style={{ fontSize: 13, color: "var(--pj-danger)" }}>
+                      Nenhum prato serve a esta combinação — liga mais um aparelho ou tira uma restrição.
+                    </p>
+                  )}
                 </>
               )}
             </div>
