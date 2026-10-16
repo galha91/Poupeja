@@ -72,7 +72,7 @@ export default async function handler(req, res) {
     try {
       const { data: conv, error: convErr } = await admin
         .from("convidados_site")
-        .select("primeira_em, ultima_em, aberturas, converteu_em")
+        .select("primeira_em, ultima_em, aberturas, converteu_em, comparou_em, escolheu_em, alerta_em, pediu_conta_em")
         .limit(100000);
       if (convErr) throw convErr;
       const linhas = conv || [];
@@ -92,6 +92,22 @@ export default async function handler(req, res) {
         abriram30: desde("ultima_em", 30 * DIA),
         aberturas: linhas.reduce((n, c) => n + (c.aberturas || 0), 0),
         converteram: linhas.filter(c => c.converteu_em).length,
+        // Funil dos últimos 7 dias, de quem entrou nesses 7 dias:
+        // entrou → comparou a lista → escolheu onde comprar → ligou o sino →
+        // tocou em "criar conta" → criou conta. E quantos voltaram a abrir.
+        funil7: (() => {
+          const novos = linhas.filter(c => c.primeira_em && agora - new Date(c.primeira_em).getTime() < 7 * DIA);
+          const n = f => novos.filter(f).length;
+          return {
+            entraram: novos.length,
+            voltaram: n(c => (c.aberturas || 0) > 1),
+            comparou: n(c => c.comparou_em),
+            escolheu: n(c => c.escolheu_em),
+            alerta: n(c => c.alerta_em),
+            pediuConta: n(c => c.pediu_conta_em),
+            converteram: n(c => c.converteu_em),
+          };
+        })(),
       };
     } catch {}
 

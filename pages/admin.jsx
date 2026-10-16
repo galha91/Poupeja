@@ -275,6 +275,25 @@ export default function Admin() {
                     </div>
                   ))}
                 </div>
+                {stats.entradasConvidado.funil7 && stats.entradasConvidado.funil7.entraram > 0 && (
+                  <div className="mt-3">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5">Percurso de quem entrou nos últimos 7 dias</p>
+                    {[["Entraram", "entraram"], ["Voltaram a abrir", "voltaram"], ["Compararam a lista", "comparou"], ["Escolheram onde comprar", "escolheu"], ["Ligaram o sino", "alerta"], ["Tocaram em criar conta", "pediuConta"], ["Criaram conta", "converteram"]].map(([rot, k]) => {
+                      const v = stats.entradasConvidado.funil7[k];
+                      const t = stats.entradasConvidado.funil7.entraram;
+                      return (
+                        <div key={k} className="flex items-center gap-2 mb-1">
+                          <span className="text-[11px] text-slate-600 font-semibold w-36 flex-none">{rot}</span>
+                          <div className="flex-1 bg-amber-50 rounded-full h-2.5 overflow-hidden">
+                            <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.max(v ? 3 : 0, Math.round(v / t * 100))}%` }} />
+                          </div>
+                          <span className="text-[11px] font-black text-slate-700 w-16 text-right flex-none">{v} · {Math.round(v / t * 100)}%</span>
+                        </div>
+                      );
+                    })}
+                    <p className="text-[10px] text-slate-400 mt-1">Os passos novos (comparou, escolheu, sino, criar conta) só contam a partir de agora.</p>
+                  </div>
+                )}
                 <p className="text-[10px] text-slate-400 mt-2">Contagem desde 1 out 2026. Antes disso: Google Analytics, evento login · method convidado_local.</p>
               </div>
             )}

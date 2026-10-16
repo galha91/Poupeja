@@ -6,6 +6,7 @@ import { Preco } from "./Preco";
 import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
+import { registarMarcoConvidado } from "./lib/convidado";
 import { melhoresPorLoja, custoPorLoja, alternativas } from "./lib/comparacao";
 import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
@@ -113,6 +114,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
       : poupancaDaEscolha(r, plano);
     const lojasEscolha = divisaoFeita ? divisaoFeita.lojas : plano === "divisao" ? divisao.lojas : [loja];
     registarEscolha({ plano, lojas: lojasEscolha, valor, artigos: comparaveis.length, lista: chaveLista(linhas.map((l) => l.item.nome)) });
+    registarMarcoConvidado("escolheu");
     evento("lista_escolha", { plano, lojas: lojasEscolha.join("+"), poupanca: valor });
     setEscolha({ plano, valor, semana: somarPeriodos(lerRegistos()).semana });
   }
@@ -126,6 +128,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
     } else {
       const atual = atualDe(l.dados);
       if (!atual) return;
+      registarMarcoConvidado("alerta");
       const novo = vigiar({ q: l.q, valor: atual.valor, unidade: atual.unidade, modo: atual.modo, promo: atual.promo });
       if (!novo) { setAvisoVigiar("Já tens 20 artigos a vigiar. Deixa de vigiar algum para juntar este."); return; }
       // Notificações só com conta (o aviso é personalizado). Pede-se a
@@ -402,7 +405,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
               <p role="status" style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
                 {avisoVigiar}
                 {pedirContaVigia && (
-                  <button onClick={() => { evento("pedir_conta", { onde: "sino" }); onCriarConta(); }} className="pj-tap press"
+                  <button onClick={() => { evento("pedir_conta", { onde: "sino" }); registarMarcoConvidado("pediu_conta"); onCriarConta(); }} className="pj-tap press"
                     style={{ display: "block", marginTop: 6, padding: "7px 14px", borderRadius: 999, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 12.5, fontWeight: 700 }}>
                     Criar conta grátis · 10 segundos
                   </button>
@@ -451,7 +454,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
                 <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.4, marginTop: 2 }}>
                   Com conta guardamos a tua lista, o histórico do que poupas e avisamos-te no telemóvel quando algo baixar de preço. Grátis, sem cartão.
                 </p>
-                <button onClick={() => { evento("pedir_conta", { onde: "poupanca", valor: escolha.valor }); onCriarConta(); }} className="pj-tap press"
+                <button onClick={() => { evento("pedir_conta", { onde: "poupanca", valor: escolha.valor }); registarMarcoConvidado("pediu_conta"); onCriarConta(); }} className="pj-tap press"
                   style={{ marginTop: 10, padding: "10px 16px", borderRadius: 12, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 700 }}>
                   Criar conta grátis
                 </button>
