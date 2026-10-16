@@ -31,6 +31,26 @@ test("dados: ids únicos, ingredientes conhecidos, artigos do catálogo", () => 
   }
 });
 
+test("cada aparelho tem receitas; quase todos chegam sozinhos para um jantar", () => {
+  const TAGS = ["familia", "conforto", "takeaway"];
+  for (const r of RECEITAS) for (const t of r.tags) assert.ok(TAGS.includes(t), `${r.id}: tag "${t}" (rápido/leve saem das contas)`);
+  for (const e of EQUIPAMENTOS) {
+    const usam = receitas().filter((r) => r.equip.flat().includes(e.id));
+    assert.ok(usam.length >= 1, `nenhuma receita usa ${e.id}`);
+    // Só com este aparelho em casa há pelo menos uma receita (a picadora precisa de algo que coza).
+    if (e.id !== "processador") {
+      const sozinho = receitas().filter((r) => compativel(r, prefs({ equip: [e.id] })));
+      assert.ok(sozinho.length >= 1, `só com ${e.id} não há receitas`);
+    }
+  }
+  // Os aparelhos que mudam a forma de cozinhar desbloqueiam receitas que o fogão e o forno não fazem.
+  for (const id of ["microondas", "panela-pressao", "slowcooker", "robo", "processador"]) {
+    const sem = receitas().filter((r) => compativel(r, prefs({ equip: ["fogao", "forno"] }))).length;
+    const com = receitas().filter((r) => compativel(r, prefs({ equip: ["fogao", "forno", id] }))).length;
+    assert.ok(com > sem, `${id} não desbloqueia nada`);
+  }
+});
+
 test("nutrição: plausível por pessoa", () => {
   for (const r of receitas()) {
     const n = r.nutricao;

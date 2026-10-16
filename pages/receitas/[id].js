@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Clock, Users, Leaf, ChefHat } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
-import { receitas, emojiIngrediente } from "../../lib/receitas/motor";
+import { receitas, emojiIngrediente, formatarTempo } from "../../lib/receitas/motor";
 
 const EMENTAS = receitas();
 
@@ -13,7 +13,7 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * O JSON-LD Recipe torna-a elegível para rich results do Google (cartões de receita).
  */
 export default function Receita({ receita, outras }) {
-  const descricao = `Receita económica de ${receita.nome} para 4 pessoas, pronta em ${receita.tempoMin} minutos. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
+  const descricao = `Receita económica de ${receita.nome} para 4 pessoas, pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
   const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}`;
 
   const dietasLd = [
@@ -55,7 +55,7 @@ export default function Receita({ receita, outras }) {
   return (
     <LayoutPublico>
       <Head>
-        <title>{`${receita.nome} — receita barata para 4 pessoas (${receita.tempoMin} min) | PoupeJá`}</title>
+        <title>{`${receita.nome} — receita barata para 4 pessoas (${formatarTempo(receita.tempoMin)}) | PoupeJá`}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/receitas/${receita.id}`} />
         <meta property="og:title" content={`${receita.nome} — receita barata para 4 pessoas`} key="og:title" />
@@ -79,7 +79,7 @@ export default function Receita({ receita, outras }) {
           </h1>
         </div>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12 }}>
-          <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {receita.tempoMin} min</span>
+          <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {formatarTempo(receita.tempoMin)}</span>
           <span className="inline-flex items-center gap-1.5"><Users size={13} /> 4 pessoas</span>
           <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>
             {"€".repeat(receita.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - receita.custo)}</span>

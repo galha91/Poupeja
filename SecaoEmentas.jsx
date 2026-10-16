@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Clock, ChefHat, Leaf, Lock, Unlock, RefreshCw, ShoppingCart, Check, Sparkles, SlidersHorizontal, ChevronDown, Star, CalendarDays } from "lucide-react";
 import {
   receitas, receitaPorId, compativel, gerarPlano, regenerar, trocarDia, alternarFixa, comprasDoPlano,
-  mediaDoPlano, porcoesNoPlano, sugestaoDaSemana, DIAS, DIETAS, VONTADES, EQUIPAMENTOS,
+  mediaDoPlano, porcoesNoPlano, sugestaoDaSemana, formatarTempo, DIAS, DIETAS, VONTADES, EQUIPAMENTOS,
 } from "./lib/receitas/motor";
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes } from "./ReceitaDetalhe";
 import EmentasAssistente from "./EmentasAssistente";
@@ -63,7 +63,7 @@ function Meta({ r, claro = false }) {
   const cor = claro ? "rgba(255,255,255,0.75)" : "var(--pj-text-muted)";
   return (
     <span className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mt-0.5" style={{ fontSize: 12, color: cor }}>
-      <span className="inline-flex items-center gap-1"><Clock size={11} /> {r.tempoMin} min</span>
+      <span className="inline-flex items-center gap-1"><Clock size={11} /> {formatarTempo(r.tempoMin)}</span>
       <BadgeCusto custo={r.custo} claro={claro} />
       <span className="tabular-nums">{r.nutricao.kcal} kcal</span>
       {r.vegano ? <span className="inline-flex items-center gap-1"><Leaf size={11} /> vegano</span>

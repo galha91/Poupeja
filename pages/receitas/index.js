@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Clock, ChefHat, Leaf } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
-import { receitas } from "../../lib/receitas/motor";
+import { receitas, formatarTempo } from "../../lib/receitas/motor";
 
 const EMENTAS = receitas();
 
@@ -63,7 +63,7 @@ export default function Receitas() {
               <span style={{ flex: 1, minWidth: 0 }}>
                 <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>{e.nome}</span>
                 <span className="flex items-center gap-2.5" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>
-                  <span className="inline-flex items-center gap-1"><Clock size={11} /> {e.tempoMin} min</span>
+                  <span className="inline-flex items-center gap-1"><Clock size={11} /> {formatarTempo(e.tempoMin)}</span>
                   <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>{"€".repeat(e.custo)}</span>
                   {e.airfryer && <span className="inline-flex items-center gap-1"><ChefHat size={11} /> air fryer</span>}
                   {e.veg && <span className="inline-flex items-center gap-1"><Leaf size={11} /> vegetariano</span>}

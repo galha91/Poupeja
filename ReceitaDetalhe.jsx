@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, Clock, ShoppingCart, Check, ChefHat, Minus, Plus, Star, ChevronLeft, ChevronRight, Timer, Pause, Play, RotateCcw, Info } from "lucide-react";
-import { ingredientesPara, minutosDoPasso, emojiIngrediente, DIETAS } from "./lib/receitas/motor";
+import { ingredientesPara, minutosDoPasso, emojiIngrediente, formatarTempo, DIETAS } from "./lib/receitas/motor";
 import { evento } from "./lib/analytics";
 
 /*
@@ -277,7 +277,7 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
               {legenda && <p className={ROT} style={{ color: "var(--pj-brand-ink)" }}>{legenda}</p>}
               <p className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.2 }}>{receita.nome}</p>
               <p className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mt-1" style={{ fontSize: 12, color: "var(--pj-text-muted)" }}>
-                <span className="inline-flex items-center gap-1"><Clock size={11} /> {receita.tempoMin} min</span>
+                <span className="inline-flex items-center gap-1"><Clock size={11} /> {formatarTempo(receita.tempoMin)}</span>
                 <BadgeCusto custo={receita.custo} />
                 {receita.airfryer && <span className="inline-flex items-center gap-1"><ChefHat size={11} /> air fryer</span>}
                 {aval.estrelas ? <span className="inline-flex items-center gap-0.5"><Star size={11} fill="#e0a526" style={{ color: "#e0a526" }} /> {aval.estrelas}</span> : null}
