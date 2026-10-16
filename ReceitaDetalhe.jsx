@@ -248,7 +248,7 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
   const n = receita.nutricao;
   const rotulos = receita.ingredientes.filter((i) => i.rotulo).map((i) => i.nome);
   const pedeRotulo = rotulos.length > 0 && dietasDaPessoa.some((d) => d === "sem-gluten" || d === "sem-lactose");
-  const dietas = DIETAS.filter((d) => receita.dietas.includes(d.id) && !(d.id === "pescetariano" && receita.veg) && !(d.id === "vegetariano" && receita.vegano));
+  const dietas = DIETAS.filter((d) => receita.dietas.includes(d.id) && d.id !== "sem-ovo-cru" && !(d.id === "pescetariano" && receita.veg) && !(d.id === "vegetariano" && receita.vegano));
 
   async function adicionar() {
     const novos = await onAdicionar(aComprar);
@@ -337,6 +337,15 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
               </span>
             ))}
           </div>
+        )}
+        {receita.ovoCru && (
+          <p className="flex gap-2 mt-3 rounded-xl p-3" style={{ fontSize: 12, lineHeight: 1.5, background: "var(--pj-warn-wash)", color: "var(--pj-warn)" }}>
+            <Info size={14} className="flex-shrink-0 mt-0.5" />
+            <span>
+              <strong>Leva ovo cru.</strong> Usa ovos pasteurizados, ou muito frescos e sem fissuras, e guarda sempre no frigorífico (até 24 h).
+              Não é recomendado a grávidas, bebés e crianças pequenas, idosos ou pessoas com as defesas baixas.
+            </span>
+          </p>
         )}
         {pedeRotulo && (
           <p className="flex gap-2 mt-3 rounded-xl p-3" style={{ fontSize: 12, lineHeight: 1.5, background: "var(--pj-warn-wash)", color: "var(--pj-warn)" }}>

@@ -230,6 +230,18 @@ test("plano com pequenos-almoços e sobremesa", () => {
   assert.equal(s.sobremesa, null);
 });
 
+test("ovo cru: marcado, com ovo nos ingredientes, e fora com a restrição", () => {
+  const cru = receitas().filter((r) => r.ovoCru);
+  assert.ok(cru.length >= 4);
+  for (const r of cru) {
+    assert.ok(r.ingredientes.some((i) => ["ovo", "gema", "clara"].includes(i.key)), `${r.id} sem ovo`);
+    assert.ok(!compativel(r, prefs({ dietas: ["sem-ovo-cru"], equip: EQUIPAMENTOS.map((e) => e.id) })), r.id);
+  }
+  // As versões sem ovo continuam lá para quem não pode.
+  assert.ok(compativel(receitaPorId("mousse-chocolate"), prefs({ dietas: ["sem-ovo-cru"], equip: EQUIPAMENTOS.map((e) => e.id) })));
+  assert.ok(!receitaPorId("pudim-flan").ovoCru, "o pudim vai ao forno");
+});
+
 test("temporizador do passo", () => {
   assert.equal(minutosDoPasso("Coze a batata (20 min)."), 20);
   assert.equal(minutosDoPasso("Forno 200 °C, 50-60 min"), 50);

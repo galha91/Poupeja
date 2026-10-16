@@ -247,6 +247,11 @@ export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
                         onClick={() => set("dietas", alternar(p.dietas, d.id))} />
                     ))}
                   </div>
+                  {p.dietas.includes("sem-ovo-cru") && (
+                    <p className="mt-4 rounded-xl p-3" style={{ fontSize: 12, lineHeight: 1.55, background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
+                      Ficam de fora a mousse tradicional, a baba de camelo e outras sobremesas com ovo cru — há versões sem ovo de quase todas.
+                    </p>
+                  )}
                   {(p.dietas.includes("sem-gluten") || p.dietas.includes("sem-lactose")) && (
                     <p className="mt-4 rounded-xl p-3" style={{ fontSize: 12, lineHeight: 1.55, background: "var(--pj-warn-wash)", color: "var(--pj-warn)" }}>
                       As receitas são escolhidas pelos ingredientes. Em processados (chouriço, salsichas, caril…) a composição muda de marca para marca — confirma sempre o rótulo, sobretudo em caso de doença celíaca ou alergia.
