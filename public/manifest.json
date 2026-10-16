@@ -95,6 +95,17 @@
       ]
     },
     {
+      "name": "Ementas da semana",
+      "short_name": "Ementas",
+      "url": "/?atalho=ementas",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Combustível mais barato",
       "short_name": "Combustível",
       "url": "/?atalho=mobilidade",

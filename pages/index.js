@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { jaViuEmentas } from "../DestaqueEmentas";
 import dynamic from "next/dynamic";
 import Router from "next/router";
 
@@ -76,6 +77,7 @@ const ATALHOS_SUB = {
   garantias:  ["taloes", "garantias"],
   renovacoes: ["contas", "renovacoes"],
   prazos:     ["apoios", "prazos"],
+  ementas:    ["mercados", "ementas"],
 };
 function subDoAtalho(tab) {
   if (typeof window === "undefined") return null;
@@ -116,6 +118,9 @@ function BotaoVoltar({ onClick }) {
 /* ─── Wrapper Mercados ─── */
 function SecaoMercados({ setTab, inicioAba = "comparar" }) {
   const [sub, setSub] = useState(inicioAba);
+  // Selo "Novo" nas Ementas até serem abertas pela primeira vez.
+  const [ementasNovas, setEmentasNovas] = useState(false);
+  useEffect(() => { setEmentasNovas(!jaViuEmentas()); }, [sub]);
   return (
     <div className="pb-28 pt-1">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
@@ -131,6 +136,9 @@ function SecaoMercados({ setTab, inicioAba = "comparar" }) {
             style={sub === o.id ? { background: "var(--pj-card)", color: "var(--pj-text)" } : { color: "var(--pj-text-faint)" }}
           >
             <o.icon size={13} /> {o.label}
+            {o.id === "ementas" && ementasNovas && sub !== "ementas" && (
+              <span aria-label="novo" style={{ width: 7, height: 7, borderRadius: 4, background: "#e3b341", boxShadow: "0 0 0 2px var(--pj-subtle)" }} />
+            )}
           </button>
         ))}
       </div>
@@ -170,7 +178,7 @@ function PoupeJa() {
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
   const [subTabTaloes, setSubTabTaloes] = useState(() => subDoAtalho("taloes") || "compras");
-  const [subTabMercados, setSubTabMercados] = useState("comparar");
+  const [subTabMercados, setSubTabMercados] = useState(() => subDoAtalho("mercados") || "comparar");
   const [subTabContas, setSubTabContas]     = useState(() => subDoAtalho("contas") || "contas");
   const [subTabApoios, setSubTabApoios]     = useState(() => subDoAtalho("apoios") || "apoios");
   const [garantiasAviso, setGarantiasAviso] = useState([]);

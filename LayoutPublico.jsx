@@ -4,6 +4,7 @@ import { instalado } from "./lib/plataforma";
 import SubscreverFolhetos from "./SubscreverFolhetos";
 import PartilharPagina from "./PartilharPagina";
 import { SECOES_APP } from "./lib/secoesApp";
+import { DestaqueEmentasPublico } from "./DestaqueEmentas";
 
 /*
  * Estas páginas também abrem dentro da app Android e da PWA — e aí um
@@ -26,7 +27,7 @@ export function SoForaDaApp({ children }) {
  * Conteúdo server-rendered visível ao Google, com o estilo editorial da app
  * e um caminho claro para instalar/abrir o PoupeJá.
  */
-export default function LayoutPublico({ children }) {
+export default function LayoutPublico({ children, destaqueEmentas = true }) {
   return (
     <div style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
       <header className="mx-auto flex items-center justify-between px-5 py-4" style={{ maxWidth: 720 }}>
@@ -45,6 +46,8 @@ export default function LayoutPublico({ children }) {
 
       <main className="mx-auto px-5 pb-16" style={{ maxWidth: 720 }}>
         {children}
+        {/* As Ementas em destaque em todas as páginas públicas (menos nas de receitas, que já são). */}
+        {destaqueEmentas && <DestaqueEmentasPublico />}
         <PartilharPagina />
         <SoForaDaApp><SubscreverFolhetos origem="paginas-publicas" /></SoForaDaApp>
       </main>
@@ -60,7 +63,7 @@ export default function LayoutPublico({ children }) {
           </SoForaDaApp>
           <a href="/combustiveis" style={{ color: "var(--pj-text-muted)" }}>Combustíveis</a>
           <a href="/folhetos" style={{ color: "var(--pj-text-muted)" }}>Folhetos</a>
-          <a href="/receitas" style={{ color: "var(--pj-text-muted)" }}>Receitas baratas</a>
+          <a href="/receitas" style={{ color: "var(--pj-brand-ink)", fontWeight: 700 }}>Ementas e receitas</a>
           <a href="/apoios" style={{ color: "var(--pj-text-muted)" }}>Apoios do Estado</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
@@ -83,13 +86,13 @@ export default function LayoutPublico({ children }) {
   );
 }
 
-export function CtaApp({ texto = "Vê isto e muito mais na app — grátis" }) {
+export function CtaApp({ texto = "Vê isto e muito mais na app — grátis", href = null }) {
   // Dentro da app, o mesmo botão leva ao ecrã principal em vez de à
   // página de instalação.
   const naApp = useInstalado();
   return (
     <a
-      href={naApp ? "/" : "/instalar"}
+      href={href || (naApp ? "/" : "/instalar")}
       className="pj-tap flex items-center justify-between no-underline mt-8 rounded-2xl px-5 py-4"
       style={{ background: "var(--pj-brand)", color: "#fff" }}
     >

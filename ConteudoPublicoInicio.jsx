@@ -36,7 +36,7 @@ export function HeadInicio() {
 const BLOCOS = [
   { href: "/folhetos", t: "Folhetos desta semana", d: "Aldi, Auchan, Continente, E.Leclerc, Intermarché, Lidl, Pingo Doce e mais, num só sítio." },
   { href: "/combustiveis", t: "Combustível mais barato", d: "Preços oficiais da DGEG, por concelho, atualizados todos os dias." },
-  { href: "/receitas", t: "Receitas baratas", d: "Pratos para a semana com ingredientes simples." },
+  { href: "/receitas", t: "Receitas baratas", d: "Mais de 100 receitas: jantares, sopas, pequenos-almoços e sobremesas." },
   { href: "/apoios", t: "Apoios do Estado", d: "O que existe, quem pode pedir e onde requerer." },
 ];
 
@@ -51,6 +51,14 @@ export default function ConteudoPublicoInicio() {
         Grátis e sem registo. Vê os folhetos da semana, descobre onde a tua lista de compras fica mais barata
         e onde atestar o carro perto de ti.
       </p>
+      <a href="/?atalho=ementas" className="no-underline" style={{ display: "block", marginTop: 24, padding: "18px 18px", borderRadius: 18, background: "var(--pj-brand)", color: "#fff" }}>
+        <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 8, background: "#e3b341", color: "#2a2208" }}>Novo</span>
+        <strong className="font-display" style={{ display: "block", fontSize: 21, lineHeight: 1.25, marginTop: 8 }}>Ementas da semana, feitas à medida da tua casa</strong>
+        <span style={{ display: "block", fontSize: 14, color: "#d5e7de", marginTop: 6, lineHeight: 1.5 }}>
+          Diz quantos são, o orçamento, o que não comem e que aparelhos tens. Sai o plano de jantares, a lista de compras e onde fica mais barata.
+        </span>
+        <span style={{ display: "inline-block", marginTop: 12, padding: "9px 14px", borderRadius: 12, background: "#fff", color: "var(--pj-brand-ink)", fontSize: 14, fontWeight: 700 }}>Criar o meu plano →</span>
+      </a>
       <ul style={{ listStyle: "none", padding: 0, margin: "24px 0 0", display: "grid", gap: 12 }}>
         {BLOCOS.map(b => (
           <li key={b.href}>

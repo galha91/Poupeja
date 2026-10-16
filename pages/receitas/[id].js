@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Clock, Users, Leaf, ChefHat } from "lucide-react";
-import LayoutPublico, { CtaApp } from "../../LayoutPublico";
+import LayoutPublico from "../../LayoutPublico";
 import { receitas, emojiIngrediente, formatarTempo, rendimento } from "../../lib/receitas/motor";
 
 const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
@@ -173,7 +173,6 @@ export default function Receita({ receita, outras }) {
           </a>
         </div>
 
-        <CtaApp texto="Mete os ingredientes na lista de compras num toque — grátis" />
       </div>
     </LayoutPublico>
   );
