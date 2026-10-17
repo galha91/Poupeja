@@ -4,15 +4,16 @@ import {
   Download, Share, Plus, Check, CheckCircle2, Bell, Zap,
   WifiOff, Home, Smartphone, Monitor, ArrowRight, MoreVertical,
 } from "lucide-react";
-import { instalado } from "../lib/plataforma";
+import { instalado, URL_PLAY_STORE } from "../lib/plataforma";
+import { detetarNavegador } from "../lib/navegador";
 
 /*
  * Página dedicada de instalação — poupejá.com/instalar
  * Link limpo e partilhável (WhatsApp, redes) que leva a pessoa
  * a instalar a PWA com o mínimo de fricção:
- *   • Android / Chrome / desktop → botão que dispara o popup nativo (1 toque)
- *   • iPhone (Safari, Chrome…)   → guia passo-a-passo do browser em uso (a Apple não deixa 1-clique)
- *   • iPhone dentro do Instagram/Facebook → abrir primeiro no browser
+ *   • Android / desktop → botão que dispara o popup nativo (1 toque), quando o browser o tem
+ *   • Cada browser (Safari, Chrome, Edge, Firefox, Samsung…) → guia passo-a-passo próprio
+ *   • Dentro do Instagram/Facebook/TikTok → abrir primeiro no browser (no Android, Play Store)
  *   • Já instalada               → estado de sucesso + abrir a app
  */
 
@@ -25,7 +26,7 @@ const BENEFICIOS = [
 
 export default function Instalar() {
   const [modo, setModo] = useState(null); // null | "ios" | "android" | "desktop" | "instalado"
-  const [navegadorIos, setNavegadorIos] = useState("safari");
+  const [nav, setNav] = useState("chrome");
   const [aInstalar, setAInstalar] = useState(false);
   const promptRef = useRef(null);
 
@@ -35,13 +36,11 @@ export default function Instalar() {
     // Já está instalada — PWA ou app Android da Play Store
     if (instalado()) { setModo("instalado"); return; }
 
-    const ua = navigator.userAgent || "";
-    const isIos = /iphone|ipad|ipod/i.test(ua) ||
-      // iPad com iPadOS 13+ reporta-se como Mac com toque
-      (/Macintosh/.test(ua) && "ontouchend" in document);
-    const isAndroid = /android/i.test(ua);
+    const { so, nav: navegador } = detetarNavegador(navigator.userAgent || "", { toque: "ontouchend" in document });
+    const isAndroid = so === "android";
+    setNav(navegador);
 
-    if (isIos) { setNavegadorIos(navegadorDoIos(ua)); setModo("ios"); return; }
+    if (so === "ios") { setModo("ios"); return; }
 
     // Android / desktop: à espera do evento nativo. Enquanto não chega,
     // mostramos já o ecrã certo com um fallback.
@@ -124,12 +123,13 @@ export default function Instalar() {
             {(modo === "android" || modo === "desktop") && (
               <AcaoInstalar
                 modo={modo}
+                nav={nav}
                 aInstalar={aInstalar}
                 temPrompt={!!promptRef.current}
                 onInstalar={instalar}
               />
             )}
-            {modo === "ios" && <GuiaIos navegador={navegadorIos} />}
+            {modo === "ios" && <Guia so="ios" nav={nav} />}
             {modo === null && (
               <div className="h-14 rounded-2xl bg-slate-100 animate-pulse" />
             )}
@@ -153,7 +153,7 @@ export default function Instalar() {
 }
 
 /* ─── Android / desktop: botão 1-toque quando disponível + guia visual sempre presente ─── */
-function AcaoInstalar({ modo, aInstalar, temPrompt, onInstalar }) {
+function AcaoInstalar({ modo, nav, aInstalar, temPrompt, onInstalar }) {
   return (
     <div className="flex flex-col gap-3">
       {temPrompt && (
@@ -176,11 +176,17 @@ function AcaoInstalar({ modo, aInstalar, temPrompt, onInstalar }) {
         </button>
       )}
 
-      {modo === "android" ? (
-        <GuiaAndroid comBotaoAcima={temPrompt} />
-      ) : (
-        !temPrompt && <GuiaDesktop />
+      {modo === "android" && nav === "app" && (
+        <a
+          href={URL_PLAY_STORE}
+          className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2"
+          style={{ background: "var(--pj-brand)" }}
+        >
+          <Download size={19} /> Instalar pela Play Store
+        </a>
       )}
+
+      {(modo === "android" || !temPrompt) && <Guia so={modo} nav={nav} comBotaoAcima={temPrompt} />}
     </div>
   );
 }
@@ -210,67 +216,97 @@ function Passo({ Icon, numero, titulo, desc }) {
   );
 }
 
-/* ─── iPhone: guia passo-a-passo conforme o browser ─── */
-// Desde o iOS 16.4 o Chrome, o Edge e o Firefox também adicionam ao ecrã
-// inicial pelo menu Partilhar. Os browsers dentro de apps (Instagram,
-// Facebook, TikTok…) não têm essa opção: é preciso abrir o link num browser.
-function navegadorDoIos(ua) {
-  if (/Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|Line\/|LinkedInApp|Snapchat|GSA\//i.test(ua)) return "app";
-  if (/CriOS/i.test(ua)) return "chrome";
-  if (/EdgiOS/i.test(ua)) return "edge";
-  if (/FxiOS/i.test(ua)) return "firefox";
-  return "safari";
-}
+/* ─── Guias passo-a-passo por sistema e browser ───
+ * Desde o iOS 16.4, todos os browsers do iPhone adicionam ao ecrã inicial
+ * pelo menu Partilhar. Os browsers dentro de apps (Instagram, Facebook,
+ * TikTok…) não têm essa opção: é preciso abrir o link num browser.
+ */
+const ADICIONAR_IOS = { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." };
+const CONFIRMAR_IOS = { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." };
+const CONFIRMAR     = { Icon: Check, titulo: "Confirma", desc: "O ícone do PoupeJá aparece logo no teu ecrã inicial." };
+const NOTA_IOS = "Funciona em todos os browsers do iPhone com iOS 16.4 ou mais recente. Se não vires “Adicionar ao Ecrã Inicial”, atualiza o iPhone ou abre o link no Safari.";
+const NOTA_ANDROID = "Se não encontrares a opção, abre poupejá.com no Chrome.";
 
-const GUIAS_IOS = {
-  safari: {
-    titulo: "Instalar no iPhone (Safari)",
-    passos: [
-      { Icon: Share, titulo: "Toca em Partilhar", desc: "O ícone na barra do Safari (uma caixa com uma seta ↑ para cima)." },
-      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
-      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
-    ],
+const partilharIos = (onde) => ({ Icon: Share, titulo: "Toca em Partilhar", desc: onde });
+const guiaIos = (nome, onde) => ({ titulo: `Instalar no iPhone (${nome})`, passos: [partilharIos(onde), ADICIONAR_IOS, CONFIRMAR_IOS], nota: NOTA_IOS });
+const guiaAndroid = (nome, menu, opcao, nota = NOTA_ANDROID) => ({
+  titulo: `Instalar no Android (${nome})`,
+  passos: [{ Icon: MoreVertical, titulo: `Abre o menu ${menu.icone}`, desc: menu.onde }, { Icon: Plus, titulo: opcao.titulo, desc: opcao.desc }, CONFIRMAR],
+  nota,
+});
+const MENU_CIMA = { icone: "⋮", onde: "No canto superior direito do browser." };
+const MENU_BAIXO = (icone) => ({ icone, onde: "Na barra de baixo do browser." });
+const ADICIONAR_ANDROID = { titulo: "“Adicionar ao ecrã principal”", desc: "Ou “Instalar aplicação”, consoante a versão." };
+
+const GUIAS = {
+  ios: {
+    safari:     guiaIos("Safari", "O ícone na barra do Safari (uma caixa com uma seta ↑ para cima)."),
+    chrome:     guiaIos("Chrome", "O ícone ↑ na barra de endereço, em cima à direita (ou menu ⋯ → Partilhar)."),
+    edge:       guiaIos("Edge", "No menu ⋯ da barra de baixo, toca em Partilhar."),
+    firefox:    guiaIos("Firefox", "No menu ☰ da barra de baixo, toca em Partilhar."),
+    opera:      guiaIos("Opera", "No menu do Opera, toca em Partilhar."),
+    duckduckgo: guiaIos("DuckDuckGo", "No menu ⋯ junto à barra de endereço, toca em Partilhar."),
+    yandex:     guiaIos("Yandex", "No menu do browser, toca em Partilhar."),
+    app: {
+      titulo: "Primeiro, abre no browser",
+      passos: [
+        { Icon: MoreVertical, titulo: "Toca em ⋯", desc: "No canto superior direito deste ecrã." },
+        { Icon: Share, titulo: "“Abrir no browser”", desc: "Ou “Abrir no Safari”/“Abrir no navegador externo”, consoante a app." },
+        { Icon: Check, titulo: "Segue os passos que aparecem", desc: "No Safari ou no Chrome mostramos-te como adicionar ao ecrã inicial." },
+      ],
+      aviso: "Dentro do Instagram, do Facebook ou do TikTok não dá para instalar.",
+    },
   },
-  chrome: {
-    titulo: "Instalar no iPhone (Chrome)",
-    passos: [
-      { Icon: Share, titulo: "Toca em Partilhar", desc: "O ícone ↑ na barra de endereço, em cima à direita (ou menu ⋯ → Partilhar)." },
-      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
-      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
-    ],
+  android: {
+    chrome:     guiaAndroid("Chrome", MENU_CIMA, { titulo: "“Instalar aplicação”", desc: "Ou “Adicionar ao ecrã principal”, consoante a versão do Chrome." }, null),
+    samsung:    guiaAndroid("Samsung Internet", MENU_BAIXO("≡"), { titulo: "“Adicionar página a” → “Ecrã inicial”", desc: "Ou toca no ícone de instalar na barra de endereço, se aparecer." }),
+    firefox:    guiaAndroid("Firefox", MENU_CIMA, ADICIONAR_ANDROID),
+    edge:       guiaAndroid("Edge", MENU_BAIXO("⋯"), { titulo: "“Adicionar ao telemóvel”", desc: "Ou “Adicionar ao ecrã principal”, consoante a versão." }),
+    opera:      guiaAndroid("Opera", MENU_CIMA, { titulo: "“Adicionar a…” → “Ecrã inicial”", desc: "O nome pode variar consoante a versão." }),
+    duckduckgo: guiaAndroid("DuckDuckGo", MENU_CIMA, ADICIONAR_ANDROID),
+    yandex:     guiaAndroid("Yandex", MENU_CIMA, ADICIONAR_ANDROID),
+    xiaomi:     guiaAndroid("Mi Browser", MENU_BAIXO("≡"), ADICIONAR_ANDROID),
+    huawei:     guiaAndroid("Huawei", MENU_CIMA, ADICIONAR_ANDROID),
+    app: {
+      titulo: "Ou abre no browser",
+      passos: [
+        { Icon: MoreVertical, titulo: "Toca em ⋮", desc: "No canto superior direito deste ecrã." },
+        { Icon: Share, titulo: "“Abrir no Chrome”", desc: "Ou “Abrir no browser”, consoante a app." },
+        { Icon: Check, titulo: "Segue os passos que aparecem", desc: "No Chrome mostramos-te como instalar." },
+      ],
+      aviso: "Dentro do Instagram, do Facebook ou do TikTok não dá para instalar pelo browser.",
+    },
   },
-  edge: {
-    titulo: "Instalar no iPhone (Edge)",
-    passos: [
-      { Icon: MoreVertical, titulo: "Abre o menu ⋯", desc: "Na barra de baixo do Edge, e toca em Partilhar." },
-      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
-      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
-    ],
-  },
-  firefox: {
-    titulo: "Instalar no iPhone (Firefox)",
-    passos: [
-      { Icon: MoreVertical, titulo: "Abre o menu ☰", desc: "Na barra de baixo do Firefox, e toca em Partilhar." },
-      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
-      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
-    ],
-  },
-  app: {
-    titulo: "Primeiro, abre no browser",
-    passos: [
-      { Icon: MoreVertical, titulo: "Toca em ⋯", desc: "No canto superior direito deste ecrã." },
-      { Icon: Share, titulo: "“Abrir no browser”", desc: "Ou “Abrir no Safari”/“Abrir no navegador externo”, consoante a app." },
-      { Icon: Check, titulo: "Segue os passos que aparecem", desc: "No Safari ou no Chrome mostramos-te como adicionar ao ecrã inicial." },
-    ],
+  desktop: {
+    chrome: { titulo: "Instalar a partir do browser", texto: "No Chrome ou Edge, clica no ícone de instalar (⊕) na barra de endereço, ou no menu ⋮ → “Instalar PoupeJá”." },
+    edge:   { titulo: "Instalar a partir do Edge", texto: "Clica no ícone de instalar (⊕) na barra de endereço, ou no menu ⋯ → “Aplicações” → “Instalar este site como aplicação”." },
+    opera:  { titulo: "Instalar a partir do Opera", texto: "Se aparecer o ícone de instalar na barra de endereço, clica nele. Se não, abre poupejá.com no Chrome ou no Edge." },
+    safari: { titulo: "Instalar no Mac (Safari)", texto: "No menu Ficheiro, escolhe “Adicionar ao Dock” (Safari 17 ou mais recente)." },
+    firefox:{ titulo: "O Firefox não instala apps web", texto: "No computador, abre poupejá.com no Chrome ou no Edge para instalar. Ou instala no telemóvel." },
   },
 };
 
-function GuiaIos({ navegador = "safari" }) {
-  const { titulo, passos } = GUIAS_IOS[navegador] || GUIAS_IOS.safari;
+function Guia({ so, nav, comBotaoAcima = false }) {
+  const guias = GUIAS[so] || GUIAS.desktop;
+  const g = guias[nav] || guias.chrome || guias.safari;
   const [copiado, setCopiado] = useState(false);
   const copiar = async () => {
     try { await navigator.clipboard.writeText(window.location.origin + "/instalar"); setCopiado(true); } catch { /* sem acesso à área de transferência */ }
   };
+
+  if (so === "desktop") {
+    return (
+      <div className="card p-5 text-center">
+        <div className="w-11 h-11 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "var(--pj-subtle)" }}>
+          <Monitor size={20} style={{ color: "var(--pj-brand-ink)" }} />
+        </div>
+        <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{g.titulo}</p>
+        <p className="text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>{g.texto}</p>
+      </div>
+    );
+  }
+
+  const titulo = comBotaoAcima && so === "android" && nav !== "app" ? "Ou instala pelo menu do browser" : g.titulo;
   return (
     <div className="card overflow-hidden">
       <div className="px-4 py-3 flex items-center gap-2" style={{ background: "var(--pj-brand)" }}>
@@ -278,59 +314,21 @@ function GuiaIos({ navegador = "safari" }) {
         <p className="text-[13px] font-semibold text-white">{titulo}</p>
       </div>
       <div className="p-4 flex flex-col gap-3.5">
-        {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
+        {g.passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
       </div>
-      <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "var(--pj-subtle)" }}>
-        {navegador === "app" ? (
-          <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--pj-danger)" }}>
-            <strong>Dentro do Instagram ou do Facebook não dá para instalar.</strong> Se não encontrares a opção,{" "}
-            <button onClick={copiar} className="underline font-bold">{copiado ? "link copiado ✓" : "copia o link"}</button>{" "}
-            e cola-o no Safari ou no Chrome.
-          </p>
-        ) : (
-          <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Funciona no Safari e no Chrome (e também no Edge e no Firefox) com iOS 16.4 ou mais recente.
-            Se não vires “Adicionar ao Ecrã Inicial”, atualiza o iPhone ou abre o link no Safari.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Android: guia passo-a-passo (mesma qualidade visual do iOS) ─── */
-function GuiaAndroid({ comBotaoAcima }) {
-  const passos = [
-    { Icon: MoreVertical, titulo: "Abre o menu ⋮", desc: "No canto superior direito do Chrome." },
-    { Icon: Plus,         titulo: "“Instalar aplicação”", desc: "Ou “Adicionar ao ecrã principal”, consoante a versão do Chrome." },
-    { Icon: Check,        titulo: "Confirma a instalação", desc: "O ícone do PoupeJá aparece logo no teu ecrã inicial." },
-  ];
-  return (
-    <div className="card overflow-hidden">
-      <div className="px-4 py-3 flex items-center gap-2" style={{ background: "var(--pj-brand)" }}>
-        <Smartphone size={16} className="text-white" />
-        <p className="text-[13px] font-semibold text-white">
-          {comBotaoAcima ? "Ou instala pelo menu do Chrome" : "Instalar no Android (Chrome)"}
-        </p>
-      </div>
-      <div className="p-4 flex flex-col gap-3.5">
-        {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Desktop: guia curto (Chrome/Edge) ─── */
-function GuiaDesktop() {
-  return (
-    <div className="card p-5 text-center">
-      <div className="w-11 h-11 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "var(--pj-subtle)" }}>
-        <Monitor size={20} style={{ color: "var(--pj-brand-ink)" }} />
-      </div>
-      <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Instalar a partir do browser</p>
-      <p className="text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--text-muted)" }}>
-        No Chrome ou Edge, clica no ícone de instalar (⊕) na barra de endereço, ou no menu ⋮ → “Instalar PoupeJá”.
-      </p>
+      {(g.aviso || g.nota) && (
+        <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "var(--pj-subtle)" }}>
+          {g.aviso ? (
+            <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--pj-danger)" }}>
+              <strong>{g.aviso}</strong> Se não encontrares a opção,{" "}
+              <button onClick={copiar} className="underline font-bold">{copiado ? "link copiado ✓" : "copia o link"}</button>{" "}
+              e cola-o no browser.
+            </p>
+          ) : (
+            <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--text-muted)" }}>{g.nota}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
