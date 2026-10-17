@@ -213,10 +213,15 @@ export default async function handler(req, res) {
       ativouPush: totalPush,
     };
 
-    // Recentes com última visita e dispositivo
-    const recentes = [...todos]
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, 50)
+    // Recentes com última visita e dispositivo: as 50 contas mais novas
+    // mais as 50 com login mais recente (uma conta antiga que entra agora
+    // não pode ficar de fora da lista "Último login")
+    const maisNovas = [...todos].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 50);
+    const ultimosLogins = todos
+      .filter(u => u.last_sign_in_at)
+      .sort((a, b) => new Date(b.last_sign_in_at) - new Date(a.last_sign_in_at))
+      .slice(0, 50);
+    const recentes = [...new Map([...maisNovas, ...ultimosLogins].map(u => [u.id, u])).values()]
       .map(u => ({
         email: u.email,
         criado: u.created_at,
