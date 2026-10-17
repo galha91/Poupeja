@@ -11,7 +11,8 @@ import { instalado } from "../lib/plataforma";
  * Link limpo e partilhável (WhatsApp, redes) que leva a pessoa
  * a instalar a PWA com o mínimo de fricção:
  *   • Android / Chrome / desktop → botão que dispara o popup nativo (1 toque)
- *   • iPhone / Safari            → guia passo-a-passo (a Apple não deixa 1-clique)
+ *   • iPhone (Safari, Chrome…)   → guia passo-a-passo do browser em uso (a Apple não deixa 1-clique)
+ *   • iPhone dentro do Instagram/Facebook → abrir primeiro no browser
  *   • Já instalada               → estado de sucesso + abrir a app
  */
 
@@ -24,6 +25,7 @@ const BENEFICIOS = [
 
 export default function Instalar() {
   const [modo, setModo] = useState(null); // null | "ios" | "android" | "desktop" | "instalado"
+  const [navegadorIos, setNavegadorIos] = useState("safari");
   const [aInstalar, setAInstalar] = useState(false);
   const promptRef = useRef(null);
 
@@ -39,7 +41,7 @@ export default function Instalar() {
       (/Macintosh/.test(ua) && "ontouchend" in document);
     const isAndroid = /android/i.test(ua);
 
-    if (isIos) { setModo("ios"); return; }
+    if (isIos) { setNavegadorIos(navegadorDoIos(ua)); setModo("ios"); return; }
 
     // Android / desktop: à espera do evento nativo. Enquanto não chega,
     // mostramos já o ecrã certo com um fallback.
@@ -127,7 +129,7 @@ export default function Instalar() {
                 onInstalar={instalar}
               />
             )}
-            {modo === "ios" && <GuiaIos />}
+            {modo === "ios" && <GuiaIos navegador={navegadorIos} />}
             {modo === null && (
               <div className="h-14 rounded-2xl bg-slate-100 animate-pulse" />
             )}
@@ -208,26 +210,89 @@ function Passo({ Icon, numero, titulo, desc }) {
   );
 }
 
-/* ─── iPhone / Safari: guia passo-a-passo ─── */
-function GuiaIos() {
-  const passos = [
-    { Icon: Share, titulo: "Toca em Partilhar", desc: "O ícone na barra do Safari (uma caixa com uma seta ↑ para cima)." },
-    { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
-    { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
-  ];
+/* ─── iPhone: guia passo-a-passo conforme o browser ─── */
+// Desde o iOS 16.4 o Chrome, o Edge e o Firefox também adicionam ao ecrã
+// inicial pelo menu Partilhar. Os browsers dentro de apps (Instagram,
+// Facebook, TikTok…) não têm essa opção: é preciso abrir o link num browser.
+function navegadorDoIos(ua) {
+  if (/Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|Line\/|LinkedInApp|Snapchat|GSA\//i.test(ua)) return "app";
+  if (/CriOS/i.test(ua)) return "chrome";
+  if (/EdgiOS/i.test(ua)) return "edge";
+  if (/FxiOS/i.test(ua)) return "firefox";
+  return "safari";
+}
+
+const GUIAS_IOS = {
+  safari: {
+    titulo: "Instalar no iPhone (Safari)",
+    passos: [
+      { Icon: Share, titulo: "Toca em Partilhar", desc: "O ícone na barra do Safari (uma caixa com uma seta ↑ para cima)." },
+      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
+      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
+    ],
+  },
+  chrome: {
+    titulo: "Instalar no iPhone (Chrome)",
+    passos: [
+      { Icon: Share, titulo: "Toca em Partilhar", desc: "O ícone ↑ na barra de endereço, em cima à direita (ou menu ⋯ → Partilhar)." },
+      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
+      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
+    ],
+  },
+  edge: {
+    titulo: "Instalar no iPhone (Edge)",
+    passos: [
+      { Icon: MoreVertical, titulo: "Abre o menu ⋯", desc: "Na barra de baixo do Edge, e toca em Partilhar." },
+      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
+      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
+    ],
+  },
+  firefox: {
+    titulo: "Instalar no iPhone (Firefox)",
+    passos: [
+      { Icon: MoreVertical, titulo: "Abre o menu ☰", desc: "Na barra de baixo do Firefox, e toca em Partilhar." },
+      { Icon: Plus,  titulo: "“Adicionar ao Ecrã Inicial”", desc: "Faz scroll na lista e toca nesta opção." },
+      { Icon: Check, titulo: "Toca em “Adicionar”", desc: "No canto superior direito. O ícone aparece logo no teu ecrã." },
+    ],
+  },
+  app: {
+    titulo: "Primeiro, abre no browser",
+    passos: [
+      { Icon: MoreVertical, titulo: "Toca em ⋯", desc: "No canto superior direito deste ecrã." },
+      { Icon: Share, titulo: "“Abrir no browser”", desc: "Ou “Abrir no Safari”/“Abrir no navegador externo”, consoante a app." },
+      { Icon: Check, titulo: "Segue os passos que aparecem", desc: "No Safari ou no Chrome mostramos-te como adicionar ao ecrã inicial." },
+    ],
+  },
+};
+
+function GuiaIos({ navegador = "safari" }) {
+  const { titulo, passos } = GUIAS_IOS[navegador] || GUIAS_IOS.safari;
+  const [copiado, setCopiado] = useState(false);
+  const copiar = async () => {
+    try { await navigator.clipboard.writeText(window.location.origin + "/instalar"); setCopiado(true); } catch { /* sem acesso à área de transferência */ }
+  };
   return (
     <div className="card overflow-hidden">
       <div className="px-4 py-3 flex items-center gap-2" style={{ background: "var(--pj-brand)" }}>
         <Smartphone size={16} className="text-white" />
-        <p className="text-[13px] font-semibold text-white">Instalar no iPhone (Safari)</p>
+        <p className="text-[13px] font-semibold text-white">{titulo}</p>
       </div>
       <div className="p-4 flex flex-col gap-3.5">
         {passos.map((p, i) => <Passo key={i} {...p} numero={i + 1} />)}
       </div>
       <div className="mx-4 mb-4 px-3.5 py-2.5 rounded-xl" style={{ background: "var(--pj-subtle)" }}>
-        <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--pj-danger)" }}>
-          <strong>Tem de ser no Safari.</strong> Se abriste este link no Chrome, Instagram ou noutra app, toca em ⋯ → “Abrir no Safari” primeiro.
-        </p>
+        {navegador === "app" ? (
+          <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--pj-danger)" }}>
+            <strong>Dentro do Instagram ou do Facebook não dá para instalar.</strong> Se não encontrares a opção,{" "}
+            <button onClick={copiar} className="underline font-bold">{copiado ? "link copiado ✓" : "copia o link"}</button>{" "}
+            e cola-o no Safari ou no Chrome.
+          </p>
+        ) : (
+          <p className="text-[11.5px] font-medium leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            Funciona no Safari e no Chrome (e também no Edge e no Firefox) com iOS 16.4 ou mais recente.
+            Se não vires “Adicionar ao Ecrã Inicial”, atualiza o iPhone ou abre o link no Safari.
+          </p>
+        )}
       </div>
     </div>
   );
