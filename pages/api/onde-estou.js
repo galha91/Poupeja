@@ -1,3 +1,5 @@
+import { cidadePortuguesa } from "../../lib/cidadeIp";
+
 /*
  * Localização APROXIMADA de quem pede, a partir do IP — sem pedir nada.
  *
@@ -25,7 +27,7 @@ export default function handler(req, res) {
   }
 
   let cidade = null;
-  try { cidade = decodeURIComponent(req.headers["x-vercel-ip-city"] || "") || null; } catch {}
+  try { cidade = cidadePortuguesa(decodeURIComponent(req.headers["x-vercel-ip-city"] || "")); } catch {}
 
   return res.status(200).json({
     ok: true,
