@@ -26,7 +26,7 @@ const SecaoPoupanca    = dynamic(() => import("../SecaoPoupanca"), { loading: ca
 import EcraInicio from "../EcraInicio";
 import ModalCriarConta from "../ModalCriarConta";
 import PedirNotificacoes from "../PedirNotificacoes";
-import { ativarPush } from "../lib/push";
+import { ativarPush, guardarSubscricao } from "../lib/push";
 import { podeMostrar, adiar, lerEstado, guardarEstado } from "../lib/pushSoft";
 import { ModalInstalar, useInstallDetect, BarraInstalacao } from "../InstalarApp";
 import PainelAvisos from "../PainelAvisos";
@@ -308,17 +308,17 @@ function PoupeJa() {
 
   /* Avisos: se já autorizou, subscreve em silêncio; senão, convite com motivo (ver PedirNotificacoes) */
   useEffect(() => {
-    if (!user?.id) return;
-    if (user?.convidado) return; // push personalizado é exclusivo de contas registadas
+    // Convidados também: recebem os avisos gerais (combustível à sexta, folhetos à quinta).
+    if (!user?.id && !user?.convidado) return;
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
     const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     if (!VAPID_PUBLIC) return;
 
-    // Se já tem permissão concedida, subscreve sem pedir de novo (VAPID podem ter sido adicionadas depois)
+    // Se já tem permissão concedida, subscreve sem pedir de novo (VAPID podem ter sido adicionadas depois).
+    // Uma subscrição que já existe volta a ser enviada: assim, quem era convidado e
+    // entrou numa conta passa a subscrição para a conta (o servidor tira a de convidado).
     if (Notification.permission === "granted") {
       navigator.serviceWorker.ready.then(async reg => {
-        const jaSubscrito = await reg.pushManager.getSubscription();
-        if (jaSubscrito) return;
         function urlBase64ToUint8Array(b) {
           const pad = "=".repeat((4 - (b.length % 4)) % 4);
           const base64 = (b + pad).replace(/-/g, "+").replace(/_/g, "/");
@@ -326,15 +326,9 @@ function PoupeJa() {
           return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
         }
         try {
-          const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC) });
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.access_token) {
-            await fetch("/api/push-subscribe", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-              body: JSON.stringify({ subscription: sub }),
-            });
-          }
+          const sub = (await reg.pushManager.getSubscription())
+            || (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC) }));
+          await guardarSubscricao(sub);
         } catch {}
       });
       return;
@@ -354,7 +348,7 @@ function PoupeJa() {
       } catch {}
     }, 8000);
     return () => { cancelado = true; clearTimeout(timer); };
-  }, [user?.id]);
+  }, [user?.id, user?.convidado]);
 
   /* Convite a instalar: logo na 1ª visita e depois a relembrar (3ª e a cada 5) */
   useEffect(() => {
@@ -792,8 +786,8 @@ function PoupeJa() {
           />
         )}
 
-        {pedirPush && !modalConta && !modalInstalarAberto && !user?.convidado && (
-          <PedirNotificacoes onAtivar={ativarAvisos} onAdiar={adiarAvisos} />
+        {pedirPush && !modalConta && !modalInstalarAberto && (
+          <PedirNotificacoes convidado={!!user?.convidado} onAtivar={ativarAvisos} onAdiar={adiarAvisos} />
         )}
 
         {modalInstalarAberto && installModo && installModo !== "instalado" && (

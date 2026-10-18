@@ -384,7 +384,7 @@ export default function Admin() {
             </div>
 
             {/* Push subscritores */}
-            {stats.pushSubscritores?.length > 0 && (
+            {(stats.pushSubscritores?.length > 0 || stats.pushConvidados > 0) && (
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-5">
                 <button
                   onClick={() => setVerPush(v => !v)}
@@ -394,10 +394,15 @@ export default function Admin() {
                   <Bell size={14} className="text-blue-500" />
                   <h2 className="text-sm font-black text-slate-700">Notificações push ativas</h2>
                   <span className="ml-auto text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                    {stats.pushSubscritores.length}
+                    {stats.pushSubscritores.length + (stats.pushConvidados || 0)}
                   </span>
                   <ChevronDown size={16} className={`text-slate-400 transition-transform ${verPush ? "rotate-180" : ""}`} />
                 </button>
+                {verPush && stats.pushConvidados > 0 && (
+                  <p className="px-4 py-2.5 border-b border-slate-50 text-sm font-bold text-slate-700">
+                    {stats.pushConvidados} sem conta <span className="font-normal text-slate-400">(só avisos gerais)</span>
+                  </p>
+                )}
                 {verPush && stats.pushSubscritores.map((s, i) => (
                   <div key={i} className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-0">
                     <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center shrink-0">

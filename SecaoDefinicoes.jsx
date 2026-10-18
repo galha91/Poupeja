@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Fuel, MapPin, Bell, ShieldCheck, Info, ChevronRight, Check, ArrowLeft, Heart, FileText, Mail, PiggyBank, LogOut, BellRing, BellOff, Moon, Share2, Trash2, Landmark } from "lucide-react";
 import { apagarConta } from "./lib/apagarConta";
-import { supabase } from "./lib/supabase";
 import { partilharApp } from "./lib/partilhar";
 import { emAppNativa } from "./lib/plataforma";
+import { guardarSubscricao } from "./lib/push";
 
 // Sem Minipreço: as lojas passaram para a Auchan (ver lib/cobertura).
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan"];
@@ -188,8 +188,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
       reg.pushManager.getSubscription().then(sub => {
         if (sub) { setPushEstado("ativo"); return; }
         // Permissão já concedida mas sem subscrição — subscreve automaticamente
-        // (nunca para convidados: abriria o modal de conta sem interação)
-        if (Notification.permission === "granted" && !user?.convidado) {
+        if (Notification.permission === "granted") {
           ativarPush();
         } else {
           setPushEstado("inativo");
@@ -199,8 +198,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
   }, [VAPID_PUBLIC]);
 
   async function ativarPush() {
-    if (user?.convidado) { onCriarConta?.(); return; } // exclusivo de contas registadas
-    if (!VAPID_PUBLIC) return;
+    if (!VAPID_PUBLIC) return; // convidados também: recebem os avisos gerais
     setPushLoading(true);
     try {
       const perm = await Notification.requestPermission();
@@ -212,14 +210,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
       });
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        await fetch("/api/push-subscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-          body: JSON.stringify({ subscription: sub }),
-        });
-      }
+      await guardarSubscricao(sub);
       setPushEstado("ativo");
     } catch (e) {
       console.error("Push subscribe error:", e);
@@ -233,14 +224,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
       if (sub) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) {
-          await fetch("/api/push-subscribe", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-            body: JSON.stringify({ endpoint: sub.endpoint }),
-          });
-        }
+        await guardarSubscricao(sub, "DELETE");
         await sub.unsubscribe();
       }
       setPushEstado("inativo");
@@ -488,15 +472,15 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               }
             </IconChip>
             <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Folhetos no ecrã bloqueado</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Avisos no ecrã bloqueado</p>
               <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
                 {pushEstado === "ativo"
-                  ? "Notificações ativas. Avisamos quando saem folhetos novos."
+                  ? "Notificações ativas. Avisamos à sexta se o combustível sobe ou desce e à quinta quando saem folhetos novos."
                   : pushEstado === "bloqueado"
                   ? "Notificações bloqueadas no browser. Permite nas definições do browser."
                   : pushEstado === "sem-suporte"
                   ? "O teu browser não suporta notificações push. No iOS, instala o site no ecrã inicial."
-                  : "Recebe uma notificação quando saem os folhetos da semana."
+                  : "Recebe à sexta o que vai acontecer ao combustível na segunda e à quinta os folhetos da semana."
                 }
               </p>
               {pushEstado !== "sem-suporte" && pushEstado !== "bloqueado" && (
