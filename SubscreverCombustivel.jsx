@@ -11,6 +11,7 @@ export default function SubscreverCombustivel({ concelho, nome, onFeito }) {
   const [email, setEmail] = useState("");
   const [ok, setOk] = useState(false);
   const [aceito, setAceito] = useState(false);
+  const [alerta, setAlerta] = useState(false);
   const [erro, setErro] = useState("");
   const [a, setA] = useState(false);
 
@@ -23,11 +24,11 @@ export default function SubscreverCombustivel({ concelho, nome, onFeito }) {
       const r = await fetch("/api/subscrever-combustivel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, concelho, consentimento: true }),
+        body: JSON.stringify({ email, concelho, consentimento: true, alerta }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.erro || "Não foi possível guardar.");
-      evento("subscrever_combustivel", { concelho });
+      evento("subscrever_combustivel", { concelho, alerta });
       setOk(true);
       onFeito?.();
     } catch (err) {
@@ -61,6 +62,10 @@ export default function SubscreverCombustivel({ concelho, nome, onFeito }) {
           <label style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 10, fontSize: 12, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
             <input type="checkbox" checked={aceito} onChange={e => setAceito(e.target.checked)} style={{ marginTop: 3 }} />
             <span>Aceito receber este email semanal. Ver <a href="/privacidade" style={{ color: "var(--pj-brand-ink)", textDecoration: "underline" }}>Política de Privacidade</a>.</span>
+          </label>
+          <label style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 6, fontSize: 12, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
+            <input type="checkbox" checked={alerta} onChange={e => setAlerta(e.target.checked)} style={{ marginTop: 3 }} />
+            <span>Avisa-me também à sexta-feira quando o Governo anunciar que os combustíveis sobem na semana seguinte, para abastecer antes.</span>
           </label>
           {erro && <p role="alert" style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-danger)", marginTop: 8 }}>{erro}</p>}
         </form>

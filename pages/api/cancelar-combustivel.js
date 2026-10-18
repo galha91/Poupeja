@@ -1,7 +1,11 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { tokenCombValido } from "../../lib/subscritoresToken";
 
-/* Cancelamento do email de combustível. POST = one-click (RFC 8058); GET = link do email. */
+/*
+ * Cancelamento do email de combustível. POST = one-click (RFC 8058); GET = link do email.
+ * Com so=alerta, desliga só o alerta de subidas (em todas as subscrições desse
+ * email) e mantém o email semanal.
+ */
 
 async function cancelar(id) {
   const admin = getSupabaseAdmin();
@@ -11,6 +15,18 @@ async function cancelar(id) {
     .update({ cancelado_em: new Date().toISOString() })
     .eq("id", id)
     .is("cancelado_em", null);
+  return !error;
+}
+
+async function cancelarAlerta(id) {
+  const admin = getSupabaseAdmin();
+  if (!admin) return false;
+  const { data: sub } = await admin.from("subscritores_combustivel").select("email").eq("id", id).maybeSingle();
+  if (!sub) return true;
+  const { error } = await admin
+    .from("subscritores_combustivel")
+    .update({ alerta_subidas: false })
+    .ilike("email", sub.email);
   return !error;
 }
 
@@ -26,15 +42,19 @@ export default async function handler(req, res) {
   const id = req.query.s || req.body?.s;
   const t = req.query.t || req.body?.t;
   const valido = tokenCombValido(id, t);
+  const soAlerta = (req.query.so || req.body?.so) === "alerta";
+  const anular = soAlerta ? cancelarAlerta : cancelar;
 
   if (req.method === "POST") {
-    if (valido) await cancelar(id);
+    if (valido) await anular(id);
     return res.status(200).end();
   }
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   if (!valido) return res.status(400).send(pagina("Ligação inválida", "Esta ligação de cancelamento não é válida."));
-  const ok = await cancelar(id);
+  const ok = await anular(id);
   if (!ok) return res.status(500).send(pagina("Não foi possível cancelar", "Tenta novamente daqui a pouco."));
-  return res.status(200).send(pagina("Cancelado", "Deixaste de receber o email semanal de combustível."));
+  return res.status(200).send(pagina("Cancelado", soAlerta
+    ? "Deixaste de receber o alerta de subida dos combustíveis."
+    : "Deixaste de receber o email semanal de combustível."));
 }
