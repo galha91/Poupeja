@@ -30,7 +30,7 @@ const SECOES = [
   },
   {
     titulo: "7. Emails semanais e notificações",
-    texto: "O resumo semanal de folhetos, o email semanal de combustível de um concelho (para quem o pede nas páginas públicas, sem conta; guardamos o email, o concelho e os últimos preços enviados, para dizer se subiram ou desceram) e as notificações push são opcionais e baseados no teu consentimento. Podes desativar o email a qualquer momento em Definições → Resumo automático semanal, ou através da ligação \"cancelar subscrição\" presente em cada email (também para quem subscreveu sem conta). As notificações podem ser desativadas em Definições ou nas definições do teu dispositivo.",
+    texto: "O resumo semanal de folhetos, o email semanal de combustível de um concelho (para quem o pede nas páginas públicas, sem conta; guardamos o email, o concelho e os últimos preços enviados, para dizer se subiram ou desceram), o alerta de sexta-feira quando os combustíveis vão subir na semana seguinte (só para quem marca essa opção ao subscrever) e as notificações push são opcionais e baseados no teu consentimento. Podes desativar o email a qualquer momento em Definições → Resumo automático semanal, ou através da ligação \"cancelar subscrição\" presente em cada email (também para quem subscreveu sem conta). As notificações podem ser desativadas em Definições ou nas definições do teu dispositivo.",
   },
   {
     titulo: "8. Os teus direitos (RGPD)",

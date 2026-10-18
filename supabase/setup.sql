@@ -191,6 +191,27 @@ create unique index if not exists subscritores_combustivel_uq
 
 alter table public.subscritores_combustivel enable row level security;
 
+-- Alerta de subida (sexta-feira): segundo consentimento, opcional.
+alter table public.subscritores_combustivel
+  add column if not exists alerta_subidas boolean not null default false;
+
+-- ── Previsão semanal dos combustíveis ───────────────────────────────────────
+-- Uma linha por semana já tratada pelo /api/cron-previsao-combustiveis
+-- (impede um segundo alerta na mesma semana). semana = a segunda-feira.
+create table if not exists public.previsoes_combustivel (
+  semana         date primary key,
+  gasoleo_cent   numeric,
+  gasolina_cent  numeric,
+  fontes         jsonb not null default '[]',
+  resumo         text,
+  alerta_enviado boolean not null default false,
+  enviados       integer not null default 0,
+  push_enviados  integer not null default 0,
+  criado_em      timestamptz not null default now()
+);
+
+alter table public.previsoes_combustivel enable row level security;
+
 -- ── Contador de visitas sem cookies ─────────────────────────────────────────
 -- Páginas vistas por dia/página/origem + visitantes diários. O hash do
 -- visitante muda todos os dias e é apagado no fim do dia; só fica a contagem.

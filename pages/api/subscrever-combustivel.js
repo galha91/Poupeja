@@ -14,7 +14,8 @@ export default async function handler(req, res) {
     return res.status(429).json({ erro: "Demasiados pedidos. Tenta daqui a pouco." });
   }
 
-  const { email, concelho, consentimento } = req.body || {};
+  const { email, concelho, consentimento, alerta } = req.body || {};
+  const alertaSubidas = alerta === true; // segundo consentimento, opcional
   if (consentimento !== true) return res.status(400).json({ erro: "Falta aceitar receber o email." });
   if (!emailValido(email)) return res.status(400).json({ erro: "Escreve um email válido." });
   if (!slugConcelhoValido(concelho)) return res.status(400).json({ erro: "Concelho inválido." });
@@ -35,13 +36,16 @@ export default async function handler(req, res) {
     .maybeSingle();
 
   if (existente) {
-    if (existente.cancelado_em) {
-      await admin.from("subscritores_combustivel").update({ cancelado_em: null }).eq("id", existente.id);
+    const mudar = {};
+    if (existente.cancelado_em) mudar.cancelado_em = null;
+    if (alertaSubidas) mudar.alerta_subidas = true; // desmarcar aqui não desliga: isso faz-se no email
+    if (Object.keys(mudar).length) {
+      await admin.from("subscritores_combustivel").update(mudar).eq("id", existente.id);
     }
     return res.status(200).json({ ok: true, concelho: municipio.nome });
   }
 
-  const { error } = await admin.from("subscritores_combustivel").insert({ email: limpo, concelho });
+  const { error } = await admin.from("subscritores_combustivel").insert({ email: limpo, concelho, alerta_subidas: alertaSubidas });
   if (error && error.code !== "23505") {
     console.error("subscrever-combustivel: erro a gravar:", error.message);
     return res.status(500).json({ erro: "Não foi possível guardar. Tenta novamente." });
