@@ -1,22 +1,27 @@
+import webpush from "web-push";
 import { Resend } from "resend";
 import { enviarEmail } from "../../lib/enviarEmail";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { urlCancelarComb } from "../../lib/subscritoresToken";
 import { pesquisarPrevisao } from "../../lib/pesquisarPrevisao";
-import { hojeLisboa, proximaSegunda, validarPrevisao, vaiSubir, construirEmailPrevisao } from "../../lib/previsaoCombustivel";
+import { hojeLisboa, proximaSegunda, validarPrevisao, vaiSubir, construirEmailPrevisao, construirPushPrevisao } from "../../lib/previsaoCombustivel";
 
 /*
  * Alerta "os combustíveis sobem na segunda" — sexta à tarde, com nova
  * tentativa ao sábado de manhã (ver vercel.json). Só um alerta por semana:
  * a tabela previsoes_combustivel guarda a semana já tratada.
  *
- * Recebe quem marcou "avisa-me quando for subir" ao subscrever o email de
- * combustível (subscritores_combustivel.alerta_subidas), uma vez por email.
+ * Push: todas as semanas, suba ou desça, a todos os dispositivos com
+ * notificações (push_subscriptions).
+ * Email: só quando sobe, a quem marcou "avisa-me quando for subir" ao
+ * subscrever o email de combustível (alerta_subidas), uma vez por email.
  *
- * ?teste=1 faz a pesquisa e envia só para EMAIL_ADMIN, sem gravar nada.
+ * ?teste=1 faz a pesquisa e envia o email só para EMAIL_ADMIN, sem push
+ * nem gravar nada (devolve o texto do push).
  *
- * Requer: SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, ANTHROPIC_API_KEY, CRON_SECRET.
+ * Requer: SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, ANTHROPIC_API_KEY,
+ * CRON_SECRET e as VAPID_* (para o push).
  */
 const EMAIL_ADMIN = process.env.EMAIL_ADMIN || "poupeja.portugal@gmail.com";
 
@@ -52,8 +57,10 @@ export default async function handler(req, res) {
   if (teste) {
     const { subject, html, text } = construirEmailPrevisao({ previsao, base, unsubscribeUrl: `${base}/privacidade` });
     await enviarEmail(resend, { from: "PoupeJá <noreply@xn--poupej-uta.com>", to: EMAIL_ADMIN, subject: `[teste] ${subject}`, html, text });
-    return res.status(200).json({ ok: true, teste: true, previsao, subir });
+    return res.status(200).json({ ok: true, teste: true, previsao, subir, push: construirPushPrevisao(previsao) });
   }
+
+  const pushEnviados = await enviarPush(admin, construirPushPrevisao(previsao));
 
   let enviados = 0, falhas = 0;
   if (subir) {
@@ -105,8 +112,37 @@ export default async function handler(req, res) {
     resumo: previsao.resumo,
     alerta_enviado: subir,
     enviados,
+    push_enviados: pushEnviados,
   });
 
-  console.log(`cron-previsao-combustiveis: semana=${semana} subir=${subir} enviados=${enviados} falhas=${falhas}`);
-  return res.status(200).json({ ok: true, semana, previsao, subir, enviados, falhas });
+  console.log(`cron-previsao-combustiveis: semana=${semana} subir=${subir} push=${pushEnviados} enviados=${enviados} falhas=${falhas}`);
+  return res.status(200).json({ ok: true, semana, previsao, subir, pushEnviados, enviados, falhas });
+}
+
+/* Broadcast, como o /api/admin-push. Remove as subscrições expiradas. */
+async function enviarPush(admin, mensagem) {
+  const publica = process.env.VAPID_PUBLIC_KEY || process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  if (!publica || !process.env.VAPID_PRIVATE_KEY || !process.env.VAPID_EMAIL) {
+    console.error("cron-previsao-combustiveis: VAPID em falta, sem push.");
+    return 0;
+  }
+  webpush.setVapidDetails(process.env.VAPID_EMAIL, publica, process.env.VAPID_PRIVATE_KEY);
+  const { data: subs, error } = await admin.from("push_subscriptions").select("id, subscription");
+  if (error) {
+    console.error("cron-previsao-combustiveis: erro a ler push_subscriptions:", error.message);
+    return 0;
+  }
+  const payload = JSON.stringify(mensagem);
+  let enviadas = 0;
+  const expiradas = [];
+  await Promise.all((subs || []).map(async row => {
+    try {
+      await webpush.sendNotification(row.subscription, payload);
+      enviadas++;
+    } catch (e) {
+      if (e.statusCode === 410 || e.statusCode === 404) expiradas.push(row.id);
+    }
+  }));
+  if (expiradas.length) await admin.from("push_subscriptions").delete().in("id", expiradas);
+  return enviadas;
 }

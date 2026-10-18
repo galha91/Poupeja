@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { proximaSegunda, extrairJson, validarPrevisao, vaiSubir, construirEmailPrevisao } from "../lib/previsaoCombustivel.js";
+import { proximaSegunda, extrairJson, validarPrevisao, vaiSubir, construirEmailPrevisao, construirPushPrevisao } from "../lib/previsaoCombustivel.js";
 
 test("próxima segunda a partir de sexta, sábado, domingo e segunda (Lisboa)", () => {
   assert.equal(proximaSegunda(new Date("2026-10-16T16:30:00Z")), "2026-10-19"); // sexta
@@ -51,4 +51,13 @@ test("email com valores, fontes e cancelamento", () => {
   assert.match(r.html, /2,25 €/); // 4,5 cênt. × 50 L
   assert.ok(r.html.includes("https://eco.sapo.pt/a") && r.text.includes(unsub));
   assert.ok(r.html.includes(unsub.replace(/&/g, "&amp;")));
+});
+
+test("push de sexta: sobe ou desce", () => {
+  const sobe = construirPushPrevisao({ semana: "2026-10-19", gasoleo: 4.5, gasolina: -1.5, fontes: [] });
+  assert.equal(sobe.title, "⛽ Combustíveis sobem na segunda (19/10)");
+  assert.equal(sobe.body, "Gasóleo: sobe cerca de 4,5 cênt./L · Gasolina: desce cerca de 1,5 cênt./L. Abastece até domingo.");
+  const desce = construirPushPrevisao({ semana: "2026-10-19", gasoleo: -2, gasolina: null, fontes: [] });
+  assert.equal(desce.title, "⛽ Combustíveis na segunda (19/10)");
+  assert.equal(desce.body, "Gasóleo: desce cerca de 2 cênt./L.");
 });

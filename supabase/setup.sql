@@ -206,6 +206,7 @@ create table if not exists public.previsoes_combustivel (
   resumo         text,
   alerta_enviado boolean not null default false,
   enviados       integer not null default 0,
+  push_enviados  integer not null default 0,
   criado_em      timestamptz not null default now()
 );
 
