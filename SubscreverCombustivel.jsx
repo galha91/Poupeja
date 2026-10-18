@@ -7,7 +7,8 @@ import { evento } from "./lib/analytics";
  * cada email. É um pedido diferente do dos folhetos, e vai noutro dia.
  */
 // `onFeito`: avisa quem a usa (o Início guarda-o para não voltar a oferecer).
-export default function SubscreverCombustivel({ concelho, nome, onFeito }) {
+// `destaqueAlerta`: o Início vende primeiro o alerta de sexta (a caixa continua por marcar).
+export default function SubscreverCombustivel({ concelho, nome, onFeito, destaqueAlerta }) {
   const [email, setEmail] = useState("");
   const [ok, setOk] = useState(false);
   const [aceito, setAceito] = useState(false);
@@ -40,9 +41,13 @@ export default function SubscreverCombustivel({ concelho, nome, onFeito }) {
 
   return (
     <section className="mt-8 rounded-2xl px-5 py-5" style={{ background: "var(--pj-brand-wash)", border: "1px solid var(--pj-border)" }} aria-label={`Receber o combustível de ${nome} por email`}>
-      <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>O combustível de {nome} no teu email</h2>
+      <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>
+        {destaqueAlerta ? "Sabe antes de o combustível subir" : `O combustível de ${nome} no teu email`}
+      </h2>
       <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.55, marginTop: 6 }}>
-        Um email por semana, à segunda-feira, com os postos mais baratos de {nome} e se o preço subiu ou desceu. Sem conta, grátis, cancelas num toque.
+        {destaqueAlerta
+          ? `Às segundas, os postos mais baratos de ${nome}. Se marcares a segunda caixa, também um aviso à sexta quando o combustível sobe na semana seguinte, para abasteceres antes. Sem conta, grátis, cancelas num toque.`
+          : `Um email por semana, à segunda-feira, com os postos mais baratos de ${nome} e se o preço subiu ou desceu. Sem conta, grátis, cancelas num toque.`}
       </p>
       {ok ? (
         <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 12 }}>Feito! Recebes o primeiro na próxima segunda-feira.</p>

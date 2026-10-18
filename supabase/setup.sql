@@ -43,6 +43,12 @@ create table if not exists public.push_subscriptions (
 
 alter table public.push_subscriptions enable row level security;
 
+-- Convidados (sem conta) também ativam notificações: user_id fica null e só
+-- recebem os avisos gerais. Um registo por browser sem conta.
+alter table public.push_subscriptions alter column user_id drop not null;
+create unique index if not exists push_subscriptions_sem_conta_uq
+  on public.push_subscriptions (endpoint) where user_id is null;
+
 -- O utilizador gere as suas próprias subscrições
 create policy "push - select"
   on public.push_subscriptions for select

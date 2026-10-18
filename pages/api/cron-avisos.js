@@ -102,7 +102,8 @@ export default async function handler(req, res) {
   // 1. Só interessam utilizadores com push ativo
   const { data: subs, error: errSubs } = await admin
     .from("push_subscriptions")
-    .select("id, user_id, subscription");
+    .select("id, user_id, subscription")
+    .not("user_id", "is", null); // convidados: só avisos gerais, sem dados para personalizar
   if (errSubs) return res.status(500).json({ erro: "Erro ao ler subscrições." });
   if (!subs?.length) return res.status(200).json({ utilizadores: 0, notificacoes: 0 });
 

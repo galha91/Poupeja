@@ -143,7 +143,8 @@ export default async function handler(req, res) {
     const { data: pushSubsRaw } = await admin
       .from("push_subscriptions")
       .select("user_id, criado_em");
-    const pushSubs = (pushSubsRaw || []).filter(s => !adminIds.has(s.user_id));
+    const pushSubs = (pushSubsRaw || []).filter(s => s.user_id && !adminIds.has(s.user_id));
+    const pushConvidados = (pushSubsRaw || []).filter(s => !s.user_id).length;
 
     const userMap = Object.fromEntries(todos.map(u => [u.id, u.email]));
     const pushSubscritores = (pushSubs || [])
@@ -248,6 +249,7 @@ export default async function handler(req, res) {
       porPlataforma,
       recentes,
       pushSubscritores,
+      pushConvidados,
       ativosHoje,
       ativos7,
       ativos30,

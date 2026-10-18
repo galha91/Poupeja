@@ -3,7 +3,7 @@ import { CartaoEmentasInicio } from "./DestaqueEmentas";
 import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
-  Flame, ListChecks, Landmark, Calculator, Search, Gift,
+  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
@@ -303,25 +303,33 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
       )}
 
       {/*
-        Voltar sem conta: as notificações push só existem para contas (a
-        subscrição fica presa ao user_id). O que já funciona sem conta é o
-        email semanal do concelho — oferece-se aqui, com o concelho que a
-        pessoa está a ver, e só depois de haver um "perto".
+        Voltar sem conta pelo email: o alerta de sexta (sobe na semana
+        seguinte) e o email semanal do concelho que a pessoa está a ver, só
+        depois de haver um "perto".
       */}
       {dados?.concelho && dados.nivel !== "pais" && subscrito !== dados.concelho.slug && (
         emailAberto ? (
           <SubscreverCombustivel
             concelho={dados.concelho.slug}
             nome={dados.concelho.nome}
+            destaqueAlerta
             onFeito={() => { try { localStorage.setItem(LS_EMAIL_COMB, dados.concelho.slug); } catch {} }}
           />
         ) : (
+          // Em destaque: hoje quase ninguém subscreve o email (o link discreto não se via).
           <button
             onClick={() => { evento("inicio_combustivel", { acao: "email_abrir", nivel: dados.nivel }); setEmailAberto(true); }}
-            className="pj-tap pj-alvo flex items-center"
-            style={{ gap: 4, marginTop: 14, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}
+            className="pj-tap press flex items-center w-full text-left"
+            style={{ gap: 12, marginTop: 14, padding: "12px 14px", borderRadius: 14, background: "var(--pj-brand-wash)", border: "1px solid var(--pj-border)" }}
           >
-            Receber o gasóleo de {dados.concelho.nome} por email, às segundas <ChevronRight size={14} />
+            <Mail size={20} aria-hidden style={{ color: "var(--pj-brand-ink)", flex: "none" }} />
+            <span className="flex-1 min-w-0">
+              <span style={{ display: "block", fontSize: 14, fontWeight: 700, color: "var(--pj-text)" }}>Sabe antes de o combustível subir</span>
+              <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.4, marginTop: 2 }}>
+                Email à sexta quando sobe na semana seguinte e à segunda os postos mais baratos de {dados.concelho.nome}. Grátis, sem conta.
+              </span>
+            </span>
+            <ChevronRight size={16} aria-hidden style={{ color: "var(--pj-brand-ink)", flex: "none" }} />
           </button>
         )
       )}

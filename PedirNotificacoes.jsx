@@ -7,7 +7,8 @@ import { Bell, Loader2 } from "lucide-react";
  * recusar lá, fica bloqueado para sempre; com "Agora não" voltamos a
  * perguntar mais tarde (ver lib/pushSoft.js).
  */
-export default function PedirNotificacoes({ onAtivar, onAdiar }) {
+// `convidado`: sem conta só chegam os avisos gerais, por isso o texto não promete alertas dos artigos.
+export default function PedirNotificacoes({ convidado, onAtivar, onAdiar }) {
   const [aPedir, setAPedir] = useState(false);
 
   async function ativar() {
@@ -26,7 +27,9 @@ export default function PedirNotificacoes({ onAtivar, onAdiar }) {
         <div className="flex-1 min-w-0">
           <div style={{ fontSize: 14, fontWeight: 700, color: "var(--pj-text)" }}>Recebe avisos que te poupam dinheiro</div>
           <div style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.4, marginTop: 2 }}>
-            Gasóleo a descer, folhetos novos à quinta e alertas dos teus artigos. Sem spam: só quando há poupança.
+            {convidado
+              ? "Combustível a subir ou descer, à sexta, e folhetos novos à quinta. Sem conta e sem spam."
+              : "Combustível a subir ou descer, folhetos novos à quinta e alertas dos teus artigos. Sem spam: só quando há poupança."}
           </div>
         </div>
       </div>
