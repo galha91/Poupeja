@@ -42,7 +42,8 @@ import {
 } from "lucide-react";
 import { evento, ecra } from "../lib/analytics";
 import { modoExecucao } from "../lib/plataforma";
-import { registarAberturaConvidado, registarConversaoConvidado } from "../lib/convidado";
+import { registarAberturaConvidado, registarConversaoConvidado, registarSecaoConvidado } from "../lib/convidado";
+import PerguntaOrigem from "../PerguntaOrigem";
 
 /* Convidado local: sem conta, sem rede. Os dados vivem no localStorage e
    sobem para a conta quando a pessoa se registar (pull() do lib/sync). */
@@ -116,8 +117,9 @@ function BotaoVoltar({ onClick }) {
 }
 
 /* ─── Wrapper Mercados ─── */
-function SecaoMercados({ setTab, inicioAba = "comparar" }) {
+function SecaoMercados({ setTab, inicioAba = "comparar", onSub }) {
   const [sub, setSub] = useState(inicioAba);
+  useEffect(() => { onSub?.(sub); }, [sub]); // eslint-disable-line react-hooks/exhaustive-deps
   // Selo "Novo" nas Ementas até serem abertas pela primeira vez.
   const [ementasNovas, setEmentasNovas] = useState(false);
   useEffect(() => { setEmentasNovas(!jaViuEmentas()); }, [sub]);
@@ -257,6 +259,11 @@ function PoupeJa() {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  /* Que partes da app usam os convidados (uma vez por sessão e parte; ver /admin) */
+  useEffect(() => {
+    if (user?.convidado && tab !== "inicio") registarSecaoConvidado(tab);
+  }, [tab, user?.convidado]);
 
   /* Conta quem abre o site em modo convidado (estatísticas do /admin) */
   useEffect(() => {
@@ -708,7 +715,7 @@ function PoupeJa() {
                 {/* "Voltar" ao Início em todos os separadores menos o próprio Início
                     (a lista tem o seu, ao lado do "Partilhar"). */}
                 {tab !== "inicio" && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
-                {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
+                {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} onSub={user?.convidado ? registarSecaoConvidado : undefined} />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
@@ -785,6 +792,8 @@ function PoupeJa() {
             onConvertido={(nome, email) => setUser(u => ({ ...u, nome, email }))}
           />
         )}
+
+        {user?.convidado && !pedirPush && !modalConta && !modalInstalarAberto && <PerguntaOrigem />}
 
         {pedirPush && !modalConta && !modalInstalarAberto && (
           <PedirNotificacoes convidado={!!user?.convidado} onAtivar={ativarAvisos} onAdiar={adiarAvisos} />

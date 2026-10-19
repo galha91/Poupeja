@@ -347,3 +347,52 @@ returns void language sql security definer set search_path = public as $$
 $$;
 
 revoke all on function public.marcar_convidado(uuid, text) from public, anon, authenticated;
+
+-- ── Ficha anónima do convidado (2026-10-19) ─────────────────────────────────
+-- Categorias largas da primeira visita, junto ao id aleatório do browser:
+-- nunca o IP, o URL de origem, o nome ou o email. fora_pt = ligação de fora
+-- de Portugal (quase sempre testes do Google Play; o admin conta à parte).
+alter table public.convidados_site
+  add column if not exists origem        text,
+  add column if not exists regiao        text,
+  add column if not exists pais          text,
+  add column if not exists dispositivo   text,
+  add column if not exists modo          text,
+  add column if not exists entrada       text,
+  add column if not exists fora_pt       boolean not null default false,
+  add column if not exists como_conheceu text,
+  add column if not exists secoes        text[] not null default '{}';
+
+create or replace function public.registar_convidado_ficha(p_id uuid, p_converteu boolean, p_ficha jsonb)
+returns void language sql security definer set search_path = public as $$
+  insert into public.convidados_site (id, converteu_em, origem, regiao, pais, dispositivo, modo, entrada, fora_pt)
+  values (p_id, case when p_converteu then now() end,
+          p_ficha->>'origem', p_ficha->>'regiao', p_ficha->>'pais', p_ficha->>'dispositivo',
+          p_ficha->>'modo', p_ficha->>'entrada', coalesce((p_ficha->>'fora_pt')::boolean, false))
+  on conflict (id) do update set
+    ultima_em    = now(),
+    aberturas    = convidados_site.aberturas + case when p_converteu then 0 else 1 end,
+    converteu_em = coalesce(convidados_site.converteu_em, case when p_converteu then now() end),
+    origem       = coalesce(convidados_site.origem, excluded.origem),
+    regiao       = coalesce(convidados_site.regiao, excluded.regiao),
+    dispositivo  = coalesce(convidados_site.dispositivo, excluded.dispositivo),
+    modo         = coalesce(convidados_site.modo, excluded.modo),
+    entrada      = coalesce(convidados_site.entrada, excluded.entrada),
+    fora_pt      = case when convidados_site.pais is null then excluded.fora_pt else convidados_site.fora_pt end,
+    pais         = coalesce(convidados_site.pais, excluded.pais);
+$$;
+revoke all on function public.registar_convidado_ficha(uuid, boolean, jsonb) from public, anon, authenticated;
+
+create or replace function public.marcar_secao_convidado(p_id uuid, p_secao text)
+returns void language sql security definer set search_path = public as $$
+  update public.convidados_site
+     set secoes = array_append(secoes, p_secao)
+   where id = p_id and not (p_secao = any(secoes)) and cardinality(secoes) < 30;
+$$;
+revoke all on function public.marcar_secao_convidado(uuid, text) from public, anon, authenticated;
+
+create or replace function public.responder_convidado(p_id uuid, p_resposta text)
+returns void language sql security definer set search_path = public as $$
+  update public.convidados_site set como_conheceu = coalesce(como_conheceu, p_resposta) where id = p_id;
+$$;
+revoke all on function public.responder_convidado(uuid, text) from public, anon, authenticated;
