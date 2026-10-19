@@ -38,6 +38,15 @@ function MyApp({ Component, pageProps }) {
         rec = primeiroDia === hoje ? 'novo' : 'recorrente';
       } catch (_) {}
       const o = primeira ? new URLSearchParams(window.location.search).get('o') : null;
+      // A chegada desta sessão (de onde veio e por que página entrou) fica no
+      // browser para a ficha anónima do convidado (lib/convidado.js).
+      if (primeira) {
+        try {
+          if (!sessionStorage.getItem('poupeja_chegada')) {
+            sessionStorage.setItem('poupeja_chegada', JSON.stringify({ ref: ref.slice(0, 300), o, entrada: url.split(/[?#]/)[0] }));
+          }
+        } catch (_) {}
+      }
       primeira = false;
       const headers = { 'Content-Type': 'application/json' };
       /*

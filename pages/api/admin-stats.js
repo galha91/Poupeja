@@ -72,10 +72,13 @@ export default async function handler(req, res) {
     try {
       const { data: conv, error: convErr } = await admin
         .from("convidados_site")
-        .select("primeira_em, ultima_em, aberturas, converteu_em, comparou_em, escolheu_em, alerta_em, pediu_conta_em")
+        .select("primeira_em, ultima_em, aberturas, converteu_em, comparou_em, escolheu_em, alerta_em, pediu_conta_em, origem, regiao, dispositivo, modo, entrada, fora_pt, como_conheceu, secoes")
         .limit(100000);
       if (convErr) throw convErr;
-      const linhas = conv || [];
+      // Ligações de fora de Portugal contam à parte: quase todas são os
+      // aparelhos de teste do Google Play, não pessoas.
+      const todasLinhas = conv || [];
+      const linhas = todasLinhas.filter(c => !c.fora_pt);
       const desde = (campo, ms) => linhas.filter(c => c[campo] && agora - new Date(c[campo]).getTime() < ms).length;
       const deHoje = campo => linhas.filter(c => c[campo] && new Date(c[campo]) >= inicioHoje).length;
       entradasConvidado = {
@@ -92,6 +95,30 @@ export default async function handler(req, res) {
         abriram30: desde("ultima_em", 30 * DIA),
         aberturas: linhas.reduce((n, c) => n + (c.aberturas || 0), 0),
         converteram: linhas.filter(c => c.converteu_em).length,
+        foraPt7: todasLinhas.filter(c => c.fora_pt && c.primeira_em && agora - new Date(c.primeira_em).getTime() < 7 * DIA).length,
+        foraPtTotal: todasLinhas.length - linhas.length,
+        // Quem são, de quem entrou nos últimos 30 dias (só categorias largas).
+        perfil30: (() => {
+          const novos = linhas.filter(c => c.primeira_em && agora - new Date(c.primeira_em).getTime() < 30 * DIA);
+          const contar = (f) => {
+            const m = new Map();
+            for (const c of novos) for (const v of [].concat(f(c) ?? [])) if (v) m.set(v, (m.get(v) || 0) + 1);
+            return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+          };
+          return {
+            n: novos.length,
+            comFicha: novos.filter(c => c.origem || c.regiao).length,
+            voltaramOutroDia: novos.filter(c => c.ultima_em && new Date(c.ultima_em) - new Date(c.primeira_em) > DIA).length,
+            converteram: novos.filter(c => c.converteu_em).length,
+            origem: contar(c => c.origem),
+            comoConheceu: contar(c => c.como_conheceu),
+            regiao: contar(c => c.regiao),
+            dispositivo: contar(c => c.dispositivo),
+            modo: contar(c => c.modo),
+            entrada: contar(c => c.entrada),
+            secoes: contar(c => c.secoes || []),
+          };
+        })(),
         // Funil dos últimos 7 dias, de quem entrou nesses 7 dias:
         // entrou → comparou a lista → escolheu onde comprar → ligou o sino →
         // tocou em "criar conta" → criou conta. E quantos voltaram a abrir.

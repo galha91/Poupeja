@@ -294,7 +294,12 @@ export default function Admin() {
                     <p className="text-[10px] text-slate-400 mt-1">Os passos novos (comparou, escolheu, sino, criar conta) só contam a partir de agora.</p>
                   </div>
                 )}
-                <p className="text-[10px] text-slate-400 mt-2">Contagem desde 1 out 2026. Antes disso: Google Analytics, evento login · method convidado_local.</p>
+                {stats.entradasConvidado.perfil30?.n > 0 && <PerfilConvidados p={stats.entradasConvidado.perfil30} />}
+                <p className="text-[10px] text-slate-400 mt-2">
+                  Contagem desde 1 out 2026, só ligações de Portugal
+                  {stats.entradasConvidado.foraPtTotal ? ` (mais ${stats.entradasConvidado.foraPtTotal} de fora, quase todas testes do Google Play)` : ""}.
+                  Antes disso: Google Analytics, evento login · method convidado_local.
+                </p>
               </div>
             )}
 
@@ -814,7 +819,7 @@ function Resumo({ stats, trafego }) {
   const conv = stats.entradasConvidado;
   const itens = [
     { rotulo: "Visitantes", ajuda: "soma diária, 7 dias", valor: p ? p.sete.visitantes : "…", antes: p?.anteriores7, cor: "text-sky-600" },
-    { rotulo: "Novos na app", ajuda: "convidados, 7 dias", valor: conv?.novos7 ?? "—", antes: conv?.novosAnteriores7, cor: "text-amber-600" },
+    { rotulo: "Novos na app", ajuda: conv?.foraPt7 ? `convidados em PT, 7 dias · +${conv.foraPt7} de fora (testes)` : "convidados em PT, 7 dias", valor: conv?.novos7 ?? "—", antes: conv?.novosAnteriores7, cor: "text-amber-600" },
     { rotulo: "Contas novas", ajuda: "7 dias", valor: stats.ultimos7, antes: stats.anteriores7, cor: "text-emerald-600" },
     { rotulo: "Emails", ajuda: "folhetos + combustível", valor: (stats.subFolhetos ?? 0) + (stats.subCombustivel ?? 0), cor: "text-violet-600",
       nota: `${stats.subFolhetos ?? 0} folhetos · ${stats.subCombustivel ?? 0} combustível` },
@@ -843,6 +848,48 @@ function Dispositivo({ onRepor, estadoRepor }) {
       <button onClick={onRepor} disabled={estadoRepor === "a-repor"} className="mt-2 text-[12px] font-black text-rose-500 underline">
         {estadoRepor === "a-repor" ? "A repor…" : estadoRepor === "ok" ? "Contador reposto a zero ✓" : estadoRepor === "erro" ? "Erro — tenta de novo" : "Pôr contador de visitas a zero"}
       </button>
+    </div>
+  );
+}
+
+/* Quem são os convidados que entraram nos últimos 30 dias (categorias largas, sem identificar ninguém). */
+const NOMES_PERFIL = {
+  direto: "Direto / app", outro: "Outro site", pesquisa: "Outra pesquisa", amigo: "Amigo ou família",
+  "app-android": "App Android", pwa: "App instalada", browser: "Browser",
+  mobilidade: "Combustíveis", mercados: "Mercado", comparar: "Comparar preços", folhetos: "Folhetos", ementas: "Ementas",
+  lista: "Lista de compras", taloes: "Talões", contas: "Contas", apoios: "Apoios", poupanca: "Poupança", lojas: "Lojas", irs: "IRS",
+  "/": "Início",
+};
+function PerfilConvidados({ p }) {
+  const grupo = (titulo, linhas, nota) => linhas?.length > 0 && (
+    <div className="mt-3">
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5">{titulo}</p>
+      {linhas.map(([v, n]) => (
+        <div key={v} className="flex items-center gap-2 mb-1">
+          <span className="text-[11px] text-slate-600 font-semibold w-32 flex-none truncate">{NOMES_PERFIL[v] || v}</span>
+          <div className="flex-1 bg-amber-50 rounded-full h-2.5 overflow-hidden">
+            <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.max(3, Math.round(n / p.n * 100))}%` }} />
+          </div>
+          <span className="text-[11px] font-black text-slate-700 w-14 text-right flex-none">{n} · {Math.round(n / p.n * 100)}%</span>
+        </div>
+      ))}
+      {nota && <p className="text-[10px] text-slate-400">{nota}</p>}
+    </div>
+  );
+  return (
+    <div className="mt-4 pt-3 border-t border-slate-100">
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Quem são · entraram nos últimos 30 dias</p>
+      <p className="text-[11px] text-slate-500 font-medium mt-1">
+        {p.n} convidados · {p.voltaramOutroDia} voltaram noutro dia · {p.converteram} criaram conta
+        {p.comFicha < p.n ? ` · ${p.n - p.comFicha} ainda sem ficha (entraram antes de 19 out; ficam com ficha se voltarem)` : ""}
+      </p>
+      {grupo("Como nos conheceram (resposta deles)", p.comoConheceu, "Pergunta feita uma vez, a quem usa a app 30 segundos.")}
+      {grupo("De onde vieram (link)", p.origem, "\"Direto / app\" inclui links abertos dentro do Instagram e do WhatsApp. Usa ?o=ig, ?o=fb, ?o=wa nos links que partilhas.")}
+      {grupo("Distrito", p.regiao)}
+      {grupo("Aparelho", p.dispositivo)}
+      {grupo("Como usam", p.modo)}
+      {grupo("Por onde entraram", p.entrada)}
+      {grupo("O que abriram", p.secoes, "Cada parte conta uma vez por convidado. O Início não entra.")}
     </div>
   );
 }
