@@ -1,5 +1,5 @@
 {
-  "atualizado": "2026-09-24",
+  "atualizado": "2026-10-19",
   "categorias": [
     {
       "id": "todos",
@@ -90,16 +90,16 @@
     {
       "id": "apoios-eficiencia-energetica",
       "titulo": "Apoios à Eficiência Energética em Casa",
-      "descricao": "Apoios do Fundo Ambiental para obras que melhorem a eficiência energética da habitação: isolamento, janelas, bombas de calor, painéis solares e ventilação. Os avisos abrem por fases, com dotação limitada, por isso convém acompanhar o portal.",
-      "valor": "Comparticipação e financiamento bonificado",
+      "descricao": "O Fundo Ambiental financiou obras e equipamentos eficientes em casa (janelas, bombas de calor, painéis solares, placas e fornos elétricos), mas neste momento não há candidaturas abertas para particulares: o Vale Eficiência II fechou em outubro de 2024 e o E-Lar (2.ª fase) em março de 2026. Os avisos do PRR dependem de dotação limitada, por isso convém acompanhar o portal.",
+      "valor": "Sem candidaturas abertas (outubro de 2026)",
       "categoria": "energia",
       "quemPode": [
         "Proprietários de habitação própria permanente",
         "Obras que melhorem o desempenho energético do imóvel"
       ],
-      "comoRequerer": "Acompanha a abertura das candidaturas no portal do Fundo Ambiental (fundoambiental.pt). Em geral é necessário: declaração de IRS, caderneta predial, certificado energético e orçamentos de instaladores certificados.",
+      "comoRequerer": "Não há aviso aberto para particulares. Quando abrir um novo, aparece no portal do Fundo Ambiental (fundoambiental.pt); costuma pedir declaração de IRS, caderneta predial, certificado energético e orçamentos de instaladores certificados.",
       "link": "https://www.fundoambiental.pt/",
-      "novo": true
+      "novo": false
     },
     {
       "id": "passe-sub23",
@@ -191,7 +191,7 @@
     {
       "id": "rsi",
       "titulo": "Rendimento Social de Inserção (RSI)",
-      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral. Em 2026 o valor de referência do titular é 247,56€/mês, somando-se 173,29€ por cada adulto adicional e 123,78€ por cada criança. A partir de 2027 passa a ser integrado na Prestação Social Única (PSU).",
+      "descricao": "Apoio financeiro mensal para famílias em situação de pobreza extrema, acompanhado de um programa de inserção social e laboral. Em 2026 o valor de referência do titular é 247,56€/mês, somando-se 173,29€ por cada adulto adicional e 123,78€ por cada criança. Vai ser integrado na Prestação Social Única (PSU), que tem efeitos a partir do final de 2026.",
       "valor": "247,56€/mês (titular, 2026)",
       "categoria": "familia",
       "quemPode": [
@@ -206,8 +206,8 @@
     {
       "id": "prestacao-social-unica",
       "titulo": "Prestação Social Única (PSU)",
-      "descricao": "Nova prestação criada pelo Decreto-Lei n.º 166/2026 que junta 13 apoios sociais — entre eles o RSI e o subsídio social de desemprego — numa só candidatura e num só pagamento mensal. O valor base é metade do IAS (≈ 268,57€), com majorações por filhos e desemprego e um incentivo para quem volta a trabalhar. Começa a ser paga no arranque de 2027.",
-      "valor": "≈ 268,57€/mês de base (a partir de 2027)",
+      "descricao": "Nova prestação criada pelo Decreto-Lei n.º 166/2026 que junta 13 apoios sociais — entre eles o RSI e o subsídio social de desemprego — numa só candidatura e num só pagamento mensal. O valor base é metade do IAS (≈ 268,57€), com majorações por filhos e desemprego e um incentivo para quem volta a trabalhar. Os efeitos começam no final de 2026.",
+      "valor": "≈ 268,57€/mês de base (a partir do final de 2026)",
       "categoria": "familia",
       "quemPode": [
         "Pessoas com 18 ou mais anos residentes em Portugal",
@@ -216,7 +216,7 @@
         "Quem pode trabalhar: inscrição no centro de emprego"
       ],
       "comoRequerer": "Ainda não há candidaturas: a Segurança Social está a adaptar o sistema. Quem já recebe RSI ou outro apoio abrangido passa para a PSU sem perder rendimento.",
-      "link": "https://portugal.gov.pt/gc25/comunicacao/noticias/prestacao-social-unica-o-que-e-e-como-funciona",
+      "link": "https://portugal.gov.pt/gc25/comunicacao/noticias/prestacao-social-unica-aumenta-valor-de-referencia-e-reune-13-apoios-sociais",
       "novo": true
     },
     {
