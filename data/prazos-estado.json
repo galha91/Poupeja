@@ -1,6 +1,6 @@
 {
   "_comoEditar": "Cada prazo tem: id (único, sem espaços), titulo, descricao, quemPode (linguagem simples), perfis (todos | filhos | arrendo | casa | jovem | estudante | carro), prazo, prazoTexto (como aparece no ecrã), link (fonte oficial) e verificado (AAAA-MM-DD). prazo.tipo 'anual' repete todos os anos: periodos é uma lista de { inicio?, fim } em MM-DD (02-29 fica 02-28 nos anos comuns). prazo.tipo 'continuo' não tem data. Só entram prazos confirmados na fonte oficial.",
-  "atualizado": "2026-10-03",
+  "atualizado": "2026-10-19",
   "prazos": [
     {
       "id": "agregado-familiar",
@@ -221,18 +221,18 @@
     {
       "id": "apoio-extraordinario-renda",
       "titulo": "Apoio extraordinário à renda",
-      "descricao": "Apoio mensal pago pela Segurança Social a quem tem direito, sem ser preciso pedir. Valores abaixo de 20 € são pagos de seis em seis meses.",
-      "quemPode": "Quem arrenda a habitação permanente e cumpre as condições de rendimento e de contrato definidas para o apoio — a verificação é feita automaticamente.",
+      "descricao": "Apoio mensal (até 200 €) pago pela Segurança Social a quem já tem direito, sem ser preciso pedir. Está fechado a novos beneficiários: só abrange contratos de arrendamento celebrados até 15 de março de 2023. O Governo anunciou a sua revogação, ainda não publicada, e quem já recebe continua a receber. Valores abaixo de 20 € são pagos de seis em seis meses.",
+      "quemPode": "Só quem já recebe: agregados com contrato de arrendamento da habitação permanente celebrado até 15 de março de 2023, rendimento até ao 6.º escalão do IRS e taxa de esforço com a renda de pelo menos 35%. Não aceita novos pedidos; quem procura apoio à renda deve ver o Porta 65.",
       "perfis": [
         "arrendo"
       ],
       "prazo": {
         "tipo": "continuo"
       },
-      "prazoTexto": "Sem pedido — pago até ao dia 20 de cada mês a quem tem direito",
+      "prazoTexto": "Sem pedido e fechado a novos beneficiários — pago até ao dia 20 de cada mês a quem já tem direito",
       "link": "https://www.portaldahabitacao.pt/apoio-extraordin%C3%A1rio-%C3%A0-renda",
       "fonte": "Portal da Habitação",
-      "verificado": "2026-10-03"
+      "verificado": "2026-10-19"
     },
     {
       "id": "iuc",
