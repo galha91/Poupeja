@@ -112,6 +112,19 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* ── Campos de data/mês ──
+ * No iOS o input de data/mês tem largura mínima própria e saía do ecrã
+ * (Crédito → próxima revisão). Assim respeita o width: 100% do campo. */
+input[type="date"],
+input[type="month"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  min-width: 0;
+}
+input[type="date"]::-webkit-date-and-time-value,
+input[type="month"]::-webkit-date-and-time-value { text-align: left; }
+
 /* ── Range input ── */
 input[type="range"] {
   -webkit-appearance: none;
