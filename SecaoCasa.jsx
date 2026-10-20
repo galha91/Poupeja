@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { Building2, Plus, Pencil, Home } from "lucide-react";
 import { eur } from "./lib/formato";
 import { falta } from "./lib/datas";
+import { prestacao as calcPrestacao, taxaAnual, simular } from "./lib/credito";
 import FonteOficial from "./FonteOficial";
-import { Campo, BotaoPrincipal, Chip, Nota, Erro, Folha, Cartao, ROTULO } from "./UiSimples";
+import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, Cartao, ROTULO } from "./UiSimples";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
@@ -44,11 +45,7 @@ function guardarLocal(d) {
 }
 
 function calcPMT(capital, spreadPct, euriborPct, prazoAnos) {
-  const r = (spreadPct + Math.max(euriborPct, 0)) / 100 / 12;
-  const n = Math.round(prazoAnos * 12);
-  if (n <= 0) return 0;
-  if (r <= 0) return capital / n;
-  return capital * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+  return calcPrestacao(capital, taxaAnual(euriborPct, spreadPct), prazoAnos * 12);
 }
 
 const euros = v => `${Math.round(v).toLocaleString("pt-PT")} €`;
@@ -217,8 +214,145 @@ function BlocoEuribor({ euribor, carregando }) {
   );
 }
 
+/* ─── Simulador "E se…?" ─── */
+const SIM_PADRAO = { capital: 150000, spread: 1, anos: 30 };
+
+/** "22 anos", "21 anos e 4 meses", "8 meses" */
+function prazoTexto(meses) {
+  const a = Math.floor(meses / 12), m = meses % 12;
+  const pa = a ? `${a} ${a === 1 ? "ano" : "anos"}` : "";
+  const pm = m ? `${m} ${m === 1 ? "mês" : "meses"}` : "";
+  return [pa, pm].filter(Boolean).join(" e ") || "0 meses";
+}
+
+function Deslizador({ label, texto, valor, min, max, step, onChange, extremos, children }) {
+  const id = useId();
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3">
+        <label htmlFor={id} style={ROTULO}>{label}</label>
+        <span style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{texto}</span>
+      </div>
+      <input id={id} type="range" min={min} max={max} step={step} value={valor} aria-valuetext={texto}
+        onChange={e => onChange(Number(e.target.value))} style={{ marginTop: 12, accentColor: "var(--pj-brand)" }} />
+      <div className="flex justify-between" style={{ fontSize: 11, color: "var(--pj-text-faint)", marginTop: 4 }}>
+        <span>{extremos[0]}</span>{children}<span>{extremos[1]}</span>
+      </div>
+    </div>
+  );
+}
+
+function Simulador({ credito, euribor }) {
+  const idx = credito?.indexante || "6M";
+  const euriborHoje = euribor?.[idx]?.valor ?? null;
+  const base = credito || SIM_PADRAO;
+
+  const [capital, setCapital] = useState(String(base.capital));
+  const [spread, setSpread] = useState(base.spread);
+  const [anos, setAnos] = useState(base.anos ?? base.prazo);
+  const [eurSim, setEurSim] = useState(euriborHoje ?? 2.5);
+  const [amortizar, setAmortizar] = useState(false);
+  const [amort, setAmort] = useState("");
+  const [modo, setModo] = useState("prestacao");
+
+  // A Euribor chega depois do primeiro desenho: entra como ponto de partida.
+  useEffect(() => { if (euriborHoje != null) setEurSim(euriborHoje); }, [euriborHoje]);
+
+  const cap = numero(capital);
+  const valido = cap > 0;
+  const r = valido ? simular({ capital: cap, spread, euribor: eurSim, anos, amortizacao: amortizar ? numero(amort) : 0, modo }) : null;
+  const hoje = credito && euriborHoje != null ? calcPMT(credito.capital, credito.spread, euriborHoje, credito.prazo) : null;
+  const delta = r && hoje != null ? r.prestacao - hoje : null;
+  const mexido = credito
+    ? cap !== credito.capital || spread !== credito.spread || anos !== credito.prazo || (euriborHoje != null && Math.abs(eurSim - euriborHoje) > 1e-9) || amortizar
+    : false;
+
+  function repor() {
+    setCapital(String(base.capital)); setSpread(base.spread); setAnos(base.anos ?? base.prazo);
+    if (euriborHoje != null) setEurSim(euriborHoje);
+    setAmortizar(false); setAmort("");
+  }
+
+  return (
+    <Cartao className="p-4">
+      <p style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{credito ? "E se…?" : "Simular um crédito"}</p>
+      <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 2 }}>
+        {credito ? "Mexe nos valores e vê a prestação mudar." : "Para quem vai comprar casa: mexe nos valores e vê a prestação."}
+      </p>
+
+      {/* Resultado — fica em cima, à vista enquanto se mexe */}
+      <div className="mt-4 p-4" style={{ borderRadius: 14, background: "var(--pj-subtle)" }} aria-live="polite">
+        {r ? (
+          <>
+            <p className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.1 }}>
+              {euros(r.prestacao)}<span style={{ fontSize: 15, color: "var(--pj-text-muted)", fontWeight: 500 }}> /mês</span>
+            </p>
+            {delta != null && mexido && Math.abs(delta) >= 1 && (
+              <p style={{ fontSize: 14, marginTop: 4 }}>
+                <strong style={{ color: delta > 0 ? "var(--pj-danger)" : "var(--pj-brand-ink)" }}>
+                  {delta > 0 ? "+" : "−"}{euros(Math.abs(delta))}/mês
+                </strong>
+                <span style={{ color: "var(--pj-text-muted)" }}> do que pagas hoje</span>
+              </p>
+            )}
+            <div className="grid grid-cols-2 gap-3 mt-3" style={{ fontSize: 12, color: "var(--pj-text-muted)" }}>
+              <div>Taxa (TAN)<span className="block" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{eur(r.taxa, 2)}%</span></div>
+              <div>Juros até ao fim<span className="block" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{euros(r.juros)}</span></div>
+            </div>
+            {amortizar && numero(amort) > 0 && (
+              <p style={{ fontSize: 13, color: "var(--pj-text)", marginTop: 10, lineHeight: 1.5 }}>
+                {modo === "prazo"
+                  ? <>Acabas <strong>{prazoTexto(Math.max(Math.round(anos * 12) - r.meses, 0))}</strong> mais cedo</>
+                  : <>Mesmo prazo, prestação mais baixa</>}
+                {" "}e poupas <strong style={{ color: "var(--pj-brand-ink)" }}>{euros(r.poupancaJuros)}</strong> em juros.
+              </p>
+            )}
+          </>
+        ) : (
+          <p style={{ fontSize: 14, color: "var(--pj-text-muted)" }}>Indica o capital para simular.</p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-5 mt-5">
+        <Deslizador label={`Euribor ${INDEXANTES[idx]}`} texto={`${eur(eurSim, 2)}%`} valor={eurSim} min={-0.5} max={5} step={0.05}
+          onChange={setEurSim} extremos={["−0,5%", "5%"]}>
+          {euriborHoje != null && Math.abs(eurSim - euriborHoje) > 1e-9 && (
+            <button type="button" onClick={() => setEurSim(euriborHoje)} className="pj-tap"
+              style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-brand-ink)", background: "none", border: 0, padding: "0 8px", minHeight: 28 }}>
+              Voltar à de hoje ({eur(euriborHoje, 3)}%)
+            </button>
+          )}
+        </Deslizador>
+        <Deslizador label="Spread" texto={`${eur(spread, 2)}%`} valor={spread} min={0.3} max={3} step={0.05}
+          onChange={setSpread} extremos={["0,3%", "3%"]} />
+        <Deslizador label="Anos que faltam" texto={`${anos} anos`} valor={anos} min={5} max={40} step={1}
+          onChange={setAnos} extremos={["5", "40"]} />
+        <Campo label="Capital em dívida" type="text" inputMode="decimal" value={capital} onChange={e => setCapital(e.target.value)} />
+
+        <label className="flex items-center gap-3" style={{ minHeight: 44, fontSize: 14, color: "var(--pj-text)" }}>
+          <input type="checkbox" checked={amortizar} onChange={e => setAmortizar(e.target.checked)} style={{ width: 22, height: 22, accentColor: "var(--pj-brand)" }} />
+          Amortizar parte do crédito
+        </label>
+        {amortizar && (
+          <div className="flex flex-col gap-3" style={{ marginTop: -8 }}>
+            <Campo label="Quanto amortizas" type="text" inputMode="decimal" placeholder="ex: 10 000 €" value={amort}
+              onChange={e => setAmort(e.target.value)}
+              ajuda="Em taxa variável o banco pode cobrar até 0,5% do valor amortizado (2% em taxa fixa)." />
+            <div className="flex gap-2 flex-wrap">
+              <Chip ativo={modo === "prestacao"} onClick={() => setModo("prestacao")}>Baixar a prestação</Chip>
+              <Chip ativo={modo === "prazo"} onClick={() => setModo("prazo")}>Acabar mais cedo</Chip>
+            </div>
+          </div>
+        )}
+
+        {mexido && <BotaoSecundario onClick={repor} className="w-full">Repor os meus valores</BotaoSecundario>}
+      </div>
+    </Cartao>
+  );
+}
+
 /* ─── Formulários ─── */
-function FormCredito({ inicial, onGuardar, onRemover }) {
+function FormCredito({ inicial, euribor, onGuardar, onRemover }) {
   const [f, setF] = useState({
     capital: paraCampo(inicial?.capital), spread: paraCampo(inicial?.spread), prazo: paraCampo(inicial?.prazo),
     indexante: inicial?.indexante || "6M", dataRevisao: inicial?.dataRevisao || "",
@@ -252,6 +386,16 @@ function FormCredito({ inicial, onGuardar, onRemover }) {
           ))}
         </div>
       </div>
+      {(() => {
+        const e = euribor?.[f.indexante]?.valor;
+        const cap = numero(f.capital), sp = numero(f.spread), pz = numero(f.prazo);
+        if (e == null || !(cap > 0) || !(pz > 0) || f.spread === "" || !(sp >= 0)) return null;
+        return (
+          <p style={{ fontSize: 15, color: "var(--pj-text)" }} aria-live="polite">
+            Prestação estimada: <strong style={{ color: "var(--pj-brand-ink)" }}>{euros(calcPMT(cap, sp, e, pz))}/mês</strong>
+          </p>
+        );
+      })()}
       <Campo label="Próxima revisão da taxa" opcional type="month" value={f.dataRevisao} onChange={muda("dataRevisao")} />
       <Erro>{erro}</Erro>
       <BotaoPrincipal type="submit">Guardar</BotaoPrincipal>
@@ -343,6 +487,7 @@ export default function SecaoCasa() {
 
       <div className="flex flex-col gap-3 anim-up anim-up-1">
         <BlocoCredito credito={c} euribor={euribor} carregando={loadEuribor} onEditar={() => setFolha("credito")} />
+        <Simulador key={c ? `${c.capital}-${c.spread}-${c.prazo}-${c.indexante}` : "novo"} credito={c} euribor={euribor} />
         <BlocoRenda renda={dados.renda} onEditar={() => setFolha("renda")} />
         <BlocoEuribor euribor={euribor} carregando={loadEuribor} />
       </div>
@@ -353,7 +498,7 @@ export default function SecaoCasa() {
 
       {folha === "credito" && (
         <Folha titulo={c ? "Editar crédito" : "Crédito habitação"} onFechar={() => setFolha(null)}>
-          <FormCredito inicial={c} onGuardar={v => salvar({ credito: v })} onRemover={c ? () => remover("credito") : null} />
+          <FormCredito inicial={c} euribor={euribor} onGuardar={v => salvar({ credito: v })} onRemover={c ? () => remover("credito") : null} />
         </Folha>
       )}
       {folha === "renda" && (
