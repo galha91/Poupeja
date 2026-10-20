@@ -6,6 +6,7 @@ import { eur } from "./lib/formato";
 import { FONTES } from "./lib/fontes";
 import DescontosCombustivel from "./DescontosCombustivel";
 import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontosCombustivel";
+import { LS_FAV, chavePosto, lerFavoritos, guardarFicha, apagarFicha, completarFichas } from "./lib/postosFavoritos";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -475,16 +476,21 @@ function SubCombustiveis() {
 
   useEffect(() => { setHistorico(lerHistorico()); }, []);
   useEffect(() => {
-    try { const r = localStorage.getItem("poupeja_postos_fav"); if (r) setFavoritos(JSON.parse(r)); } catch {}
+    setFavoritos(lerFavoritos());
   }, []);
 
-  function favKey(e) { return `${(e.nome || e.posto || "").toLowerCase()}__${e.municipio || ""}`; }
+  const favKey = chavePosto;
   function ehFavorito(e) { return favoritos.includes(favKey(e)); }
   function toggleFavorito(e) {
     const k = favKey(e);
+    // Decide-se sobre `prev` (dois toques seguidos não se baralham); as
+    // escritas são idempotentes, por isso podem viver aqui dentro.
     setFavoritos(prev => {
-      const nova = prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k];
-      try { localStorage.setItem("poupeja_postos_fav", JSON.stringify(nova)); } catch {}
+      const tirar = prev.includes(k);
+      const nova = tirar ? prev.filter(x => x !== k) : [...prev, k];
+      // A ficha (coordenadas, id) é o que deixa o Início mostrar o preço deste posto.
+      if (tirar) apagarFicha(k); else if (e.lat != null && e.lon != null) guardarFicha(e);
+      try { localStorage.setItem(LS_FAV, JSON.stringify(nova)); } catch {}
       return nova;
     });
   }
@@ -519,6 +525,8 @@ function SubCombustiveis() {
         if (!json.success) { setErro(json.erro || "Sem dados"); setLoading(false); return; }
         const items = json.estacoes || json.dados || [];
         setEstacoes(items);
+        // Favoritos marcados antes de haver fichas: ficam com coordenadas agora.
+        completarFichas(lerFavoritos(), items);
         setTipos(json.tipos || [...new Set(items.map(e => e.tipoLabel || e.tipo).filter(Boolean))]);
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);

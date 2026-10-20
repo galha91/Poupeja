@@ -19,6 +19,7 @@ import { evento } from "./lib/analytics";
 import { slugify } from "./lib/slug";
 import { lerDescontos, aplicarDescontos } from "./lib/descontosCombustivel";
 import SubscreverCombustivel from "./SubscreverCombustivel";
+import CartaoPostoFavorito from "./CartaoPostoFavorito";
 
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
@@ -132,7 +133,7 @@ function useGasoleoHoje() {
         const maisPerto = (j.estacoes || []).filter(e => e.municipio && e.distancia != null)
           .sort((a, b) => a.distancia - b.distancia)[0];
         const concelho = maisPerto ? { slug: slugify(maisPerto.municipio), nome: maisPerto.municipio } : null;
-        if (best) melhor({ preco: best.preco, desconto: best.desconto, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, concelho, frescura: frescuraDe(j) });
+        if (best) melhor({ preco: best.preco, desconto: best.desconto, marca: best.marca || best.nome, distancia: best.distancia, nivel, cidade, concelho, frescura: frescuraDe(j), tipo: best.tipoLabel, lat, lon });
       })
       .catch(() => {})
       .finally(() => nivel === "exata" && setALocalizar(false));
@@ -618,6 +619,14 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             streak={streak}
             resumo={resumo}
             onGuardarTalao={() => setTab("taloes")}
+          />
+        )}
+
+        {/* Os postos com estrela na Mobilidade, com o preço de hoje. */}
+        {lido && (
+          <CartaoPostoFavorito
+            perto={gasoleo.dados?.tipo === "Gasóleo" && gasoleo.dados.lat != null ? gasoleo.dados : null}
+            onAbrir={() => setTab("mobilidade")}
           />
         )}
 
