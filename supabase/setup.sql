@@ -367,3 +367,40 @@ create table if not exists public.precos_talao (
 );
 create index if not exists precos_talao_loja_data on public.precos_talao (loja, data desc);
 alter table public.precos_talao enable row level security;
+
+-- ── Catálogos lidos de noite (2026-10-20) ───────────────────────────────────
+-- Cópia dos preços das lojas cuja pesquisa não se pode usar no momento mas
+-- cujas páginas de categoria se podem ler (hoje, o El Corte Inglés; ver
+-- /api/cron-catalogo-eci). O cursor guarda onde a leitura da noite vai.
+-- Só a API (service role).
+create table if not exists public.catalogo_precos (
+  loja          text not null,
+  id            text not null,
+  nome          text not null,
+  nome_busca    text not null,
+  preco         numeric not null,
+  preco_antigo  numeric,
+  preco_unidade numeric,
+  unidade       text,
+  quantidade    text,
+  ao_peso       boolean not null default false,
+  url           text,
+  imagem        text,
+  visto_em      date not null,
+  primary key (loja, id)
+);
+create index if not exists catalogo_precos_loja_visto on public.catalogo_precos (loja, visto_em);
+alter table public.catalogo_precos enable row level security;
+
+create table if not exists public.catalogo_cursor (
+  loja           text primary key,
+  dia            date not null,
+  seccao         int not null default 0,
+  pagina         int not null default 1,
+  total_paginas  int,
+  concluido      boolean not null default false,
+  produtos       int not null default 0,
+  erro           text,
+  atualizado_em  timestamptz not null default now()
+);
+alter table public.catalogo_cursor enable row level security;
