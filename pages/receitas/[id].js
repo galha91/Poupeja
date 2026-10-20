@@ -57,7 +57,7 @@ export default function Receita({ receita, outras }) {
   };
 
   return (
-    <LayoutPublico>
+    <LayoutPublico destaqueEmentas>
       <Head>
         <title>{`${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`}</title>
         <meta name="description" content={descricao} />

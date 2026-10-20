@@ -5,7 +5,7 @@ import {
   CalendarDays, Building2, RefreshCw,
 } from "lucide-react";
 import { eur } from "./lib/formato";
-import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, ROTULO } from "./UiSimples";
+import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, ROTULO, useDesfazer, reporItem } from "./UiSimples";
 
 // Crédito Habitação / Renda — sub-secção irmã, carregada só quando aberta
 const SecaoCasaConteudo = dynamic(() => import("./SecaoCasa"), {
@@ -191,7 +191,8 @@ const OPORTUNIDADES = [
   { cats: ["energia"],   label: "Luz, gás e água",      provider: "ComparaJá",       url: "https://www.comparaja.pt/?ref=poupeja" },
   { cats: ["internet"],  label: "Internet e telemóvel", provider: "ComparaJá",       url: "https://www.comparaja.pt/?ref=poupeja" },
   { cats: ["seguro"],    label: "Seguros",              provider: "ComparaJá",       url: "https://www.comparaja.pt/?ref=poupeja" },
-  { cats: ["habitacao"], label: "Crédito habitação",    provider: "Doutor Finanças", url: "https://www.doutorfinancas.pt/?ref=poupeja", minMensal: 200 },
+  // Só para a prestação: uma renda ou o condomínio não são crédito.
+  { cats: ["habitacao"], label: "Crédito habitação",    provider: "Doutor Finanças", url: "https://www.doutorfinancas.pt/?ref=poupeja", minMensal: 200, nome: /presta|cr[eé]dito|empr[eé]stimo|hipoteca/i },
 ];
 
 /*
@@ -200,9 +201,13 @@ const OPORTUNIDADES = [
  * uma comparação real: o resultado do simulador da ERSE guardado em
  * Contas → Renovações. O resto é o convite a comparar, sem prometer valores.
  */
+function serveOportunidade(op, c) {
+  return op.cats.includes(c.categoria) && (!op.minMensal || c.valor >= op.minMensal) && (!op.nome || op.nome.test(c.nome || ""));
+}
+
 function calcOportunidades(contas) {
   return OPORTUNIDADES.filter(op =>
-    contas.some(c => op.cats.includes(c.categoria) && (!op.minMensal || c.valor >= op.minMensal))
+    contas.some(c => serveOportunidade(op, c))
   );
 }
 
@@ -336,7 +341,7 @@ function Detalhe({ conta, pagamentos, pago, podeMarcar, onMarcar, onEditar, onAp
     const k = mesChave(i - 5);
     return { k, pago: !!pagamentos[k]?.[conta.id], label: MESES_CURTOS[parseInt(k.split("-")[1], 10) - 1] };
   });
-  const op = OPORTUNIDADES.find(o => o.cats.includes(conta.categoria) && (!o.minMensal || conta.valor >= o.minMensal));
+  const op = OPORTUNIDADES.find(o => serveOportunidade(o, conta));
 
   return (
     <div className="flex flex-col gap-5 pb-2">
@@ -392,6 +397,9 @@ function ContasFixasConteudo({ onIrRenovacoes }) {
   const [pagamentos, setPagamentos] = useState({});
   const [mesOff, setMesOff]         = useState(0);
   const [folha, setFolha]           = useState(null); // { modo: "nova" | "ver" | "editar", id? }
+  const [avisoDesfazer, oferecerDesfazer] = useDesfazer();
+  const contasRef = useRef(contas);
+  contasRef.current = contas;
 
   const hoje       = new Date().getDate();
   const esMesAtual = mesOff === 0;
@@ -432,9 +440,10 @@ function ContasFixasConteudo({ onIrRenovacoes }) {
   }
 
   function apagar(id) {
-    if (!window.confirm("Apagar esta conta?")) return;
+    const idx = contas.findIndex(c => c.id === id), item = contas[idx];
     gravarContas(contas.filter(c => c.id !== id));
     setFolha(null);
+    oferecerDesfazer("Conta apagada", () => gravarContas(reporItem(contasRef.current, item, idx)));
   }
 
   const linha = c => (
@@ -451,6 +460,7 @@ function ContasFixasConteudo({ onIrRenovacoes }) {
 
   return (
     <div className="pb-28 pt-3 px-4">
+      {avisoDesfazer}
       {contas.length > 0 && (
         <div className="mb-5 anim-up">
           <div className="flex items-center justify-between">

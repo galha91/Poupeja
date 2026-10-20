@@ -29,7 +29,7 @@ export default function Folhetos({ folhetos, semana, atualizadoEm }) {
     })),
   };
   return (
-    <LayoutPublico>
+    <LayoutPublico destaqueEmentas>
       <Head>
         {/*
           Uma expressão só, numa template string. Misturar texto literal com

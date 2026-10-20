@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Fuel, MapPin, Bell, ShieldCheck, Info, ChevronRight, Check, ArrowLeft, Heart, FileText, Mail, PiggyBank, LogOut, BellRing, BellOff, Moon, Share2, Trash2, Landmark } from "lucide-react";
+import { Fuel, MapPin, Bell, ShieldCheck, Info, ChevronRight, Check, ArrowLeft, Heart, FileText, Mail, PiggyBank, LogOut, BellRing, BellOff, Moon, Share2, Trash2, Landmark, X, Zap, ShoppingCart, ListChecks, Receipt } from "lucide-react";
 import { apagarConta } from "./lib/apagarConta";
 import { partilharApp } from "./lib/partilhar";
 import { emAppNativa } from "./lib/plataforma";
@@ -155,7 +155,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
   async function convidar() {
     const r = await partilharApp();
     if (!r) return; // cancelado ou sem suporte — não dizer nada
-    setFeedbackConvite(r === "copiado" ? "Link copiado ✓" : "Obrigado! 💚");
+    setFeedbackConvite(r === "copiado" ? "Link copiado ✓" : "Obrigado!");
     setTimeout(() => setFeedbackConvite(""), 2500);
   }
 
@@ -641,8 +641,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
 
             {/* Cabeçalho editorial */}
             <div className="relative p-6 pb-6" style={{ background: "var(--pj-card)", borderBottom: "1px solid var(--pj-border)" }}>
-              <button onClick={() => setModalSobre(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
-                <span className="font-semibold text-sm" style={{ color: "var(--pj-text-muted)" }}>✕</span>
+              <button onClick={() => setModalSobre(false)} aria-label="Fechar" className="absolute top-4 right-4 w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+                <X size={18} style={{ color: "var(--pj-text-muted)" }} />
               </button>
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style={{ background: "var(--pj-brand)" }}>
                 <PiggyBank size={24} className="text-white" />
@@ -665,14 +665,14 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
                 <p className="mb-3" style={LABEL_STYLE}>O que oferecemos</p>
                 <div className="space-y-2.5">
                   {[
-                    { emoji: "⛽", titulo: "Combustíveis em tempo real", desc: "Preços atualizados da DGEG, ordenados pelo mais barato perto de ti" },
-                    { emoji: "⚡", titulo: "Postos de carregamento EV", desc: "Localização e disponibilidade em tempo real dos postos elétricos" },
-                    { emoji: "🛒", titulo: "Folhetos de supermercados", desc: "Continente, Pingo Doce, Lidl, Aldi e Intermarché num só sítio" },
-                    { emoji: "📋", titulo: "Lista de compras", desc: "Organiza o que precisas antes de sair de casa" },
-                    { emoji: "🧾", titulo: "Talões e garantias digitais", desc: "Guarda os teus recibos e nunca mais percas uma garantia" },
+                    { Icone: Fuel, titulo: "Combustíveis em tempo real", desc: "Preços atualizados da DGEG, ordenados pelo mais barato perto de ti" },
+                    { Icone: Zap, titulo: "Postos de carregamento EV", desc: "Localização e disponibilidade em tempo real dos postos elétricos" },
+                    { Icone: ShoppingCart, titulo: "Folhetos de supermercados", desc: "Continente, Pingo Doce, Lidl, Aldi e Intermarché num só sítio" },
+                    { Icone: ListChecks, titulo: "Lista de compras", desc: "Organiza o que precisas antes de sair de casa" },
+                    { Icone: Receipt, titulo: "Talões e garantias digitais", desc: "Guarda os teus recibos e nunca mais percas uma garantia" },
                   ].map(f => (
                     <div key={f.titulo} className="flex gap-3 items-start rounded-2xl p-3" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-                      <span className="text-xl flex-shrink-0">{f.emoji}</span>
+                      <f.Icone size={20} aria-hidden="true" className="flex-shrink-0" style={{ color: "var(--pj-brand-ink)", marginTop: 1 }} />
                       <div>
                         <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>{f.titulo}</p>
                         <p className="text-xs mt-0.5" style={{ color: "var(--pj-text-faint)" }}>{f.desc}</p>
@@ -707,8 +707,8 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
           <div className="w-full max-w-lg rounded-t-3xl p-6 pb-10 max-h-[85vh] overflow-y-auto" style={{ background: "var(--pj-surface)" }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <p className="font-display text-2xl" style={{ color: "var(--pj-text)" }}>Termos e Privacidade</p>
-              <button onClick={() => setModalTermos(false)} className="press pj-tap w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
-                <span className="text-lg font-semibold" style={{ color: "var(--pj-text-muted)" }}>✕</span>
+              <button onClick={() => setModalTermos(false)} aria-label="Fechar" className="press pj-tap w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: "var(--pj-subtle)" }}>
+                <X size={18} style={{ color: "var(--pj-text-muted)" }} />
               </button>
             </div>
             <div className="text-sm leading-relaxed space-y-4" style={{ color: "var(--pj-text-muted)" }}>

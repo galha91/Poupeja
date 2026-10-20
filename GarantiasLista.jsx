@@ -16,7 +16,7 @@ import { comprimirImagem } from "./lib/imagem";
 import { hojeIso, dataCurta, dataExtenso, falta } from "./lib/datas";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, LinkExterno, ROTULO } from "./UiSimples";
+import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, LinkExterno, ROTULO, useDesfazer, reporItem } from "./UiSimples";
 
 /*
  * Garantias — registo rápido de uma compra, fim da garantia calculado,
@@ -275,6 +275,9 @@ function Detalhe({ g, onAtualizar, onEditar, onApagar }) {
 export default function GarantiasLista() {
   const [lista, setLista] = useState([]);
   const [folha, setFolha] = useState(null); // { modo: "nova" | "ver" | "editar", id? }
+  const [avisoDesfazer, oferecerDesfazer] = useDesfazer();
+  const listaRef = useRef(lista);
+  listaRef.current = lista;
   const [msg, setMsg] = useState("");
   const importar = useRef(null);
 
@@ -333,6 +336,7 @@ export default function GarantiasLista() {
 
   return (
     <div className="pb-28 px-4 anim-up">
+      {avisoDesfazer}
       {lista.length === 0 ? (
         <Cartao>
           <EstadoVazio Icone={ShieldCheck} titulo="Guarda as compras importantes"
@@ -394,10 +398,11 @@ export default function GarantiasLista() {
             onAtualizar={g => gravar(lista.map(x => (x.id === g.id ? g : x)))}
             onEditar={() => setFolha({ modo: "editar", id: atual.id })}
             onApagar={() => {
-              if (!window.confirm("Apagar esta compra e a foto?")) return;
-              apagarFoto(atual.id).catch(() => {});
-              gravar(lista.filter(x => x.id !== atual.id));
+              const item = atual, idx = lista.indexOf(atual), id = atual.id;
+              gravar(lista.filter(x => x.id !== id));
               setFolha(null);
+              // A foto só se apaga quando já não dá para desfazer.
+              oferecerDesfazer("Compra apagada", () => gravar(reporItem(listaRef.current, item, idx)), () => apagarFoto(id).catch(() => {}));
             }}
           />
         </Folha>

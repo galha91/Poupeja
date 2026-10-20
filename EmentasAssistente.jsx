@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, X, Minus, Plus, Search, Check } from "lucide-react";
+import { ArrowLeft, X, Minus, Plus, Search, Check, ChefHat, Soup, EggFried, CakeSlice } from "lucide-react";
 import {
   DIETAS, VONTADES, MAX_VONTADES, INGREDIENTES, PREFS_PADRAO,
   contarCompativeis, porRefeicao, faixaMaxima, emojiIngrediente,
@@ -67,12 +67,12 @@ function Contador({ valor, min, max, onChange, rotulo }) {
   );
 }
 
-function Extra({ ativo, onClick, emoji, titulo, desc }) {
+function Extra({ ativo, onClick, Icone, titulo, desc }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={!!ativo}
       className="pj-tap press w-full text-left flex items-center gap-3 rounded-2xl p-4"
       style={{ border: `1.5px solid ${ativo ? "var(--pj-brand)" : "var(--pj-border)"}`, background: ativo ? "var(--pj-brand-wash)" : "var(--pj-card)" }}>
-      <span style={{ fontSize: 28 }}>{emoji}</span>
+      <Icone size={24} aria-hidden="true" style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
       <span className="flex-1">
         <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>{titulo}</span>
         <span className="block" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>{desc}</span>
@@ -136,11 +136,7 @@ export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
 
         {aGerar ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <div className="flex gap-2 text-[40px]" aria-hidden="true">
-              {["🥕", "🍗", "🐟", "🫘"].map((e, k) => (
-                <span key={k} style={{ animation: `pj-salto 0.9s ${k * 0.12}s ease-in-out infinite` }}>{e}</span>
-              ))}
-            </div>
+            <ChefHat size={44} aria-hidden="true" style={{ color: "var(--pj-brand-ink)", animation: "pj-salto 0.9s ease-in-out infinite" }} />
             <p className="font-display mt-6" style={{ fontSize: 23, fontWeight: 600, color: "var(--pj-text)" }}>A escolher receitas para ti…</p>
             <p className="mt-2" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", maxWidth: 290, lineHeight: 1.5 }}>
               Entre {compat.pratos} pratos que servem à tua casa — sem repetir a proteína dois dias seguidos e a aproveitar ingredientes entre receitas.
@@ -191,11 +187,11 @@ export default function EmentasAssistente({ inicial, onFechar, onConcluir }) {
 
                   <p className="font-display mt-9" style={{ fontSize: 18, fontWeight: 600, color: "var(--pj-text)" }}>Queres juntar mais alguma coisa?</p>
                   <div className="flex flex-col gap-2.5 mt-3">
-                    <Extra ativo={p.sopa} onClick={() => set("sopa", !p.sopa)} emoji="🥣"
+                    <Extra ativo={p.sopa} onClick={() => set("sopa", !p.sopa)} Icone={Soup}
                       titulo="Uma sopa para a semana" desc="Uma panela que dá para todos os jantares — barata e enche." />
-                    <Extra ativo={p.pequenoAlmoco} onClick={() => set("pequenoAlmoco", !p.pequenoAlmoco)} emoji="🥞"
+                    <Extra ativo={p.pequenoAlmoco} onClick={() => set("pequenoAlmoco", !p.pequenoAlmoco)} Icone={EggFried}
                       titulo="Pequenos-almoços" desc="Três ideias para ir alternando durante a semana." />
-                    <Extra ativo={p.sobremesa} onClick={() => set("sobremesa", !p.sobremesa)} emoji="🍮"
+                    <Extra ativo={p.sobremesa} onClick={() => set("sobremesa", !p.sobremesa)} Icone={CakeSlice}
                       titulo="Uma sobremesa para o fim de semana" desc="Doçaria de casa: arroz-doce, bolo de laranja, pudim…" />
                   </div>
                 </>

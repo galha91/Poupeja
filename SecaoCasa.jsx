@@ -4,7 +4,7 @@ import { eur } from "./lib/formato";
 import { falta } from "./lib/datas";
 import { prestacao as calcPrestacao, taxaAnual, simular } from "./lib/credito";
 import FonteOficial from "./FonteOficial";
-import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, Cartao, ROTULO } from "./UiSimples";
+import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, Cartao, ROTULO, useDesfazer } from "./UiSimples";
 
 const EURIBOR_REF = { "3M": -0.568, "6M": -0.543, "12M": -0.477 };
 
@@ -444,6 +444,7 @@ export default function SecaoCasa() {
   const [euribor, setEuribor] = useState(null);
   const [loadEuribor, setLoadEuribor] = useState(true);
   const [folha, setFolha] = useState(null); // "credito" | "renda"
+  const [avisoDesfazer, oferecerDesfazer] = useDesfazer();
 
   useEffect(() => { setDados(lerLocal()); }, []);
 
@@ -463,8 +464,9 @@ export default function SecaoCasa() {
   }
 
   function remover(chave) {
-    if (!window.confirm(chave === "credito" ? "Remover o crédito?" : "Remover a renda?")) return;
+    const antes = dados[chave];
     salvar({ [chave]: null });
+    oferecerDesfazer(chave === "credito" ? "Crédito removido" : "Renda removida", () => setDados(d => { const n = { ...d, [chave]: antes }; guardarLocal(n); return n; }));
   }
 
   const c = dados.credito;
@@ -476,6 +478,7 @@ export default function SecaoCasa() {
 
   return (
     <div className="pb-28 pt-3 px-4">
+      {avisoDesfazer}
       {ambos && (
         <div className="mb-5 anim-up">
           <p style={{ fontSize: 13, color: "var(--pj-text-muted)" }}>Com a casa pagas</p>

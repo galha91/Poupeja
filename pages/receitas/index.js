@@ -33,7 +33,7 @@ export default function Receitas() {
     })),
   };
   return (
-    <LayoutPublico destaqueEmentas={false}>
+    <LayoutPublico>
       <Head>
         <title>{`Receitas Baratas — ${EMENTAS.length} jantares, sopas, pequenos-almoços e sobremesas | PoupeJá`}</title>
         <meta name="description" content={`${EMENTAS.length} receitas portuguesas baratas, com ingredientes, quantidades e passo a passo. Jantares, sopas, pequenos-almoços e sobremesas, para todos os aparelhos da cozinha — grátis, sem registo.`} />

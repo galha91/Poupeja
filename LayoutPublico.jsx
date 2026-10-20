@@ -27,7 +27,7 @@ export function SoForaDaApp({ children }) {
  * Conteúdo server-rendered visível ao Google, com o estilo editorial da app
  * e um caminho claro para instalar/abrir o PoupeJá.
  */
-export default function LayoutPublico({ children, destaqueEmentas = true }) {
+export default function LayoutPublico({ children, destaqueEmentas = false }) {
   return (
     <div style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
       <header className="mx-auto flex items-center justify-between px-5 py-4" style={{ maxWidth: 720 }}>

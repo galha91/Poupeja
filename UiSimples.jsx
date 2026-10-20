@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
@@ -172,4 +172,59 @@ export function Cartao({ children, className = "", style, ...props }) {
       {children}
     </div>
   );
+}
+
+/** Volta a pôr `item` na lista ATUAL, no sítio de onde saiu (sem duplicar). */
+export function reporItem(lista, item, indice) {
+  if (lista.some(x => x.id === item.id)) return lista;
+  const n = [...lista];
+  n.splice(Math.min(Math.max(indice, 0), n.length), 0, item);
+  return n;
+}
+
+/**
+ * Apagar sem perguntar, com "Desfazer" durante uns segundos — em vez do
+ * confirm() do browser, que no telemóvel é feio e às vezes vem em inglês.
+ *   const [avisoDesfazer, oferecerDesfazer] = useDesfazer();
+ *   oferecerDesfazer("Conta apagada", () => repor(), () => apagarFoto());
+ *   … {avisoDesfazer}
+ */
+export function useDesfazer(ms = 5000) {
+  const [aviso, setAviso] = useState(null);
+  const temporizador = useRef(null);
+  // O que só se faz quando já não há volta (apagar uma foto, por exemplo).
+  const definitivo = useRef(null);
+  const concluir = () => { const f = definitivo.current; definitivo.current = null; f?.(); };
+  useEffect(() => {
+    // Fechar a app dentro dos 5 s não desmonta nada: sem isto, a foto de
+    // uma garantia apagada ficava para sempre no telemóvel.
+    window.addEventListener("pagehide", concluir);
+    return () => { window.removeEventListener("pagehide", concluir); clearTimeout(temporizador.current); concluir(); };
+  }, []);
+
+  function oferecer(texto, desfazer, aoConcluir) {
+    clearTimeout(temporizador.current);
+    concluir();
+    definitivo.current = aoConcluir || null;
+    setAviso({ texto, desfazer, id: Date.now() });
+    temporizador.current = setTimeout(() => { concluir(); setAviso(null); }, ms);
+  }
+
+  const elemento = aviso && typeof document !== "undefined" ? createPortal(
+    <div role="status" aria-live="polite" className="fixed left-0 right-0 z-[60] flex justify-center px-4"
+      style={{ bottom: "calc(88px + env(safe-area-inset-bottom))" }}>
+      <div key={aviso.id} className="anim-up flex items-center gap-3 w-full max-w-md"
+        style={{ minHeight: 52, padding: "0 6px 0 16px", borderRadius: 16, background: "var(--pj-text)", color: "var(--pj-surface)", boxShadow: "0 8px 24px -8px rgba(0,0,0,0.35)" }}>
+        <span className="flex-1" style={{ fontSize: 14, fontWeight: 500 }}>{aviso.texto}</span>
+        <button type="button" className="pj-tap press"
+          onClick={() => { clearTimeout(temporizador.current); definitivo.current = null; aviso.desfazer(); setAviso(null); }}
+          style={{ minHeight: 44, padding: "0 12px", borderRadius: 12, background: "none", border: 0, color: "var(--pj-surface)", fontSize: 14, fontWeight: 700, textDecoration: "underline", textUnderlineOffset: 3 }}>
+          Desfazer
+        </button>
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
+  return [elemento, oferecer];
 }

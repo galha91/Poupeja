@@ -90,7 +90,7 @@ export default function MetaPoupanca({ syncTick = 0 }) {
               <p className="truncate" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{meta.nome}</p>
               <p style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>
                 {completa
-                  ? <>Meta alcançada! €{meta.valor.toFixed(2).replace(".", ",")} poupados 🎉</>
+                  ? <>Meta alcançada! €{meta.valor.toFixed(2).replace(".", ",")} poupados</>
                   : <>€{progresso.toFixed(2).replace(".", ",")} de €{meta.valor.toFixed(2).replace(".", ",")} · desde {new Date(meta.criadoEm).toLocaleDateString("pt-PT", { day: "numeric", month: "short" })}</>}
               </p>
             </div>
@@ -135,7 +135,7 @@ export default function MetaPoupanca({ syncTick = 0 }) {
               className="w-full px-4 py-3 rounded-xl text-[14px] mb-4 focus:outline-none"
               style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
             <button type="submit" className="pj-tap w-full py-4 rounded-2xl text-white font-semibold" style={{ background: "var(--pj-brand)" }}>
-              {meta ? "Guardar alterações" : "Começar a encher o jarro 🐷"}
+              {meta ? "Guardar alterações" : "Criar meta"}
             </button>
             {meta && (
               <button type="button" onClick={remover} className="pj-tap w-full py-2.5 mt-2 inline-flex items-center justify-center gap-1.5 font-semibold text-[13px]" style={{ color: "var(--pj-danger)" }}>
