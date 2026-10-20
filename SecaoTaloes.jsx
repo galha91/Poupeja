@@ -113,6 +113,7 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
                 <Receipt size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--pj-brand-ink)" }} />
                 <p className="text-[12px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
                   Fotografa o <strong style={{ color: "var(--pj-text)" }}>talão inteiro</strong>, incluindo o final onde aparece o <strong style={{ color: "var(--pj-text)" }}>total poupado</strong>. Assim lemos o valor automaticamente.
+                  {" "}Do Lidl, serve também a captura do talão digital da app Lidl Plus.
                 </p>
               </div>
             )}
@@ -143,6 +144,8 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
             <p className="text-[11px] text-center mt-4 leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
               A foto é lida uma vez para tirar os valores e depois fica guardada
               só neste dispositivo — não é enviada para a tua conta.
+              Os preços dos artigos (loja, artigo, preço e data, sem a foto nem
+              quem a tirou) entram na comparação de preços, para todos.
             </p>
           </>
         )}

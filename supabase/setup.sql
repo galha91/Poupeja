@@ -347,3 +347,23 @@ returns void language sql security definer set search_path = public as $$
 $$;
 
 revoke all on function public.marcar_convidado(uuid, text) from public, anon, authenticated;
+
+-- ── Preços lidos nos talões (2026-10-20) ────────────────────────────────────
+-- Linhas de artigos dos talões fotografados (loja, artigo, preço, data), sem
+-- a foto, sem quem a tirou e sem o cabeçalho. Dão os preços de loja que não
+-- estão online (sortido fixo do Lidl, Mercadona). Só a API (service role).
+create table if not exists public.precos_talao (
+  id            bigserial primary key,
+  loja          text not null,
+  nome          text not null,
+  nome_busca    text not null,
+  preco         numeric not null,
+  preco_unidade numeric,
+  unidade       text,
+  ao_peso       boolean not null default false,
+  data          date not null,
+  criado_em     timestamptz not null default now(),
+  unique (loja, nome_busca, data, preco)
+);
+create index if not exists precos_talao_loja_data on public.precos_talao (loja, data desc);
+alter table public.precos_talao enable row level security;
