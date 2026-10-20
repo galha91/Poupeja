@@ -122,7 +122,7 @@ function SecaoMercados({ setTab, inicioAba = "comparar" }) {
   const [ementasNovas, setEmentasNovas] = useState(false);
   useEffect(() => { setEmentasNovas(!jaViuEmentas()); }, [sub]);
   return (
-    <div className="pb-28 pt-1">
+    <div className="pb-28 pt-4">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
         {[
           { id: "comparar", icon: Scale, label: "Preços" },
@@ -705,9 +705,10 @@ function PoupeJa() {
             <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
                 {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} onEntrar={() => setEcraEntrar(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} garantiasCount={garantiasAviso.filter(a => a.tipo === "garantia").length} />}
-                {/* "Voltar" ao Início em todos os separadores menos o próprio Início
-                    (a lista tem o seu, ao lado do "Partilhar"). */}
-                {tab !== "inicio" && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
+                {/* "Voltar" só onde a barra de baixo não chega (Apoios, Lojas, IRS,
+                    Talões). Nos 5 da barra era um botão a mais por cima de cada
+                    ecrã; a lista tem o seu, ao lado do "Partilhar". */}
+                {!NAV.some(n => n.id === tab) && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
                 {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Zap, Flame, Wifi, ShieldCheck, Plus, CalendarPlus, ExternalLink, Bell, BellOff, Trash2, Pencil, RefreshCw } from "lucide-react";
 import {
   TIPOS, PERIODICIDADES, POTENCIAS_KVA, OPCOES_HORARIAS, FONTE_ERSE,
@@ -9,7 +9,7 @@ import { lerRenovacoes, guardarRenovacoes, novoId, exportarIcs, ativouLembrete }
 import { hojeIso, diasEntre, dataExtenso, falta } from "./lib/datas";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, LinkExterno, ROTULO } from "./UiSimples";
+import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, LinkExterno, ROTULO, useDesfazer, reporItem } from "./UiSimples";
 
 /*
  * Contas que renovam (eletricidade, gás, telecomunicações, seguros).
@@ -271,6 +271,9 @@ function Detalhe({ conta, onAtualizar, onApagar, onEditar }) {
 export default function ContasRenovacoes() {
   const [contas, setContas] = useState([]);
   const [folha, setFolha] = useState(null); // { modo: "nova" | "ver" | "editar", id?, pre? }
+  const [avisoDesfazer, oferecerDesfazer] = useDesfazer();
+  const contasRef = useRef(contas);
+  contasRef.current = contas;
 
   useEffect(() => { setContas(lerRenovacoes()); }, []);
 
@@ -298,6 +301,7 @@ export default function ContasRenovacoes() {
 
   return (
     <div className="pb-28 pt-3 px-4">
+      {avisoDesfazer}
       {contas.length > 0 && (
         <div className="mb-5 anim-up">
           <p style={{ fontSize: 13, color: "var(--pj-text-muted)" }}>Nestas contas pagas</p>
@@ -373,9 +377,10 @@ export default function ContasRenovacoes() {
             onAtualizar={c => gravar(contas.map(x => x.id === c.id ? c : x))}
             onEditar={() => setFolha({ modo: "editar", id: atual.id })}
             onApagar={() => {
-              if (!window.confirm("Apagar esta conta?")) return;
+              const item = atual, idx = contas.indexOf(atual);
               gravar(contas.filter(x => x.id !== atual.id));
               setFolha(null);
+              oferecerDesfazer("Conta apagada", () => gravar(reporItem(contasRef.current, item, idx)));
             }}
           />
         </Folha>

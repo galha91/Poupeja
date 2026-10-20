@@ -16,7 +16,7 @@ export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm }) {
   const descricao = `Folheto ${folheto.loja} desta semana, com link direto para o folheto oficial. Grátis, com aviso semanal na app PoupeJá.`;
 
   return (
-    <LayoutPublico>
+    <LayoutPublico destaqueEmentas>
       <Head>
         <title>{`Folheto ${folheto.loja} desta Semana — promoções e descontos | PoupeJá`}</title>
         <meta name="description" content={descricao} />

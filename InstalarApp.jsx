@@ -150,24 +150,24 @@ export function BarraInstalacao({ modo, onAbrir, onInstalarDireto }) {
   if (!visivel) return null;
 
   return (
-    <div className="lg:hidden mx-4 mt-2 rounded-xl px-4 py-3 flex items-center gap-3 bg-white border border-slate-100"
+    <div className="lg:hidden mx-4 mt-2 rounded-xl px-4 py-3 flex items-center gap-3 bg-white border border-[color:var(--pj-border)]"
       style={{ boxShadow: "0 2px 8px rgba(15,23,42,0.06)" }}
     >
-      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-        <Smartphone size={15} className="text-emerald-600" />
+      <div className="w-8 h-8 rounded-lg bg-[color:var(--pj-brand-wash)] flex items-center justify-center flex-shrink-0">
+        <Smartphone size={15} className="text-[color:var(--pj-brand-ink)]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[12px] font-black text-slate-800 leading-snug">Instala a app — gratuito</p>
-        <p className="text-[10px] text-slate-400 mt-0.5">Notificações e acesso rápido</p>
+        <p className="text-[12px] font-black text-[color:var(--pj-text)] leading-snug">Instala a app — gratuito</p>
+        <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-0.5">Notificações e acesso rápido</p>
       </div>
       <button
         onClick={modo === "android" && onInstalarDireto ? onInstalarDireto : onAbrir}
-        className="press flex-shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[11px] font-black"
+        className="press flex-shrink-0 px-3 py-1.5 rounded-lg bg-[color:var(--pj-brand)] text-white text-[11px] font-black"
       >
         {modo === "android" ? "Instalar" : "Como →"}
       </button>
-      <button onClick={dispensar} className="press w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-        <X size={10} className="text-slate-400" />
+      <button onClick={dispensar} className="press w-6 h-6 rounded-full bg-[color:var(--pj-subtle)] flex items-center justify-center flex-shrink-0">
+        <X size={10} className="text-[color:var(--pj-text-faint)]" />
       </button>
     </div>
   );

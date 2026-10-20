@@ -160,7 +160,7 @@ function ApoiosLista() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-[13px] font-semibold leading-snug" style={{ color: C.text }}>{apoio.titulo}</p>
                       {apoio.novo && (
-                        <span className="text-[8px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: C.chip, color: C.green }}>NOVO</span>
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: C.chip, color: C.green }}>NOVO</span>
                       )}
                     </div>
                     <p className="text-[11px] font-semibold mt-0.5" style={{ color: C.green }}>{apoio.valor}</p>

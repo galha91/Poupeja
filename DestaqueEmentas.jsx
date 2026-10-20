@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from "react";
-import { ChevronRight, ArrowRight, CalendarDays } from "lucide-react";
+import { ChevronRight, ArrowRight, CalendarDays, UtensilsCrossed } from "lucide-react";
 
 /*
  * O destaque das Ementas — para saltar à vista no Início da app e nas
@@ -94,7 +94,7 @@ export function CartaoEmentasInicio({ onAbrir }) {
           </span>
         ) : comPlano ? (
           <span className="flex items-center gap-3 mt-2">
-            <span style={{ fontSize: 30 }}>🍽️</span>
+            <UtensilsCrossed size={26} aria-hidden="true" style={{ color: "#d5e7de", flexShrink: 0 }} />
             <span style={{ flex: 1 }}>
               <span className="block font-display" style={{ fontSize: 19, fontWeight: 600, color: "#fff" }}>Hoje não há jantar no plano</span>
               <span className="block" style={{ fontSize: 12.5, color: "#d5e7de", marginTop: 3 }}>{hoje.n} jantares planeados · ver ou gerar um novo</span>
@@ -110,7 +110,7 @@ export function CartaoEmentasInicio({ onAbrir }) {
               Liga os aparelhos que tens, diz o orçamento e o que não comes — sai o plano, a lista de compras e onde fica mais barata.
             </span>
             <span className="flex items-center justify-between mt-3.5" style={{ gap: 10 }}>
-              <span aria-hidden="true" style={{ fontSize: 22, letterSpacing: 2 }}>🥕🍗🐟🥣🍮</span>
+              <span style={{ fontSize: 12.5, color: "#d5e7de" }}>Grátis, sem criar conta</span>
               <span className="inline-flex items-center gap-1.5 flex-shrink-0"
                 style={{ padding: "9px 14px", borderRadius: 12, background: "#fff", color: "var(--pj-brand-ink)", fontSize: 13.5, fontWeight: 700 }}>
                 <CalendarDays size={15} /> Planear

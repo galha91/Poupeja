@@ -74,15 +74,15 @@ const CAT_CONFIG = {
 };
 
 // ── Tokens do sistema editorial ──
-const TXT = "#14231c";
-const MUTED = "#5c6b62";
-const FAINT = "#8a978e";
+const TXT = "var(--pj-text)";
+const MUTED = "var(--pj-text-muted)";
+const FAINT = "var(--pj-text-faint)";
 const ACCENT      = "var(--pj-brand-ink)";  // verde como texto
 const ACCENT_FILL = "var(--pj-brand)";      // verde como preenchimento
-const CHIP = "#eeece4";
-const DIV_ROW = "#eeece4";
-const DIV_SEC = "#e4e2d8";
-const CARD_BG = "#fbfaf6";
+const CHIP = "var(--pj-subtle)";
+const DIV_ROW = "var(--pj-subtle)";
+const DIV_SEC = "var(--pj-border)";
+const CARD_BG = "var(--pj-card)";
 
 const labelStyle = {
   textTransform: "uppercase",
@@ -135,7 +135,7 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
                 <p className="text-[11px] leading-tight truncate" style={{ color: TXT, fontWeight: 600 }}>{loja.nome}</p>
                 <div className="mt-1 flex items-center justify-center gap-0.5">
                   {promo ? (
-                    <span className="text-[9px] flex items-center gap-0.5" style={{ color: ACCENT, fontWeight: 600, letterSpacing: "0.04em" }}>
+                    <span className="text-[11px] flex items-center gap-0.5" style={{ color: ACCENT, fontWeight: 600, letterSpacing: "0.04em" }}>
                       <Tag size={8} /> Saldos
                     </span>
                   ) : null}
@@ -146,9 +146,9 @@ function GrelhaLojas({ lista, promo, favs, onToggleFav }) {
               <button
                 onClick={e => { e.stopPropagation(); onToggleFav(loja.nome); }}
                 className="pj-tap absolute top-0 right-0 w-6 h-6 rounded-lg flex items-center justify-center"
-                style={{ background: isFav ? "#fbeaea" : CHIP }}
+                style={{ background: isFav ? "var(--pj-danger-wash)" : CHIP }}
               >
-                <Heart size={11} className={isFav ? "text-red-400 fill-red-400" : ""} style={isFav ? {} : { color: FAINT }} />
+                <Heart size={11} className={isFav ? "text-[color:var(--pj-danger)] fill-[color:var(--pj-danger)]" : ""} style={isFav ? {} : { color: FAINT }} />
               </button>
             )}
           </div>
@@ -219,7 +219,7 @@ export default function SecaoLojas() {
                 >
                   <c.icon size={13} /> {c.label}
                   <span
-                    className="text-[9px] px-1.5 py-0.5 rounded-full"
+                    className="text-[11px] px-1.5 py-0.5 rounded-full"
                     style={ativo
                       ? { background: "rgba(246,245,240,0.22)", color: "#f6f5f0", fontWeight: 600 }
                       : { background: "rgba(20,35,28,0.06)", color: FAINT, fontWeight: 600 }}
@@ -247,7 +247,7 @@ export default function SecaoLojas() {
           {favoritasAtuais.length > 0 && (
             <div className="mb-6">
               <p className="px-4 mb-4 flex items-center gap-1.5" style={labelStyle}>
-                <Heart size={10} className="text-red-400 fill-red-400" /> Favoritas
+                <Heart size={10} className="text-[color:var(--pj-danger)] fill-[color:var(--pj-danger)]" /> Favoritas
               </p>
               <GrelhaLojas lista={favoritasAtuais} promo={false} favs={favs} onToggleFav={toggleFav} />
               <div className="mx-4 mt-6 mb-1" style={{ borderTop: `1px solid ${DIV_ROW}` }} />

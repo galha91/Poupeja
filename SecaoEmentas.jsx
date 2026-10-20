@@ -285,8 +285,7 @@ export default function SecaoEmentas({ setTab }) {
         <div className="mx-4 mb-6 rounded-3xl overflow-hidden" style={{ background: "var(--pj-brand)", boxShadow: "0 8px 24px rgba(11,107,79,0.25)" }}>
           <Azulejos altura={28} />
           <div className="p-5">
-          <div className="flex gap-1.5 text-[26px]" aria-hidden="true">🥕🍗🐟🫘🥣</div>
-          <p className="font-display mt-3" style={{ fontSize: 21, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>Planeia os jantares da semana em 1 minuto</p>
+          <p className="font-display" style={{ fontSize: 21, fontWeight: 600, color: "#fff", lineHeight: 1.25 }}>Planeia os jantares da semana em 1 minuto</p>
           <ul className="mt-3 flex flex-col gap-1.5" style={{ fontSize: 13, color: "#d5e7de", paddingLeft: 0, listStyle: "none" }}>
             <li>✓ Para quantos cozinhas e quanto queres gastar</li>
             <li>✓ Sem o que não comes — vegano, sem glúten, sem lactose…</li>

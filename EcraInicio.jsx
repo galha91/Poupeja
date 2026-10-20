@@ -3,7 +3,7 @@ import { CartaoEmentasInicio } from "./DestaqueEmentas";
 import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
-  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail,
+  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail, User,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
@@ -437,7 +437,8 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const [convPendente] = useState(() => {
     try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
   });
-  const primeiroNome = user?.nome?.split(" ")[0] || "aí";
+  // Sem conta, o nome é o "Convidado" técnico — não se trata ninguém assim.
+  const primeiroNome = user?.convidado ? "" : (user?.nome?.split(" ")[0] || "");
   const [folhetoAberto, setFolhetoAberto] = useState(null); // folheto aberto dentro da app
 
   const [totalMes, setTotalMes]       = useState(0);
@@ -540,16 +541,16 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {/* Cabeçalho */}
         <div className="flex items-center justify-between anim-up">
           <div style={{ fontSize: 15, color: "var(--pj-text-muted)", fontWeight: 500 }}>
-            {saudacaoHora()}, <span className="capitalize" style={{ color: "var(--pj-text)", fontWeight: 600 }}>{primeiroNome}</span>
+            {saudacaoHora()}{primeiroNome && <>, <span className="capitalize" style={{ color: "var(--pj-text)", fontWeight: 600 }}>{primeiroNome}</span></>}
           </div>
           <div className="flex items-center" style={{ gap: 16, color: "var(--pj-text)" }}>
             <button onClick={onAbrirAvisos} className="pj-tap relative flex" aria-label="Avisos">
               <Bell size={21} strokeWidth={1.7} />
-              {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "var(--pj-danger)", border: "1.5px solid #f6f5f0" }} />}
+              {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "var(--pj-danger)", border: "1.5px solid var(--pj-surface)" }} />}
             </button>
             <button onClick={onAbrirDefinicoes} className="pj-tap flex items-center justify-center" aria-label="Perfil"
               style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--pj-brand)", color: "#f6f5f0", fontSize: 14, fontWeight: 600 }}>
-              {(primeiroNome[0] || "P").toUpperCase()}
+              {primeiroNome ? primeiroNome[0].toUpperCase() : <User size={17} strokeWidth={2} aria-hidden="true" />}
             </button>
           </div>
         </div>

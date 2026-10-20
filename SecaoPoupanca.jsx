@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   ChevronRight, BarChart, TrendingUp, Plus, ListChecks,
-  Share2, TrendingDown, Lightbulb, Gift,
+  Share2, TrendingDown, Lightbulb, Gift, Zap, Landmark,
 } from "lucide-react";
 import DesafiosMensais from "./DesafiosMensais";
 import MetaPoupanca from "./MetaPoupanca";
@@ -22,8 +22,8 @@ function cap(texto) {
 
 function SectionLabel({ children, icon: Icon, className = "" }) {
   return (
-    <p className={`text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5 ${className}`}>
-      {Icon && <Icon size={12} className="text-slate-300" />}
+    <p className={`text-[11px] font-black text-[color:var(--pj-text-faint)] uppercase tracking-widest mb-3 flex items-center gap-1.5 ${className}`}>
+      {Icon && <Icon size={12} className="text-[color:var(--pj-text-faint)]" />}
       {children}
     </p>
   );
@@ -129,18 +129,18 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
           /* O mesmo convite do Início: sem número nenhum até haver um. */
           <>
             <p className="font-display" style={{ fontSize: 29, fontWeight: 500, lineHeight: 1.15, letterSpacing: "-0.02em", color: "var(--pj-text)", marginTop: 14 }}>
-              A tua poupança começa<br />no próximo talão.
+              Ainda sem poupança para somar.
             </p>
             <div style={{ fontSize: 13.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 8, lineHeight: 1.5 }}>
-              Guarda o talão da compra e o PoupeJá faz as contas por ti.
+              Cada talão que guardas diz quanto pagaste a menos em promoções e cartão. O total junta-se aqui, mês a mês.
             </div>
           </>
         ) : (
           <>
             <div className="font-display flex items-baseline" style={{ fontWeight: 500, fontSize: 64, lineHeight: 1, letterSpacing: "-0.035em", color: "var(--pj-text)", marginTop: 14 }}>
-              <span style={{ fontSize: 32, color: "#b0b8b0", marginRight: 5, fontWeight: 400 }}>€</span>
+              <span style={{ fontSize: 32, color: "var(--pj-text-faint)", marginRight: 5, fontWeight: 400 }}>€</span>
               {Math.floor(dados.totalGeral)}
-              <span style={{ fontSize: 32, color: "#b0b8b0", fontWeight: 400 }}>,{String(Math.round((dados.totalGeral % 1) * 100)).padStart(2, "0")}</span>
+              <span style={{ fontSize: 32, color: "var(--pj-text-faint)", fontWeight: 400 }}>,{String(Math.round((dados.totalGeral % 1) * 100)).padStart(2, "0")}</span>
             </div>
             <div style={{ fontSize: 13.5, color: "var(--pj-text-muted)", fontWeight: 500, marginTop: 12, lineHeight: 1.5 }}>
               Poupança real somada em <span style={{ color: "var(--pj-text)", fontWeight: 600 }}>tudo</span> — {dados.count} tal{dados.count !== 1 ? "ões" : "ão"} guardado{dados.count !== 1 ? "s" : ""}.
@@ -235,7 +235,7 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
                     onClick={() => setBarSelecionada(isSelecionada ? null : m)}
                     className="flex-1 flex flex-col items-center gap-1 group"
                   >
-                    <p className="text-[8px] font-semibold h-3" style={{ color: "var(--pj-brand-ink)" }}>
+                    <p className="text-[10px] font-semibold h-3" style={{ color: "var(--pj-brand-ink)" }}>
                       {m.v > 0 ? `€${m.v.toFixed(0)}` : ""}
                     </p>
                     <div
@@ -243,14 +243,14 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
                       style={{
                         height: `${Math.max(pct, m.v > 0 ? 6 : 3)}%`,
                         background: isSelecionada
-                          ? "#0b6b4f"
+                          ? "var(--pj-brand)"
                           : isAtual
-                          ? "#3f9070"
-                          : m.v > 0 ? "#cfe3d8" : "#eeece4",
+                          ? "var(--pj-cat-verde)"
+                          : m.v > 0 ? "var(--pj-brand-soft)" : "var(--pj-subtle)",
                         minHeight: 4,
                       }}
                     />
-                    <p className="text-[9px] font-semibold" style={{ color: isAtual ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
+                    <p className="text-[11px] font-semibold" style={{ color: isAtual ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
                       {m.label}
                     </p>
                   </button>
@@ -259,11 +259,11 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
             </div>
             <div className="flex items-center gap-3 mt-3 pt-3" style={{ borderTop: "1px solid var(--pj-border)" }}>
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#3f9070" }} />
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "var(--pj-cat-verde)" }} />
                 <span className="text-[10px] font-medium" style={{ color: "var(--pj-text-faint)" }}>Mês atual</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "#cfe3d8" }} />
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "var(--pj-brand-soft)" }} />
                 <span className="text-[10px] font-medium" style={{ color: "var(--pj-text-faint)" }}>Meses anteriores</span>
               </div>
             </div>
@@ -317,7 +317,7 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
             <ListChecks size={24} style={{ color: "var(--pj-brand-ink)" }} />
           </div>
           <div className="flex-1">
-            <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "var(--pj-text-faint)" }}>Novo</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--pj-text-faint)" }}>Novo</p>
             <p className="font-display text-[15px] font-semibold leading-snug" style={{ color: "var(--pj-text)" }}>Lista de compras</p>
             <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Organiza o que precisas antes de ir às compras</p>
           </div>
@@ -340,31 +340,22 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
               rel="noopener noreferrer"
               className="press card p-4 flex items-center gap-4 text-left no-underline"
             >
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden"
-                style={{ background: lead.bg }}
-              >
-                <img
-                  src={`https://www.google.com/s2/favicons?domain=${lead.dominio}&sz=64`}
-                  alt={lead.nome}
-                  width={32}
-                  height={32}
-                  style={{ objectFit: "contain" }}
-                  onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "block"; }}
-                />
-                <span style={{ display: "none", fontSize: 22 }}>{lead.emoji}</span>
+              {/* Ícone de linha: o favicon vinha do Google (um pedido a
+                  terceiros por cada visita) e caía num emoji quando falhava. */}
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--pj-subtle)" }}>
+                <lead.Icone size={20} style={{ color: lead.cor }} aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-[13px] font-black text-slate-800">{lead.nome}</p>
+                  <p className="text-[13px] font-black text-[color:var(--pj-text)]">{lead.nome}</p>
                   <span
-                    className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
-                    style={{ background: lead.bg, color: lead.cor }}
+                    className="text-[11px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: "var(--pj-subtle)", color: lead.cor }}
                   >
                     {lead.badge}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">{lead.desc}</p>
+                <p className="text-[11px] text-[color:var(--pj-text-muted)] leading-relaxed">{lead.desc}</p>
                 <p className="text-[10px] font-black mt-1" style={{ color: lead.cor }}>
                   {lead.cta} →
                 </p>
@@ -372,7 +363,7 @@ export default function SecaoPoupanca({ setTab, retrato, onAbrirRetrato }) {
             </a>
           ))}
         </div>
-        <p className="text-[10px] text-slate-400 text-center mt-2">
+        <p className="text-[10px] text-[color:var(--pj-text-faint)] text-center mt-2">
           Serviços de comparação gratuitos e sem compromisso
         </p>
       </div>
@@ -388,11 +379,10 @@ const LEADS_FINANCEIROS = [
     id: "comparaja",
     nome: "ComparaJá",
     dominio: "comparaja.pt",
-    emoji: "⚡",
-    bg: "#fef3c7",
+    Icone: Zap,
     cor: "var(--pj-cat-ocre)",
-    badge: "Energia & Internet",
-    desc: "Compara tarifas de eletricidade, gás, internet e seguros. Poupas centenas por ano sem sair de casa.",
+    badge: "Energia e internet",
+    desc: "Compara tarifas de eletricidade, gás, internet e seguros.",
     cta: "Comparar agora",
     url: "https://www.comparaja.pt/?ref=poupeja",
   },
@@ -400,11 +390,10 @@ const LEADS_FINANCEIROS = [
     id: "doutorfinancas",
     nome: "Doutor Finanças",
     dominio: "doutorfinancas.pt",
-    emoji: "🏦",
-    bg: "#eff6ff",
+    Icone: Landmark,
     cor: "var(--pj-cat-azul)",
-    badge: "Crédito & Seguros",
-    desc: "Simula crédito habitação, pessoal e seguros. Negociação gratuita com os melhores bancos.",
+    badge: "Crédito e seguros",
+    desc: "Simula crédito habitação, crédito pessoal e seguros.",
     cta: "Simular grátis",
     url: "https://www.doutorfinancas.pt/?ref=poupeja",
   },

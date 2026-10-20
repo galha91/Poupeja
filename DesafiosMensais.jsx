@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trophy, Flame, Share2, Swords, Lock, Sparkles, ChevronDown, ChevronUp, Check, Lightbulb } from "lucide-react";
+import { Trophy, Flame, Share2, Swords, Lock, Sparkles, ChevronDown, ChevronUp, Check, Lightbulb, Coins } from "lucide-react";
 import { eur } from "./lib/formato";
 import {
   calcularEstado, calcularConquistas, nivelAtual,
@@ -161,7 +161,7 @@ export default function DesafiosMensais({ setTab }) {
               <span className="text-xl" style={{ filter: c.feito ? "none" : "grayscale(1)" }}>
                 {c.feito ? c.emoji : <Lock size={16} style={{ color: "var(--pj-text-faint)" }} className="mx-auto" />}
               </span>
-              <span className="text-[8px] text-center leading-tight px-0.5" style={{ fontWeight: 700, color: c.feito ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
+              <span className="text-[10px] text-center leading-tight px-0.5" style={{ fontWeight: 700, color: c.feito ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
                 {c.nome}
               </span>
             </button>
@@ -199,7 +199,7 @@ export default function DesafiosMensais({ setTab }) {
             className="press pj-tap w-full flex items-center justify-between gap-2"
           >
             <div className="flex items-center gap-2.5 text-left">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base" style={{ background: "var(--pj-subtle)" }}>💶</div>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base" style={{ background: "var(--pj-subtle)" }}><Coins size={18} aria-hidden="true" style={{ color: "var(--pj-brand-ink)" }} /></div>
               <div>
                 <p className="text-[12px] leading-tight" style={{ fontWeight: 700, color: "var(--pj-text)" }}>Desafio das 52 Semanas</p>
                 <p className="text-[10px] mt-0.5" style={{ fontWeight: 600, color: "var(--pj-text-faint)" }}>
@@ -239,7 +239,7 @@ export default function DesafiosMensais({ setTab }) {
                     <button
                       key={n}
                       onClick={() => setEstado52(alternarSemana52(n))}
-                      className="press pj-tap aspect-square rounded-lg flex items-center justify-center text-[9px] transition-all"
+                      className="press pj-tap aspect-square rounded-lg flex items-center justify-center text-[11px] transition-all"
                       style={{
                         fontWeight: 700,
                         background: feita ? "var(--pj-brand)" : atual ? "var(--pj-brand-wash)" : "var(--pj-subtle)",
@@ -271,7 +271,7 @@ export default function DesafiosMensais({ setTab }) {
       )}
 
       <p className="text-[10px] text-center mt-4" style={{ color: "var(--pj-text-faint)" }}>
-        Tudo calculado a partir dos teus talões. Guarda talões para subir de nível 🚀
+        Tudo calculado a partir dos teus talões. Guarda talões para subir de nível.
       </p>
     </div>
   );

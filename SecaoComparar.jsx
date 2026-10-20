@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, ExternalLink, Plus, Check, RefreshCw, Store, ChevronDown, Info, ScanBarcode } from "lucide-react";
+import { Search, ExternalLink, Plus, Check, RefreshCw, ChevronDown, Info, ScanBarcode } from "lucide-react";
 import dynamic from "next/dynamic";
 import LogoLoja from "./LogoLoja";
 import { Preco } from "./Preco";
@@ -493,9 +493,6 @@ export default function SecaoComparar() {
     <div className="pb-6" style={{ background: "var(--pj-surface)" }}>
       {/* Cabeçalho + pesquisa */}
       <div className="px-4 pt-5 pb-4" style={{ borderBottom: "1px solid var(--pj-border)" }}>
-        <p className="flex items-center gap-1.5 mb-2" style={{ textTransform: "uppercase", fontSize: 11, fontWeight: 600, letterSpacing: "0.09em", color: "var(--pj-text-faint)" }}>
-          <Store size={11} style={{ color: "var(--pj-brand-ink)" }} /> Comparar preços
-        </p>
         <h2 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
           Onde está mais barato?
         </h2>

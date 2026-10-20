@@ -17,7 +17,7 @@ function km(v) {
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   Bell, Plus, Trash2,
-  Check, Info, X, TrendingDown, TrendingUp, Calendar, Car, Clock, Star,
+  Check, Info, ChevronDown, X, TrendingDown, TrendingUp, Calendar, Car, Clock, Star,
   Map as MapIcon, List as ListIcon,
 } from "lucide-react";
 
@@ -190,9 +190,9 @@ function resolverMarca(nome) {
   return { cor, logoKey };
 }
 const EST = {
-  "disponível": { dot: "bg-emerald-500", txt: "text-emerald-600", label: "Disponível", border: "border-emerald-100" },
-  "ocupado":    { dot: "bg-red-500",     txt: "text-red-500",     label: "Ocupado",    border: "border-red-100" },
-  "manutenção": { dot: "bg-orange-400",  txt: "text-orange-500",  label: "Manutenção", border: "border-orange-100" },
+  "disponível": { dot: "bg-[color:var(--pj-brand)]", txt: "text-[color:var(--pj-brand-ink)]", label: "Disponível", border: "border-[color:var(--pj-border)]" },
+  "ocupado":    { dot: "bg-[color:var(--pj-danger)]",     txt: "text-[color:var(--pj-danger)]",     label: "Ocupado",    border: "border-[color:var(--pj-danger-border)]" },
+  "manutenção": { dot: "bg-[color:var(--pj-warn)]",  txt: "text-[color:var(--pj-warn)]",  label: "Manutenção", border: "border-[color:var(--pj-warn-border)]" },
 };
 
 /* ─── micro components ─── */
@@ -203,9 +203,11 @@ function TabBar({ options, value, onChange }) {
         <button
           key={o.id}
           onClick={() => onChange(o.id)}
-          className={`press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-            value === o.id ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"
+          aria-pressed={value === o.id}
+          className={`pj-tap press flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            value === o.id ? "shadow-sm" : ""
           }`}
+          style={value === o.id ? { background: "var(--pj-card)", color: "var(--pj-text)" } : { color: "var(--pj-text-faint)" }}
         >
           <o.icon size={13} /> {o.label}
         </button>
@@ -606,7 +608,9 @@ function SubCombustiveis() {
 
   return (
     <div>
-      {/* Hero — card editorial */}
+      {/* Hero — card editorial. Com a DGEG em baixo e sem preço guardado
+          ficava um cartão só com o título; o aviso de erro mais abaixo chega. */}
+      {!(erro && !loading && tiposDisponiveis.length === 0) && (
       <div className="mx-4 mb-4 card overflow-hidden">
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center justify-between mb-3">
@@ -671,6 +675,7 @@ function SubCombustiveis() {
           </div>
         )}
       </div>
+      )}
 
       {/* Tendência de preços */}
       <TendenciaPrecos historico={historico} tipoAtivo={tipoAtivo} />
@@ -710,7 +715,7 @@ function SubCombustiveis() {
                 onTouchEnd={() => carregar(loc.lat, loc.lon, raio)}
                 className="w-full mb-3" style={{ accentColor: "var(--pj-accent)" }}
               />
-              <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
+              <div className="flex justify-between text-[11px] text-[color:var(--pj-text-faint)] mb-3">
                 <span>5 km</span><span>15 km</span><span>30 km</span>
               </div>
               <div className="flex gap-2">
@@ -806,7 +811,9 @@ function SubCombustiveis() {
       )}
 
       {/* Lista */}
-      {erro ? <ErroCard onRetry={() => carregar()} titulo="Preços indisponíveis de momento" sub="A DGEG não respondeu agora mesmo. A tendência acima continua disponível." /> : vista === "mapa" ? null : (
+      {erro ? <ErroCard onRetry={() => carregar()} titulo="Preços indisponíveis de momento" sub={Object.values(historico || {}).some(h => h?.length)
+        ? "A DGEG não respondeu agora mesmo. A tendência acima continua disponível."
+        : "A DGEG não respondeu agora mesmo. Tenta daqui a pouco."} /> : vista === "mapa" ? null : (
         <div className="px-4 flex flex-col gap-2.5">
           {soFavoritos && filtrados.length === 0 && (
             <div className="card p-6 text-center">
@@ -854,10 +861,10 @@ function SubCombustiveis() {
                     <div className="flex items-center gap-2 mb-0.5 min-w-0">
                       <p className="font-semibold text-[color:var(--pj-text)] text-sm truncate min-w-0">{nome}</p>
                       {`${c.nome}__${c.distancia}` === keyMaisProximo && (
-                        <span className="text-[9px] font-semibold bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
+                        <span className="text-[11px] font-semibold bg-[color:var(--pj-subtle)] text-[color:var(--pj-brand-ink)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais próximo</span>
                       )}
                       {isBest && (
-                        <span className="text-[9px] font-semibold bg-[color:var(--pj-accent-wash)] text-[color:var(--pj-accent)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
+                        <span className="text-[11px] font-semibold bg-[color:var(--pj-accent-wash)] text-[color:var(--pj-accent)] px-1.5 py-0.5 rounded-full flex-shrink-0">Mais barato</span>
                       )}
                     </div>
                     {c.municipio && <p className="text-[10px] text-[color:var(--pj-text-faint)] mb-1">{c.municipio}</p>}
@@ -874,11 +881,11 @@ function SubCombustiveis() {
                     */}
                     <Preco valor={c.preco} casas={3} tamanho={20} cor="var(--pj-text)" />
                     {c.desconto ? (
-                      <p className="pj-num text-[9px] text-[color:var(--pj-brand-ink)] font-semibold mt-0.5">
+                      <p className="pj-num text-[11px] text-[color:var(--pj-brand-ink)] font-semibold mt-0.5">
                         com desconto · afixado €{eur(c.precoAfixado, 3)}
                       </p>
                     ) : (
-                      <p className="text-[9px] text-[color:var(--pj-text-faint)] mt-0.5">por litro</p>
+                      <p className="text-[11px] text-[color:var(--pj-text-faint)] mt-0.5">por litro</p>
                     )}
                     {c.distancia && (
                       <p className="text-[10px] text-[color:var(--pj-text-faint)] flex items-center gap-0.5 justify-end mt-0.5">
@@ -1064,7 +1071,7 @@ function SubPostosEV() {
               ].map(s => (
                 <div key={s.label} className="py-1 text-center">
                   <p className={`font-display text-2xl font-semibold ${s.color}`}>{s.value}</p>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.06em] text-[color:var(--pj-text-faint)] mt-0.5">{s.label}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[color:var(--pj-text-faint)] mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -1102,9 +1109,9 @@ function SubPostosEV() {
           onChange={e => setRaioInput(parseInt(e.target.value))}
           onMouseUp={e => setRaio(parseInt(e.target.value))}
           onTouchEnd={e => setRaio(parseInt(e.target.value))}
-          className="w-full mb-3" style={{ accentColor: "#0b6b4f" }}
+          className="w-full mb-3" style={{ accentColor: "var(--pj-brand)" }}
         />
-        <div className="flex justify-between text-[9px] text-[color:var(--pj-text-faint)] mb-3">
+        <div className="flex justify-between text-[11px] text-[color:var(--pj-text-faint)] mb-3">
           <span>1 km</span><span>25 km</span><span>50 km</span>
         </div>
         <button
@@ -1134,7 +1141,7 @@ function SubPostosEV() {
               )}
             </div>
           </div>
-          <span className="text-[color:var(--pj-text-faint)] text-xs">{simOpen ? "▲" : "▼"}</span>
+          <ChevronDown size={18} aria-hidden="true" className="text-[color:var(--pj-text-faint)] transition-transform" style={{ transform: simOpen ? "rotate(180deg)" : "none" }} />
         </button>
 
         {simOpen && (
@@ -1160,23 +1167,23 @@ function SubPostosEV() {
             <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mb-2">Bateria</p>
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <p className="text-[9px] text-[color:var(--pj-text-faint)] mb-1">De</p>
+                <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">De</p>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="range" min={0} max={99} step={5} value={batDe}
                     onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
-                    className="flex-1" style={{ accentColor: "#0b6b4f" }}
+                    className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
                   />
                   <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-8 text-right">{batDe}%</span>
                 </div>
               </div>
               <div className="flex-1">
-                <p className="text-[9px] text-[color:var(--pj-text-faint)] mb-1">Até</p>
+                <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">Até</p>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="range" min={0} max={100} step={5} value={batAte}
                     onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
-                    className="flex-1" style={{ accentColor: "#0b6b4f" }}
+                    className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
                   />
                   <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-8 text-right">{batAte}%</span>
                 </div>
@@ -1231,7 +1238,9 @@ function SubPostosEV() {
 
       <div className="px-4 mb-3 flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-[color:var(--pj-brand)] animate-pulse" />
-        <p className="text-[10px] text-[color:var(--pj-text-faint)]">{filtrados.length} postos · {fonte || "Dados EV em tempo real"}</p>
+        <p className="text-[11px] text-[color:var(--pj-text-faint)]">
+          {loading ? "A procurar postos…" : `${filtrados.length} ${filtrados.length === 1 ? "posto" : "postos"}`} · {fonte || "Dados EV em tempo real"}
+        </p>
       </div>
 
       {/* Seletor Lista / Mapa */}
@@ -1257,10 +1266,10 @@ function SubPostosEV() {
             userLoc={loc}
             onNavegar={(lat, lon) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`, "_blank", "noopener")}
           />
-          <p className="text-[10px] text-slate-400 mt-1.5 text-center">
-            <span className="text-emerald-500 font-bold">verde</span> = disponível ·{" "}
-            <span className="text-red-500 font-bold">vermelho</span> = ocupado ·{" "}
-            <span className="text-amber-500 font-bold">laranja</span> = manutenção
+          <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 text-center">
+            <span className="text-[color:var(--pj-brand-ink)] font-bold">verde</span> = disponível ·{" "}
+            <span className="text-[color:var(--pj-danger)] font-bold">vermelho</span> = ocupado ·{" "}
+            <span className="text-[color:var(--pj-warn)] font-bold">laranja</span> = manutenção
           </p>
         </div>
       )}
@@ -1271,10 +1280,10 @@ function SubPostosEV() {
           {[1, 2, 3].map(i => (
             <div key={i} className="card p-4 animate-pulse">
               <div className="flex gap-3">
-                <div className="w-11 h-11 rounded-xl bg-slate-100" />
+                <div className="w-11 h-11 rounded-xl bg-[color:var(--pj-subtle)]" />
                 <div className="flex-1">
-                  <div className="h-3 bg-slate-100 rounded mb-2" />
-                  <div className="h-2 bg-slate-50 rounded w-2/3" />
+                  <div className="h-3 bg-[color:var(--pj-subtle)] rounded mb-2" />
+                  <div className="h-2 bg-[color:var(--pj-subtle)] rounded w-2/3" />
                 </div>
               </div>
             </div>
@@ -1282,18 +1291,18 @@ function SubPostosEV() {
         </div>
       ) : filtrados.length === 0 ? (
         <div className="mx-4 card p-6 text-center">
-          <Battery size={32} className="text-slate-200 mx-auto mb-2" />
-          <p className="text-sm font-black text-slate-400">Sem postos neste raio</p>
-          <p className="text-xs text-slate-300 mt-0.5">Aumenta o raio de pesquisa</p>
+          <Battery size={32} className="text-[color:var(--pj-text-faint)] mx-auto mb-2" />
+          <p className="text-sm font-black text-[color:var(--pj-text-faint)]">Sem postos neste raio</p>
+          <p className="text-xs text-[color:var(--pj-text-faint)] mt-0.5">Aumenta o raio de pesquisa</p>
         </div>
       ) : (
         <div className="px-4 flex flex-col gap-3">
           {filtrados.map((posto, i) => {
             const est    = EST[posto.estado] || EST["disponível"];
             const kwNum  = posto.potenciaNum || parseInt(posto.potencia) || 0;
-            const kwCls  = kwNum >= 150 ? "text-purple-600 bg-purple-50 border-purple-200"
-                         : kwNum >= 50  ? "text-blue-600 bg-blue-50 border-blue-200"
-                         : "text-emerald-700 bg-emerald-50 border-emerald-200";
+            const kwCls  = kwNum >= 150 ? "text-[color:var(--pj-cat-ameixa)] bg-[color:var(--pj-subtle)] border-[color:var(--pj-border)]"
+                         : kwNum >= 50  ? "text-[color:var(--pj-cat-azul)] bg-[color:var(--pj-subtle)] border-[color:var(--pj-border)]"
+                         : "text-[color:var(--pj-brand-ink)] bg-[color:var(--pj-brand-wash)] border-[color:var(--pj-border)]";
             const kwLabel = kwNum >= 150 ? "Ultra-Rápido" : kwNum >= 50 ? "Rápido" : "Normal";
 
             const ultimaStr = (() => {
@@ -1312,22 +1321,22 @@ function SubPostosEV() {
               <div key={posto.id || i} className={`card overflow-hidden border ${est.border}`}>
                 {/* Header com status */}
                 <div className={`px-4 py-2.5 flex items-center justify-between ${
-                  posto.estado === "disponível" ? "bg-emerald-50" :
-                  posto.estado === "ocupado"    ? "bg-red-50" : "bg-orange-50"
+                  posto.estado === "disponível" ? "bg-[color:var(--pj-brand-wash)]" :
+                  posto.estado === "ocupado"    ? "bg-[color:var(--pj-danger-wash)]" : "bg-[color:var(--pj-warn-wash)]"
                 }`}>
                   <div className="flex items-center gap-1.5">
                     <span className={`w-2 h-2 rounded-full ${est.dot}${posto.estado === "disponível" ? " animate-pulse" : ""}`} />
                     <span className={`text-[11px] font-black ${est.txt}`}>{est.label}</span>
                     {posto.temTempoReal && (
-                      <span className="text-[9px] text-slate-400 font-medium">· tempo real</span>
+                      <span className="text-[11px] text-[color:var(--pj-text-faint)] font-medium">· tempo real</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     {ultimaStr && (
-                      <span className="text-[9px] text-slate-400">atualizado {ultimaStr}</span>
+                      <span className="text-[11px] text-[color:var(--pj-text-faint)]">atualizado {ultimaStr}</span>
                     )}
                     {posto.distancia && (
-                      <span className="text-[10px] text-slate-500 font-bold flex items-center gap-0.5">
+                      <span className="text-[10px] text-[color:var(--pj-text-muted)] font-bold flex items-center gap-0.5">
                         <MapPin size={9} /> <span className="pj-num">{km(posto.distancia)}</span>
                       </span>
                     )}
@@ -1339,21 +1348,21 @@ function SubPostosEV() {
                   <div className="flex items-start gap-3 mb-3">
                     <div className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center flex-shrink-0 border gap-0 ${kwCls}`}>
                       <Zap size={14} />
-                      <span className="text-[8px] font-black leading-none">{kwLabel}</span>
+                      <span className="text-[10px] font-black leading-none">{kwLabel}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-black text-sm text-slate-800 leading-tight">{posto.nome}</p>
+                      <p className="font-black text-sm text-[color:var(--pj-text)] leading-tight">{posto.nome}</p>
                       {posto.morada && (
-                        <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+                        <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-0.5 truncate">
                           {posto.morada}{posto.cidade ? `, ${posto.cidade}` : ""}
                         </p>
                       )}
-                      <p className="text-[10px] text-slate-400">{posto.operador}</p>
+                      <p className="text-[10px] text-[color:var(--pj-text-faint)]">{posto.operador}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className={`px-2 py-1 rounded-lg border text-center ${kwCls}`}>
                         <p className="text-sm font-black leading-none">{kwNum || "?"}</p>
-                        <p className="text-[8px] font-bold leading-none mt-0.5">kW</p>
+                        <p className="text-[10px] font-bold leading-none mt-0.5">kW</p>
                       </div>
                     </div>
                   </div>
@@ -1364,8 +1373,8 @@ function SubPostosEV() {
                       {posto.conectores.map((c, ci) => {
                         const livre = c.livres > 0;
                         const statusCls = livre
-                          ? "border-emerald-200 bg-emerald-50"
-                          : "border-slate-200 bg-slate-50";
+                          ? "border-[color:var(--pj-border)] bg-[color:var(--pj-brand-wash)]"
+                          : "border-[color:var(--pj-border)] bg-[color:var(--pj-subtle)]";
                         const icon = CONECTOR_ICONS[c.tipo];
                         // Tempo estimado com o carro selecionado
                         const carMaxKw = carro
@@ -1381,33 +1390,33 @@ function SubPostosEV() {
                             {icon ? (
                               <div className="flex-shrink-0">{icon(34)}</div>
                             ) : (
-                              <div className="w-9 h-9 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
-                                <Zap size={16} className="text-slate-500" />
+                              <div className="w-9 h-9 rounded-xl bg-[color:var(--pj-subtle)] flex items-center justify-center flex-shrink-0">
+                                <Zap size={16} className="text-[color:var(--pj-text-muted)]" />
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-[12px] font-black text-slate-800">{c.tipo}</p>
-                              <p className="text-[10px] text-slate-400">{c.corrente}{c.kw > 0 ? ` · ${c.kw} kW` : ""}</p>
+                              <p className="text-[12px] font-black text-[color:var(--pj-text)]">{c.tipo}</p>
+                              <p className="text-[10px] text-[color:var(--pj-text-faint)]">{c.corrente}{c.kw > 0 ? ` · ${c.kw} kW` : ""}</p>
                               {tempo && (
                                 <div className="flex items-center gap-1 mt-0.5">
-                                  <Clock size={9} className="text-emerald-600" />
-                                  <span className="text-[10px] font-black text-emerald-600">{tempo}</span>
+                                  <Clock size={9} className="text-[color:var(--pj-brand-ink)]" />
+                                  <span className="text-[10px] font-black text-[color:var(--pj-brand-ink)]">{tempo}</span>
                                 </div>
                               )}
                               {carro && c.corrente === "DC" && carro.conectorDC !== c.tipo && (
-                                <p className="text-[9px] text-red-400 font-bold mt-0.5">Incompatível</p>
+                                <p className="text-[11px] text-[color:var(--pj-danger)] font-bold mt-0.5">Incompatível</p>
                               )}
                             </div>
                             <div className="text-right flex-shrink-0">
                               {c.total > 0 ? (
                                 <>
-                                  <p className={`text-[13px] font-black ${livre ? "text-emerald-600" : "text-red-500"}`}>
+                                  <p className={`text-[13px] font-black ${livre ? "text-[color:var(--pj-brand-ink)]" : "text-[color:var(--pj-danger)]"}`}>
                                     {c.livres}/{c.total}
                                   </p>
-                                  <p className="text-[9px] text-slate-400">livres</p>
+                                  <p className="text-[11px] text-[color:var(--pj-text-faint)]">livres</p>
                                 </>
                               ) : (
-                                <span className={`text-[10px] font-black ${livre ? "text-emerald-600" : "text-slate-400"}`}>
+                                <span className={`text-[10px] font-black ${livre ? "text-[color:var(--pj-brand-ink)]" : "text-[color:var(--pj-text-faint)]"}`}>
                                   {livre ? "Disponível" : "—"}
                                 </span>
                               )}
@@ -1418,7 +1427,7 @@ function SubPostosEV() {
                     </div>
                   ) : posto.tipo ? (
                     <div className="mb-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-muted)]">
                         {posto.tipo}
                       </span>
                     </div>
@@ -1426,9 +1435,9 @@ function SubPostosEV() {
 
                   {/* Tomadas */}
                   <div className="mb-3">
-                    <div className="flex justify-between text-[10px] text-slate-500 mb-1.5">
+                    <div className="flex justify-between text-[10px] text-[color:var(--pj-text-muted)] mb-1.5">
                       <span className="font-medium">Tomadas</span>
-                      <span className={`font-black ${posto.livres > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                      <span className={`font-black ${posto.livres > 0 ? "text-[color:var(--pj-brand-ink)]" : "text-[color:var(--pj-danger)]"}`}>
                         {posto.livres} livre{posto.livres !== 1 ? "s" : ""} de {posto.slots}
                       </span>
                     </div>
@@ -1436,10 +1445,10 @@ function SubPostosEV() {
                       {Array.from({ length: Math.min(posto.slots, 12) }).map((_, si) => (
                         <div key={si} className={`flex-1 h-2.5 rounded-full ${
                           si < posto.livres
-                            ? "bg-emerald-400"
+                            ? "bg-[color:var(--pj-brand)]"
                             : posto.estado === "manutenção"
-                              ? "bg-orange-300"
-                              : "bg-red-300"
+                              ? "bg-[color:var(--pj-warn)]"
+                              : "bg-[color:var(--pj-danger)]"
                         }`} />
                       ))}
                     </div>
@@ -1451,8 +1460,8 @@ function SubPostosEV() {
                       onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${posto.lat},${posto.lon}`, "_blank")}
                       className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 ${
                       posto.estado === "disponível"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                        : "bg-slate-50 text-slate-400 border-slate-100"
+                        ? "bg-[color:var(--pj-brand-wash)] text-[color:var(--pj-brand-ink)] border-[color:var(--pj-border)]"
+                        : "bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-faint)] border-[color:var(--pj-border)]"
                     }`}>
                       <Navigation size={12} /> Navegar
                     </button>
@@ -1463,8 +1472,8 @@ function SubPostosEV() {
                           onClick={() => toggleAlerta(posto)}
                           className={`press flex-1 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1 transition-all ${
                             ativo
-                              ? "bg-emerald-600 text-white border-emerald-600"
-                              : "bg-blue-50 text-blue-700 border-blue-100"
+                              ? "bg-[color:var(--pj-brand)] text-white border-[color:var(--pj-brand)]"
+                              : "bg-[color:var(--pj-subtle)] text-[color:var(--pj-cat-azul)] border-[color:var(--pj-border)]"
                           }`}
                         >
                           <Bell size={12} /> {ativo ? "Ativo ✓" : "Alertar"}
@@ -1571,7 +1580,7 @@ function SubAvisos() {
             <Check size={17} className="text-white" />
           </div>
           <div>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-brand-ink)" }}>Aviso ativado</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em]" style={{ color: "var(--pj-brand-ink)" }}>Aviso ativado</p>
             <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>{d.texto}</p>
           </div>
         </div>
@@ -1667,9 +1676,9 @@ function SubAvisos() {
       <div className="mx-4 flex flex-col gap-2.5">
         {avisos.length === 0 && !criar ? (
           <div className="rounded-2xl p-6 text-center" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-            <Bell size={28} className="mx-auto mb-2" style={{ color: "#cfccbf" }} />
+            <Bell size={28} className="mx-auto mb-2" style={{ color: "var(--pj-text-faint)" }} />
             <p className="text-sm font-semibold" style={{ color: "var(--pj-text-faint)" }}>Ainda não tens avisos</p>
-            <p className="text-xs mt-0.5" style={{ color: "#b0b8b0" }}>Cria um para saberes quando o preço baixa</p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Cria um para saberes quando o preço baixa</p>
           </div>
         ) : avisos.map(a => {
           const ativo = disparados.some(d => d.id === a.id);
@@ -1696,7 +1705,7 @@ function SubAvisos() {
                   </>
                 )}
                 {ativo && (
-                  <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
+                  <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
                     <Check size={8} /> Condição cumprida agora
                   </span>
                 )}

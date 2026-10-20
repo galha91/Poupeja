@@ -121,5 +121,5 @@ export default function MapaPostos({ postos = [], variante = "combustivel", user
     setTimeout(() => map.invalidateSize(), 60);
   }, [postos, userLoc, min]);
 
-  return <div ref={elRef} style={{ width: "100%", height: 380 }} className="rounded-2xl overflow-hidden border border-slate-200 z-0" />;
+  return <div ref={elRef} style={{ width: "100%", height: 380 }} className="rounded-2xl overflow-hidden border border-[color:var(--pj-border)] z-0" />;
 }
