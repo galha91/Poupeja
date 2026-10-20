@@ -29,6 +29,9 @@
     },
     "pages/api/cron-previsao-combustiveis.js": {
       "maxDuration": 60
+    },
+    "pages/api/cron-catalogo-eci.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -75,6 +78,14 @@
     {
       "path": "/api/cron-indexnow",
       "schedule": "40 7 * * *"
+    },
+    {
+      "path": "/api/cron-catalogo-eci",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron-catalogo-eci",
+      "schedule": "0 4 * * *"
     }
   ]
 }
