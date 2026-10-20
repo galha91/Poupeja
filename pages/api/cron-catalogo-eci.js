@@ -7,10 +7,12 @@ import { nomeBusca } from "../../lib/precosTalao";
 /*
  * Catálogo do El Corte Inglés, lido de noite (Vercel Cron, ver vercel.json).
  *
- * O catálogo tem perto de mil páginas e cada execução só tem 60 s, por
- * isso o cron corre de 5 em 5 minutos durante a madrugada e continua onde
- * a anterior parou (tabela catalogo_cursor). Uma página de cada vez, com
- * pausa entre elas: é o ritmo de uma pessoa a folhear, não uma rajada.
+ * O catálogo tem perto de mil páginas e cada execução só tem 60 s. O plano
+ * da Vercel só deixa os crons correrem uma vez por dia, por isso cada
+ * execução, ao acabar, chama a seguinte, que continua onde esta parou
+ * (tabela catalogo_cursor) — uma cadeia de execuções, uma de cada vez. O
+ * cron das 4h retoma se a cadeia tiver parado a meio. Uma página de cada
+ * vez, com pausa entre elas: o ritmo de uma pessoa a folhear.
  *
  * No primeiro passo de cada dia o cursor volta ao início; quando a volta
  * fica completa, apagam-se os artigos que já não aparecem há dias
@@ -22,6 +24,9 @@ const LOJA = "elcorteingles";
 const ORCAMENTO_MS = 45_000;
 const PAUSA_MS = 800;
 const GUARDAR_DIAS = 3;
+// Se o cursor mexeu há menos disto, há uma execução a correr: não se abre
+// uma segunda cadeia em paralelo.
+const OCUPADO_MS = 70_000;
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 
@@ -38,6 +43,9 @@ export default async function handler(req, res) {
     ? atual
     : { loja: LOJA, dia, seccao: 0, pagina: 1, total_paginas: null, concluido: false, produtos: 0, erro: null };
   if (cursor.concluido) return res.status(200).json({ ok: true, concluido: true, produtos: cursor.produtos });
+  const outroACorrer = atual?.dia === dia && Date.now() - Date.parse(atual.atualizado_em) < OCUPADO_MS;
+  if (outroACorrer && req.query.cadeia !== "1") return res.status(200).json({ ok: true, ocupado: true });
+  await admin.from("catalogo_cursor").upsert({ ...cursor, atualizado_em: new Date().toISOString() });
 
   const limite = Date.now() + ORCAMENTO_MS;
   let paginas = 0;
@@ -80,6 +88,14 @@ export default async function handler(req, res) {
   }
 
   await admin.from("catalogo_cursor").upsert({ ...cursor, erro, atualizado_em: new Date().toISOString() });
+  // Falta catálogo e esta execução avançou sem erro: chama a seguinte. Só
+  // se espera que o pedido chegue; a seguinte corre por conta própria.
+  if (!cursor.concluido && !erro && paginas > 0) {
+    await fetch(`https://${req.headers.host}/api/cron-catalogo-eci?cadeia=1`, {
+      headers: { authorization: req.headers.authorization },
+      signal: AbortSignal.timeout(3000),
+    }).catch(() => {});
+  }
   if (cursor.concluido) {
     const antes = new Date(Date.now() - GUARDAR_DIAS * 86400000).toISOString().slice(0, 10);
     await admin.from("catalogo_precos").delete().eq("loja", LOJA).lt("visto_em", antes);

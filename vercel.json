@@ -81,7 +81,11 @@
     },
     {
       "path": "/api/cron-catalogo-eci",
-      "schedule": "*/5 0-5 * * *"
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron-catalogo-eci",
+      "schedule": "0 4 * * *"
     }
   ]
 }
