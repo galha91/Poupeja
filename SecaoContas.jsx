@@ -305,7 +305,7 @@ function LinhaConta({ conta, pago, podeMarcar, vence, onMarcar, onAbrir }) {
       >
         <span className="flex items-center justify-center" style={{
           width: 24, height: 24, borderRadius: 99,
-          border: pago ? "none" : "2px solid var(--pj-border)",
+          border: pago ? "none" : "2px solid var(--pj-text-faint)",
           background: pago ? "var(--pj-brand)" : "transparent",
         }}>
           {pago && <Check size={14} strokeWidth={3} color="#fff" />}
