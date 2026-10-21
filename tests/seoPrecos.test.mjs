@@ -120,3 +120,15 @@ test("datas à portuguesa", () => {
   assert.equal(dataCurta("2026-10-21"), "21 out 2026");
   assert.equal(dataCurta("2026-01-05", { ano: false }), "5 jan");
 });
+
+test("preços impossíveis ficam de fora", () => {
+  const d = montarArtigo([
+    l("2026-10-21", "auchan", 0.01, { unidade: "kg", preco: 3.15 }), // seriam 315 kg
+    l("2026-10-21", "pingo-doce", 4.25, { unidade: "kg", preco: 0.85 }),
+    l("2026-10-21", "continente", 5.98, { unidade: "kg", preco: 2.99 }),
+    l("2026-10-21", "aldi", 6.73, { unidade: "kg", preco: 2.69 }),
+    l("2026-10-21", "apolonia", 40, { unidade: "kg", preco: 8 }), // > 3× a mediana
+  ], HOJE);
+  assert.deepEqual(d.ofertas.map((o) => o.loja), ["pingo-doce", "continente", "aldi"]);
+  assert.ok(d.serie.every((p) => p.media > 1));
+});
