@@ -3,6 +3,9 @@ import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import dadosFolhetos from "../../public/folhetos.json";
 import { slugify, LOGO, LOJAS_SLUGS } from "../../lib/seo-slugs";
 import { semanaAtual } from "../../lib/semana-atual";
+import { ListaArtigos } from "../../PaginasPrecos";
+import { LOJAS_SEO, comComparacao, paraLista, hojeLisboa } from "../../lib/seoPrecos";
+import { resumosRecentes } from "../../lib/seoPrecosDados";
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -11,7 +14,7 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * Estática (revalida de hora a hora); alvo: "folheto continente",
  * "folheto pingo doce esta semana", etc. Interliga com as outras lojas.
  */
-export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm }) {
+export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm, precos = null }) {
   const slug = slugify(folheto.loja);
   const descricao = `Folheto ${folheto.loja} desta semana, com link direto para o folheto oficial. Grátis, com aviso semanal na app PoupeJá.`;
 
@@ -24,6 +27,15 @@ export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm }) {
         <meta property="og:title" content={`Folheto ${folheto.loja} desta semana`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/folhetos/${slug}`} key="og:url" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "PoupeJá", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Folhetos", item: `${SITE_URL}/folhetos` },
+            { "@type": "ListItem", position: 3, name: `Folheto ${folheto.loja}`, item: `${SITE_URL}/folhetos/${slug}` },
+          ],
+        }) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>
@@ -81,6 +93,29 @@ export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm }) {
           desconto nenhum.
         </p>
 
+        {/* O que a comparação de preços diz desta cadeia hoje — é o que
+            torna esta página diferente das dos outros folhetos. */}
+        {precos?.ganha?.length > 0 ? (
+          <>
+            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 6 }}>
+              Onde o {folheto.loja} é mais barato hoje
+            </h2>
+            <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginBottom: 14 }}>
+              Fora do folheto, nos preços do site: o {folheto.loja} é o mais barato em{" "}
+              <strong style={{ color: "var(--pj-text)" }}>{precos.total} dos {precos.comparados} artigos</strong> que comparamos com outras cadeias.
+            </p>
+            <ListaArtigos artigos={precos.ganha} mostrarLoja={false} />
+            <a href={`/precos/loja/${precos.slug}`} className="pj-alvo inline-block no-underline mt-4" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+              Ver todos os preços do {folheto.loja} →
+            </a>
+          </>
+        ) : precos?.semPrecos ? (
+          <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginTop: 24 }}>
+            O {folheto.loja} não publica os preços online, por isso não entra na nossa{" "}
+            <a href="/precos" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>comparação de preços</a>: o folheto é a melhor forma de ver as promoções.
+          </p>
+        ) : null}
+
         {/* Interligação com outras lojas */}
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
           Folhetos de outras lojas
@@ -123,9 +158,18 @@ export async function getStaticProps({ params }) {
   if (!folheto) return { notFound: true };
   const { semana, atualizadoEm } = semanaAtual();
   const { validade, ...semValidade } = folheto; // a de junho, fixa, nunca foi verdade
+  const loja = LOJAS_SEO.find(l => l.nome === folheto.loja);
+  let precos = { semPrecos: !loja };
+  if (loja) {
+    const artigos = comComparacao(await resumosRecentes(hojeLisboa()));
+    const comparados = artigos.filter(a => a.ofertas.some(o => o.loja === loja.id));
+    const ganha = comparados.filter(a => a.vencedor.loja === loja.id).sort((a, b) => b.pct - a.pct);
+    precos = { slug: loja.slug, comparados: comparados.length, total: ganha.length, ganha: ganha.slice(0, 8).map(a => paraLista(a)) };
+  }
   return {
     props: {
       folheto: semValidade,
+      precos: JSON.parse(JSON.stringify(precos)),
       semana,
       outras: LOJAS_SLUGS.filter(l => l.slug !== params.loja),
       atualizadoEm,

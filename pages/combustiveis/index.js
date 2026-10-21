@@ -189,6 +189,16 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
           O que subiu e desceu esta semana, por marca <span aria-hidden="true">→</span>
         </a>
 
+        {/* Uma página por combustível, para "preço do gasóleo hoje" e afins. */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {[["gasoleo", "Preço do gasóleo"], ["gasolina-95", "Preço da gasolina 95"], ["gpl", "Preço do GPL Auto"]].map(([slug, texto]) => (
+            <a key={slug} href={`/combustiveis/${slug}`} className="pj-tap no-underline"
+              style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}>
+              {texto} →
+            </a>
+          ))}
+        </div>
+
         {/* Páginas por concelho, agrupadas por distrito — é também o caminho
             de rastreio: sem isto o Google não chega às páginas de concelho. */}
         {porDistrito.length > 0 && (

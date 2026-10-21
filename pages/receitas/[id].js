@@ -2,6 +2,10 @@ import Head from "next/head";
 import { Clock, Users, Leaf, ChefHat } from "lucide-react";
 import LayoutPublico from "../../LayoutPublico";
 import { receitas, emojiIngrediente, formatarTempo, rendimento } from "../../lib/receitas/motor";
+import { BotaoAbrirPoupeja } from "../../PaginasPrecos";
+import { euros, porUnidade } from "../../lib/seoFormato";
+import { custoReceita, hojeLisboa } from "../../lib/seoPrecos";
+import { resumosRecentes } from "../../lib/seoPrecosDados";
 
 const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
 
@@ -14,10 +18,16 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * Estática; alvo: "receita caldo verde barata", "jantar económico 4 pessoas", etc.
  * O JSON-LD Recipe torna-a elegível para rich results do Google (cartões de receita).
  */
-export default function Receita({ receita, outras }) {
+export default function Receita({ receita, outras, custo = null }) {
   const rende = rendimento(receita.porcoes, receita.un);
   const porUm = rendimento(1, receita.un).slice(2);
   const descricao = `Receita económica de ${receita.nome} (${rende}), pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
+  // Até ~60 caracteres: o que passa disso o Google corta no resultado.
+  const titulo = [
+    `${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`,
+    `${receita.nome} — receita barata (${rende}) | PoupeJá`,
+    `${receita.nome} — receita barata | PoupeJá`,
+  ].find(t => t.length <= 60) || `${receita.nome} | PoupeJá`;
   const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}`;
 
   const dietasLd = [
@@ -54,12 +64,13 @@ export default function Receita({ receita, outras }) {
       fiberContent: `${receita.nutricao.fib} g`,
     },
     ...(dietasLd.length ? { suitableForDiet: dietasLd } : {}),
+    ...(custo?.total ? { estimatedCost: { "@type": "MonetaryAmount", currency: "EUR", value: custo.total.toFixed(2) } } : {}),
   };
 
   return (
     <LayoutPublico destaqueEmentas>
       <Head>
-        <title>{`${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`}</title>
+        <title>{titulo}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/receitas/${receita.id}`} />
         <meta property="og:title" content={`${receita.nome} — receita barata (${rende})`} key="og:title" />
@@ -149,6 +160,32 @@ export default function Receita({ receita, outras }) {
           antes de ires às compras — na app PoupeJá os ingredientes desta receita entram na tua lista
           de compras num toque.
         </p>
+        {/* Com os preços de hoje: só os ingredientes que se convertem na
+            unidade do preço (gramas × €/kg), e a página diz quantos foram. */}
+        {custo?.total != null && (
+          <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.7, marginTop: 10 }}>
+            Com os preços de hoje, no supermercado mais barato para cada um,{" "}
+            <strong>{custo.comPreco} dos {custo.contados} ingredientes</strong> custam cerca de{" "}
+            <strong style={{ color: "var(--pj-brand-ink)" }}>{euros(custo.total)} €</strong> para {rende}.
+            Os da despensa ficam de fora.
+          </p>
+        )}
+        {custo?.ligacoes?.length > 0 && (
+          <>
+            <h3 className="font-display" style={{ fontSize: 16, fontWeight: 600, marginTop: 20, marginBottom: 10 }}>
+              Preço dos ingredientes hoje
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {custo.ligacoes.map(l => (
+                <a key={l.slug} href={`/precos/${l.slug}`} className="pj-tap no-underline"
+                  style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}>
+                  {l.nome}{l.valor != null ? ` · ${euros(l.valor)} €${porUnidade(l.unidade)}` : ""}
+                </a>
+              ))}
+            </div>
+          </>
+        )}
+        <BotaoAbrirPoupeja href="/?atalho=ementas" tipo="receita" texto="Pôr esta receita no plano da semana, com lista de compras" />
 
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
           Mais receitas baratas
@@ -188,10 +225,14 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const receita = EMENTAS.find(e => e.id === params.id);
   if (!receita) return { notFound: true };
+  const custo = custoReceita(receita.ingredientes, await resumosRecentes(hojeLisboa()));
   return {
     props: {
       receita,
       outras: EMENTAS.filter(e => e.id !== params.id).map(e => ({ id: e.id, nome: e.nome, emoji: e.emoji })),
+      custo: JSON.parse(JSON.stringify(custo)),
     },
+    // Os preços dos ingredientes mudam: a página regenera-se de 3 em 3 horas.
+    revalidate: 10800,
   };
 }
