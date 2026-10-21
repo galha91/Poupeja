@@ -5,7 +5,11 @@ import { lerPaginaEci, proximaPaginaEci, urlPaginaEci, SECOES_ECI } from "../../
 import { nomeBusca } from "../../lib/precosTalao";
 
 /*
- * Catálogo do El Corte Inglés, lido de noite (Vercel Cron, ver vercel.json).
+ * Catálogo do El Corte Inglés, lido de noite.
+ *
+ * DESLIGADO (21/10/2026): o site responde 403 aos servidores da Vercel.
+ * Não se contorna; o cron saiu do vercel.json e a loja voltou a sem-precos.
+ * Fica o código para o caso de o El Corte Inglés vir a autorizar o acesso.
  *
  * O catálogo tem perto de mil páginas e cada execução só tem 60 s. O plano
  * da Vercel só deixa os crons correrem uma vez por dia, por isso cada
