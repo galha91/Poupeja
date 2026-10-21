@@ -167,7 +167,7 @@ export default function Receita({ receita, outras, custo = null }) {
             Com os preços de hoje, no supermercado mais barato para cada um,{" "}
             <strong>{custo.comPreco} dos {custo.contados} ingredientes</strong> custam cerca de{" "}
             <strong style={{ color: "var(--pj-brand-ink)" }}>{euros(custo.total)} €</strong> para {rende}.
-            Os da despensa ficam de fora.
+            Os da despensa ficam de fora, e para o que se compra à unidade usamos pesos médios: é uma estimativa.
           </p>
         )}
         {custo?.ligacoes?.length > 0 && (
