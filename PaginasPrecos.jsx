@@ -29,7 +29,8 @@ export function BotaoAbrirPoupeja({ href, texto, tipo }) {
   return (
     <a
       href={href}
-      onClick={() => evento("abrir_poupeja", { origem: "seo", tipo })}
+      // beacon: o evento tem de sair antes de a página mudar.
+      onClick={() => evento("abrir_poupeja", { origem: "seo", tipo, transport_type: "beacon" })}
       className="pj-tap flex items-center justify-between no-underline mt-8 rounded-2xl px-5 py-4"
       style={{ background: "var(--pj-brand)", color: "#fff" }}
     >
