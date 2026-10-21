@@ -3,12 +3,15 @@ import { listarMunicipios, DISTRITOS_SLUGS } from "../../lib/municipios";
 import { LOJAS_SLUGS, RECEITAS_SLUGS } from "../../lib/seo-slugs";
 import { montarPedido, ENDPOINT_INDEXNOW } from "../../lib/indexnow";
 import { URL_SITE } from "../../lib/site";
+import { paginasPrecos } from "../../lib/sitemap";
+import { TIPOS_PAGINA } from "../../lib/combustivelTipo";
 
 /*
  * Aviso diário IndexNow (Vercel Cron, ver vercel.json) — depois do cron
  * dos preços, para os motores verem as páginas já com os preços do dia.
  *
- * Todos os dias: as páginas de combustível (mudam todos os dias).
+ * Todos os dias: as páginas de combustível e as de preços de supermercado
+ * indexáveis (mudam todos os dias).
  * À quinta-feira, dia dos folhetos novos: também folhetos, receitas e as
  * páginas fixas. O protocolo pede que só se avise o que mudou; avisar
  * sempre tudo leva a que os avisos passem a ser ignorados.
@@ -24,12 +27,22 @@ export default async function handler(req, res) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
 
-  const caminhos = ["/combustiveis", "/combustiveis/esta-semana", ...DISTRITOS_SLUGS.map(d => `/combustiveis/distrito/${d.slug}`)];
+  const caminhos = [
+    "/combustiveis", "/combustiveis/esta-semana",
+    ...TIPOS_PAGINA.map(t => `/combustiveis/${t.slug}`),
+    ...DISTRITOS_SLUGS.map(d => `/combustiveis/distrito/${d.slug}`),
+  ];
   try {
     const concelhos = (await listarMunicipios()).slice(0, MAX_CONCELHOS);
     caminhos.push(...concelhos.map(m => `/combustiveis/${m.slug}`));
   } catch (e) {
     console.warn("cron-indexnow: sem lista de concelhos:", e.message);
+  }
+
+  try {
+    caminhos.push(...(await paginasPrecos()).map(p => p.path));
+  } catch (e) {
+    console.warn("cron-indexnow: sem páginas de preços:", e.message);
   }
 
   const quinta = new Date().getUTCDay() === 4;

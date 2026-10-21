@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# /api/og serve as imagens das receitas (rich results): não bloquear /api/.
+Disallow: /admin
 
 Sitemap: https://xn--poupej-uta.com/sitemap.xml
