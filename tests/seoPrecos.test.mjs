@@ -138,3 +138,9 @@ test("preços de outro dia não se dizem de hoje", () => {
   assert.match(frasesArtigo(artigoPorSlug("azeite"), d, HOJE)[0], /^A 19 out é 0,80 €\/L/);
   assert.match(frasesArtigo(artigoPorSlug("azeite"), d, "2026-10-19")[0], /^Hoje/);
 });
+
+test("duas cadeias a mais de 3× uma da outra não vão para o Google", () => {
+  const d = montarArtigo([l("2026-10-21", "auchan", 9.99, { unidade: "kg", preco: 9.99 }), l("2026-10-21", "continente", 45, { unidade: "kg", preco: 9 })], HOJE);
+  assert.equal(d.ofertas.length, 2);
+  assert.equal(d.indexavel, false);
+});
