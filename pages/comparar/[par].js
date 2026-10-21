@@ -70,8 +70,8 @@ export default function CompararPar({ par, r, frase, atualizado, outros }) {
                     const celula = (v, ganha) => ({ padding: "11px 12px", textAlign: "right", whiteSpace: "nowrap", fontSize: 14, fontWeight: ganha ? 700 : 500, color: ganha ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" });
                     return (
                       <tr key={l.slug} style={{ borderTop: "1px solid var(--pj-subtle)" }}>
-                        <td style={{ padding: "11px 12px" }}>
-                          <a href={`/precos/${l.slug}`} style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)", textDecoration: "none" }}>{l.nome}</a>
+                        <td style={{ padding: "5px 12px" }}>
+                          <a href={`/precos/${l.slug}`} style={{ display: "block", padding: "6px 0", fontSize: 14, fontWeight: 600, color: "var(--pj-text)", textDecoration: "none" }}>{l.nome}</a>
                         </td>
                         <td className="pj-num" style={celula(l.a, l.ganha === a.id)}>{euros(l.a)} €{u}</td>
                         <td className="pj-num" style={celula(l.b, l.ganha === b.id)}>{euros(l.b)} €{u}</td>

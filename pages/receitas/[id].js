@@ -22,6 +22,12 @@ export default function Receita({ receita, outras, custo = null }) {
   const rende = rendimento(receita.porcoes, receita.un);
   const porUm = rendimento(1, receita.un).slice(2);
   const descricao = `Receita económica de ${receita.nome} (${rende}), pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
+  // Até ~60 caracteres: o que passa disso o Google corta no resultado.
+  const titulo = [
+    `${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`,
+    `${receita.nome} — receita barata (${rende}) | PoupeJá`,
+    `${receita.nome} — receita barata | PoupeJá`,
+  ].find(t => t.length <= 60) || `${receita.nome} | PoupeJá`;
   const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}`;
 
   const dietasLd = [
@@ -64,7 +70,7 @@ export default function Receita({ receita, outras, custo = null }) {
   return (
     <LayoutPublico destaqueEmentas>
       <Head>
-        <title>{`${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`}</title>
+        <title>{titulo}</title>
         <meta name="description" content={descricao} />
         <link rel="canonical" href={`${SITE_URL}/receitas/${receita.id}`} />
         <meta property="og:title" content={`${receita.nome} — receita barata (${rende})`} key="og:title" />
