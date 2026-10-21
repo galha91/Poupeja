@@ -63,6 +63,8 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
           </SoForaDaApp>
           <a href="/combustiveis" style={{ color: "var(--pj-text-muted)" }}>Combustíveis</a>
           <a href="/folhetos" style={{ color: "var(--pj-text-muted)" }}>Folhetos</a>
+          <a href="/precos" style={{ color: "var(--pj-text-muted)" }}>Preços de supermercado</a>
+          <a href="/comparar" style={{ color: "var(--pj-text-muted)" }}>Qual é mais barato?</a>
           <a href="/receitas" style={{ color: "var(--pj-brand-ink)", fontWeight: 700 }}>Ementas e receitas</a>
           <a href="/apoios" style={{ color: "var(--pj-text-muted)" }}>Apoios do Estado</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>

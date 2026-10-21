@@ -91,6 +91,13 @@ export default function Folhetos({ folhetos, semana, atualizadoEm }) {
           ))}
         </div>
 
+        {/* Do folheto à comparação: o mesmo artigo pode estar mais barato
+            noutra cadeia sem promoção nenhuma. */}
+        <a href="/precos" className="pj-tap no-underline flex items-center justify-between rounded-2xl px-4 py-3 mt-6"
+          style={{ background: "var(--pj-brand-wash)", border: "1px solid var(--pj-border)", color: "var(--pj-text)", fontWeight: 600, fontSize: 14 }}>
+          Preços de hoje: onde cada artigo está mais barato <span aria-hidden="true">→</span>
+        </a>
+
         <CtaApp texto="Recebe os folhetos novos toda a semana — grátis" />
       </div>
     </LayoutPublico>
