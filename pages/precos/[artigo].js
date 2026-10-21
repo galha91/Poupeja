@@ -9,6 +9,8 @@ import {
   receitasComArtigo, linkApp, hojeLisboa,
 } from "../../lib/seoPrecos";
 import { historicoArtigo, resumosRecentes, paraProps } from "../../lib/seoPrecosDados";
+import { gruposMarca } from "../../lib/seoMarcasDados";
+import { ofertasProduto } from "../../lib/seoMarcas";
 import { receitas } from "../../lib/receitas/motor";
 import { URL_SITE } from "../../lib/site";
 
@@ -21,7 +23,7 @@ import { URL_SITE } from "../../lib/site";
  * Sem pelo menos 2 cadeias com preço recente, a página continua a existir
  * (há links para ela), mas sai com noindex e fora do sitemap.
  */
-export default function PrecoArtigo({ artigo, dados, frases, meta, relacionados, receitasLigadas, pares }) {
+export default function PrecoArtigo({ artigo, dados, frases, meta, relacionados, receitasLigadas, pares, marcas = [] }) {
   const canonical = `${URL_SITE}/precos/${artigo.slug}`;
   const passos = [
     { nome: "PoupeJá", path: "/" },
@@ -70,6 +72,13 @@ export default function PrecoArtigo({ artigo, dados, frases, meta, relacionados,
         <GraficoHistorico serie={dados.serie} unidade={dados.unidade} />
 
         <BotaoAbrirPoupeja href={linkApp(artigo.q)} tipo="preco" texto={`Comparar ${artigo.nomeCurto.toLowerCase()} na app e juntar à lista`} />
+
+        {marcas.length > 0 && (
+          <>
+            <h2 className="font-display" style={estiloH2}>{artigo.nomeCurto} por marca</h2>
+            <ListaArtigos artigos={marcas} />
+          </>
+        )}
 
         {receitasLigadas.length > 0 && (
           <>
@@ -125,10 +134,24 @@ export async function getStaticProps({ params }) {
   const pares = PARES.filter((p) => presentes.has(p.a.id) && presentes.has(p.b.id)).slice(0, 4)
     .map((p) => ({ slug: p.slug, a: p.a.nome, b: p.b.nome }));
 
+  // Produtos de marca desta pesquisa, os comparáveis primeiro.
+  const marcas = (await gruposMarca(hoje))
+    .filter((g) => g.q === artigo.q)
+    .map((g) => ({ g, d: ofertasProduto(g, hoje) }))
+    .filter(({ d }) => d.ofertas.length)
+    .sort((a, b) => b.d.ofertas.length - a.d.ofertas.length || a.d.ofertas[0].preco - b.d.ofertas[0].preco)
+    .slice(0, 8)
+    .map(({ g, d }) => ({
+      slug: g.slug, nome: g.nome, href: `/produto/${g.slug}`, unidade: "embalagem",
+      contexto: `${d.ofertas.length} cadeia${d.ofertas.length > 1 ? "s" : ""} · mais barato no ${d.ofertas[0].lojaNome}`,
+      vencedor: { lojaNome: d.ofertas[0].lojaNome, valor: d.ofertas[0].preco },
+    }));
+
   return {
     props: paraProps({
       artigo,
       dados,
+      marcas,
       frases: frasesArtigo(artigo, dados, hoje),
       meta: metaArtigo(artigo, dados),
       relacionados,

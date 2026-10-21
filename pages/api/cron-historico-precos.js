@@ -1,6 +1,6 @@
 import { bearerValido } from "../../lib/seguranca";
 import { pesquisarTudo } from "../../lib/supermercados";
-import { registar } from "../../lib/supermercados/historico";
+import { registar, registarMarcas } from "../../lib/supermercados/historico";
 import { ARTIGOS_SEO, CATEGORIAS_SEO, LOJAS_SEO, normalizarQ } from "../../lib/seoPrecos";
 
 /*
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
       const q = fila[proximo++];
       try {
         const r = await pesquisarTudo(q);
-        if (r.lojas.some((l) => l.ok)) { await registar(r); feitos++; } else falhas++;
+        if (r.lojas.some((l) => l.ok)) { await Promise.all([registar(r), registarMarcas(r).catch(() => {})]); feitos++; } else falhas++;
       } catch { falhas++; }
       await new Promise((ok) => setTimeout(ok, PAUSA_MS));
     }
