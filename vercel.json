@@ -78,14 +78,6 @@
     {
       "path": "/api/cron-indexnow",
       "schedule": "40 7 * * *"
-    },
-    {
-      "path": "/api/cron-catalogo-eci",
-      "schedule": "0 1 * * *"
-    },
-    {
-      "path": "/api/cron-catalogo-eci",
-      "schedule": "0 4 * * *"
     }
   ]
 }
