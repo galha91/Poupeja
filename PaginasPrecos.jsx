@@ -59,7 +59,7 @@ export function TabelaPrecos({ ofertas, unidade }) {
             <tr key={o.loja} style={{ borderTop: "1px solid var(--pj-subtle)", background: i === 0 ? "var(--pj-brand-wash)" : "transparent" }}>
               <td style={{ padding: "12px", borderLeft: `3px solid ${i === 0 ? "var(--pj-brand)" : "transparent"}` }}>
                 <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>
-                  {o.lojaNome}{i === 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--pj-brand-ink)", marginLeft: 8 }}>MAIS BARATO</span>}
+                  {o.lojaNome}{i === 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--pj-brand-ink)", marginLeft: 8, whiteSpace: "nowrap" }}>MAIS BARATO</span>}
                 </span>
                 {o.produto && <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 2 }}>{o.produto}</span>}
               </td>
@@ -110,7 +110,7 @@ export function ListaArtigos({ artigos, mostrarLoja = true }) {
   return (
     <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
       {artigos.map((a, i) => (
-        <a key={a.slug} href={`/precos/${a.slug}`} className="flex items-center justify-between gap-3 px-4 py-3 no-underline"
+        <a key={a.slug} href={a.href || `/precos/${a.slug}`} className="flex items-center justify-between gap-3 px-4 py-3 no-underline"
           style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
           <span style={{ minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{a.nome}</span>

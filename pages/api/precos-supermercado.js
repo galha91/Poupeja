@@ -1,6 +1,6 @@
 import { pesquisarTudo } from "../../lib/supermercados";
 import { excedeuLimite } from "../../lib/protecao-api";
-import { registar, resumo, registarEmbalagens, reduflacaoDe } from "../../lib/supermercados/historico";
+import { registar, resumo, registarEmbalagens, registarMarcas, reduflacaoDe } from "../../lib/supermercados/historico";
 import { armadilhasEmbalagem } from "../../lib/reduflacao";
 
 // O histórico é um extra: nunca pode atrasar a resposta mais do que isto.
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   let historico = null;
   let encolheram = null;
   if (falhas.length < r.lojas.length) {
-    await comPrazo(Promise.all([registar(r), registarEmbalagens(r)]), 1500);
+    await comPrazo(Promise.all([registar(r), registarEmbalagens(r), registarMarcas(r)]), 1500);
     [historico, encolheram] = await Promise.all([
       comPrazo(resumo(q, r.modo === "embalagem" ? "embalagem" : r.nomeUnidade), 1500),
       comPrazo(reduflacaoDe(r.produtos), 1500),

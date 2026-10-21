@@ -3,7 +3,7 @@ import { listarMunicipios, DISTRITOS_SLUGS } from "../../lib/municipios";
 import { LOJAS_SLUGS, RECEITAS_SLUGS } from "../../lib/seo-slugs";
 import { montarPedido, ENDPOINT_INDEXNOW } from "../../lib/indexnow";
 import { URL_SITE } from "../../lib/site";
-import { paginasPrecos } from "../../lib/sitemap";
+import { paginasPrecos, paginasMarcas } from "../../lib/sitemap";
 import { TIPOS_PAGINA } from "../../lib/combustivelTipo";
 
 /*
@@ -40,7 +40,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    caminhos.push(...(await paginasPrecos()).map(p => p.path));
+    const [precos, marcas] = await Promise.all([paginasPrecos(), paginasMarcas().catch(() => [])]);
+    caminhos.push(...precos.map(p => p.path), ...marcas.map(p => p.path));
   } catch (e) {
     console.warn("cron-indexnow: sem páginas de preços:", e.message);
   }

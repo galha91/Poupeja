@@ -404,3 +404,38 @@ create table if not exists public.catalogo_cursor (
   atualizado_em  timestamptz not null default now()
 );
 alter table public.catalogo_cursor enable row level security;
+
+-- ── Produtos de marca (páginas /produto e /marca, ver lib/seoMarcas) ──
+-- Cada pesquisa (app ou cron) guarda os produtos de marcas nacionais com
+-- tamanho conhecido. Só a service role lê e escreve (RLS sem políticas).
+create table if not exists public.produtos_marca (
+  loja         text          not null,
+  produto_id   text          not null,
+  q            text          not null,
+  nome         text          not null,
+  marca        text          not null,
+  marca_slug   text          not null,
+  qtd          numeric(10,3),
+  unidade      text,
+  preco        numeric(10,2) not null,
+  valor        numeric(10,2),
+  imagem       text,
+  url          text,
+  primeiro_dia date          not null default (now() at time zone 'Europe/Lisbon')::date,
+  ultimo_dia   date          not null,
+  primary key (loja, produto_id)
+);
+alter table public.produtos_marca enable row level security;
+create index if not exists produtos_marca_marca on public.produtos_marca (marca_slug);
+create index if not exists produtos_marca_ultimo on public.produtos_marca (ultimo_dia);
+
+create table if not exists public.produtos_marca_dia (
+  loja       text          not null,
+  produto_id text          not null,
+  dia        date          not null,
+  preco      numeric(10,2) not null,
+  valor      numeric(10,2),
+  primary key (loja, produto_id, dia)
+);
+alter table public.produtos_marca_dia enable row level security;
+create index if not exists produtos_marca_dia_dia on public.produtos_marca_dia (dia);
