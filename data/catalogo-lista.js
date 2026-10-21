@@ -212,7 +212,7 @@ export const CATEGORIAS = [
       { nome: "Atum em lata", un: "lata", q: "atum", sin: ["atum"] },
       { nome: "Sardinhas em lata", un: "lata", q: "sardinhas em azeite", sin: ["sardinhas em conserva"] },
       { nome: "Cavala em lata", un: "lata", q: "filetes de cavala" },
-      { nome: "Salsichas em lata", un: "lata", q: "salsichas", sin: ["salsichas"] },
+      { nome: "Salsichas em lata", un: "lata", q: "salsichas frankfurt", sin: ["salsichas"] },
       { nome: "Feijão cozido", un: "frasco", sin: ["feijão em lata"] },
       { nome: "Grão cozido", un: "frasco", sin: ["grão em lata"] },
       { nome: "Milho doce", un: "lata", sin: ["milho"] },

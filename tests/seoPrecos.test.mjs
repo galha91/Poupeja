@@ -144,3 +144,19 @@ test("duas cadeias a mais de 3× uma da outra não vão para o Google", () => {
   assert.equal(d.ofertas.length, 2);
   assert.equal(d.indexavel, false);
 });
+
+test("custo da receita com peso médio por unidade e molhos de ervas", () => {
+  const kg = (q, v) => montarArtigo([{ ...l("2026-10-21", "lidl", v, { unidade: "kg" }), q }, { ...l("2026-10-21", "aldi", v + 0.1, { unidade: "kg" }), q }], HOJE);
+  const resumos = new Map([
+    ["cebolas", kg("cebolas", 2)],
+    ["alho", kg("alho", 10)],
+    ["salsa", montarArtigo([{ ...l("2026-10-21", "lidl", 0.99, { unidade: "embalagem" }), q: "salsa" }, { ...l("2026-10-21", "aldi", 1.2, { unidade: "embalagem" }), q: "salsa" }], HOJE)],
+  ]);
+  const c = custoReceita([
+    { compra: "Cebolas", q: 2, u: "un" },  // 2 × 0,15 kg × 2 €/kg = 0,60
+    { compra: "Alho", q: 2, u: "dente" },  // 2 × 0,005 kg × 10 €/kg = 0,10
+    { compra: "Salsa", q: 0.5, u: "molho" }, // 0,5 × 0,99 = 0,495
+  ], resumos);
+  assert.equal(c.comPreco, 3);
+  assert.equal(c.total, 1.19); // 1,195 arredondado
+});
