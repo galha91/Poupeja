@@ -25,7 +25,11 @@ export default function CombustiveisDistrito({ dados, serieGasoleo = [] }) {
 
   const gasoleo  = destaques.find(d => d.tipoLabel === "Gasóleo");
   const gasolina = destaques.find(d => d.tipoLabel === "Gasolina 95");
-  const titulo = `Combustível mais barato no distrito de ${distrito.nome} hoje — gasóleo e gasolina | PoupeJá`;
+  const hoje = idade.deHoje ? " hoje" : "";
+  const titulo = [
+    gasoleo && `Gasóleo distrito de ${distrito.nome}${hoje}: €${eur(gasoleo.preco, 3)} | PoupeJá`,
+    `Combustível no distrito de ${distrito.nome}${hoje} | PoupeJá`,
+  ].filter(Boolean).find(t => t.length <= 60) || `Combustível em ${distrito.nome} | PoupeJá`;
   const descricao =
     `Preços de hoje no distrito de ${distrito.nome} (dados oficiais DGEG)` +
     `${gasoleo ? `: gasóleo desde €${eur(gasoleo.preco, 3)} em ${gasoleo.municipio}` : ""}` +

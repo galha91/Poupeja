@@ -58,7 +58,13 @@ export default function CombustiveisConcelho({ dados, serieGasoleo = [] }) {
     `${gasolina ? `${gasoleo ? "," : ":"} gasolina 95 desde €${eur(gasolina.preco, 3)}` : ""}` +
     `. ${municipio.nPostos} postos comparados, grátis.`;
 
-  const titulo = `Preço dos Combustíveis em ${municipio.nome} Hoje — gasóleo e gasolina mais baratos | PoupeJá`;
+  // Até ~60 caracteres, com o preço: é o que se lê no resultado do Google.
+  const hoje = idade.deHoje ? " hoje" : "";
+  const titulo = [
+    gasoleo && `Preço gasóleo ${municipio.nome}${hoje}: desde €${eur(gasoleo.preco, 3)} | PoupeJá`,
+    gasoleo && `Gasóleo ${municipio.nome}${hoje}: desde €${eur(gasoleo.preco, 3)} | PoupeJá`,
+    `Combustíveis em ${municipio.nome}${hoje} | PoupeJá`,
+  ].filter(Boolean).find(t => t.length <= 60) || `Combustíveis em ${municipio.nome} | PoupeJá`;
   const canonical = `${URL_SITE}/combustiveis/${municipio.slug}`;
 
   const jsonLd = {
@@ -90,7 +96,7 @@ export default function CombustiveisConcelho({ dados, serieGasoleo = [] }) {
           {" "}· {idade.rotulo}
         </p>
         <h1 className="font-display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 10 }}>
-          Preço dos combustíveis em {municipio.nome}{idade.deHoje ? " hoje" : ""}
+          Preço do gasóleo e da gasolina em {municipio.nome}{idade.deHoje ? " hoje" : ""}
         </h1>
         <p style={{ fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 12 }}>
           <strong style={{ color: "var(--pj-text)" }}>{municipio.nPostos} postos</strong> no concelho
@@ -241,6 +247,9 @@ export default function CombustiveisConcelho({ dados, serieGasoleo = [] }) {
             </div>
             <a href="/combustiveis" className="inline-block no-underline mt-4" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
               Ver todos os concelhos →
+            </a>
+            <a href="/combustiveis/gasoleo" className="inline-block no-underline mt-4" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-brand-ink)", marginLeft: 18 }}>
+              Gasóleo no país →
             </a>
           </>
         )}
