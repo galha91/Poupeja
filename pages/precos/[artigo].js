@@ -129,7 +129,7 @@ export async function getStaticProps({ params }) {
     props: paraProps({
       artigo,
       dados,
-      frases: frasesArtigo(artigo, dados),
+      frases: frasesArtigo(artigo, dados, hoje),
       meta: metaArtigo(artigo, dados),
       relacionados,
       receitasLigadas: receitasComArtigo(artigo, receitas()),

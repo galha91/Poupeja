@@ -132,3 +132,9 @@ test("preços impossíveis ficam de fora", () => {
   assert.deepEqual(d.ofertas.map((o) => o.loja), ["pingo-doce", "continente", "aldi"]);
   assert.ok(d.serie.every((p) => p.media > 1));
 });
+
+test("preços de outro dia não se dizem de hoje", () => {
+  const d = montarArtigo([l("2026-10-19", "lidl", 7.1), l("2026-10-19", "continente", 7.9)], HOJE);
+  assert.match(frasesArtigo(artigoPorSlug("azeite"), d, HOJE)[0], /^A 19 out é 0,80 €\/L/);
+  assert.match(frasesArtigo(artigoPorSlug("azeite"), d, "2026-10-19")[0], /^Hoje/);
+});
