@@ -2,6 +2,7 @@ import { bearerValido } from "../../lib/seguranca";
 import { pesquisarTudo } from "../../lib/supermercados";
 import { registar, registarMarcas } from "../../lib/supermercados/historico";
 import { ARTIGOS_SEO, CATEGORIAS_SEO, LOJAS_SEO, normalizarQ } from "../../lib/seoPrecos";
+import { URL_SITE } from "../../lib/site";
 
 /*
  * Histórico diário de preços (Vercel Cron, ver vercel.json).
@@ -87,11 +88,16 @@ export default async function handler(req, res) {
   // Falta fila e esta execução registou alguma coisa: chama a seguinte. Se
   // nada correu bem (lojas a recusar), pára por hoje em vez de insistir.
   // Só se espera que o pedido chegue; a seguinte corre por conta própria.
+  // Em produção, pelo domínio público: o endereço do deploy (o Host que o
+  // cron da Vercel usa) está atrás da Proteção de Deployments e devolvia
+  // 401 em silêncio, e a cadeia parava na primeira volta.
   if (ficaramPorFazer > 0 && feitos > 0) {
-    await fetch(`https://${req.headers.host}/api/cron-historico-precos?desde=${proximo}`, {
+    const base = process.env.VERCEL_ENV === "production" ? URL_SITE : `https://${req.headers.host}`;
+    const r = await fetch(`${base}/api/cron-historico-precos?desde=${proximo}`, {
       headers: { authorization: req.headers.authorization },
       signal: AbortSignal.timeout(3000),
-    }).catch(() => {});
+    }).catch(() => null); // timeout = a seguinte já está a correr
+    if (r && !r.ok) console.warn(`cron-historico-precos: a volta seguinte respondeu ${r.status}`);
   }
   let hubs = 0;
   if (ficaramPorFazer === 0) {

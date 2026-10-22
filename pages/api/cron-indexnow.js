@@ -74,6 +74,7 @@ export default async function handler(req, res) {
       console.error(`cron-indexnow: ${r.status} ${txt}`);
       return res.status(502).json({ erro: `IndexNow respondeu ${r.status}`, enviados: 0 });
     }
+    console.log(`cron-indexnow: ${corpo.urlList.length} endereços enviados (${r.status})`);
     return res.status(200).json({ ok: true, estado: r.status, enviados: corpo.urlList.length });
   } catch (e) {
     console.error("cron-indexnow:", e.message);
