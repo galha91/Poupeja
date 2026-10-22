@@ -38,6 +38,7 @@ const GRUPOS = [
   {
     nome: "Compras",
     itens: [
+      { href: "/iuc", titulo: "Simulador de IUC 2026", texto: "Quanto paga o teu carro por ano e quando pagar." },
       { href: "/comparar", titulo: "Qual supermercado é mais barato?", texto: "Continente, Pingo Doce, Lidl, Aldi e Auchan lado a lado." },
       { href: "/precos", titulo: "Preços de supermercado hoje", texto: "Artigo a artigo, com preço por kg e por litro." },
       { href: "/combustiveis", titulo: "Combustíveis mais baratos", texto: "Gasóleo e gasolina perto de ti, atualizados todos os dias." },
@@ -50,7 +51,7 @@ const GRUPOS = [
 
 export default function Ferramentas() {
   const titulo = "Calculadoras e guias para poupar | PoupeJá";
-  const descricao = "Salário líquido, recibos verdes, IRS, abono de família, IMT, tarifa social, crédito habitação, preços de supermercado e combustíveis. Grátis e sem conta.";
+  const descricao = "Salário líquido, recibos verdes, IRS, abono de família, IMT, IUC, tarifa social, crédito habitação, preços de supermercado e combustíveis. Grátis e sem conta.";
   const canonical = `${URL_SITE}/ferramentas`;
   const passos = [{ nome: "PoupeJá", path: "/" }, { nome: "Ferramentas", path: "/ferramentas" }];
   const todos = GRUPOS.flatMap((g) => g.itens);
