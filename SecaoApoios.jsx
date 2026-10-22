@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import {
   Landmark, ExternalLink, ChevronDown, ChevronUp,
   Zap, Bus, Home, Users, GraduationCap, Heart, Briefcase, Search, CalendarClock,
+  Calculator, ChevronRight,
 } from "lucide-react";
 import dadosRaw from "./public/apoios.json";
 import FonteOficial from "./FonteOficial";
@@ -222,6 +223,25 @@ function ApoiosLista() {
             );
           })
         )}
+      </div>
+
+      {/* Calculadoras: uma entrada só, para as páginas de /ferramentas
+          (salário líquido, abono, subsídio de desemprego, tarifa social…). */}
+      <div className="px-4 mt-4">
+        <a
+          href="/ferramentas"
+          className="pj-tap press rounded-2xl px-4 py-3.5 flex items-center gap-3 no-underline"
+          style={{ background: C.card, border: `1px solid ${C.border}` }}
+        >
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: C.chip }}>
+            <Calculator size={17} style={{ color: C.green }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold" style={{ color: C.text }}>Calculadoras</p>
+            <p className="text-[12px] mt-0.5" style={{ color: C.muted }}>Salário líquido, abono, desemprego, tarifa social e mais</p>
+          </div>
+          <ChevronRight size={16} style={{ color: C.faint, flexShrink: 0 }} />
+        </a>
       </div>
 
       {/* Rodapé */}
