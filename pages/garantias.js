@@ -104,6 +104,7 @@ export default function Garantias() {
 
         <h2 className="font-display" style={h2}>Ver também</h2>
         <Pilulas itens={[
+          { href: "/devolucoes", texto: "Devolver compras online" },
           { href: "/apoios", texto: "Apoios do Estado" },
           { href: "/prazos", texto: "Prazos do Estado" },
           { href: "/precos", texto: "Preços de supermercado", fraco: true },
