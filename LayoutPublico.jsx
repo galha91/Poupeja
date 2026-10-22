@@ -71,6 +71,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
           <a href="/prazos" style={{ color: "var(--pj-text-muted)" }}>Prazos do Estado</a>
           <a href="/euribor" style={{ color: "var(--pj-text-muted)" }}>Euribor hoje</a>
           <a href="/irs" style={{ color: "var(--pj-text-muted)" }}>Escalões de IRS</a>
+          <a href="/salario-liquido" style={{ color: "var(--pj-text-muted)" }}>Salário líquido</a>
           <a href="/garantias" style={{ color: "var(--pj-text-muted)" }}>Garantias</a>
           <a href="/devolucoes" style={{ color: "var(--pj-text-muted)" }}>Devoluções</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>

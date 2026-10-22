@@ -134,9 +134,15 @@ export default function Irs() {
           confirmado a {dataExtenso(VERIFICADO_IRS)}. Valores para o Continente; nos Açores e na Madeira as taxas são mais baixas.
           Os escalões de {ANO_IRS + 1} dependem do próximo Orçamento do Estado.
         </p>
+        <p style={{ ...estiloTexto, fontSize: 13.5 }}>
+          <strong style={forte}>Atenção:</strong> em outubro de {ANO_IRS} foi aprovada uma descida das taxas do 1.º ao 6.º escalão, de 0,3 a 0,5 pontos,
+          com efeitos a 1 de janeiro de {ANO_IRS}. Só entra na tabela oficial quando o decreto-lei for publicado em Diário da República; nessa altura
+          atualizamos esta página e o simulador. Em novembro a retenção na fonte já vem a metade (<a href="/salario-liquido" style={estiloLink}>salário líquido</a>).
+        </p>
 
         <h2 className="font-display" style={estiloH2}>Ver também</h2>
         <Pilulas itens={[
+          { href: "/salario-liquido", texto: "Salário líquido 2026" },
           { href: "/prazos/entrega-irs", texto: `Prazo de entrega do IRS` },
           { href: "/apoios/irs-jovem", texto: "IRS Jovem" },
           { href: "/credito-habitacao", texto: "Simulador de crédito habitação" },
