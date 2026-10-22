@@ -68,6 +68,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
           <a href="/receitas" style={{ color: "var(--pj-brand-ink)", fontWeight: 700 }}>Ementas e receitas</a>
           <a href="/apoios" style={{ color: "var(--pj-text-muted)" }}>Apoios do Estado</a>
           <a href="/prazos" style={{ color: "var(--pj-text-muted)" }}>Prazos do Estado</a>
+          <a href="/euribor" style={{ color: "var(--pj-text-muted)" }}>Euribor hoje</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
         </nav>

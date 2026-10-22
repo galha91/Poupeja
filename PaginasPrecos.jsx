@@ -156,9 +156,13 @@ export { estiloLink };
 const GL = 360, GA = 140, GM = { top: 12, right: 12, bottom: 22, left: 44 };
 const fmtDia = (d) => { const [, m, dd] = d.split("-").map(Number); return `${dd}/${String(m).padStart(2, "0")}`; };
 
-export function GraficoHistorico({ serie, unidade }) {
-  if (!serie || serie.length < 7) return null;
+export function GraficoHistorico({ serie, unidade, titulo = "Histórico de preço", legenda = null, fmt = null, eixo = null, minPontos = 7, rotuloDia = null }) {
+  if (!serie || serie.length < minPontos) return null;
   const u = porUnidade(unidade);
+  // Por omissão, euros; a Euribor passa um formato de percentagem e dias "set 26".
+  const valorTxt = fmt || ((v) => `${euros(v)} €${u}`);
+  const eixoTxt = eixo || ((v) => euros(v));
+  const diaTxt = rotuloDia || fmtDia;
   const v = serie.map((p) => p.media);
   let lo = Math.min(...v), hi = Math.max(...v);
   const folga = Math.max((hi - lo) * 0.15, 0.01);
@@ -173,22 +177,22 @@ export function GraficoHistorico({ serie, unidade }) {
   return (
     <figure className="rounded-2xl p-4 mt-6" style={{ ...estiloCartao, margin: 0, marginTop: 24 }}>
       <figcaption>
-        <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-text)" }}>Histórico de preço</p>
+        <p className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-text)" }}>{titulo}</p>
         <p className="pj-num" style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>
-          Melhor preço de cada dia{u ? ` (€${u})` : ""}, {serie.length} dias ·{" "}
-          {Math.abs(diff) < 0.01 ? "praticamente igual" : `${diff < 0 ? "desceu" : "subiu"} ${euros(Math.abs(diff))} €`} desde {fmtDia(primeiro.dia)}
+          {legenda || <>Melhor preço de cada dia{u ? ` (€${u})` : ""}, {serie.length} dias</>} ·{" "}
+          {Math.abs(diff) < 0.01 ? "praticamente igual" : `${diff < 0 ? "desceu" : "subiu"} ${valorTxt(Math.abs(diff)).replace(/\/.*$/, "")}`} desde {diaTxt(primeiro.dia)}
         </p>
       </figcaption>
       <svg viewBox={`0 0 ${GL} ${GA}`} width="100%" role="img" style={{ display: "block", marginTop: 8, color: "var(--pj-brand-ink)" }}
-        aria-label={`De ${euros(primeiro.media)} € a ${fmtDia(primeiro.dia)} para ${euros(ultimo.media)} € a ${fmtDia(ultimo.dia)}`}>
+        aria-label={`De ${valorTxt(primeiro.media)} a ${diaTxt(primeiro.dia)} para ${valorTxt(ultimo.media)} a ${diaTxt(ultimo.dia)}`}>
         {marcas.map((m, i) => (
           <g key={i}>
             <line x1={GM.left} x2={GL - GM.right} y1={y(m)} y2={y(m)} stroke="var(--pj-border)" strokeWidth="1" />
-            <text x={GM.left - 6} y={y(m)} dy="0.32em" textAnchor="end" fontSize="10" fill="var(--pj-text-faint)">{euros(m)}</text>
+            <text x={GM.left - 6} y={y(m)} dy="0.32em" textAnchor="end" fontSize="10" fill="var(--pj-text-faint)">{eixoTxt(m)}</text>
           </g>
         ))}
-        <text x={GM.left} y={GA - 6} fontSize="10" fill="var(--pj-text-faint)">{fmtDia(primeiro.dia)}</text>
-        <text x={GL - GM.right} y={GA - 6} fontSize="10" fill="var(--pj-text-faint)" textAnchor="end">{fmtDia(ultimo.dia)}</text>
+        <text x={GM.left} y={GA - 6} fontSize="10" fill="var(--pj-text-faint)">{diaTxt(primeiro.dia)}</text>
+        <text x={GL - GM.right} y={GA - 6} fontSize="10" fill="var(--pj-text-faint)" textAnchor="end">{diaTxt(ultimo.dia)}</text>
         <path d={caminho} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
         <circle cx={x(serie.length - 1)} cy={y(ultimo.media)} r="4" fill="currentColor" stroke="var(--pj-card)" strokeWidth="2" />
       </svg>
@@ -198,8 +202,8 @@ export function GraficoHistorico({ serie, unidade }) {
           <tbody>
             {serie.slice().reverse().map((l) => (
               <tr key={l.dia} style={{ borderTop: "1px solid var(--pj-subtle)" }}>
-                <td style={{ padding: "4px 0" }}>{fmtDia(l.dia)}</td>
-                <td style={{ textAlign: "right" }}>{euros(l.media)} €{u}</td>
+                <td style={{ padding: "4px 0" }}>{diaTxt(l.dia)}</td>
+                <td style={{ textAlign: "right" }}>{valorTxt(l.media)}</td>
               </tr>
             ))}
           </tbody>
