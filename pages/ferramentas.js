@@ -31,6 +31,7 @@ const GRUPOS = [
     nome: "Casa e crédito",
     itens: [
       { href: "/imt", titulo: "Simulador de IMT 2026", texto: "IMT e Imposto do Selo na compra de casa, com IMT Jovem." },
+      { href: "/mais-valias", titulo: "Mais-valias da venda de casa", texto: "Quanto IRS pagas ao vender e como reinvestir sem pagar." },
       { href: "/credito-habitacao", titulo: "Simulador de crédito habitação", texto: "A prestação da casa com a Euribor de hoje." },
       { href: "/euribor", titulo: "Euribor hoje", texto: "3, 6 e 12 meses, com a evolução do último ano." },
     ],
