@@ -5,42 +5,13 @@ import {
 } from "lucide-react";
 import FonteOficial from "./FonteOficial";
 
+import { ESCALOES_IRS, DEDUCAO_ESPECIFICA } from "./lib/irs";
+
 /*
- * IRS 2026 (Continente) — rendimentos de 2026, declarados em 2027.
- *
- * Tabela do art. 68.º do CIRS na redação da Lei 73-A/2025 (OE 2026),
- * copiada do Portal das Finanças em 24/09/2026.
- *
- * A que aqui estava dizia "2025" mas era a tabela ORIGINAL de 2025 (Lei
- * 45-A/2024): já tinha sido revista em Julho de 2025 (Lei 55-A/2025) e
- * outra vez pelo OE 2026. Duas actualizações atrás.
- *
- * Só se guardam limites e taxas, que é o que a lei publica. A parcela a
- * abater calcula-se — é o que garante a continuidade entre escalões — e
- * assim não há um terceiro número por escalão para se desalinhar.
+ * IRS 2026 (Continente) — tabela do art. 68.º e dedução específica em
+ * lib/irs.js, partilhadas com a página pública /irs.
  */
-const TABELA_ART68_2026 = [
-  { ate: 8342,     taxa: 0.125 },
-  { ate: 12587,    taxa: 0.157 },
-  { ate: 17838,    taxa: 0.212 },
-  { ate: 23089,    taxa: 0.241 },
-  { ate: 29397,    taxa: 0.311 },
-  { ate: 43090,    taxa: 0.349 },
-  { ate: 46566,    taxa: 0.431 },
-  { ate: 86634,    taxa: 0.446 },
-  { ate: Infinity, taxa: 0.48  },
-];
-
-export const ESCALOES_IRS = TABELA_ART68_2026.reduce((acc, e, i) => {
-  const ant = acc[i - 1];
-  const abater = ant ? ant.abater + ant.ate * (e.taxa - ant.taxa) : 0;
-  acc.push({ ...e, abater });
-  return acc;
-}, []);
-
-// Art. 25.º, n.º 1, a): 8,54 × IAS. IAS 2026 = 537,13 € (Portaria 480-A/2025/1).
-const IAS_2026 = 537.13;
-const DEDUCAO_ESPECIFICA = Math.round(8.54 * IAS_2026 * 100) / 100; // 4587,09 €
+export { ESCALOES_IRS };
 
 // Art. 78.º-E: limite da dedução com rendas em 2026 — 900 € pela norma
 // transitória do DL 97/2026 (1000 € a partir de 2027). Rendimentos baixos

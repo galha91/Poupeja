@@ -91,6 +91,12 @@ export default function Apoio({ apoio, categoria, atualizado, prazos, relacionad
           O PoupeJá é independente e não é um serviço do Estado; confirma sempre no site oficial antes de pedir.
         </p>
 
+        {apoio.id === "irs-jovem" && (
+          <a href="/irs" className="pj-tap flex items-center justify-between no-underline mt-6 rounded-2xl px-5 py-4" style={{ ...estiloCartao, color: "var(--pj-text)" }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>Escalões de IRS e em qual ficas</span>
+            <span aria-hidden="true" style={{ color: "var(--pj-brand-ink)" }}>→</span>
+          </a>
+        )}
         {apoio.id.startsWith("tarifa-social") && (
           <a href="/tarifa-social" className="pj-tap flex items-center justify-between no-underline mt-6 rounded-2xl px-5 py-4" style={{ ...estiloCartao, color: "var(--pj-text)" }}>
             <span style={{ fontSize: 14.5, fontWeight: 600 }}>Vê em 30 segundos se tens direito</span>
