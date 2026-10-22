@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       ...RECEITAS_SLUGS.map(r => `/receitas/${r.slug}`),
       ...(dadosApoios.apoios || []).map(a => `/apoios/${slugApoio(a)}`),
       "/prazos", ...dadosPrazos.prazos.map(p => `/prazos/${slugPrazo(p)}`),
-      "/euribor", "/euribor/3-meses", "/euribor/6-meses", "/euribor/12-meses", "/credito-habitacao", "/garantias", "/devolucoes", "/tarifa-social", "/irs", "/reduflacao", "/salario-liquido", "/abono-de-familia", "/ferramentas", "/subsidio-desemprego", "/imt", "/recibos-verdes", "/iuc", "/mais-valias",
+      "/euribor", "/euribor/3-meses", "/euribor/6-meses", "/euribor/12-meses", "/credito-habitacao", "/garantias", "/devolucoes", "/tarifa-social", "/irs", "/reduflacao", "/salario-liquido", "/abono-de-familia", "/ferramentas", "/subsidio-desemprego", "/imt", "/recibos-verdes", "/iuc", "/mais-valias", "/atualizacao-de-rendas",
     );
   }
 
