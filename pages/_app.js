@@ -84,11 +84,15 @@ function MyApp({ Component, pageProps }) {
     if (!('serviceWorker' in navigator)) return;
 
     let recarregando = false;
+    // Na primeira visita não há service worker a controlar a página; o
+    // primeiro a assumir não traz versão nova, e recarregar aí apagava o
+    // que a pessoa já tinha escrito (p. ex. numa calculadora).
+    const tinhaControlador = !!navigator.serviceWorker.controller;
 
     // Quando um service worker novo assume o controlo, recarrega uma vez
     // para que o utilizador veja logo a versão mais recente.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (recarregando) return;
+      if (recarregando || !tinhaControlador) return;
       recarregando = true;
       window.location.reload();
     });
