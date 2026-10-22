@@ -13,6 +13,7 @@ const GRUPOS = [
     nome: "Salário e impostos",
     itens: [
       { href: "/salario-liquido", titulo: "Salário líquido 2026", texto: "Do bruto ao líquido, com IRS Jovem e dependentes." },
+      { href: "/recibos-verdes", titulo: "Recibos verdes 2026", texto: "Quanto sobra depois da Segurança Social e do IRS." },
       { href: "/irs", titulo: "Escalões de IRS 2026", texto: "Em que escalão ficas e como funcionam as taxas." },
     ],
   },
@@ -49,7 +50,7 @@ const GRUPOS = [
 
 export default function Ferramentas() {
   const titulo = "Calculadoras e guias para poupar | PoupeJá";
-  const descricao = "Salário líquido, IRS, abono de família, IMT, tarifa social, crédito habitação, preços de supermercado e combustíveis. Grátis e sem conta.";
+  const descricao = "Salário líquido, recibos verdes, IRS, abono de família, IMT, tarifa social, crédito habitação, preços de supermercado e combustíveis. Grátis e sem conta.";
   const canonical = `${URL_SITE}/ferramentas`;
   const passos = [{ nome: "PoupeJá", path: "/" }, { nome: "Ferramentas", path: "/ferramentas" }];
   const todos = GRUPOS.flatMap((g) => g.itens);
