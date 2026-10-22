@@ -187,6 +187,15 @@ function PoupeJa() {
   const [pedirPush, setPedirPush] = useState(false);
   const [modalConta, setModalConta] = useState(false);
   const [ecraEntrar, setEcraEntrar] = useState(false);
+  // "/?entrar=1" (botão do /admin, por exemplo) abre logo o ecrã de entrar.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("entrar") !== "1") return;
+    setEcraEntrar(true);
+    params.delete("entrar");
+    const resto = params.toString();
+    window.history.replaceState(null, "", window.location.pathname + (resto ? `?${resto}` : ""));
+  }, []);
   const [retrato, setRetrato] = useState(null);          // retrato do mês anterior, se houver dados
   const [bannerRetrato, setBannerRetrato] = useState(null); // só dias 1-7 e ainda não visto
   const [retratoAberto, setRetratoAberto] = useState(false);
@@ -645,6 +654,7 @@ function PoupeJa() {
             onVoltar={() => { setDir("fade"); setTabRaw("inicio"); setVerDefs(false); }}
             onLogout={handleLogout}
             onCriarConta={() => setModalConta(true)}
+            onEntrar={() => setEcraEntrar(true)}
             onContaApagada={handleContaApagada}
           />
         ) : (

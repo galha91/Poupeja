@@ -179,7 +179,7 @@ export default function Admin() {
             </div>
 
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/?entrar=1")}
               className="mt-5 px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm"
             >
               Iniciar sessão

@@ -143,7 +143,7 @@ function IconChip({ active = false, children }) {
   );
 }
 
-export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta, onContaApagada }) {
+export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta, onEntrar, onContaApagada }) {
   const [prefs, setPrefs]   = useState(lerPrefs);
   const [saved, setSaved]   = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -316,6 +316,16 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
             <p className="text-[12px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Guarda o teu progresso e desbloqueia avisos, sincronização e email semanal</p>
           </div>
           <ChevronRight size={16} style={{ color: "var(--pj-brand-ink)" }} />
+        </button>
+      )}
+      {/* Quem já tem conta (ou saiu sem querer) tem de conseguir voltar a entrar daqui. */}
+      {user?.convidado && onEntrar && (
+        <button
+          onClick={onEntrar}
+          className="pj-tap press mx-4 -mt-5 mb-8 w-[calc(100%-2rem)] py-3 rounded-2xl font-semibold text-[14px]"
+          style={{ border: "1.5px solid var(--pj-brand)", color: "var(--pj-brand-ink)" }}
+        >
+          Já tenho conta — entrar
         </button>
       )}
 
