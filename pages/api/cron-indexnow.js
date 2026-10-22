@@ -5,6 +5,9 @@ import { montarPedido, ENDPOINT_INDEXNOW } from "../../lib/indexnow";
 import { URL_SITE } from "../../lib/site";
 import { paginasPrecos, paginasMarcas } from "../../lib/sitemap";
 import { TIPOS_PAGINA } from "../../lib/combustivelTipo";
+import dadosApoios from "../../public/apoios.json";
+import dadosPrazos from "../../data/prazos-estado.json";
+import { slugApoio, slugPrazo } from "../../lib/seoEstado";
 
 /*
  * Aviso diário IndexNow (Vercel Cron, ver vercel.json) — depois do cron
@@ -52,6 +55,8 @@ export default async function handler(req, res) {
       "/", "/folhetos", "/receitas", "/apoios",
       ...LOJAS_SLUGS.map(l => `/folhetos/${l.slug}`),
       ...RECEITAS_SLUGS.map(r => `/receitas/${r.slug}`),
+      ...(dadosApoios.apoios || []).map(a => `/apoios/${slugApoio(a)}`),
+      "/prazos", ...dadosPrazos.prazos.map(p => `/prazos/${slugPrazo(p)}`),
     );
   }
 
