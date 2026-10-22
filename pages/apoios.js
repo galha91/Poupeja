@@ -1,6 +1,7 @@
 import Head from "next/head";
 import LayoutPublico, { CtaApp } from "../LayoutPublico";
 import dadosApoios from "../public/apoios.json";
+import { slugApoio } from "../lib/seoEstado";
 
 const SITE_URL = "https://xn--poupej-uta.com";
 
@@ -20,14 +21,14 @@ export default function Apoios({ apoios, categorias, atualizado }) {
       "@type": "ListItem",
       position: i + 1,
       name: a.titulo,
-      url: `${SITE_URL}/apoios#${a.id}`,
+      url: `${SITE_URL}/apoios/${slugApoio(a)}`,
     })),
   };
   return (
     <LayoutPublico>
       <Head>
         {/* Template string: ver a nota em folhetos/index.js — aqui saíam quatro comentários no título. */}
-        <title>{`Apoios do Estado ${new Date(atualizado).getFullYear()} — ${apoios.length} benefícios a que podes ter direito | PoupeJá`}</title>
+        <title>{`Apoios do Estado ${new Date(atualizado).getFullYear()}: ${apoios.length} benefícios e como pedir | PoupeJá`}</title>
         <meta name="description" content={`${apoios.length} apoios e benefícios oficiais em Portugal — tarifa social de eletricidade e gás, passes, habitação e mais. Quem pode pedir e como, com link direto para o Estado.`} />
         <link rel="canonical" href={`${SITE_URL}/apoios`} />
         <meta property="og:title" content={`Apoios do Estado — ${apoios.length} benefícios a que podes ter direito`} key="og:title" />
@@ -54,7 +55,7 @@ export default function Apoios({ apoios, categorias, atualizado }) {
               <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase" }}>
                 {nomeCat[a.categoria] || a.categoria}
               </p>
-              <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600, marginTop: 6 }}>{a.titulo}</h2>
+              <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600, marginTop: 6 }}><a href={`/apoios/${slugApoio(a)}`} style={{ color: "inherit", textDecoration: "none" }}>{a.titulo}</a></h2>
               {a.valor && <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 4 }}>{a.valor}</p>}
               <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.6, marginTop: 8 }}>{a.descricao}</p>
               {a.quemPode?.length > 0 && (
@@ -72,6 +73,9 @@ export default function Apoios({ apoios, categorias, atualizado }) {
                   Ver no site oficial →
                 </a>
               )}
+              <a href={`/apoios/${slugApoio(a)}`} className="pj-alvo inline-block no-underline mt-3" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", marginLeft: a.link ? 16 : 0 }}>
+                Como pedir →
+              </a>
             </article>
           ))}
         </div>
