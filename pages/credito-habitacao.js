@@ -59,7 +59,7 @@ export default function CreditoHabitacao({ euribores, periodo }) {
         <BotaoAbrirPoupeja href="/?atalho=contas" tipo="credito" texto="Guarda o teu crédito na app e simula amortizações" />
 
         <h2 className="font-display" style={estiloH2}>Euribor hoje</h2>
-        <Pilulas itens={[...PRAZOS_EURIBOR.map((p) => ({ href: `/euribor/${p.slug}`, texto: p.nome })), { href: "/euribor", texto: "Todos os prazos", fraco: true }]} />
+        <Pilulas itens={[...PRAZOS_EURIBOR.map((p) => ({ href: `/euribor/${p.slug}`, texto: p.nome })), { href: "/imt", texto: "IMT e Imposto do Selo" }, { href: "/euribor", texto: "Todos os prazos", fraco: true }]} />
       </div>
     </LayoutPublico>
   );
