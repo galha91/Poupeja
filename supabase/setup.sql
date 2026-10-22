@@ -323,6 +323,19 @@ create table if not exists public.produtos_embalagem (
 alter table public.produtos_embalagem enable row level security;
 create index if not exists produtos_embalagem_produto on public.produtos_embalagem (produto_id);
 
+-- Só os produtos com mais de um tamanho, para a página /reduflacao.
+-- security_invoker + sem grants: só o service role a lê.
+-- (Migração vista_embalagem_mudancas.)
+create or replace view public.produtos_embalagem_mudancas
+with (security_invoker = true) as
+select e.*
+from public.produtos_embalagem e
+where exists (
+  select 1 from public.produtos_embalagem o
+  where o.loja = e.loja and o.produto_id = e.produto_id and o.qtd <> e.qtd
+);
+revoke all on public.produtos_embalagem_mudancas from anon, authenticated;
+
 -- ─────────────────────────────────────────────────────────────
 -- Percurso do convidado: o que fez antes de criar conta (ou de sair).
 -- Cada marco guarda a primeira vez que aconteceu, para o funil do /admin:
