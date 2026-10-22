@@ -86,3 +86,32 @@ test("um só tamanho ou dados em falta: sem aviso", () => {
   assert.equal(detetarReduflacao([{ qtd: 1, unidade: "kg", preco: 2, ultimo_dia: "2026-10-10" }]), null);
   assert.equal(detetarReduflacao([]), null);
 });
+
+test("id reaproveitado para outro produto não é reduflação", async () => {
+  const { detetarReduflacao, mesmoProduto } = await import("../lib/reduflacao.js");
+  const linhas = [
+    { qtd: 0.8, unidade: "kg", preco: 8.99, nome: "Tronco de Natal com Doce de Ovos", ultimo_dia: "2026-10-19" },
+    { qtd: 0.75, unidade: "kg", preco: 8.99, nome: "Tronco Doce de Ovo Suíça", ultimo_dia: "2026-10-21" },
+  ];
+  assert.equal(mesmoProduto(linhas[0].nome, linhas[1].nome), false);
+  assert.equal(detetarReduflacao(linhas), null);
+  assert.equal(mesmoProduto("Bolachas Maria Cuétara 200g", "Bolachas Maria Cuétara 180 g"), true);
+});
+
+test("casos para a página pública: só com tempo suficiente em cada tamanho", async () => {
+  const { casosReduflacao } = await import("../lib/reduflacao.js");
+  const base = { loja: "continente", produto_id: "1", unidade: "kg" };
+  const linhas = [
+    { ...base, qtd: 0.2, preco: 1.49, nome: "Bolachas Maria X 200g", primeiro_dia: "2026-10-01", ultimo_dia: "2026-10-12" },
+    { ...base, qtd: 0.18, preco: 1.49, nome: "Bolachas Maria X 180g", primeiro_dia: "2026-10-13", ultimo_dia: "2026-10-20" },
+  ];
+  const [c] = casosReduflacao(linhas, "2026-10-22");
+  assert.equal(c.antes.qtd, "200 g");
+  assert.equal(c.agora.qtd, "180 g");
+  assert.equal(c.menos, 10);
+  assert.equal(c.pct, 11);
+  // Tamanho novo visto há pouco tempo: ainda não se publica.
+  assert.equal(casosReduflacao([linhas[0], { ...linhas[1], primeiro_dia: "2026-10-19" }], "2026-10-22").length, 0);
+  // Já não está à venda há mais de uma semana: fica de fora.
+  assert.equal(casosReduflacao(linhas, "2026-11-10").length, 0);
+});
