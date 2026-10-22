@@ -22,7 +22,7 @@ const eur0 = (v) => v.toLocaleString("pt-PT", { maximumFractionDigits: 0 });
 
 export default function SalarioLiquido({ exemplos }) {
   const titulo = "Salário líquido 2026: do bruto ao líquido | PoupeJá";
-  const descricao = "Calcula o teu salário líquido em 2026: Segurança Social e retenção de IRS pelas tabelas oficiais, com dependentes. Exemplos de 920 € a 4000 € brutos.";
+  const descricao = "Calcula o teu salário líquido em 2026: Segurança Social e retenção de IRS pelas tabelas oficiais, com dependentes e IRS Jovem. Exemplos de 920 € a 4000 €.";
   const canonical = `${URL_SITE}/salario-liquido`;
   const passos = [{ nome: "PoupeJá", path: "/" }, { nome: "Salário líquido 2026", path: "/salario-liquido" }];
   const appLd = {
@@ -51,7 +51,7 @@ export default function SalarioLiquido({ exemplos }) {
         <Migalhas passos={passos.slice(1)} />
         <h1 className="font-display" style={estiloH1}>Salário líquido 2026</h1>
         <p style={{ ...estiloTexto, color: "var(--pj-text)", fontWeight: 500 }}>
-          Do bruto ao que cai na conta: 11% para a Segurança Social e a retenção de IRS das tabelas oficiais de 2026.
+          Do bruto ao que cai na conta: 11% para a Segurança Social e a retenção de IRS das tabelas oficiais de 2026, com IRS Jovem e incapacidade.
         </p>
 
         <CalculadoraSalario />
@@ -86,6 +86,8 @@ export default function SalarioLiquido({ exemplos }) {
           <strong style={forte}>Segurança Social:</strong> 11% do bruto, sempre.{" "}
           <strong style={forte}>IRS:</strong> a empresa aplica a tabela de retenção que corresponde à tua situação: salário × taxa da linha, menos uma
           parcela a abater e um valor por cada dependente. Com 3 ou mais dependentes a taxa baixa um ponto. Até 920 € brutos (o salário mínimo) não há retenção.
+          Com IRS Jovem, a taxa calcula-se sobre o salário todo mas só se aplica à parte que não está isenta: 100% no 1.º ano, 75% do 2.º ao 4.º, 50% do 5.º ao 7.º
+          e 25% do 8.º ao 10.º, até 2110,15 € isentos por mês. Com incapacidade de 60% ou mais há tabelas próprias, com retenção mais baixa.
         </p>
         <p style={estiloTexto}>
           A retenção é um adiantamento: o IRS a sério faz-se na declaração do ano seguinte, com as tuas despesas e deduções. É aí que recebes ou pagas
@@ -101,7 +103,7 @@ export default function SalarioLiquido({ exemplos }) {
         <p style={{ fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 28, lineHeight: 1.6 }}>
           Fonte: <a href={FONTE_RETENCAO} target="_blank" rel="noopener noreferrer" style={estiloLink}>Despacho n.º 233-A/2026 (tabelas de retenção na fonte, Diário da República)</a> e{" "}
           <a href={FONTE_NOVEMBRO} target="_blank" rel="noopener noreferrer" style={estiloLink}>Despacho n.º 12523-A/2026</a>, confirmados a {dataExtenso(VERIFICADO_SALARIO)}.
-          Não inclui IRS Jovem, pessoas com deficiência, Açores e Madeira, nem outros descontos (sindicato, seguros). Valores ao cêntimo, indicativos.
+          IRS Jovem pelo art. 99.º-F, n.º 4, do Código do IRS (isenção mensal até 2110,15 €); incapacidade ≥ 60% pelas tabelas IV a VII. Não inclui Açores e Madeira, dependentes com deficiência nem outros descontos (sindicato, seguros). Valores ao cêntimo, indicativos.
         </p>
 
         <h2 className="font-display" style={estiloH2}>Ver também</h2>

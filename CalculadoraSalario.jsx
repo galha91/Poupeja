@@ -31,7 +31,11 @@ export default function CalculadoraSalario() {
   const [bruto, setBruto] = useState("");
   const [situacao, setSituacao] = useState("nao-casado");
   const [dependentes, setDependentes] = useState("0");
-  const r = salarioLiquido(Number(String(bruto).replace(/\s/g, "").replace(",", ".")), { situacao, dependentes: Number(dependentes) });
+  const [irsJovem, setIrsJovem] = useState("0");
+  const [deficiencia, setDeficiencia] = useState(false);
+  const r = salarioLiquido(Number(String(bruto).replace(/\s/g, "").replace(",", ".")), {
+    situacao, dependentes: Number(dependentes), irsJovemAno: Number(irsJovem), deficiencia,
+  });
 
   return (
     <div className="rounded-2xl p-5 mt-6" style={estiloCartao}>
@@ -54,7 +58,21 @@ export default function CalculadoraSalario() {
             {[0, 1, 2, 3, 4, 5].map((n) => <option key={n} value={String(n)}>{n === 5 ? "5 ou mais" : n}</option>)}
           </select>
         </label>
+        <label htmlFor="s-jovem" style={{ display: "block" }}>
+          <span style={estiloRotuloCampo}>IRS Jovem (até 35 anos)</span>
+          <select id="s-jovem" value={irsJovem} onChange={(e) => setIrsJovem(e.target.value)} style={estiloCampo}>
+            <option value="0">Não</option>
+            <option value="1">1.º ano a trabalhar (100% isento)</option>
+            <option value="2">2.º ao 4.º ano (75%)</option>
+            <option value="5">5.º ao 7.º ano (50%)</option>
+            <option value="8">8.º ao 10.º ano (25%)</option>
+          </select>
+        </label>
       </div>
+      <label className="flex items-center" style={{ gap: 10, marginTop: 14, fontSize: 14, color: "var(--pj-text)", cursor: "pointer" }}>
+        <input type="checkbox" checked={deficiencia} onChange={(e) => setDeficiencia(e.target.checked)} style={{ width: 20, height: 20, flexShrink: 0 }} />
+        <span>Tenho incapacidade igual ou superior a 60%</span>
+      </label>
 
       <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--pj-subtle)" }} aria-live="polite">
         {!r && <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.6 }}>Escreve o salário bruto que está no contrato.</p>}
@@ -65,7 +83,7 @@ export default function CalculadoraSalario() {
             <div className="pj-num" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.8 }}>
               <div className="flex justify-between"><span>Bruto</span><span>{eur(r.bruto)} €</span></div>
               <div className="flex justify-between"><span>Segurança Social (11%)</span><span>− {eur(r.ss)} €</span></div>
-              <div className="flex justify-between"><span>Retenção de IRS (tabela {r.tabela})</span><span>− {eur(r.irs)} €</span></div>
+              <div className="flex justify-between"><span>Retenção de IRS (tabela {r.tabela}{irsJovem !== "0" ? ", IRS Jovem" : ""})</span><span>− {eur(r.irs)} €</span></div>
             </div>
             <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.6 }}>
               Por ano, com subsídios de férias e de Natal: cerca de <strong style={{ color: "var(--pj-text)" }}>{eur0(r.liquido * 14)} €</strong> líquidos.
