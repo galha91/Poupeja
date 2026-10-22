@@ -3,7 +3,7 @@ import { eur } from "../../lib/formato";
 import { descreverFrescura } from "../../lib/frescura";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { Preco, LinhaPreco } from "../../Preco";
-import { listarMunicipios, frescuraDosPrecos, precosPorMarca, TIPOS_DESTAQUE } from "../../lib/municipios";
+import { listarMunicipios, frescuraDosPrecos, precosPorMarca, marcasCombustivel, TIPOS_DESTAQUE } from "../../lib/municipios";
 
 /* Quantas marcas por combustível. Ver a explicação em porCombustivel. */
 const MARCAS_VISIVEIS = 12;
@@ -17,7 +17,7 @@ import { slugify } from "../../lib/slug";
  * cacheada 30 min na CDN. Alvo: pesquisas "preço gasóleo hoje",
  * "gasolina mais barata", etc.
  */
-export default function Combustiveis({ dados, concelhos, frescura, erro }) {
+export default function Combustiveis({ dados, concelhos, frescura, erro, marcas = [] }) {
   const idade = descreverFrescura(frescura);
   /*
    * Uma lista por combustível. Ordenar preços de produtos diferentes na
@@ -189,6 +189,18 @@ export default function Combustiveis({ dados, concelhos, frescura, erro }) {
           O que subiu e desceu esta semana, por marca <span aria-hidden="true">→</span>
         </a>
 
+        {/* Uma página por marca (Galp, Repsol, Prio…), as que têm 20+ postos. */}
+        {marcas.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {marcas.map(m => (
+              <a key={m.slug} href={`/combustiveis/marca/${m.slug}`} className="pj-tap no-underline"
+                style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}>
+                {m.nome}
+              </a>
+            ))}
+          </div>
+        )}
+
         {/* Uma página por combustível, para "preço do gasóleo hoje" e afins. */}
         <div className="flex flex-wrap gap-2 mt-4">
           {[["gasoleo", "Preço do gasóleo"], ["gasolina-95", "Preço da gasolina 95"], ["gpl", "Preço do GPL Auto"]].map(([slug, texto]) => (
@@ -272,11 +284,12 @@ export async function getServerSideProps({ res }) {
    * uma conta que está a um import de distância. Agora chama a biblioteca,
    * como a linha das concelhos aqui em cima sempre fez.
    */
+  const marcas = await marcasCombustivel().then(l => l.map(({ slug, nome }) => ({ slug, nome }))).catch(() => []);
   try {
     const { dados, frescura: frescuraPrecos } = await precosPorMarca();
     if (!dados.length) throw new Error("sem dados");
-    return { props: { dados, concelhos, frescura: frescura || frescuraPrecos, erro: false } };
+    return { props: { dados, concelhos, frescura: frescura || frescuraPrecos, erro: false, marcas } };
   } catch {
-    return { props: { dados: [], concelhos, frescura, erro: true } };
+    return { props: { dados: [], concelhos, frescura, erro: true, marcas } };
   }
 }
