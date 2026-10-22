@@ -21,6 +21,7 @@ const GRUPOS = [
     nome: "Família e apoios",
     itens: [
       { href: "/abono-de-familia", titulo: "Abono de família 2026", texto: "Escalão e valor por filho, todos os meses." },
+      { href: "/indemnizacao-despedimento", titulo: "Indemnização por despedimento", texto: "Quanto recebes se o contrato acabar por decisão da empresa." },
       { href: "/subsidio-desemprego", titulo: "Subsídio de desemprego 2026", texto: "Quanto recebes por mês e durante quanto tempo." },
       { href: "/tarifa-social", titulo: "Tarifa social", texto: "Vê se tens luz, gás e internet mais baratos." },
       { href: "/apoios", titulo: "Apoios do Estado", texto: "Os apoios a que podes ter direito e como pedir." },
