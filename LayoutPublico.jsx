@@ -67,6 +67,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
           <a href="/comparar" style={{ color: "var(--pj-text-muted)" }}>Qual é mais barato?</a>
           <a href="/receitas" style={{ color: "var(--pj-brand-ink)", fontWeight: 700 }}>Ementas e receitas</a>
           <a href="/apoios" style={{ color: "var(--pj-text-muted)" }}>Apoios do Estado</a>
+          <a href="/tarifa-social" style={{ color: "var(--pj-text-muted)" }}>Tarifa social</a>
           <a href="/prazos" style={{ color: "var(--pj-text-muted)" }}>Prazos do Estado</a>
           <a href="/euribor" style={{ color: "var(--pj-text-muted)" }}>Euribor hoje</a>
           <a href="/garantias" style={{ color: "var(--pj-text-muted)" }}>Garantias</a>
