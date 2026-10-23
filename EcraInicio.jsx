@@ -19,6 +19,7 @@ import { evento } from "./lib/analytics";
 import { slugify } from "./lib/slug";
 import { lerDescontos, aplicarDescontos } from "./lib/descontosCombustivel";
 import SubscreverCombustivel from "./SubscreverCombustivel";
+import CartaoProximaConta from "./CartaoProximaConta";
 
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
@@ -624,6 +625,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
             ou o convite para planear a semana. */}
         <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />
+
+        {/* A conta fixa mais urgente do mês, para marcar como paga aqui mesmo. */}
+        {lido && <CartaoProximaConta onAbrir={() => setTab("contas")} />}
 
         {/* Lista de compras — com o resultado da lista otimizada, quando há */}
         <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />

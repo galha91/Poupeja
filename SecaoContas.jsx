@@ -5,6 +5,10 @@ import {
   CalendarDays, Building2, RefreshCw,
 } from "lucide-react";
 import { eur } from "./lib/formato";
+import {
+  mesChave as mesChaveDe, mesNome, inicioDoMes, quandoVence, porPagarOrdenadas,
+  lerContas, guardarContas, lerPagamentos, guardarPagamentos,
+} from "./lib/contasMes";
 import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, ROTULO, useDesfazer, reporItem } from "./UiSimples";
 
 // Crédito Habitação / Renda — sub-secção irmã, carregada só quando aberta
@@ -72,53 +76,16 @@ const SUGESTOES = [
   { nome: "Streaming",        cat: "lazer" },
 ];
 
-const MESES_PT = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 const MESES_CURTOS = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 
 const euros = v => `${eur(v, 2)} €`;
 const eurosRedondo = v => `${Math.round(v).toLocaleString("pt-PT")} €`;
 
-function mesChave(offset = 0) {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + offset);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
+const mesChave = (offset = 0) => mesChaveDe(new Date(), offset);
+const mesNomeCompleto = (offset = 0) => mesNome(new Date(), offset);
 
-function mesNomeCompleto(offset = 0) {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + offset);
-  const ano = d.getFullYear();
-  const mesLabel = MESES_PT[d.getMonth()];
-  return ano !== new Date().getFullYear() ? `${mesLabel} ${ano}` : mesLabel;
-}
-
-function lerContas() {
-  try { return JSON.parse(localStorage.getItem("poupeja_contas") || "[]"); } catch { return []; }
-}
-function guardarContas(lista) {
-  localStorage.setItem("poupeja_contas", JSON.stringify(lista));
-}
-function lerPagamentos() {
-  try { return JSON.parse(localStorage.getItem("poupeja_contas_pago") || "{}"); } catch { return {}; }
-}
-function guardarPagamentos(obj) {
-  localStorage.setItem("poupeja_contas_pago", JSON.stringify(obj));
-}
 function novoId() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
-}
-
-/** "Hoje", "Amanhã", "Dia 22 · daqui a 3 dias", "Dia 5 · já passou". */
-function quandoVence(conta, { pago, esMesAtual, hoje }) {
-  const d = conta.diaVencimento;
-  if (pago || !esMesAtual) return { texto: `Dia ${d}`, tom: null };
-  if (d === hoje) return { texto: "Vence hoje", tom: "danger" };
-  if (d === hoje + 1) return { texto: "Vence amanhã", tom: "warn" };
-  if (d > hoje && d <= hoje + 5) return { texto: `Dia ${d} · daqui a ${d - hoje} dias`, tom: "warn" };
-  if (d < hoje) return { texto: `Dia ${d} · já passou`, tom: "warn" };
-  return { texto: `Dia ${d}`, tom: null };
 }
 
 /* ─── Formulário ─── */
@@ -416,9 +383,10 @@ function ContasFixasConteudo({ onIrRenovacoes }) {
   const totalPago     = contas.filter(c => pagosMes[c.id]).reduce((s, c) => s + c.valor, 0);
   const totalPendente = totalMensal - totalPago;
   const pct           = totalMensal > 0 ? (totalPago / totalMensal) * 100 : 0;
-  const porDia        = (a, b) => a.diaVencimento - b.diaVencimento;
-  const porPagar      = contas.filter(c => !pagosMes[c.id]).sort(porDia);
-  const pagas         = contas.filter(c => pagosMes[c.id]).sort(porDia);
+  // A mesma ordem do cartão do Início: as esquecidas primeiro, depois por dia.
+  const diaDoMes      = inicioDoMes(new Date(), mesOff);
+  const porPagar      = esMesAtual ? porPagarOrdenadas(contas, pagosMes) : contas.filter(c => !pagosMes[c.id]).sort((a, b) => a.diaVencimento - b.diaVencimento);
+  const pagas         = contas.filter(c => pagosMes[c.id]).sort((a, b) => a.diaVencimento - b.diaVencimento);
   const atual         = folha?.id ? contas.find(c => c.id === folha.id) : null;
 
   function gravarContas(lista) {
@@ -452,7 +420,7 @@ function ContasFixasConteudo({ onIrRenovacoes }) {
       conta={c}
       pago={!!pagosMes[c.id]}
       podeMarcar={esMesAtual}
-      vence={quandoVence(c, { pago: !!pagosMes[c.id], esMesAtual, hoje })}
+      vence={quandoVence(c, { pago: !!pagosMes[c.id], esMesAtual, hoje, data: esMesAtual ? new Date() : diaDoMes })}
       onMarcar={() => togglePago(c.id)}
       onAbrir={() => setFolha({ modo: "ver", id: c.id })}
     />

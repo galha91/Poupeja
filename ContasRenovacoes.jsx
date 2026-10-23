@@ -8,6 +8,7 @@ import { ANTECEDENCIA_CONTAS } from "./lib/lembretes";
 import { lerRenovacoes, guardarRenovacoes, novoId, exportarIcs, ativouLembrete } from "./lib/dadosLocais";
 import { hojeIso, diasEntre, dataExtenso, falta } from "./lib/datas";
 import { eur } from "./lib/formato";
+import { lerContas } from "./lib/contasMes";
 import { evento } from "./lib/analytics";
 import { Campo, BotaoPrincipal, BotaoSecundario, Chip, Nota, Erro, Folha, EstadoVazio, Cartao, LinkExterno, ROTULO, useDesfazer, reporItem } from "./UiSimples";
 
@@ -27,7 +28,7 @@ const euros = v => `${eur(v, 2)} €`;
 /* Contas fixas (separador ao lado) que já dizem o tipo: sugestão no estado vazio. */
 function sugestoesDasContasFixas() {
   try {
-    const contas = JSON.parse(localStorage.getItem("poupeja_contas") || "[]");
+    const contas = lerContas();
     const tipoDe = c => {
       const n = (c.nome || "").toLowerCase();
       if (c.categoria === "seguro") return "seguro";
