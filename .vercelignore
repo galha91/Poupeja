@@ -1,0 +1,4 @@
+# A FrutaBol é um projeto independente (frontend próprio no Vercel com
+# root directory frutabol/frontend + backend no Railway). O deploy do
+# PoupeJá não deve incluir nada dela.
+frutabol

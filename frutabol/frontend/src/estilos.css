@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-stone-100 text-stone-900 antialiased;
+}
+.dark body {
+  @apply bg-[#0b0b14] text-stone-100;
+}
+
+/* cartão estilo marketplace NFT */
+.carta {
+  @apply rounded-2xl border transition-transform duration-200
+    bg-white border-stone-200 shadow-sm
+    dark:bg-[#14141f] dark:border-white/10;
+}
+.carta:hover {
+  transform: translateY(-4px) scale(1.01);
+  @apply shadow-xl dark:shadow-black/40;
+}
+
+.botao, .botao-primario, .botao-fantasma {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+    font-semibold text-sm transition disabled:opacity-40 disabled:pointer-events-none;
+}
+.botao-primario { @apply bg-amber-400 text-stone-900 hover:bg-amber-300; }
+.botao-fantasma { @apply border border-stone-300 dark:border-white/15 hover:bg-stone-200/60 dark:hover:bg-white/5; }
+
+.campo {
+  @apply w-full rounded-xl border px-3 py-2.5 text-sm outline-none
+    bg-white border-stone-300 focus:border-amber-400
+    dark:bg-[#0f0f1a] dark:border-white/15 dark:focus:border-amber-400;
+}

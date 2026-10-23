@@ -1,0 +1,210 @@
+// FrutaBol — esquema da base de dados
+// Nota: os saldos vivem em User.saldo MAS a verdade contabilística é o
+// ledger imutável (CoinTransaction). Toda a escrita de moedas passa por
+// servicos/moedas.js dentro de transações serializáveis.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Papel {
+  UTILIZADOR
+  ADMIN
+}
+
+enum Raridade {
+  COMUM
+  RARO
+  EPICO
+  LENDARIO
+}
+
+enum EstadoLeilao {
+  AGENDADO
+  ATIVO
+  TERMINADO
+  CANCELADO
+}
+
+enum TipoMovimento {
+  BONUS_REGISTO
+  BONUS_DIARIO
+  BONUS_REFERRAL
+  LICITACAO        // moedas cativas (valor negativo)
+  DEVOLUCAO        // devolução de licitação ultrapassada (valor positivo)
+  COMPRA_IMEDIATA  // gasto em compra imediata (valor negativo)
+  COMPRA_PACK      // moedas compradas (fase 2, valor positivo)
+  AJUSTE_ADMIN
+}
+
+enum TipoCompra {
+  LEILAO
+  COMPRA_IMEDIATA
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  nome              String    @unique
+  passwordHash      String?
+  googleId          String?   @unique
+  papel             Papel     @default(UTILIZADOR)
+  emailVerificado   Boolean   @default(false)
+  tokenVerificacao  String?   @unique
+  saldo             Int       @default(0)
+  codigoReferral    String    @unique
+  ultimoBonusDiario DateTime?
+  criadoEm          DateTime  @default(now())
+
+  bids             Bid[]
+  compras          Purchase[]
+  edicoes          Edition[]
+  favoritos        Favorite[]
+  movimentos       CoinTransaction[]
+  referraisFeitos  Referral[]        @relation("padrinho")
+  referralRecebido Referral?         @relation("afilhado")
+}
+
+model Character {
+  id        String   @id @default(cuid())
+  nome      String   @unique
+  clube     String
+  descricao String
+  estilo    String
+  raridade  Raridade
+  imagem    String // caminho do ficheiro em uploads/
+  tiragem   Int // número máximo de edições
+  ativo     Boolean  @default(true)
+  criadoEm  DateTime @default(now())
+
+  edicoes   Edition[]
+  leiloes   Auction[]
+  favoritos Favorite[]
+}
+
+model Edition {
+  id          String   @id @default(cuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id])
+  numero      Int
+  ownerId     String?
+  owner       User?    @relation(fields: [ownerId], references: [id])
+  criadoEm    DateTime @default(now())
+
+  certificado Certificate?
+  leilao      Auction?
+  compra      Purchase?
+
+  @@unique([characterId, numero])
+}
+
+model Auction {
+  id               String       @id @default(cuid())
+  editionId        String       @unique
+  edition          Edition      @relation(fields: [editionId], references: [id])
+  characterId      String
+  character        Character    @relation(fields: [characterId], references: [id])
+  precoInicial     Int
+  incrementoMinimo Int          @default(5)
+  compraImediata   Int?
+  inicio           DateTime
+  fim              DateTime
+  estado           EstadoLeilao @default(AGENDADO)
+  vencedorId       String?
+  precoFinal       Int?
+  criadoEm         DateTime     @default(now())
+
+  bids Bid[]
+
+  @@index([estado, fim])
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  auctionId String
+  auction   Auction  @relation(fields: [auctionId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  valor     Int
+  criadoEm  DateTime @default(now())
+
+  @@index([auctionId, valor])
+}
+
+model Purchase {
+  id        String     @id @default(cuid())
+  editionId String     @unique
+  edition   Edition    @relation(fields: [editionId], references: [id])
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  valor     Int
+  tipo      TipoCompra
+  criadoEm  DateTime   @default(now())
+}
+
+model CoinPack {
+  id          String  @id @default(cuid())
+  nome        String
+  moedas      Int
+  precoCents  Int // em cêntimos de euro (499 = 4,99 €)
+  lsVariantId String? // variante do produto no Lemon Squeezy
+  ativo       Boolean @default(true)
+}
+
+model CoinTransaction {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  tipo      TipoMovimento
+  valor     Int // positivo = crédito, negativo = débito
+  saldoApos Int
+  meta      Json?
+  criadoEm  DateTime      @default(now())
+
+  @@index([userId, criadoEm])
+}
+
+model Certificate {
+  id        String   @id // legível, ex.: FRB-2026-A1B2C3
+  editionId String   @unique
+  edition   Edition  @relation(fields: [editionId], references: [id])
+  hash      String // SHA-256 da imagem + dados da edição
+  emitidoEm DateTime @default(now())
+}
+
+model Favorite {
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id])
+  criadoEm    DateTime  @default(now())
+
+  @@id([userId, characterId])
+}
+
+model Referral {
+  id         String   @id @default(cuid())
+  padrinhoId String
+  padrinho   User     @relation("padrinho", fields: [padrinhoId], references: [id])
+  afilhadoId String   @unique
+  afilhado   User     @relation("afilhado", fields: [afilhadoId], references: [id])
+  moedas     Int
+  criadoEm   DateTime @default(now())
+}
+
+// Idempotência dos webhooks: cada evento só é processado uma vez.
+model WebhookEvent {
+  id           String   @id
+  processadoEm DateTime @default(now())
+}
+
+// Configuração editável no admin (bónus, etc.)
+model Config {
+  chave String @id
+  valor Int
+}
