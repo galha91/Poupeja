@@ -1,8 +1,5 @@
 {
   "functions": {
-    "pages/api/*.js": {
-      "maxDuration": 30
-    },
     "pages/api/cron-email-semanal.js": {
       "maxDuration": 60
     },
@@ -35,6 +32,12 @@
     },
     "pages/api/cron-catalogo-eci.js": {
       "maxDuration": 60
+    },
+    "pages/api/cron-historico-precos-3.js": {
+      "maxDuration": 60
+    },
+    "pages/api/*.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
@@ -80,6 +83,10 @@
     },
     {
       "path": "/api/cron-historico-precos-2",
+      "schedule": "15 13 * * *"
+    },
+    {
+      "path": "/api/cron-historico-precos-3",
       "schedule": "15 19 * * *"
     },
     {

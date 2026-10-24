@@ -3,7 +3,7 @@ import { pesquisarTudo } from "../../lib/supermercados";
 import { registar, registarEmbalagens, registarMarcas } from "../../lib/supermercados/historico";
 import { ARTIGOS_SEO, CATEGORIAS_SEO, LOJAS_SEO, normalizarQ } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
-import { filaDoDia } from "../../lib/filaHistorico";
+import { filaDoDia, PARTES } from "../../lib/filaHistorico";
 
 /*
  * Histórico diário de preços (Vercel Cron, ver vercel.json).
@@ -16,9 +16,9 @@ import { filaDoDia } from "../../lib/filaHistorico";
  * Duas pesquisas de cada vez e uma pausa entre elas: em rajada, o
  * Continente começa a recusar pedidos.
  *
- * Duas execuções por dia (ver vercel.json): a 1.ª faz os populares e o
- * princípio do resto do catálogo; a 2.ª (cron-historico-precos-2) continua
- * o resto. A ordem vem de lib/filaHistorico.
+ * Três execuções por dia (ver vercel.json): a 1.ª faz os populares e o
+ * princípio do resto do catálogo; a 2.ª e a 3.ª (cron-historico-precos-2 e
+ * -3) continuam o resto. A ordem vem de lib/filaHistorico.
  */
 
 export const POPULARES = [
@@ -43,9 +43,9 @@ const PAUSA_MS = 700;
  * artigos terem a sua vez, a lista começa num ponto diferente em cada dia
  * (os que ficaram para trás hoje, vêm primeiro amanhã).
  */
-const ORCAMENTO_MS = 38_000;
-// Na última volta sobra tempo para refazer os hubs (22 páginas) antes dos 60 s.
-const ORCAMENTO_ULTIMA_MS = 22_000;
+const ORCAMENTO_MS = 22_000;
+// Na última volta sobra tempo para refazer os hubs (22 páginas) antes dos 30 s.
+const ORCAMENTO_ULTIMA_MS = 12_000;
 const VOLTAS_MAX = 5;
 
 /*
@@ -72,16 +72,24 @@ export function filaCompleta(agora = new Date(), parte = 1) {
 /* Os hubs refazem-se quando a volta acaba, para mostrarem já os preços de hoje. */
 const HUBS = ["/precos", "/comparar", ...CATEGORIAS_SEO.map((c) => `/precos/categoria/${c.slug}`), ...LOJAS_SEO.map((l) => `/precos/loja/${l.slug}`)];
 
+/*
+ * O Vercel só lê o maxDuration deste ficheiro no vercel.json se o padrão
+ * específico vier ANTES do genérico "pages/api/*.js" (vinha depois e esta
+ * função cortava aos 30 s). Os orçamentos abaixo cabem nos 30 s mesmo que
+ * o limite de 60 s não seja aplicado.
+ */
+export const config = { maxDuration: 60 };
+
 export default function handler(req, res) {
   return executar(req, res);
 }
 
-/* parteFixa: a 2.ª execução diária entra por outra rota (cron-historico-precos-2) com a parte já escolhida. */
+/* parteFixa: a 2.ª e a 3.ª execuções diárias entram por outras rotas (cron-historico-precos-2 e -3) com a parte já escolhida. */
 export async function executar(req, res, parteFixa) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
-  const parte = parteFixa || (req.query.parte === "2" ? 2 : 1);
+  const parte = parteFixa || Math.min(PARTES, Math.max(1, parseInt(req.query.parte, 10) || 1));
   const volta = Math.max(1, parseInt(req.query.volta, 10) || 1);
   const ultimaVolta = volta >= VOLTAS_MAX;
   const fila = filaCompleta(new Date(), parte);
