@@ -46,7 +46,7 @@ const PAUSA_MS = 700;
 const ORCAMENTO_MS = 22_000;
 // Na última volta sobra tempo para refazer os hubs (22 páginas) antes dos 30 s.
 const ORCAMENTO_ULTIMA_MS = 12_000;
-const VOLTAS_MAX = 5;
+const VOLTAS_MAX = 4;
 
 /*
  * Depois dos populares, o resto do catálogo: são os artigos com página
@@ -59,7 +59,10 @@ const VOLTAS_MAX = 5;
  * O Vercel recusa (508, "loop detetado") a 6.ª chamada da função a si
  * própria, e os logs mostram que a cadeia parava aí todos os dias. Por
  * isso a cadeia é de VOLTAS_MAX voltas, de propósito: a última não chama a
- * seguinte e refaz os hubs, e o resto do catálogo roda de dia para dia
+ * seguinte e refaz os hubs. A revalidação (res.revalidate) é ela própria
+ * uma chamada da função a si própria, por isso conta como mais uma: com 5
+ * voltas ela era a 6.ª e os 22 hubs davam todos 508 (visto nos logs da
+ * parte 3 a 24/10). Com 4 voltas é a 5.ª. O resto do catálogo roda de dia para dia
  * (lib/filaHistorico) em vez de se esperar que caiba numa só cadeia.
  */
 export function filaCompleta(agora = new Date(), parte = 1) {
