@@ -24,7 +24,7 @@ test("rodar nunca perde nem repete artigos, mesmo com passos grandes ou negativo
   assert.deepEqual(rodar([], 5), []);
 });
 
-test("a parte 1 leva os populares todos os dias, a parte 2 só o resto", () => {
+test("a parte 1 leva os populares todos os dias, as outras só o resto", () => {
   const p1 = filaDoDia({ populares, resto }, dia(0), 1);
   const p2 = filaDoDia({ populares, resto }, dia(0), 2);
   assert.equal(p1.length, populares.length + resto.length);
@@ -33,29 +33,31 @@ test("a parte 1 leva os populares todos os dias, a parte 2 só o resto", () => {
   assert.ok(p2.every((a) => a.startsWith("r")));
 });
 
-test("a parte 2 começa onde a parte 1 garante ter chegado", () => {
+test("as partes seguintes começam onde a anterior garante ter chegado", () => {
   const p1 = filaDoDia({ populares, resto }, dia(2), 1).slice(populares.length);
   const p2 = filaDoDia({ populares, resto }, dia(2), 2);
-  assert.equal(p2[0], p1[RESTO_POR_PARTE]);
+  const p3 = filaDoDia({ populares, resto }, dia(2), 3);
+  assert.equal(p2[0], p1[RESTO_POR_PARTE[0]]);
+  assert.equal(p3[0], p2[RESTO_POR_PARTE[1]]);
 });
 
-test("cada artigo do resto volta a ter preços em 3 dias seguidos, só com a parte garantida de cada execução", () => {
-  for (let inicio = 0; inicio < 10; inicio++) {
+test("cada artigo do resto volta a ter preços em 3 dias seguidos, só com o que cada execução garante", () => {
+  for (let inicio = 0; inicio < 12; inicio++) {
     const vistos = new Set();
     for (let d = inicio; d < inicio + 3; d++) {
-      for (const parte of [1, 2]) {
+      for (let parte = 1; parte <= PARTES; parte++) {
         const fila = filaDoDia({ populares, resto }, dia(d), parte);
         const tail = parte === 1 ? fila.slice(populares.length) : fila;
-        tail.slice(0, RESTO_POR_PARTE).forEach((a) => vistos.add(a));
+        tail.slice(0, RESTO_POR_PARTE[parte - 1]).forEach((a) => vistos.add(a));
       }
     }
     assert.equal(vistos.size, resto.length, `dias ${inicio}..${inicio + 2}`);
   }
-  assert.equal(PARTES, 2);
+  assert.equal(PARTES, 3);
 });
 
-test("com só uma execução por dia a cobertura seria de mais de 3 dias (por isso há duas)", () => {
+test("com só uma execução por dia a cobertura seria de mais de 3 dias (por isso há três)", () => {
   const vistos = new Set();
-  for (let d = 0; d < 3; d++) filaDoDia({ populares, resto }, dia(d), 1).slice(populares.length, populares.length + RESTO_POR_PARTE).forEach((a) => vistos.add(a));
+  for (let d = 0; d < 3; d++) filaDoDia({ populares, resto }, dia(d), 1).slice(populares.length, populares.length + RESTO_POR_PARTE[0]).forEach((a) => vistos.add(a));
   assert.ok(vistos.size < resto.length);
 });
