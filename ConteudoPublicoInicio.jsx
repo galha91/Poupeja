@@ -51,7 +51,7 @@ export default function ConteudoPublicoInicio() {
         Grátis e sem registo. Vê os folhetos da semana, descobre onde a tua lista de compras fica mais barata
         e onde atestar o carro perto de ti.
       </p>
-      <a href="/?atalho=ementas" className="no-underline" style={{ display: "block", marginTop: 24, padding: "18px 18px", borderRadius: 18, background: "var(--pj-brand)", color: "#fff" }}>
+      <a href="/?atalho=ementas" rel="nofollow" className="no-underline" style={{ display: "block", marginTop: 24, padding: "18px 18px", borderRadius: 18, background: "var(--pj-brand)", color: "#fff" }}>
         <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 8, background: "#e3b341", color: "#2a2208" }}>Novo</span>
         <strong className="font-display" style={{ display: "block", fontSize: 21, lineHeight: 1.25, marginTop: 8 }}>Ementas da semana, feitas à medida da tua casa</strong>
         <span style={{ display: "block", fontSize: 14, color: "#d5e7de", marginTop: 6, lineHeight: 1.5 }}>

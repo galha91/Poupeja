@@ -86,7 +86,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
         </p>
         <nav className="pj-rodape flex flex-wrap gap-x-5" style={{ fontSize: 13, fontWeight: 500 }}>
           {SECOES_APP.map(s => (
-            <a key={s.atalho} href={`/?atalho=${s.atalho}`} style={{ color: "var(--pj-text-muted)" }}>{s.curto}</a>
+            <a key={s.atalho} href={`/?atalho=${s.atalho}`} rel="nofollow" style={{ color: "var(--pj-text-muted)" }}>{s.curto}</a>
           ))}
         </nav>
         <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 14 }}>

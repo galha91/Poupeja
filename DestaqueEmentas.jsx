@@ -129,7 +129,7 @@ export function CartaoEmentasInicio({ onAbrir }) {
  */
 export function DestaqueEmentasPublico() {
   return (
-    <a href="/?atalho=ementas" className="pj-tap block no-underline overflow-hidden mt-10"
+    <a href="/?atalho=ementas" rel="nofollow" className="pj-tap block no-underline overflow-hidden mt-10"
       style={{ borderRadius: 22, background: "var(--pj-brand)", color: "#fff", boxShadow: "0 10px 28px rgba(11,107,79,0.22)" }}>
       <Azulejos altura={30} />
       <div style={{ padding: "18px 20px 20px" }}>
