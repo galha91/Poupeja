@@ -88,7 +88,7 @@ export default function CalculadoraSalario() {
             <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.6 }}>
               Por ano, com subsídios de férias e de Natal: cerca de <strong style={{ color: "var(--pj-text)" }}>{eur0(r.liquido * 14)} €</strong> líquidos.
             </p>
-            <a href="/?atalho=irs" onClick={() => abrirSimulador(r, situacao, dependentes)} className="pj-tap flex items-center justify-between no-underline mt-4 rounded-2xl px-5 py-4" style={{ background: "var(--pj-brand)", color: "#fff" }}>
+            <a href="/?atalho=irs" rel="nofollow" onClick={() => abrirSimulador(r, situacao, dependentes)} className="pj-tap flex items-center justify-between no-underline mt-4 rounded-2xl px-5 py-4" style={{ background: "var(--pj-brand)", color: "#fff" }}>
               <span style={{ fontSize: 14.5, fontWeight: 600 }}>Vais receber ou pagar IRS? Vê na app</span>
               <span aria-hidden="true">→</span>
             </a>

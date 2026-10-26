@@ -51,7 +51,7 @@ export default function EscalaoIRS() {
             </p>
           </>
         )}
-        <a href="/?atalho=irs" onClick={() => abrirSimulador(b)} className="pj-tap flex items-center justify-between no-underline mt-4 rounded-2xl px-5 py-4" style={{ background: "var(--pj-brand)", color: "#fff" }}>
+        <a href="/?atalho=irs" rel="nofollow" onClick={() => abrirSimulador(b)} className="pj-tap flex items-center justify-between no-underline mt-4 rounded-2xl px-5 py-4" style={{ background: "var(--pj-brand)", color: "#fff" }}>
           <span style={{ fontSize: 14.5, fontWeight: 600 }}>{e ? "Ver quanto vais pagar ou receber" : "Abrir o simulador de IRS"}</span>
           <span aria-hidden="true">→</span>
         </a>
