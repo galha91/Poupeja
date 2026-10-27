@@ -160,3 +160,48 @@ test("custo da receita com peso médio por unidade e molhos de ervas", () => {
   assert.equal(c.comPreco, 3);
   assert.equal(c.total, 1.19); // 1,195 arredondado
 });
+
+/* ── Boas compras ── */
+import { boaCompra, boasCompras } from "../lib/seoPrecos.js";
+
+// 10 dias a ~2,00 €/L no Continente e 2,20 no Lidl; hoje o Continente desce.
+const dias30 = (hoje, extra = []) => {
+  const out = [];
+  for (let i = 10; i >= 1; i--) {
+    const dia = new Date(Date.parse(`${HOJE}T12:00:00Z`) - i * 86400000).toISOString().slice(0, 10);
+    out.push(l(dia, "continente", i % 2 ? 2.0 : 2.1), l(dia, "lidl", 2.2));
+  }
+  return [...out, l(HOJE, "continente", hoje), l(HOJE, "lidl", 2.2), ...extra];
+};
+
+test("boa compra: no mínimo dos dias anteriores e bem abaixo da média", () => {
+  const b = boaCompra(montarArtigo(dias30(1.7), HOJE));
+  assert.equal(b.juizo, "minimo");
+  assert.equal(b.pct, 17); // média 2,05 → 1,70
+  assert.equal(b.dias, 10);
+  assert.equal(b.loja, "continente");
+});
+
+test("boa compra: o preço de sempre não é boa compra", () => {
+  assert.equal(boaCompra(montarArtigo(dias30(2.0), HOJE)), null);
+  // No mínimo, mas só 2% abaixo da média: não chega.
+  assert.equal(boaCompra(montarArtigo(dias30(2.0 - 0.01), HOJE)), null);
+});
+
+test("boa compra: poucos dias de registo não dão juízo", () => {
+  const d = montarArtigo([l("2026-10-19", "continente", 2), l("2026-10-20", "continente", 2), l(HOJE, "continente", 1.5), l(HOJE, "lidl", 2.2)], HOJE);
+  assert.equal(boaCompra(d), null);
+  assert.equal(boaCompra(montarArtigo([], HOJE)), null);
+});
+
+test("boas compras: lista ordenada pela maior descida, com o contexto", () => {
+  const [a, b] = ARTIGOS_SEO;
+  const resumos = new Map([
+    [a.slug, montarArtigo(dias30(1.8), HOJE)],
+    [b.slug, montarArtigo(dias30(1.6), HOJE)],
+  ]);
+  const lista = boasCompras(resumos);
+  assert.deepEqual(lista.map((x) => x.slug), [b.slug, a.slug]);
+  assert.match(lista[0].contexto, /^Continente · 22% abaixo da média de 10 dias · o mais baixo do mês$/);
+  assert.equal(lista[0].vencedor.valor, 1.6);
+});
