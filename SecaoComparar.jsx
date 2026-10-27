@@ -179,8 +179,8 @@ function AvisoEmbalagem({ p, grande = false }) {
   );
 }
 
-function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, historico }) {
-  const [alertaAberto, setAlertaAberto] = useState(false);
+function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, historico, abrirAlerta = false }) {
+  const [alertaAberto, setAlertaAberto] = useState(abrirAlerta);
   const [alerta, setAlerta] = useState(() => alertaDe(q));
   const [avisoAlerta, setAvisoAlerta] = useState("");
   const v = valorComparacao(p, modo);
@@ -422,19 +422,25 @@ export default function SecaoComparar() {
   }, []);
 
   // Aberto por uma notificação de alerta (/?atalho=mercados&q=azeite):
-  // mostra logo essa pesquisa e limpa o q do endereço.
+  // mostra logo essa pesquisa e limpa o q do endereço. Com &alerta=1 (o
+  // "Avisa-me quando baixar" das páginas de preços) abre também o alerta.
+  const [alertaDoLink, setAlertaDoLink] = useState("");
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const q = params.get("q");
       if (!q) return;
+      if (params.get("alerta") === "1") setAlertaDoLink(normalizar(q));
       params.delete("q");
+      params.delete("alerta");
       const resto = params.toString();
       window.history.replaceState({}, "", window.location.pathname + (resto ? `?${resto}` : ""));
       procurar(q);
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // Só a primeira vez: o Vencedor já abriu o alerta ao aparecer.
+  useEffect(() => { if (estado === "pronto" && alertaDoLink) setAlertaDoLink(""); }, [estado, alertaDoLink]);
   const sugestoes = focado && normalizar(texto) !== pesquisa ? sugerir(texto) : [];
 
   async function procurar(termo, { exemplo: eExemplo = false } = {}) {
@@ -636,6 +642,7 @@ export default function SecaoComparar() {
           <div className="px-4 mt-4 flex flex-col gap-4">
             <Vencedor
               key={pesquisa}
+              abrirAlerta={alertaDoLink === pesquisa}
               p={vista.vencedor}
               segundo={vista.segundo}
               empatados={vista.empatados}

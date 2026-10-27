@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Bell } from "lucide-react";
 import { evento } from "./lib/analytics";
 import { euros, porUnidade, dataCurta, SEM_PRECOS_ONLINE } from "./lib/seoFormato";
 
@@ -37,6 +37,29 @@ export function BotaoAbrirPoupeja({ href, texto, tipo }) {
     >
       <span style={{ fontSize: 14.5, fontWeight: 600 }}>{texto}</span>
       <ArrowRight size={18} />
+    </a>
+  );
+}
+
+/*
+ * "Avisa-me quando baixar": abre a app na pesquisa com o alerta já aberto
+ * (/?atalho=mercados&q=…&alerta=1). Mais discreto do que o botão verde.
+ */
+export function BotaoAlertaPreco({ href, texto = "Avisa-me quando baixar", detalhe }) {
+  return (
+    <a
+      href={href}
+      rel="nofollow"
+      onClick={() => evento("abrir_poupeja", { origem: "seo", tipo: "alerta", transport_type: "beacon" })}
+      className="pj-tap flex items-center gap-3 no-underline mt-6 rounded-2xl px-5 py-4"
+      style={estiloCartao}
+    >
+      <Bell size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} aria-hidden />
+      <span style={{ minWidth: 0, flex: 1 }}>
+        <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>{texto}</span>
+        {detalhe && <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>{detalhe}</span>}
+      </span>
+      <ArrowRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} aria-hidden />
     </a>
   );
 }
