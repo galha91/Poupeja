@@ -510,13 +510,14 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
           <p className="px-1" style={{ marginTop: 14, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
             A lista está vazia.
           </p>
-          {/* As minhas listas; sem nenhuma, as listas prontas para começar */}
+          {/* As minhas listas e, por baixo, as listas prontas recomendadas */}
           {(() => {
-            const deVazia = guardadas.length ? guardadas : prontasPorGuardar(guardadas);
+            // As minhas primeiro; a recomendada fica sempre por baixo (até ser copiada).
+            const deVazia = [...guardadas, ...prontasPorGuardar(guardadas)];
             return deVazia.length > 0 && (
             <>
               <div className="flex items-center justify-between" style={{ padding: "16px 0 0 4px" }}>
-                <h3 style={rotulo}>{guardadas.length ? "As minhas listas" : "Para começar"}</h3>
+                <h3 style={rotulo}>Começar com uma lista</h3>
                 <button onClick={() => abrirGuardadas()} className="pj-tap" style={{ minHeight: 40, padding: "0 4px 0 12px", background: "transparent", border: 0, fontSize: 13.5, fontWeight: 600, color: "var(--pj-text-muted)" }}>
                   Gerir
                 </button>
@@ -533,7 +534,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
                       <span className="flex-1 min-w-0">
                         <span className="truncate" style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
                         <span className="truncate" style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 1 }}>
-                          {nArtigos(l.itens.length)} · {l.pronta ? l.itens.slice(0, 3).map(a => a.nome).join(", ") + "…" : quando(l)}
+                          {l.pronta ? `Recomendada · ${nArtigos(l.itens.length)}` : `${nArtigos(l.itens.length)} · ${quando(l)}`}
                         </span>
                       </span>
                       <span className="flex-none" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Usar</span>
