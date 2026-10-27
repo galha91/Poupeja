@@ -67,7 +67,7 @@ export default function Precos({ artigos, vitorias, maioresDiferencas, porCatego
         <BotaoAbrirPoupeja href="/?atalho=lista" tipo="hub" texto="Faz a lista e vê onde fica mais barata" />
 
         <h2 className="font-display" style={estiloH2}>Comparar duas cadeias</h2>
-        <Pilulas itens={[{ href: "/comparar", texto: "Continente vs Pingo Doce, Lidl vs Aldi…" }, { href: "/marcas", texto: "Preços por marca" }, { href: "/reduflacao", texto: "Produtos que encolheram" }]} />
+        <Pilulas itens={[{ href: "/precos/boas-compras", texto: "Boas compras de hoje" }, { href: "/comparar", texto: "Continente vs Pingo Doce, Lidl vs Aldi…" }, { href: "/marcas", texto: "Preços por marca" }, { href: "/reduflacao", texto: "Produtos que encolheram" }]} />
 
         {porCategoria.map((c) => (
           <section key={c.slug}>
