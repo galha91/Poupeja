@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Bookmark, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, X } from "lucide-react";
+import { ArrowLeft, Bookmark, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
-import { LS_LISTAS_GUARDADAS, NOMES_SUGERIDOS, MAX_NOME, apagarLista, guardarLista, porNome, usarLista, validarListas } from "./lib/listasGuardadas";
+import { LS_LISTAS_GUARDADAS, marcarUsada, nArtigos, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
+
+// A folha "As minhas listas" só se descarrega quando se abre.
+const ListasGuardadas = dynamic(() => import("./ListasGuardadas"), { ssr: false, loading: () => null });
 
 /*
  * Lista de compras.
@@ -22,7 +25,8 @@ import { LS_LISTAS_GUARDADAS, NOMES_SUGERIDOS, MAX_NOME, apagarLista, guardarLis
  *   3. a ação principal, em baixo: onde fica mais barata (lista otimizada).
  * Partilhar fica no cabeçalho, como ação secundária, e ao lado "Listas":
  * as listas guardadas (semanal, mensal…), para não fazer a de base de
- * cada vez. Com a lista vazia, aparecem logo à vista.
+ * cada vez (ver ListasGuardadas). Com a lista vazia aparecem logo à
+ * vista; com artigos, há "Guardar esta lista" no fim da lista.
  *
  * Nada depende de hover: toca-se na linha para marcar, na quantidade
  * para a mudar, e na cruz ao fim da linha para remover. Remover e limpar
@@ -170,10 +174,8 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   const [outro, setOutro]       = useState("");     // "Outro…" escrito na folha de todos os artigos
   // Listas guardadas (semanal, mensal…).
   const [guardadas, setGuardadas] = useState(lerGuardadas);
-  const [verGuardadas, setVerGuardadas] = useState(false);
-  const [nomeGuardar, setNomeGuardar] = useState("");
-  const [aApagar, setAApagar]   = useState(null);   // id da lista com "Apagar?" à vista
-  const guardadasRef   = useRef(null);   // o foco volta aqui ao fechar "Listas guardadas"
+  const [verGuardadas, setVerGuardadas] = useState(null);  // null, ou { modo: "guardar" } / { detalhe: id } / {}
+  const guardadasRef   = useRef(null);   // o foco volta aqui ao fechar "As minhas listas"
 
   function push(novosItens, id) {
     if (!id) return;
@@ -345,39 +347,33 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   }
 
   // ── Listas guardadas ──
-  function abrirGuardadas() {
+  function abrirGuardadas(inicio = {}) {
+    import("./ListasGuardadas");
     setGuardadas(lerGuardadas());   // pode ter chegado outra da conta (sync)
-    setNomeGuardar("");
-    setAApagar(null);
-    setVerGuardadas(true);
+    setVerGuardadas(inicio);
   }
   function fecharGuardadas() {
-    setVerGuardadas(false);
+    setVerGuardadas(null);
     requestAnimationFrame(() => guardadasRef.current?.focus());
   }
   function mudarGuardadas(novas) {
     setGuardadas(novas);
     escreverGuardadas(novas);
   }
-  function guardarAtual(e) {
-    e.preventDefault();
-    if (!nomeGuardar.trim() || !itens.length) return;
-    const atualiza = !!porNome(guardadas, nomeGuardar);
-    mudarGuardadas(guardarLista(guardadas, nomeGuardar, itens));
-    evento("lista_guardada", { atualiza });
-    setNomeGuardar("");
-  }
-  function usarGuardada(lista) {
+  function usarGuardada(lista, modo = "juntar") {
     setEditando(null);
     const antes = itens;
-    const r = usarLista(itens, lista);
+    const r = usarLista(itens, lista, { modo });
     setItens(r.itens);
-    // Usada há pouco: sobe para o topo.
-    mudarGuardadas([{ ...lista, usada: Date.now() }, ...guardadas.filter(l => l.id !== lista.id)]);
-    evento("lista_guardada_usada", { artigos: lista.itens.length });
+    mudarGuardadas(marcarUsada(guardadas, lista.id));
+    evento("lista_guardada_usada", { modo, artigos: lista.itens.length });
     if (verGuardadas) fecharGuardadas();
-    avisarAnular({ texto: r.novos ? `«${lista.nome}»: ${r.novos === 1 ? "1 artigo juntado" : `${r.novos} artigos juntados`}` : `«${lista.nome}» já estava na lista`, antes });
+    const texto = modo === "substituir" ? `Lista trocada por «${lista.nome}»`
+      : r.novos ? `«${lista.nome}»: ${r.novos === 1 ? "1 artigo juntado" : `${r.novos} artigos juntados`}`
+      : `«${lista.nome}» já estava toda na lista`;
+    avisarAnular({ texto, antes });
   }
+
 
   // ── Comparar (lista otimizada) ──
   // O último resultado (desta lista, de hoje) — `resumo` só serve para redesenhar.
@@ -417,7 +413,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
         </button>
         <div className="flex items-center">
         {(itens.length > 0 || guardadas.length > 0) && (
-          <button ref={guardadasRef} onClick={abrirGuardadas} aria-haspopup="dialog"
+          <button ref={guardadasRef} onClick={() => abrirGuardadas()} aria-haspopup="dialog"
             className="pj-tap flex items-center" style={{ gap: 7, minHeight: 44, padding: "0 12px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
             <Bookmark size={16} /> Listas
           </button>
@@ -514,16 +510,26 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
           </p>
           {guardadas.length > 0 && (
             <>
-              <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>As tuas listas</h3>
+              <div className="flex items-center justify-between" style={{ padding: "16px 0 0 4px" }}>
+                <h3 style={rotulo}>As minhas listas</h3>
+                <button onClick={() => abrirGuardadas()} className="pj-tap" style={{ minHeight: 40, padding: "0 4px 0 12px", background: "transparent", border: 0, fontSize: 13.5, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+                  Gerir
+                </button>
+              </div>
               <ul>
                 {guardadas.map((l, i) => (
                   <li key={l.id} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
-                    <button onMouseDown={e => e.preventDefault()} onClick={() => usarGuardada(l)} className="pj-tap w-full flex items-center text-left"
-                      aria-label={`Usar a lista ${l.nome}, ${l.itens.length} artigos`}
-                      style={{ gap: 12, minHeight: 48, padding: "0 4px", background: "transparent", border: 0, fontSize: 15, color: "var(--pj-text)" }}>
-                      <Bookmark size={16} aria-hidden style={{ color: "var(--pj-brand-ink)" }} />
-                      <span className="flex-1 truncate" style={{ fontWeight: 600 }}>{l.nome}</span>
-                      <span className="pj-num flex-none" style={{ fontSize: 12.5, color: "var(--pj-text-faint)" }}>{l.itens.length === 1 ? "1 artigo" : `${l.itens.length} artigos`}</span>
+                    <button onMouseDown={e => e.preventDefault()} onClick={() => usarGuardada(l)} disabled={!l.itens.length} className="pj-tap w-full flex items-center text-left"
+                      aria-label={`Usar a lista ${l.nome}, ${nArtigos(l.itens.length)}`}
+                      style={{ gap: 12, minHeight: 56, padding: "6px 4px", background: "transparent", border: 0 }}>
+                      <span aria-hidden className="flex items-center justify-center flex-none" style={{ width: 34, height: 34, borderRadius: 10, background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
+                        <Bookmark size={16} />
+                      </span>
+                      <span className="flex-1 min-w-0">
+                        <span className="truncate" style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
+                        <span className="truncate" style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 1 }}>{nArtigos(l.itens.length)} · {quando(l)}</span>
+                      </span>
+                      <span className="flex-none" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Usar</span>
                     </button>
                   </li>
                 ))}
@@ -571,6 +577,21 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
           </ul>
         </section>
       ))}
+
+      {/* Guardar esta lista (ou: já está guardada) */}
+      {nPend > 0 && (() => {
+        const igual = guardadas.find(l => mesmaLista(l, itens));
+        return (
+          <div className="px-4" style={{ marginTop: 14 }}>
+            <button onClick={() => abrirGuardadas(igual ? { detalhe: igual.id } : { modo: "guardar" })} className="pj-tap flex items-center"
+              style={{ gap: 8, minHeight: 44, padding: "0 2px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: igual ? "var(--pj-text-muted)" : "var(--pj-brand-ink)" }}>
+              {igual
+                ? <><BookmarkCheck size={17} aria-hidden /> <span className="truncate">Guardada como «{igual.nome}»</span></>
+                : <><BookmarkPlus size={17} aria-hidden /> Guardar esta lista para a próxima</>}
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Comprados — recolhidos */}
       {feitos.length > 0 && (
@@ -654,85 +675,11 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
         document.body,
       )}
 
-      {/* Listas guardadas — guardar a atual, usar ou apagar as outras */}
+      {/* As minhas listas — guardar a atual, usar, editar ou apagar */}
       {verGuardadas && createPortal(
-        <Folha titulo="Listas guardadas" onFechar={fecharGuardadas}>
-          <div style={{ padding: "12px 16px 16px" }}>
-            {itens.length > 0 && (() => {
-              const existe = porNome(guardadas, nomeGuardar);
-              return (
-                <form onSubmit={guardarAtual} style={{ marginBottom: 18 }}>
-                  <label htmlFor="pj-lista-guardar" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)", marginBottom: 8 }}>
-                    Guardar esta lista <span style={{ fontWeight: 500, color: "var(--pj-text-muted)" }}>· {itens.length === 1 ? "1 artigo" : `${itens.length} artigos`}</span>
-                  </label>
-                  <div className="flex items-center" style={{ gap: 8 }}>
-                    <input id="pj-lista-guardar" value={nomeGuardar} onChange={e => setNomeGuardar(e.target.value)} maxLength={MAX_NOME}
-                      placeholder="Nome, ex.: Semanal" autoComplete="off" enterKeyHint="done" className="flex-1 min-w-0 focus:outline-none"
-                      style={{ height: 46, padding: "0 14px", borderRadius: 12, fontSize: 16, color: "var(--pj-text)", background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }} />
-                    <button type="submit" disabled={!nomeGuardar.trim()} className="pj-tap flex-none"
-                      style={{ height: 46, padding: "0 16px", borderRadius: 12, border: 0, fontSize: 14, fontWeight: 600, background: nomeGuardar.trim() ? "var(--pj-brand)" : "var(--pj-subtle)", color: nomeGuardar.trim() ? "#fff" : "var(--pj-text-faint)" }}>
-                      {existe ? "Atualizar" : "Guardar"}
-                    </button>
-                  </div>
-                  {existe ? (
-                    <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.4 }}>
-                      Já tens a «{existe.nome}»: fica com os artigos desta lista.
-                    </p>
-                  ) : !nomeGuardar.trim() && (
-                    <div className="flex flex-wrap" style={{ gap: 8, marginTop: 10 }}>
-                      {NOMES_SUGERIDOS.filter(n => !porNome(guardadas, n)).map(n => (
-                        <button key={n} type="button" onClick={() => setNomeGuardar(n)} className="pj-tap"
-                          style={{ minHeight: 36, padding: "0 14px", borderRadius: 999, fontSize: 13.5, fontWeight: 600, border: "1px solid var(--pj-border)", background: "transparent", color: "var(--pj-text-muted)" }}>
-                          {n}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </form>
-              );
-            })()}
-
-            {guardadas.length > 0 ? (
-              <>
-                <h3 style={{ ...rotulo, padding: "0 0 4px" }}>As tuas listas</h3>
-                <ul>
-                  {guardadas.map((l, i) => (
-                    <li key={l.id} className="flex items-center" style={{ listStyle: "none", minHeight: 56, borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
-                      <button onClick={() => usarGuardada(l)} className="pj-tap flex-1 min-w-0 flex items-center text-left"
-                        aria-label={`Usar a lista ${l.nome}, ${l.itens.length} artigos`}
-                        style={{ gap: 12, minHeight: 56, padding: "0 4px", background: "transparent", border: 0 }}>
-                        <span className="flex-1 min-w-0">
-                          <span className="truncate" style={{ display: "block", fontSize: 15.5, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
-                          <span className="truncate" style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 1 }}>
-                            {l.itens.length === 1 ? "1 artigo" : `${l.itens.length} artigos`} · {l.itens.slice(0, 3).map(a => a.nome).join(", ")}{l.itens.length > 3 ? "…" : ""}
-                          </span>
-                        </span>
-                        <span className="flex-none" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Usar</span>
-                      </button>
-                      {aApagar === l.id ? (
-                        <button onClick={() => { mudarGuardadas(apagarLista(guardadas, l.id)); setAApagar(null); }} className="pj-tap flex-none"
-                          style={{ minHeight: 44, padding: "0 4px 0 12px", background: "transparent", border: 0, fontSize: 14, fontWeight: 700, color: "var(--pj-danger)" }}>
-                          Apagar
-                        </button>
-                      ) : (
-                        <button onClick={() => setAApagar(l.id)} aria-label={`Apagar a lista ${l.nome}`} className="pj-tap flex items-center justify-center flex-none"
-                          style={{ width: 44, height: 44, marginRight: -10, background: "transparent", border: 0, color: "var(--pj-text-faint)" }}>
-                          <X size={18} />
-                        </button>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-                <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 12, lineHeight: 1.45 }}>
-                  Usar junta os artigos à lista de compras, sem apagar o que lá está.
-                </p>
-              </>
-            ) : (
-              <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
-                Guarda a lista da semana, a do mês ou outra que repitas. Da próxima vez, junta-a de um toque.
-              </p>
-            )}
-          </div>
+        <Folha titulo="As minhas listas" alta={guardadas.length > 2} onFechar={fecharGuardadas}>
+          <ListasGuardadas listas={guardadas} itens={itens} inicio={verGuardadas} onMudar={mudarGuardadas}
+            onUsar={usarGuardada} carregarCatalogo={carregarCatalogo} />
         </Folha>,
         document.body,
       )}
