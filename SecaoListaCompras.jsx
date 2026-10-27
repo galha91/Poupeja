@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Bookmark, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, X } from "lucide-react";
+import { ArrowLeft, Bookmark, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
@@ -559,6 +559,19 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
         <p className="px-5" style={{ marginTop: 18, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
           Tudo comprado.
         </p>
+      )}
+
+      {/* Resumo e "Limpar lista": tira tudo de uma vez (com Anular) */}
+      {itens.length > 0 && (
+        <div className="px-4 flex items-center justify-between" style={{ marginTop: 2 }}>
+          <span className="pj-num" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", paddingLeft: 2 }}>
+            {nPend === 1 ? "1 por comprar" : `${nPend} por comprar`}{feitos.length ? ` · ${feitos.length} ${feitos.length === 1 ? "comprado" : "comprados"}` : ""}
+          </span>
+          <button onClick={() => tirar(itens.map(i => i.id), itens.length === 1 ? "Lista limpa (1 artigo)" : `Lista limpa (${itens.length} artigos)`)}
+            className="pj-tap flex items-center" style={{ gap: 6, minHeight: 44, padding: "0 2px 0 12px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+            <Trash2 size={16} aria-hidden /> Limpar lista
+          </button>
+        </div>
       )}
 
       {/* Por comprar */}
