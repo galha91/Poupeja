@@ -47,6 +47,7 @@ const GRUPOS = [
       { href: "/combustiveis", titulo: "Combustíveis mais baratos", texto: "Gasóleo e gasolina perto de ti, atualizados todos os dias." },
       { href: "/garantias", titulo: "Garantia de 3 anos", texto: "Até quando vai a tua garantia e como reclamar." },
       { href: "/devolucoes", titulo: "Devolver compras online", texto: "Os 14 dias, quem paga os portes e o que não se devolve." },
+      { href: "/black-friday", titulo: "Black Friday: o desconto é verdadeiro?", texto: "A regra dos 30 dias e o desconto real, calculado." },
       { href: "/reduflacao", titulo: "Reduflação", texto: "Produtos que encolheram e como não ser apanhado." },
     ],
   },
