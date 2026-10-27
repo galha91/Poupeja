@@ -44,6 +44,9 @@ export function BotaoAbrirPoupeja({ href, texto, tipo }) {
 /* Preços de um artigo, uma linha por cadeia; a primeira é a mais barata. */
 export function TabelaPrecos({ ofertas, unidade }) {
   const u = porUnidade(unidade);
+  // Os preços não são todos do mesmo dia: o que for mais antigo do que o
+  // mais recente diz quando foi visto, para ninguém o tomar pelo de hoje.
+  const recente = ofertas.reduce((m, o) => (o.dia && o.dia > m ? o.dia : m), "");
   const cab = { fontSize: 11, fontWeight: 600, color: "var(--pj-text-faint)", textTransform: "uppercase", letterSpacing: "0.06em", padding: "10px 12px", textAlign: "left" };
   return (
     <div className="rounded-2xl overflow-hidden mt-6" style={estiloCartao}>
@@ -63,6 +66,7 @@ export function TabelaPrecos({ ofertas, unidade }) {
                   {o.lojaNome}{i === 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--pj-brand-ink)", marginLeft: 8, whiteSpace: "nowrap" }}>MAIS BARATO</span>}
                 </span>
                 {o.produto && <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 2 }}>{o.produto}</span>}
+                {o.dia && o.dia < recente && <span style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--pj-warn)", marginTop: 2 }}>Preço visto a {dataCurta(o.dia, { ano: false })}</span>}
               </td>
               <td className="pj-num" style={{ padding: "12px", textAlign: "right", fontSize: 13.5, color: "var(--pj-text-muted)", whiteSpace: "nowrap" }}>
                 {o.preco > 0 ? `${euros(o.preco)} €` : "—"}

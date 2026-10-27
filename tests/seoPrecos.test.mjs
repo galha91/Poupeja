@@ -134,7 +134,7 @@ test("preços impossíveis ficam de fora", () => {
 });
 
 test("preços de outro dia não se dizem de hoje", () => {
-  const d = montarArtigo([l("2026-10-19", "lidl", 7.1), l("2026-10-19", "continente", 7.9)], HOJE);
+  const d = montarArtigo([l("2026-10-19", "aldi", 7.1), l("2026-10-19", "continente", 7.9)], HOJE);
   assert.match(frasesArtigo(artigoPorSlug("azeite"), d, HOJE)[0], /^A 19 out é 0,80 €\/L/);
   assert.match(frasesArtigo(artigoPorSlug("azeite"), d, "2026-10-19")[0], /^Hoje/);
 });
@@ -159,4 +159,20 @@ test("custo da receita com peso médio por unidade e molhos de ervas", () => {
   ], resumos);
   assert.equal(c.comPreco, 3);
   assert.equal(c.total, 1.19); // 1,195 arredondado
+});
+
+test("Lidl: só conta o preço de hoje ou de ontem (preços de folheto)", () => {
+  const d = montarArtigo([
+    l("2026-10-19", "lidl", 5), l("2026-10-20", "lidl", 5), l("2026-10-21", "continente", 7.9),
+    l("2026-10-20", "aldi", 7.5),
+  ], "2026-10-22");
+  // Lidl visto há 2 dias: fora. Aldi visto há 2 dias: dentro (3 dias).
+  assert.deepEqual(d.ofertas.map((o) => o.loja), ["aldi", "continente"]);
+});
+
+test("«Hoje» só se os dois preços comparados forem de hoje", () => {
+  const d = montarArtigo([l("2026-10-19", "aldi", 7), l(HOJE, "continente", 8)], HOJE);
+  assert.match(frasesArtigo(artigoPorSlug("azeite"), d, HOJE)[0], /^A 19 out é/);
+  const d2 = montarArtigo([l(HOJE, "aldi", 7), l(HOJE, "continente", 8)], HOJE);
+  assert.match(frasesArtigo(artigoPorSlug("azeite"), d2, HOJE)[0], /^Hoje é/);
 });
