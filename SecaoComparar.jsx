@@ -312,6 +312,9 @@ function PorLoja({ lojas, melhores, modo, min, empate = false }) {
   );
 }
 
+const hojeIso = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" });
+const dataDiaMes = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
+
 function LinhaProduto({ p, primeira, modo, onLista, naLista }) {
   const desc = descontoPct(p);
   return (
@@ -329,6 +332,9 @@ function LinhaProduto({ p, primeira, modo, onLista, naLista }) {
           {[p.marca, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).map((t) => <span key={t}>· {t}</span>)}
           {desc ? <Etiqueta tom="promo">−{desc}%</Etiqueta> : null}
           {p.onde === "loja" ? <Etiqueta tom="loja">Na loja</Etiqueta> : null}
+          {/* Não entra em "mais barato": diz-se porquê (ver valeHoje). */}
+          {p.soComCartao ? <Etiqueta tom="loja">Só com Lidl Plus</Etiqueta>
+            : p.validoDe && p.validoDe > hojeIso() ? <Etiqueta tom="loja">A partir de {dataDiaMes(p.validoDe)}</Etiqueta> : null}
         </span>
         <AvisoEmbalagem p={p} />
       </span>
