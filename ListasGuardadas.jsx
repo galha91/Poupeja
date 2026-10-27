@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Bookmark, BookmarkPlus, Check, ChevronLeft, ChevronRight, Minus, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Bookmark, BookmarkPlus, ShoppingBasket, Check, ChevronLeft, ChevronRight, Minus, Pencil, Plus, Trash2, X } from "lucide-react";
 import { adicionar, agruparPorCategoria, alterarQty, retirar } from "./lib/listaCompras";
-import { NOMES_SUGERIDOS, MAX_NOME, alterarArtigos, apagarLista, guardarLista, nArtigos, porNome, quando, renomearLista } from "./lib/listasGuardadas";
+import { NOMES_SUGERIDOS, MAX_NOME, alterarArtigos, apagarLista, copiarPronta, completarPronta, guardarLista, nArtigos, porNome, prontasPorGuardar, quando, renomearLista } from "./lib/listasGuardadas";
 import { evento } from "./lib/analytics";
 
 /*
@@ -10,6 +10,8 @@ import { evento } from "./lib/analytics";
  * Duas vistas na mesma folha:
  *   - a lista de listas, com "Guardar a lista atual" no topo e "Usar" em
  *     cada uma (junta à lista de compras de um toque);
+ *     No fim, as listas prontas ("Básicos da semana"): usar logo, ou
+ *     copiar para as minhas e editar;
  *   - o detalhe de uma lista: os artigos (dá para tirar, juntar e mudar
  *     quantidades), juntar ou substituir a lista de compras, mudar o nome,
  *     atualizar com a lista atual e apagar.
@@ -49,7 +51,7 @@ export default function ListasGuardadas({ listas, itens, inicio = null, onMudar,
           }} />
       ) : (
         <Indice listas={listas} itens={itens} guardarLogo={inicio?.modo === "guardar"} onMudar={onMudar} onUsar={onUsar}
-          onAbrir={setAbertaId} avisar={avisar} />
+          onAbrir={setAbertaId} avisar={avisar} carregarCatalogo={carregarCatalogo} />
       )}
 
       {aviso && (
@@ -69,13 +71,23 @@ export default function ListasGuardadas({ listas, itens, inicio = null, onMudar,
 }
 
 /* ── A lista de listas ─────────────────────────────────────────── */
-function Indice({ listas, itens, guardarLogo, onMudar, onUsar, onAbrir, avisar }) {
+function Indice({ listas, itens, guardarLogo, onMudar, onUsar, onAbrir, avisar, carregarCatalogo }) {
   const [aGuardar, setAGuardar] = useState(guardarLogo && itens.length > 0);
   const [nome, setNome] = useState("");
   const [nova, setNova] = useState(null);     // id da que acabou de ser guardada (realce)
   const inputRef = useRef(null);
   const existe = porNome(listas, nome);
   const sugeridos = NOMES_SUGERIDOS.filter(n => !porNome(listas, n));
+  const prontas = prontasPorGuardar(listas);
+
+  // Copiar uma pronta para as minhas: fica editável e abre logo o detalhe.
+  async function copiar(pronta) {
+    const completa = completarPronta(pronta, (await carregarCatalogo())?.doCatalogo);
+    const novas = copiarPronta(listas, completa);
+    onMudar(novas);
+    evento("lista_pronta_copiada", { pronta: pronta.id });
+    onAbrir(novas[0].id);
+  }
 
   useEffect(() => { if (aGuardar) inputRef.current?.focus(); }, [aGuardar]);
 
@@ -189,6 +201,39 @@ function Indice({ listas, itens, guardarLogo, onMudar, onUsar, onAbrir, avisar }
               : "Junta artigos à lista de compras e guarda-a aqui: a semanal, a mensal, a do churrasco… Da próxima vez, é um toque."}
           </p>
         </div>
+      )}
+
+      {/* Listas prontas */}
+      {prontas.length > 0 && (
+        <>
+          <h3 style={{ ...rotulo, padding: "26px 2px 8px" }}>Listas prontas</h3>
+          <ul className="flex flex-col" style={{ gap: 10 }}>
+            {prontas.map(l => (
+              <li key={l.id} style={{ listStyle: "none", padding: "12px 14px", borderRadius: 16, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                <div className="flex items-start" style={{ gap: 12 }}>
+                  <span aria-hidden className="flex items-center justify-center flex-none" style={{ width: 36, height: 36, borderRadius: 10, background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
+                    <ShoppingBasket size={18} />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span style={{ display: "block", fontSize: 15.5, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
+                    <span style={{ display: "block", fontSize: 13, color: "var(--pj-text-muted)", marginTop: 2, lineHeight: 1.45 }}>
+                      {nArtigos(l.itens.length)}: {l.itens.map(a => a.nome).join(", ")}.
+                    </span>
+                  </span>
+                </div>
+                <div className="flex justify-end" style={{ gap: 8, marginTop: 10 }}>
+                  <button onClick={() => copiar(l)} className="pj-tap" style={{ ...botaoTexto("var(--pj-text)"), minHeight: 40 }}>
+                    Copiar e editar
+                  </button>
+                  <button onClick={() => onUsar(l, "juntar")} aria-label={`Usar a lista ${l.nome}`} className="pj-tap"
+                    style={{ minHeight: 40, padding: "0 16px", borderRadius: 999, border: 0, fontSize: 14, fontWeight: 600, background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
+                    Usar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </>
   );

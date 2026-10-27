@@ -85,3 +85,19 @@ test("quando: usada ou guardada, em dias, semanas e meses", () => {
   assert.equal(quando({}, agora), "");
   assert.equal(nArtigos(1), "1 artigo");
 });
+
+test("listas prontas: nomes do catálogo, completar e copiar", async () => {
+  const { doCatalogo } = await import("../lib/catalogoLista.js");
+  const { LISTAS_PRONTAS, prontasPorGuardar, completarPronta, copiarPronta } = await import("../lib/listasGuardadas.js");
+  for (const p of LISTAS_PRONTAS) {
+    for (const a of p.itens) assert.equal(doCatalogo(a.nome)?.nome, a.nome, `${a.nome} não está no catálogo`);
+    const c = completarPronta(p, doCatalogo);
+    assert.ok(c.itens.every(a => a.categoria), "todos ficam com categoria");
+  }
+  const basicos = LISTAS_PRONTAS[0];
+  assert.equal(prontasPorGuardar([]).length, LISTAS_PRONTAS.length);
+  const minhas = copiarPronta([], basicos, { id: "x", agora: 1 });
+  assert.equal(minhas[0].nome, basicos.nome);
+  assert.equal(minhas[0].itens.length, basicos.itens.length);
+  assert.equal(prontasPorGuardar(minhas).length, LISTAS_PRONTAS.length - 1);
+});

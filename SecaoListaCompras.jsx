@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
-import { ArrowLeft, Bookmark, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
+import { ArrowLeft, Bookmark, ShoppingBasket, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
-import { LS_LISTAS_GUARDADAS, marcarUsada, nArtigos, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
+import { LS_LISTAS_GUARDADAS, completarPronta, marcarUsada, nArtigos, prontasPorGuardar, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
 
 // A folha "As minhas listas" só se descarrega quando se abre.
 const ListasGuardadas = dynamic(() => import("./ListasGuardadas"), { ssr: false, loading: () => null });
@@ -360,13 +360,15 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
     setGuardadas(novas);
     escreverGuardadas(novas);
   }
-  function usarGuardada(lista, modo = "juntar") {
+  async function usarGuardada(lista, modo = "juntar") {
     setEditando(null);
+    // Lista pronta: categorias e termos de pesquisa vêm do catálogo.
+    if (lista.pronta) lista = completarPronta(lista, (catalogo || await carregarCatalogo())?.doCatalogo);
     const antes = itens;
     const r = usarLista(itens, lista, { modo });
     setItens(r.itens);
     mudarGuardadas(marcarUsada(guardadas, lista.id));
-    evento("lista_guardada_usada", { modo, artigos: lista.itens.length });
+    evento("lista_guardada_usada", { modo, artigos: lista.itens.length, ...(lista.pronta ? { pronta: lista.id } : {}) });
     if (verGuardadas) fecharGuardadas();
     const texto = modo === "substituir" ? `Lista trocada por «${lista.nome}»`
       : r.novos ? `«${lista.nome}»: ${r.novos === 1 ? "1 artigo juntado" : `${r.novos} artigos juntados`}`
@@ -508,26 +510,31 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
           <p className="px-1" style={{ marginTop: 14, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
             A lista está vazia.
           </p>
-          {guardadas.length > 0 && (
+          {/* As minhas listas; sem nenhuma, as listas prontas para começar */}
+          {(() => {
+            const deVazia = guardadas.length ? guardadas : prontasPorGuardar(guardadas);
+            return deVazia.length > 0 && (
             <>
               <div className="flex items-center justify-between" style={{ padding: "16px 0 0 4px" }}>
-                <h3 style={rotulo}>As minhas listas</h3>
+                <h3 style={rotulo}>{guardadas.length ? "As minhas listas" : "Para começar"}</h3>
                 <button onClick={() => abrirGuardadas()} className="pj-tap" style={{ minHeight: 40, padding: "0 4px 0 12px", background: "transparent", border: 0, fontSize: 13.5, fontWeight: 600, color: "var(--pj-text-muted)" }}>
                   Gerir
                 </button>
               </div>
               <ul>
-                {guardadas.map((l, i) => (
+                {deVazia.map((l, i) => (
                   <li key={l.id} style={{ listStyle: "none", borderTop: i ? "1px solid var(--pj-subtle)" : "none" }}>
                     <button onMouseDown={e => e.preventDefault()} onClick={() => usarGuardada(l)} disabled={!l.itens.length} className="pj-tap w-full flex items-center text-left"
                       aria-label={`Usar a lista ${l.nome}, ${nArtigos(l.itens.length)}`}
                       style={{ gap: 12, minHeight: 56, padding: "6px 4px", background: "transparent", border: 0 }}>
                       <span aria-hidden className="flex items-center justify-center flex-none" style={{ width: 34, height: 34, borderRadius: 10, background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)" }}>
-                        <Bookmark size={16} />
+                        {l.pronta ? <ShoppingBasket size={16} /> : <Bookmark size={16} />}
                       </span>
                       <span className="flex-1 min-w-0">
                         <span className="truncate" style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{l.nome}</span>
-                        <span className="truncate" style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 1 }}>{nArtigos(l.itens.length)} · {quando(l)}</span>
+                        <span className="truncate" style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 1 }}>
+                          {nArtigos(l.itens.length)} · {l.pronta ? l.itens.slice(0, 3).map(a => a.nome).join(", ") + "…" : quando(l)}
+                        </span>
                       </span>
                       <span className="flex-none" style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)" }}>Usar</span>
                     </button>
@@ -535,7 +542,8 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
                 ))}
               </ul>
             </>
-          )}
+            );
+          })()}
           {iniciais.length > 0 && (
             <>
               <h3 style={{ ...rotulo, padding: "22px 4px 4px" }}>{iniciais.some(s => s.origem !== "comparados") ? "Sugestões" : "Já comparaste"}</h3>
