@@ -24,6 +24,7 @@ const GRUPOS = [
       { href: "/indemnizacao-despedimento", titulo: "Indemnização por despedimento", texto: "Quanto recebes se o contrato acabar por decisão da empresa." },
       { href: "/subsidio-desemprego", titulo: "Subsídio de desemprego 2026", texto: "Quanto recebes por mês e durante quanto tempo." },
       { href: "/tarifa-social", titulo: "Tarifa social", texto: "Vê se tens luz, gás e internet mais baratos." },
+      { href: "/consumo-eletrodomesticos", titulo: "Quanto gasta um eletrodoméstico?", texto: "O custo por mês do aquecedor, da máquina de secar e dos outros." },
       { href: "/apoios", titulo: "Apoios do Estado", texto: "Os apoios a que podes ter direito e como pedir." },
       { href: "/prazos", titulo: "Prazos do Estado", texto: "IRS, IMI, prova escolar: o que acaba primeiro." },
     ],
