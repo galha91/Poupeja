@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  montarArtigo, frasesArtigo, metaArtigo, escolherTitulo, comComparacao, compararPar, fraseParComparado,
+  montarArtigo, frasesArtigo, mediaAntes, metaArtigo, escolherTitulo, comComparacao, compararPar, fraseParComparado,
   parPorSlug, PARES, custoReceita, produtoLd, artigoPorSlug, ARTIGOS_SEO, dataCurta, vitoriasPorLoja,
 } from "../lib/seoPrecos.js";
 
@@ -49,6 +49,8 @@ test("frases saem dos números e não se repetem entre artigos", () => {
   assert.match(f[0], /1,90 €\/L mais barato no Lidl/);
   assert.match(f[1], /21%/);
   assert.match(f[2], /mais baixo/);
+  // Média dos 10 dias anteriores: 8,55 €/L; hoje 7,10 → 17% abaixo.
+  assert.equal(f[3], "Está 17% abaixo da média dos 10 dias anteriores (8,55 €/L).");
   const outro = montarArtigo([l("2026-10-21", "continente", 3), l("2026-10-21", "aldi", 3)], HOJE);
   assert.match(frasesArtigo(artigoPorSlug("azeite"), outro)[0], /empatados/);
 });
@@ -159,4 +161,14 @@ test("custo da receita com peso médio por unidade e molhos de ervas", () => {
   ], resumos);
   assert.equal(c.comPreco, 3);
   assert.equal(c.total, 1.19); // 1,195 arredondado
+});
+
+test("média dos dias anteriores: precisa de 7 dias e não conta hoje", () => {
+  const linhas = [];
+  for (let i = 1; i <= 7; i++) linhas.push(l(`2026-10-${String(13 + i).padStart(2, "0")}`, "continente", 2));
+  const subiu = montarArtigo([...linhas, l(HOJE, "continente", 2.5), l(HOJE, "lidl", 2.6)], HOJE);
+  assert.deepEqual(mediaAntes(subiu), { valor: 2, pct: -25, dias: 7 });
+  assert.match(frasesArtigo(artigoPorSlug("azeite"), subiu).join(" "), /25% acima da média dos 7 dias anteriores/);
+  assert.equal(mediaAntes(montarArtigo([...linhas.slice(1), l(HOJE, "continente", 2.5)], HOJE)), null);
+  assert.equal(mediaAntes(montarArtigo([], HOJE)), null);
 });

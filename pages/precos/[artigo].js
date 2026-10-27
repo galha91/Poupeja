@@ -1,12 +1,12 @@
 import Head from "next/head";
 import LayoutPublico from "../../LayoutPublico";
 import {
-  Atualizado, BotaoAbrirPoupeja, GraficoHistorico, TabelaPrecos, NotaCadeias, Pilulas, ListaArtigos, Migalhas,
+  Atualizado, BotaoAbrirPoupeja, BotaoAlertaPreco, GraficoHistorico, TabelaPrecos, NotaCadeias, Pilulas, ListaArtigos, Migalhas,
   estiloH1, estiloH2, estiloTexto,
 } from "../../PaginasPrecos";
 import {
   ARTIGOS_SEO, LOJAS_SEO, PARES, artigoPorSlug, montarArtigo, frasesArtigo, metaArtigo, produtoLd, breadcrumbLd,
-  receitasComArtigo, linkApp, hojeLisboa,
+  receitasComArtigo, linkApp, linkAlerta, hojeLisboa,
 } from "../../lib/seoPrecos";
 import { historicoArtigo, resumosRecentes, paraProps } from "../../lib/seoPrecosDados";
 import { gruposMarca } from "../../lib/seoMarcasDados";
@@ -70,6 +70,11 @@ export default function PrecoArtigo({ artigo, dados, frases, meta, relacionados,
 
         {/* Histórico: o melhor preço de cada dia (só com 7+ dias de dados). */}
         <GraficoHistorico serie={dados.serie} unidade={dados.unidade} />
+
+        <BotaoAlertaPreco
+          href={linkAlerta(artigo.q)}
+          detalhe={`Escolhe o preço e recebe uma notificação quando ${artigo.nomeCurto.toLowerCase()} baixar em qualquer cadeia.`}
+        />
 
         <BotaoAbrirPoupeja href={linkApp(artigo.q)} tipo="preco" texto={`Comparar ${artigo.nomeCurto.toLowerCase()} na app e juntar à lista`} />
 
