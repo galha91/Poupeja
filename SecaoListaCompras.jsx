@@ -5,7 +5,7 @@ import { ArrowLeft, Bookmark, ShoppingBasket, BookmarkCheck, BookmarkPlus, Check
 import { N_COMPARADAS } from "./lib/cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, MAX_ARTIGOS } from "./lib/listaCompras";
+import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, juntarPartilhada, ID_PARTILHA_RE, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 import { LS_LISTAS_GUARDADAS, completarPronta, marcarUsada, nArtigos, prontasPorGuardar, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
 
@@ -31,6 +31,10 @@ const ListasGuardadas = dynamic(() => import("./ListasGuardadas"), { ssr: false,
  * Nada depende de hover: toca-se na linha para marcar, na quantidade
  * para a mudar, e na cruz ao fim da linha para remover. Remover e limpar
  * têm "Anular" durante uns segundos.
+ *
+ * O link de uma lista partilhada (/lista/<id>) chega aqui como ?lista=<id>:
+ * mostra-se um convite («Abrir no PoupeJá») e, ao aceitar, a lista fica
+ * ligada a esta app (os artigos que a pessoa já tinha juntam-se, não se perdem).
  *
  * O resultado da comparação (ResultadoLista) só se descarrega ao comparar.
  */
@@ -155,6 +159,8 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
     try { return localStorage.getItem(LS_SHARE_KEY) || null; } catch { return null; }
   });
   const [verPartilha, setVerPartilha] = useState(false);
+  // Convite: lista partilhada por outra pessoa (?lista=<id>). estado: a-ver | pronto | erro
+  const [convite, setConvite]   = useState(null);
   const [copiado, setCopiado]   = useState(false);
   const [criandoLink, setCriandoLink] = useState(false);
   const [topo, setTopo]         = useState(null); // null = campo não fica preso
@@ -206,6 +212,49 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
 
   // Pull inicial quando há lista partilhada
   useEffect(() => { if (listaId) pull(listaId); }, []);
+
+  // Link de uma lista partilhada: vê o que tem e pergunta antes de ligar.
+  // (O parâmetro fica no URL até haver resposta: o 1.º arranque da PWA recarrega a página.)
+  useEffect(() => {
+    let id = null;
+    try { id = new URLSearchParams(window.location.search).get("lista"); } catch {}
+    if (!id || !ID_PARTILHA_RE.test(id)) return;
+    if (id === listaId) { limparConvite(); return; }   // já é a minha: nada a perguntar
+    setConvite({ id, estado: "a-ver", itens: [] });
+    fetch(`/api/lista-partilhada/${id}`).then(async r => {
+      if (!r.ok) return setConvite({ id, estado: "erro", itens: [] });
+      const data = await r.json();
+      setConvite({ id, estado: "pronto", itens: Array.isArray(data.itens) ? data.itens : [] });
+    }).catch(() => setConvite({ id, estado: "erro", itens: [] }));
+  }, []);
+
+  function limparConvite() {
+    const tirar = () => {
+      try {
+        const q = new URLSearchParams(window.location.search);
+        if (!q.has("lista")) return;
+        q.delete("lista");
+        const resto = q.toString();
+        window.history.replaceState(window.history.state, "", window.location.pathname + (resto ? `?${resto}` : ""));
+      } catch {}
+    };
+    tirar();
+    setConvite(null);
+    setTimeout(tirar, 150);   // a folha, ao fechar, volta uma entrada atrás: o URL dessa ainda traz o parâmetro
+  }
+
+  function aceitarConvite() {
+    if (!convite || convite.estado !== "pronto") return;
+    // Já ligado a outra lista partilhada: os artigos locais são dessa, não se misturam.
+    const juntar = !listaId || listaId === convite.id;
+    const r = juntar ? juntarPartilhada(convite.itens, itens) : { itens: convite.itens, extras: 0 };
+    ultimoPull.current = JSON.stringify(convite.itens);   // o que já está no servidor; se há extras, vão por push
+    try { localStorage.setItem(LS_SHARE_KEY, convite.id); } catch {}
+    setItens(r.itens);
+    setListaId(convite.id);
+    evento("lista_partilhada_aberta", { artigos: convite.itens.length, extras: r.extras });
+    limparConvite();
+  }
 
   // Poll a cada 15s para apanhar mudanças de outros membros
   useEffect(() => {
@@ -702,6 +751,51 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
         <Folha titulo="As minhas listas" alta={guardadas.length > 2} onFechar={fecharGuardadas}>
           <ListasGuardadas listas={guardadas} itens={itens} inicio={verGuardadas} onMudar={mudarGuardadas}
             onUsar={usarGuardada} carregarCatalogo={carregarCatalogo} />
+        </Folha>,
+        document.body,
+      )}
+
+      {/* Convite: alguém partilhou uma lista */}
+      {convite && createPortal(
+        <Folha titulo="Lista partilhada" onFechar={limparConvite}>
+          <div style={{ padding: "16px 16px 20px" }}>
+            {convite.estado === "a-ver" && <p role="status" style={{ fontSize: 14, color: "var(--pj-text-muted)", padding: "8px 0 16px" }}>A abrir a lista…</p>}
+            {convite.estado === "erro" && (
+              <>
+                <h3 style={{ fontSize: 17, fontWeight: 600, color: "var(--pj-text)" }}>Lista não encontrada</h3>
+                <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.5, marginTop: 6 }}>O link pode estar errado ou a lista já não existe. Pede a quem a partilhou para enviar o link outra vez.</p>
+                <button onClick={limparConvite} className="pj-tap w-full" style={{ marginTop: 18, minHeight: 50, borderRadius: 14, border: 0, fontSize: 15, fontWeight: 600, background: "var(--pj-brand)", color: "#fff" }}>Continuar</button>
+              </>
+            )}
+            {convite.estado === "pronto" && (() => {
+              const novaLigacao = listaId && listaId !== convite.id;
+              const extras = !novaLigacao ? juntarPartilhada(convite.itens, itens).extras : 0;
+              const pend = convite.itens.filter(i => !i.feito);
+              return (
+                <>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--pj-text)" }}>Alguém partilhou uma lista contigo</h3>
+                  <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.5, marginTop: 6 }}>
+                    {convite.itens.length
+                      ? <>{pend.length === 1 ? "1 artigo por comprar" : `${pend.length} artigos por comprar`}: {pend.slice(0, 5).map(i => i.nome).join(", ")}{pend.length > 5 ? "…" : ""}.</>
+                      : "A lista ainda está vazia."}
+                  </p>
+                  <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.5, marginTop: 10, padding: "10px 12px", borderRadius: 12, background: "var(--pj-brand-wash)" }}>
+                    {novaLigacao
+                      ? "Vais passar a ver e editar esta lista, em vez da que tinhas partilhada. A outra continua a funcionar para quem a tem."
+                      : extras > 0
+                        ? `${extras === 1 ? "O artigo que já tinhas fica junto" : `Os ${extras} artigos que já tinhas ficam juntos`} a esta lista. Quem tem o link vê e edita, em tempo real.`
+                        : "Quem tem o link vê e edita a lista, em tempo real. Os artigos que marcares ficam marcados para todos."}
+                  </p>
+                  <button onClick={aceitarConvite} className="pj-tap w-full" style={{ marginTop: 18, minHeight: 50, borderRadius: 14, border: 0, fontSize: 15, fontWeight: 600, background: "var(--pj-brand)", color: "#fff" }}>
+                    Abrir no PoupeJá
+                  </button>
+                  <button onClick={limparConvite} className="pj-tap w-full" style={{ marginTop: 6, minHeight: 46, background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text-muted)" }}>
+                    Agora não
+                  </button>
+                </>
+              );
+            })()}
+          </div>
         </Folha>,
         document.body,
       )}

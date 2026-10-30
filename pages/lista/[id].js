@@ -2,10 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import { ShoppingCart, Check, Plus, X, Minus } from "lucide-react";
 import { URL_SITE } from "../../lib/site";
+import { ID_PARTILHA_RE } from "../../lib/listaCompras";
 
 function gerarId() { return Date.now() + Math.random(); }
 
+/*
+ * O link de uma lista partilhada (/lista/<id>):
+ *   - com conta (sessão iniciada neste browser): abre dentro do PoupeJá
+ *     (/?lista=<id>), no ecrã da lista, tudo sincronizado em tempo real;
+ *   - sem conta: fica esta página, que edita a lista sem registo.
+ * As meta tags (pré-visualização do WhatsApp/iMessage) servem-se aqui, no servidor.
+ */
 export default function ListaPartilhada({ id }) {
+  const [verificando, setVerificando] = useState(true);   // a ver se há sessão
   const [itens, setItens]         = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro]           = useState(false);
@@ -62,13 +71,31 @@ export default function ListaPartilhada({ id }) {
     setNovoItem("");
   }
 
-  useEffect(() => { pull(); }, []);
+  // Com conta, vai para a app. Qualquer falha (sem rede, sem Supabase) deixa ficar esta página.
+  useEffect(() => {
+    let ativo = true;
+    const destino = ID_PARTILHA_RE.test(id) ? `/?lista=${id}` : null;
+    (async () => {
+      try {
+        if (destino) {
+          const { supabase } = await import("../../lib/supabase");
+          const { data } = await supabase.auth.getSession();
+          if (data?.session) { window.location.replace(destino); return; }
+        }
+      } catch {}
+      if (ativo) setVerificando(false);
+    })();
+    return () => { ativo = false; };
+  }, []);
+
+  useEffect(() => { if (!verificando) pull(); }, [verificando]);
 
   // Poll a cada 10 segundos para apanhar mudanças de outros
   useEffect(() => {
+    if (verificando) return;
     const t = setInterval(pull, 10000);
     return () => clearInterval(t);
-  }, []);
+  }, [verificando]);
 
   async function copiarLink() {
     const url = window.location.href;
@@ -90,6 +117,7 @@ export default function ListaPartilhada({ id }) {
     <>
       <Head>
         <title>Lista de compras partilhada — PoupeJá</title>
+        <meta name="robots" content="noindex, nofollow" />
         <meta name="description" content="Abre e edita esta lista de compras comigo, em tempo real. Grátis no PoupeJá." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
@@ -160,7 +188,7 @@ export default function ListaPartilhada({ id }) {
             </button>
           </div>
 
-          {carregando && (
+          {(verificando || carregando) && (
             <div className="flex flex-col gap-3">
               {[1,2,3].map(i => (
                 <div key={i} className="h-16 rounded-2xl bg-slate-200 animate-pulse" />
@@ -168,14 +196,14 @@ export default function ListaPartilhada({ id }) {
             </div>
           )}
 
-          {!carregando && erro && (
+          {!verificando && !carregando && erro && (
             <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center">
               <p className="text-sm font-black text-red-600">Lista não encontrada</p>
               <p className="text-xs text-red-400 mt-1">O link pode ter expirado ou estar errado.</p>
             </div>
           )}
 
-          {!carregando && !erro && itens.length === 0 && (
+          {!verificando && !carregando && !erro && itens.length === 0 && (
             <div className="bg-white rounded-2xl border border-slate-100 p-10 flex flex-col items-center text-center">
               <ShoppingCart size={28} className="text-violet-300 mb-3" />
               <p className="text-sm font-black text-slate-600">Lista vazia</p>
@@ -254,7 +282,7 @@ export default function ListaPartilhada({ id }) {
                   {copiado ? "Copiado ✓" : "📤 Partilhar"}
                 </button>
                 <a
-                  href="/"
+                  href={ID_PARTILHA_RE.test(id) ? `/?lista=${id}` : "/"}
                   className="px-4 py-2 rounded-xl bg-white text-emerald-700 text-[12px] font-black"
                 >
                   Abrir PoupeJá →
