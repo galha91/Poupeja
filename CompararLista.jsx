@@ -1,7 +1,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Scale } from "lucide-react";
-import { termoDePesquisa, custoPorLoja } from "./lib/comparacao";
+import { termoDePesquisa, custoPorLoja, eGenerico } from "./lib/comparacao";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { pesquisarComRecurso } from "./lib/precosLocais";
 import { evento } from "./lib/analytics";
@@ -45,6 +45,12 @@ export async function compararArtigos(itens, aoAvancar = () => {}) {
       const it = artigos[i];
       const doCat = catalogo?.doCatalogo(it.nome);
       const q = it.q || doCat?.q || termoDePesquisa(it.nome);
+      // "Fruta", "Carne": geral demais para escolher um produto. Não se pesquisa.
+      if (!doCat && !it.escolha && eGenerico(it.nome)) {
+        resultado[i] = { item: it, q, custos: {}, generico: true };
+        aoAvancar();
+        continue;
+      }
       try {
         const { dados, guardado } = await pesquisarComRecurso(q);
         resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1, it.escolha) };

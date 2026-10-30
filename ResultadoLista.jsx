@@ -7,7 +7,7 @@ import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { registarMarcoConvidado } from "./lib/convidado";
-import { melhoresPorLoja, custoPorLoja, alternativas } from "./lib/comparacao";
+import { melhoresPorLoja, custoPorLoja, alternativas, exemplosGenerico } from "./lib/comparacao";
 import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
 import { resumoAtual, avaliarVigia } from "./lib/alertas";
@@ -81,7 +81,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
   ), [linhas]);
 
   // ── Resultado ──
-  const { unica, maisCara, porLoja, divisao, semPreco, parciais, comparaveis, grupo } = r;
+  const { unica, maisCara, porLoja, divisao, parciais, comparaveis, grupo } = r;
 
   // O resumo vai para o bloco de baixo da lista e para o cartão do Início.
   useEffect(() => {
@@ -253,7 +253,6 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
   }) : [];
 
   const notas = [
-    semPreco.length > 0 && `sem preço: ${semPreco.map((l) => l.nome).join(", ")}`,
     guardados.length > 0 && `${guardados.length === total ? "preços" : `${guardados.length} preços`} guardados${maisAntigo ? ` de ${quando(maisAntigo)}` : ""}`,
     caladas.length > 0 && `${juntarNomes(caladas)} não ${caladas.length > 1 ? "responderam" : "respondeu"}`,
   ].filter(Boolean);
@@ -422,10 +421,27 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
               {eDivisao
                 ? linhas.filter(daDivisao).map((l) => <LinhaArtigo key={l.item.id} l={l} loja={daDivisao(l)} />)
                 : linhas.filter((l) => l.custos[atual]).map((l) => <LinhaArtigo key={l.item.id} l={l} loja={atual} />)}
-              {naoHa.length > 0 && (
+              {/* Há noutra loja, não nesta */}
+              {naoHa.some((l) => Object.keys(l.custos).length) && (
                 <p style={{ fontSize: 12, color: "var(--pj-text-faint)", padding: "10px 0", borderTop: "1px solid var(--pj-subtle)" }}>
-                  Não há {eDivisao ? "aqui" : `no ${nomeCadeia(atual)}`}: {naoHa.map((l) => l.item.nome).join(", ")}
+                  Não há {eDivisao ? "aqui" : `no ${nomeCadeia(atual)}`}: {naoHa.filter((l) => Object.keys(l.custos).length).map((l) => l.item.nome).join(", ")}
                 </p>
+              )}
+              {/* Não entram na conta: gerais demais, ou sem produto que seja mesmo o artigo */}
+              {linhas.some((l) => !Object.keys(l.custos).length) && (
+                <div style={{ marginTop: 8, padding: "10px 12px", borderRadius: 12, background: "var(--pj-subtle)" }}>
+                  <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text)" }}>Fora da conta</p>
+                  {linhas.filter((l) => l.generico).map((l) => (
+                    <p key={l.item.id} style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.45, marginTop: 4 }}>
+                      «{l.item.nome}» é muito geral. Escreve qual: {exemplosGenerico(l.item.nome)}.
+                    </p>
+                  ))}
+                  {linhas.filter((l) => !l.generico && !Object.keys(l.custos).length).length > 0 && (
+                    <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.45, marginTop: 4 }}>
+                      Sem produto que seja mesmo {linhas.filter((l) => !l.generico && !Object.keys(l.custos).length).map((l) => `«${l.item.nome}»`).join(", ")}. Experimenta um nome mais simples (ex.: «arroz», «leite»).
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>
