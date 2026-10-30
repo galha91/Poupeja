@@ -36,3 +36,17 @@ test("um produto escolhido que já não vale hoje não entra na soma da lista", 
   assert.equal(r.custos.lidl.produto.id, "n");
   assert.ok(!alternativas({ ...dados, produtos: dados.produtos.map((x) => ({ ...x, relevancia: 1 })) }).some((x) => x.id === "plus"));
 });
+
+test("sem nada que seja mesmo o artigo, a soma da lista não usa o parecido", async () => {
+  const { eGenerico, exemplosGenerico } = await import("../lib/comparacao.js");
+  const dados = { modo: "unidade", produtos: [p("continente", "pao-hamburguer", 3.22, { relevancia: 1 })] };
+  assert.deepEqual(custoPorLoja(dados).custos, {});
+  // Escolhido à mão, vale.
+  const c = custoPorLoja(dados, 2, { loja: "continente", id: "pao-hamburguer" }).custos;
+  assert.equal(c.continente.custo, 6.44);
+  // O ecrã "Comparar preços" continua a mostrar o parecido quando não há mais nada.
+  assert.equal(melhoresPorLoja(dados, HOJE).ranking.length, 1);
+  assert.ok(eGenerico("Fruta") && eGenerico("frutas") && eGenerico(" Legumes ") && eGenerico("Carne"));
+  assert.ok(!eGenerico("Maçãs") && !eGenerico("Carne picada") && !eGenerico("Fruta da época"));
+  assert.match(exemplosGenerico("Fruta"), /maçãs/);
+});
