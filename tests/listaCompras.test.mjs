@@ -166,3 +166,16 @@ test("'Outro…' numa categoria: fora do catálogo fica nessa categoria; no cat�
   l = adicionarSem(l, "xpto", { id: 3, doCatalogo, categoria: "Inventada" });
   assert.equal(l[0].categoria, "");
 });
+
+test("lista partilhada: o que a pessoa já tinha junta-se no fim, sem repetir nem perder", async () => {
+  const { juntarPartilhada, ID_PARTILHA_RE } = await import("../lib/listaCompras.js");
+  const remotos = [it(1, "Leite meio-gordo"), it(2, "Ovos", { feito: true })];
+  const locais = [it(7, "ovos"), it(8, "Café moído"), it(9, "café moido"), it(10, "")];
+  const r = juntarPartilhada(remotos, locais);
+  assert.deepEqual(r.itens.map(x => x.id), [1, 2, 8]);
+  assert.equal(r.extras, 1);
+  assert.deepEqual(juntarPartilhada(remotos, []).itens, remotos);
+  assert.equal(juntarPartilhada(remotos, []).extras, 0);
+  assert.ok(ID_PARTILHA_RE.test("abc123") && ID_PARTILHA_RE.test("a".repeat(32)));
+  assert.ok(!ID_PARTILHA_RE.test("abc") && !ID_PARTILHA_RE.test("ABC123") && !ID_PARTILHA_RE.test("a/b123") && !ID_PARTILHA_RE.test("a".repeat(33)));
+});

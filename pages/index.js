@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { jaViuEmentas } from "../DestaqueEmentas";
 import dynamic from "next/dynamic";
 import Router from "next/router";
+import { ID_PARTILHA_RE } from "../lib/listaCompras";
 
 // Cada separador só descarrega o seu código quando é aberto (code-splitting).
 // Reduz fortemente o JavaScript inicial da home.
@@ -163,6 +164,10 @@ function PoupeJa() {
     // inicializador — sobrevive a qualquer remontagem/corrida no boot.
     if (typeof window !== "undefined") {
       try {
+        // ?lista=<id>: link de uma lista partilhada (vem de /lista/<id>).
+        // O ecrã da lista trata do convite e tira o parâmetro depois.
+        const convite = new URLSearchParams(window.location.search).get("lista");
+        if (convite && ID_PARTILHA_RE.test(convite)) { import("../SecaoListaCompras"); return "lista"; }
         const a = new URLSearchParams(window.location.search).get("atalho");
         // A lista abre direto pelo atalho: o código dela começa a descarregar
         // já, em paralelo com o arranque, e não só quando o separador desenha.
