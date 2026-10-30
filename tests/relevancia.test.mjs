@@ -39,11 +39,39 @@ const CASOS = [
   ["pudim proteico", "Pudim Proteico Chocolate Danone", "Supermercado/Laticínios e Ovos/Iogurtes e Outros Lácteos/Proteína", "continente", 2],
   ["azeitonas rodelas", "Azeitona Preta Oxidada em Rodelas Continente", "Supermercado/Frutas e Legumes/Tremoços e Azeitonas", "continente", 2],
   ["bolachas de milho", "Bolachas dos Marinheiros Milho e Sementes de Abóbora Cuétara", "Supermercado/Mercearia/Bolachas e Biscoitos/Bolachas e Biscoitos Salgados", "continente", 2],
+  // Auditoria de todo o catálogo (30/10/2026).
+  ["fermento", "Farinha de Trigo Tipo 55 sem Fermento", "Farinhas", "pingo-doce", 0],
+  ["água com gás", "Água caldas de penacova sem gas 1.5l (sdr)", "bebidas/águas", "auchan", 0],
+  ["água com gás", "Água com Gás Continente", "Bebidas/Água/Água com Gás", "continente", 2],
+  ["água", "Água com Gás", "Águas", "aldi", 1],
+  ["choco", "Chocolate de Leite dos Alpes", "Chocolates", "aldi", 1],
+  ["choco", "Choco Fresco", "Peixaria", "pingo-doce", 2],
+  ["leite gordo", "Leite Meio Gordo UHT", "Leite", "pingo-doce", 1],
+  ["leite gordo", "Leite uht gresso m/gordo pack poupança 8 x1l", "leite", "auchan", 1],
+  ["leite gordo", "Leite UHT Gordo Mimosa", "Leite", "continente", 2],
+  ["leite meio gordo", "Leite UHT Magro", "Leite", "pingo-doce", 0],
+  ["leite magro", "Leite UHT Meio Gordo Magro Sabor", "Leite", "pingo-doce", 1],
+  ["alho francês", "Alho Francês Continente", "Frutas e Legumes/Legumes/Cebola e Alho", "continente", 2],
+  ["alho", "Alho Francês Continente", "Frutas e Legumes/Legumes/Cebola e Alho", "continente", 1],
+  ["sal", "Sal auchan máquina loiça 2kg", "limpeza", "auchan", 1],
+  ["vinagre", "Vinagre de Limpeza Limão", "Limpeza", "pingo-doce", 1],
+  ["bacalhau", "Bacalhau à Gomes de Sá Cozinha Continente", "Refeições", "continente", 1],
+  ["bacalhau", "Bacalhau Espiritual", "Pratos Prontos", "pingo-doce", 1],
+  ["bacalhau", "Bacalhau Corrente 1ª da Noruega", "Bacalhau", "pingo-doce", 2],
+  ["salmão", "Salmão cabeça 2kg a 3kg", "peixaria", "auchan", 1],
+  ["natas", "Alternativa à Nata para Culinária", "Natas", "pingo-doce", 1],
+  ["fraldas", "Fraldas Incontinência L Continente", "Higiene", "continente", 1],
+  ["areia gato", "Caixa de Areia para Gato Fechada Cinza 45x35x32 cm Jomafe", "Animais/Gato/Caixas de Areia e Acessórios", "continente", 1],
+  ["areia gato", "Pá para Areia de Gato Continente", "Animais/Gato/Caixas de Areia e Acessórios", "continente", 1],
+  ["areia gato", "Areia para Gato É Continente", "Animais/Gato/Areia", "continente", 2],
+  ["cavala", "Filetes de Cavala em Azeite", "Conservas", "pingo-doce", 1],
+  ["batatas", "Batatas Waffles Birds Eye 10un = 567g", "", "apolonia", 1],
+  ["laranjas", "Laranjas de Sevilha Cortadas Ma Made Robertson`s 850g", "", "apolonia", 1],
 ];
 
 test("relevância com nomes e secções reais das lojas", () => {
   for (const [q, nome, categoria, loja, esperado] of CASOS) {
-    assert.equal(classificar({ nome, categoria }, palavras(q), loja), esperado, `«${q}» → ${nome}`);
+    assert.equal(classificar({ nome, categoria }, palavras(q), loja, undefined, q), esperado, `«${q}» → ${nome}`);
   }
 });
 
@@ -62,4 +90,40 @@ test("formas processadas saem quando há frescos em duas lojas", () => {
   ];
   assert.deepEqual(separarProcessados(ps, "morangos").map((p) => p.relevancia), [2, 2, 1]);
   assert.deepEqual(separarProcessados([{ loja: "c", nome: "Morangos Congelados", relevancia: 2 }], "morangos congelados").map((p) => p.relevancia), [2]);
+});
+
+test("formas processadas: calda, em pó (com acento), frito, peso escorrido", async () => {
+  const { separarProcessados } = await import("../lib/supermercados/relevancia.js");
+  const ps = [
+    { loja: "continente", nome: "Pêssego \"Roer\" Amarelo Continente", relevancia: 2 },
+    { loja: "apolonia", nome: "Pêssego em Metades Calda Ferbar 825g", relevancia: 2 },
+  ];
+  assert.deepEqual(separarProcessados(ps, "pêssegos").map((p) => p.relevancia), [2, 1]);
+  const acucar = [
+    { loja: "a", nome: "Açúcar Branco", relevancia: 2 }, { loja: "b", nome: "Açúcar Branco", relevancia: 2 },
+    { loja: "aldi", nome: "Açúcar em Pó", relevancia: 2 },
+  ];
+  assert.equal(separarProcessados(acucar, "açúcar")[2].relevancia, 1);
+  const cog = [{ loja: "a", nome: "Cogumelos Brancos", relevancia: 2 }, { loja: "b", nome: "Cogumelos laminados auchan 800(460)g", relevancia: 2 }];
+  assert.equal(separarProcessados(cog, "cogumelos")[1].relevancia, 1);
+  // Milho doce: a lata é o normal; uma loja com espiga fresca não as tira.
+  const milho = [{ loja: "a", nome: "Milho Doce Espiga", relevancia: 2 }, ...["b", "c", "d"].map((l) => ({ loja: l, nome: "Milho Doce em Lata", relevancia: 2 }))];
+  assert.ok(separarProcessados(milho, "milho doce").every((p) => p.relevancia === 2));
+});
+
+test("variantes: magra, light, sabores… só se a loja não tiver a normal", async () => {
+  const { eVariante } = await import("../lib/supermercados/relevancia.js");
+  assert.ok(eVariante("Manteiga Magra Continente", "manteiga"));
+  assert.ok(eVariante("Iogurte Grego Ligeiro Natural", "iogurte grego"));
+  assert.ok(eVariante("Croissant de Chocolate Mars", "croissants"));
+  assert.ok(!eVariante("Manteiga com Sal", "manteiga"));
+  assert.ok(!eVariante("Leite Magro Gresso 1L", "leite magro"));
+  assert.ok(!eVariante("Chocolate em Pó", "chocolate em pó"));
+});
+
+test("preço com ponto dos milhares e vírgula decimal (Apolónia)", async () => {
+  const { lerNumero } = await import("../lib/supermercados/comum.js");
+  assert.equal(lerNumero("5.995,00"), 5995);
+  assert.equal(lerNumero("2,99"), 2.99);
+  assert.equal(lerNumero("1.49"), 1.49);
 });
