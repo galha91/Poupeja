@@ -1,0 +1,40 @@
+name: Auditar a comparação da lista
+
+# De 15 em 15 dias (dias 1 e 15, às 06:20 UTC — depois do verificar-catalogo
+# do dia 1) e à mão (Actions → "Auditar a comparação da lista" → Run workflow).
+#
+# Pesquisa cada artigo do catálogo na API do site e vê que produto entra na
+# soma em cada loja. Abre um pull request com o relatório
+# (data/auditoria-comparacao.md): preços fora do normal, artigos com menos de
+# 2 lojas e o que mudou desde a última vez. Nada muda no site sem revisão.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 6 1,15 * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Auditar cada artigo na API do site
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/auditar-comparacao.mjs
+      - name: Resumo da execução
+        run: cat data/auditoria-comparacao.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: auditoria-comparacao-automatica
+          commit-message: "Auditoria da comparação da lista"
+          title: "Auditoria da comparação da lista"
+          body-path: data/auditoria-comparacao.md
+          add-paths: |
+            data/auditoria-comparacao.json
+            data/auditoria-comparacao.md
