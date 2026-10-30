@@ -67,6 +67,9 @@ const CASOS = [
   ["cavala", "Filetes de Cavala em Azeite", "Conservas", "pingo-doce", 1],
   ["batatas", "Batatas Waffles Birds Eye 10un = 567g", "", "apolonia", 1],
   ["laranjas", "Laranjas de Sevilha Cortadas Ma Made Robertson`s 850g", "", "apolonia", 1],
+  ["coca cola", "Refrigerante com Gás Cola Zero Coca-Cola", "Bebidas/Refrigerantes/Refrigerantes com Gás", "continente", 2],
+  ["coca cola", "Coca-Cola Original Volta 1,5L", "", "apolonia", 2],
+  ["laranja", "Refrigerante de Laranja com Gás", "Refrigerantes", "continente", 1],
 ];
 
 test("relevância com nomes e secções reais das lojas", () => {
