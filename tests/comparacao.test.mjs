@@ -50,3 +50,19 @@ test("sem nada que seja mesmo o artigo, a soma da lista não usa o parecido", as
   assert.ok(!eGenerico("Maçãs") && !eGenerico("Carne picada") && !eGenerico("Fruta da época"));
   assert.match(exemplosGenerico("Fruta"), /maçãs/);
 });
+
+test("em cada loja, a versão normal ganha à variante; preços de leitura absurdos saem", async () => {
+  const { semAbsurdos } = await import("../lib/comparacao.js");
+  const dados = { modo: "unidade", produtos: [
+    p("continente", "magra", 7.96, { variante: true }), p("continente", "normal", 8.36),
+    p("pingo-doce", "so-magra", 7.5, { variante: true }),
+  ] };
+  const { melhores } = melhoresPorLoja(dados, HOJE);
+  assert.equal(melhores.continente.id, "normal");
+  assert.equal(melhores["pingo-doce"].id, "so-magra");
+  const cog = ["a", "b", "c", "d"].map((l, i) => p(l, "c" + i, 4 + i)).concat(p("apolonia", "erro", 0.01));
+  assert.ok(!semAbsurdos(cog).some((x) => x.id === "erro"));
+  // O sal grosso barato a sério fica, ao lado das flores de sal.
+  const sal = [p("a", "grosso", 0.29), p("b", "flor", 4.5), p("c", "flor2", 5), p("d", "flor3", 4.8), p("e", "fino", 0.45)];
+  assert.equal(semAbsurdos(sal).length, 5);
+});
