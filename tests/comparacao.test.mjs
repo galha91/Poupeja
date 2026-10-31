@@ -82,3 +82,17 @@ test("palavra geral: as opções para escolher são artigos, não outra palavra 
     }
   }
 });
+
+import { textoReferencia } from "../lib/comparacao.js";
+test("textoReferencia: quantidade do preço mostrado", () => {
+  assert.equal(textoReferencia({ qtd: 1, unidade: "l" }), "1 l");
+  assert.equal(textoReferencia({ qtd: 0.5, unidade: "kg" }), "500 g");
+  assert.equal(textoReferencia({ qtd: 1.5, unidade: "kg" }, 2), "3 kg");
+  assert.equal(textoReferencia(null), "");
+});
+test("textoReferencia: plural e unidades pequenas", () => {
+  assert.equal(textoReferencia({ qtd: 24, unidade: "ovo" }), "24 ovos");
+  assert.equal(textoReferencia({ qtd: 1, unidade: "rolo" }), "1 rolo");
+  assert.equal(textoReferencia({ qtd: 0.088, unidade: "L" }), "88 ml");
+  assert.equal(textoReferencia({ qtd: 1, unidade: "L" }), "1 l");
+});

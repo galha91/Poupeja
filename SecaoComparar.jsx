@@ -5,7 +5,7 @@ import LogoLoja from "./LogoLoja";
 import { Preco } from "./Preco";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { valorComparacao, melhoresPorLoja, termoDePesquisa } from "./lib/comparacao";
+import { valorComparacao, melhoresPorLoja, termoDePesquisa, eGenerico, opcoesGenerico } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
 import { ITENS, CATEGORIAS as CATS_CATALOGO, itemPorNome } from "./data/catalogo-lista";
@@ -372,6 +372,7 @@ function Esqueleto() {
 
 export default function SecaoComparar() {
   const [texto, setTexto] = useState("");
+  const [verMesmoAssim, setVerMesmoAssim] = useState(false);
   const [pesquisa, setPesquisa] = useState("");
   const [dados, setDados] = useState(null);
   const [estado, setEstado] = useState("inicio"); // inicio | a-carregar | pronto | erro
@@ -454,6 +455,7 @@ export default function SecaoComparar() {
     setErro("");
     setFiltro(null);
     setVerOutros(false);
+    setVerMesmoAssim(false);
     setNaLista(false);
     setProdutosNaLista(new Set());
     const n = ++pedido.current;
@@ -486,10 +488,12 @@ export default function SecaoComparar() {
     // barato de marca própria (ou de outras marcas).
     const produtos = marca === "todas" ? dados.produtos
       : dados.produtos.filter((p) => (marca === "propria" ? p.marcaPropria : !p.marcaPropria));
-    const { modo, principais, melhores, ranking } = melhoresPorLoja({ ...dados, produtos });
+    // Estrito: um produto só «parecido» nunca é coroado vencedor.
+    const { modo, principais, melhores, ranking } = melhoresPorLoja({ ...dados, produtos }, undefined, { estrito: true });
     const lista = filtro ? produtos.filter((p) => p.loja === filtro) : produtos;
     const minimo = ranking[0] ? valorComparacao(ranking[0], modo) : null;
     return {
+      parecidos: ranking[0] ? [] : produtos.slice(0, 12),
       vencedor: ranking[0] || null,
       empatados: ranking.filter((p) => Math.abs(valorComparacao(p, modo) - minimo) < 0.005),
       segundo: ranking.find((p) => p.loja !== ranking[0]?.loja) || null,
@@ -637,7 +641,30 @@ export default function SecaoComparar() {
         </div>
       )}
 
-      {estado === "pronto" && vista && (
+      {estado === "pronto" && vista && eGenerico(pesquisa) && opcoesGenerico(pesquisa).length > 0 && !verMesmoAssim && (
+        // Palavra geral («pão», «leite»): coroar um produto qualquer enganava. Primeiro pergunta-se qual.
+        <div className="px-4 mt-5">
+          <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, padding: 16 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>«{pesquisa}» é muito geral. Qual?</p>
+            <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.5 }}>
+              Escolhe uma opção para compararmos o mesmo produto em todas as lojas.
+            </p>
+            <div className="flex gap-2 flex-wrap" style={{ marginTop: 12 }}>
+              {opcoesGenerico(pesquisa).map((o) => (
+                <button key={o} onClick={() => procurar(o)} className="pj-tap press"
+                  style={{ padding: "8px 14px", borderRadius: 999, border: "1px solid var(--pj-border)", background: "var(--pj-surface)", fontSize: 13.5, fontWeight: 600, color: "var(--pj-text)" }}>
+                  {o}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setVerMesmoAssim(true)} className="pj-tap" style={{ marginTop: 12, background: "transparent", border: 0, padding: 0, fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+              Ver mesmo assim os resultados
+            </button>
+          </div>
+        </div>
+      )}
+
+      {estado === "pronto" && vista && !(eGenerico(pesquisa) && opcoesGenerico(pesquisa).length > 0 && !verMesmoAssim) && (
         vista.vencedor ? (
           <div className="px-4 mt-4 flex flex-col gap-4">
             <Vencedor
@@ -718,12 +745,21 @@ export default function SecaoComparar() {
                   </button>
                 </>
               ) : <>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Não encontrámos «{pesquisa}».</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
+                {vista.parecidos.length ? `Nenhum produto é mesmo «${pesquisa}».` : `Não encontrámos «${pesquisa}».`}
+              </p>
               <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.5 }}>
-                Experimenta uma palavra mais simples, como «arroz» em vez de «arroz agulha extra longo».
+                {vista.parecidos.length
+                  ? "Não comparamos preços de produtos diferentes. Estes são parecidos; experimenta um nome mais simples."
+                  : "Experimenta uma palavra mais simples, como «arroz» em vez de «arroz agulha extra longo»."}
               </p>
               </>}
             </div>
+            {marca === "todas" && vista.parecidos.length > 0 && (
+              <div className="mt-3" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
+                {vista.parecidos.map((p, i) => <LinhaProduto key={`s-${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} />)}
+              </div>
+            )}
           </div>
         )
       )}
