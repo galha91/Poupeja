@@ -76,3 +76,14 @@ test("«tinta branca» encontra «Tinta … branco»", () => {
   const q = "tinta branca", termos = palavras(q);
   assert.equal(classificar({ nome: "Tinta interior parede branco mate 15L" }, termos, "leroy-merlin", "unidade", q), 2);
 });
+
+test("pack de unidades com o preço do pack no rótulo «€/un»", async () => {
+  const { corrigirPrecoPack } = await import("../lib/supermercados/comum.js");
+  // Auchan, 31/10/2026: «Lâmpada mini led e27 40weq luz branca 2 unidades», 1 €, rótulo 1 €/un.
+  assert.equal(corrigirPrecoPack(1, 1, { qtd: 2, unidade: "un" }), 0.5);
+  assert.equal(corrigirPrecoPack(4.99, 4.99, { qtd: 3, unidade: "un" }), 1.66);
+  // Rótulo já por unidade, ou uma só unidade, ou kg: fica.
+  assert.equal(corrigirPrecoPack(4, 1.33, { qtd: 3, unidade: "un" }), 1.33);
+  assert.equal(corrigirPrecoPack(1.39, 1.39, { qtd: 1, unidade: "un" }), 1.39);
+  assert.equal(corrigirPrecoPack(2, 2, { qtd: 2, unidade: "kg" }), 2);
+});
