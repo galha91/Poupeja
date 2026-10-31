@@ -7,7 +7,7 @@ import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { registarMarcoConvidado } from "./lib/convidado";
-import { melhoresPorLoja, custoPorLoja, alternativas, exemplosGenerico } from "./lib/comparacao";
+import { melhoresPorLoja, custoPorLoja, alternativas, exemplosGenerico, textoReferencia } from "./lib/comparacao";
 import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
 import { resumoAtual, avaliarVigia } from "./lib/alertas";
@@ -283,7 +283,12 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
               {c.produto.nome}{c.produto.quantidade && !c.produto.aoPeso ? ` · ${c.produto.quantidade}` : c.produto.aoPeso ? " · ao peso" : ""}
             </span>
           </span>
-          <span className="pj-num" style={{ fontSize: 14, fontWeight: 700, color: "var(--pj-text)" }}>{eur(c.custo, 2)} €</span>
+          <span style={{ textAlign: "right" }}>
+            <span className="pj-num" style={{ display: "block", fontSize: 14, fontWeight: 700, color: "var(--pj-text)" }}>{eur(c.custo, 2)} €</span>
+            {l.referencia && textoReferencia(l.referencia, l.item.qty || 1) && (
+              <span style={{ display: "block", fontSize: 11, color: "var(--pj-text-faint)" }}>por {textoReferencia(l.referencia, l.item.qty || 1)}</span>
+            )}
+          </span>
           {l.dados && (
             <button onClick={() => setAEscolher(aberto ? null : `${l.item.id}|${loja}`)} aria-expanded={aberto} aria-label={`Trocar ${l.item.nome} por outro produto do ${nomeCadeia(loja)}`}
               className="pj-tap flex items-center justify-center flex-none"
@@ -436,9 +441,14 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
                       «{l.item.nome}» é muito geral. Escreve qual: {exemplosGenerico(l.item.nome)}.
                     </p>
                   ))}
-                  {linhas.filter((l) => !l.generico && !Object.keys(l.custos).length).length > 0 && (
+                  {linhas.filter((l) => l.erro && !l.generico).length > 0 && (
                     <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.45, marginTop: 4 }}>
-                      Sem produto que seja mesmo {linhas.filter((l) => !l.generico && !Object.keys(l.custos).length).map((l) => `«${l.item.nome}»`).join(", ")}. Experimenta um nome mais simples (ex.: «arroz», «leite»).
+                      Não consegui ver os preços de {linhas.filter((l) => l.erro && !l.generico).map((l) => `«${l.item.nome}»`).join(", ")}. Toca em atualizar (↻) para tentar de novo.
+                    </p>
+                  )}
+                  {linhas.filter((l) => !l.generico && !l.erro && !Object.keys(l.custos).length).length > 0 && (
+                    <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.45, marginTop: 4 }}>
+                      Sem produto que seja mesmo {linhas.filter((l) => !l.generico && !l.erro && !Object.keys(l.custos).length).map((l) => `«${l.item.nome}»`).join(", ")}. Experimenta um nome mais simples (ex.: «arroz», «leite»).
                     </p>
                   )}
                 </div>
@@ -486,7 +496,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
 
       <div className="flex items-center justify-between gap-2" style={{ padding: "0 16px", borderTop: "1px solid var(--pj-subtle)" }}>
         <span style={{ ...pequeno, padding: "10px 0" }}>
-          Mesma quantidade em todas as lojas{notas.length ? ` · ${notas.join(" · ")}` : ""}
+          Preços para a mesma quantidade em todas as lojas{notas.length ? ` · ${notas.join(" · ")}` : ""}
         </span>
         <button onClick={onAtualizar} aria-label="Atualizar preços" className="pj-tap flex items-center justify-center flex-none"
           style={{ width: 36, height: 36, color: "var(--pj-brand-ink)", background: "transparent", border: 0 }}>
