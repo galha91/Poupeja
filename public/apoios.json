@@ -1,5 +1,5 @@
 {
-  "atualizado": "2026-10-19",
+  "atualizado": "2026-10-31",
   "categorias": [
     {
       "id": "todos",
@@ -140,6 +140,21 @@
       "comoRequerer": "Carrega o passe no cartão navegante (Lisboa) ou Andante (Porto) nas máquinas, balcões, Payshop ou na app da operadora.",
       "link": "https://www.navegante.pt/viajar/tarifario-navegante",
       "novo": false
+    },
+    {
+      "id": "apoio-carro-eletrico",
+      "titulo": "Apoio à Compra de Carro Elétrico",
+      "descricao": "O Governo anunciou em outubro de 2026 um novo apoio para famílias com menos rendimentos comprarem um carro 100% elétrico: paga até 80% do preço sem IVA, com um teto anunciado de 15.000€ (16.000€ se abateres um carro a gasolina ou gasóleo), e há até 1.000€ para instalar um carregador. Só há verba para cerca de 20 mil carros. O calendário e o regulamento ainda não foram publicados. À parte, continua previsto o incentivo geral do Fundo Ambiental para todos (4.000€ na última fase, que já esgotou).",
+      "valor": "Até 80% do preço do carro · candidaturas ainda não abertas",
+      "categoria": "transportes",
+      "quemPode": [
+        "Quem tem Tarifa Social de Eletricidade",
+        "Ou agregados com rendimento até 11.572€ por ano (80% do rendimento mediano)",
+        "Compra de carro 100% elétrico; regras finais ainda por publicar"
+      ],
+      "comoRequerer": "Ainda não há candidaturas. Quando abrirem, serão no portal do Fundo Ambiental (fundoambiental.pt). Se tens Tarifa Social, guarda o comprovativo; se vais abater um carro antigo, só num centro autorizado (Valorcar), que emite o certificado de cancelamento da matrícula.",
+      "link": "https://www.fundoambiental.pt/",
+      "novo": true
     },
     {
       "id": "porta-65-jovem",
