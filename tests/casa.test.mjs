@@ -67,3 +67,12 @@ test("as lâmpadas das duas lojas contam como o artigo procurado", () => {
     assert.equal(classificar(p, termos, loja, "unidade", q), 2, p.nome);
   }
 });
+
+test("litros de oferta contam («15L+3L» são 18 L)", () => {
+  assert.deepEqual(lerQuantidade("Tinta interior parede anti mofo luxens branco mate 15L+3L"), { qtd: 18, unidade: "l" });
+});
+
+test("«tinta branca» encontra «Tinta … branco»", () => {
+  const q = "tinta branca", termos = palavras(q);
+  assert.equal(classificar({ nome: "Tinta interior parede branco mate 15L" }, termos, "leroy-merlin", "unidade", q), 2);
+});
