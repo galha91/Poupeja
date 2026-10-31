@@ -22,3 +22,13 @@ test("a versão compacta dá o mesmo custo por loja que a resposta inteira", () 
   const resumo = (r) => ({ ref: r.referencia, custos: Object.fromEntries(Object.entries(r.custos).map(([k, v]) => [k, [v.custo, v.produto.nome]])) });
   assert.deepEqual(resumo(custoPorLoja(c, 2)), resumo(custoPorLoja(dados, 2)));
 });
+
+test("guardado no dispositivo: só o que é mesmo o artigo (sem os parecidos como se fossem)", async () => {
+  const { compactar } = await import("../lib/precosLocais.js");
+  const p = (loja, nome, rel, extra = {}) => ({ loja, lojaNome: loja, id: nome, nome, preco: 3, precoUnidade: 3, unidade: "kg", relevancia: rel, ...extra });
+  // Sem resultado direto: não guarda o «Pão de Hambúrguer» como se fosse hambúrguer.
+  assert.deepEqual(compactar({ q: "hambúrguer", modo: "unidade", lojas: [], produtos: [p("continente", "Pão de Hambúrguer", 1)] }).produtos, []);
+  // Com resultado direto: guarda-o, e a variante fica marcada.
+  const g = compactar({ q: "leite", modo: "unidade", lojas: [], produtos: [p("continente", "Leite Magro", 2, { variante: true }), p("pingo-doce", "Leite", 2)] });
+  assert.deepEqual(g.produtos.map((x) => [x.loja, x.variante || false]), [["continente", true], ["pingo-doce", false]]);
+});
