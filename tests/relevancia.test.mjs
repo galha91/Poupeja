@@ -130,3 +130,73 @@ test("preço com ponto dos milhares e vírgula decimal (Apolónia)", async () =>
   assert.equal(lerNumero("2,99"), 2.99);
   assert.equal(lerNumero("1.49"), 1.49);
 });
+
+/*
+ * Pesquisas livres (o que as pessoas escrevem à mão) — nomes reais, 31/10/2026.
+ */
+const LIVRES = [
+  // Marcas: a marca vem no fim do nome; o tipo de produto decide.
+  ["nutella", "Creme para Barrar Chocolate e Avelãs Nutella", "Mel/Nutella e Cremes de Barrar", "continente", 2],
+  ["nutella", "Gelado Nutella", "Gelados", "continente", 1],
+  ["philadelphia", "Queijo para Barrar Light Philadelphia", "Queijos/Queijo para Barrar", "continente", 2],
+  ["philadelphia", "Queijo Cottage Philadelphia", "Queijos Frescos/Cottage", "continente", 1],
+  ["special k", "Cereais Special K Classic", "", "pingo-doce", 2],
+  ["sagres", "Cerveja com Álcool em Lata Sagres", "Cervejas/Cerveja Tradicional", "continente", 2],
+  ["sagres", "Sardinhas em tomate sagres 120 (84)g", "mercearia/conservas/sardinha", "auchan", 1],
+  ["heineken", "Cerveja com Álcool Heineken", "Cervejas", "continente", 2],
+  ["super bock", "Cerveja com Álcool Super Bock", "Cervejas", "continente", 2],
+  ["7up", "Refrigerante com Gás 7up Zero", "Refrigerantes com Gás", "pingo-doce", 2],
+  ["monster", "Monster Energy Zero Volta 50cl", "", "apolonia", 2],
+  ["monster", "Monstera deliciosa em vaso cerâmica", "plantas-e-flores", "auchan", 1],
+  ["ariel", "Detergente Máquina Roupa Cápsulas Ariel", "Limpeza/Roupa", "continente", 2],
+  ["ariel", "Disney - Boneca Princesa Ariel", "Brinquedos e Jogos/Bonecas", "continente", 1],
+  ["ajax", "Lava Tudo Limão Ajax", "Limpeza/Chão e Superfícies/Lava Tudo", "continente", 2],
+  ["ajax", "Ajax Nº 1 - O Gato Está na Maior", "Literatura e Coleções Infantis", "continente", 1],
+  ["m&m", "Drageias de Chocolate com Amendoim M&M's", "Snacks de Chocolate", "continente", 2],
+  ["m&m", "M&M Gold Edition Baga Espumante Bairrada Bruto Nature", "Champanhe e Espumante", "continente", 1],
+  ["nespresso", "Cápsulas de Café Nespresso Clássico", "Cápsulas de Café", "pingo-doce", 2],
+  ["nespresso", "Detergente Cápsulas de Limpeza para Máquinas Nespresso HG", "", "apolonia", 1],
+  ["cream crackers", "Bolachas Cream Cracker Continente", "Bolachas", "continente", 2],
+  ["coca cola", "Absolut and Sprite Cocktail", "Bebidas Espirituosas", "continente", 0],
+  ["sprite", "Absolut and Sprite Cocktail", "Bebidas Espirituosas", "continente", 1],
+  // Parecidos e imitações.
+  ["bifes", "Bifes Soja Protisoja Salutem 250g", "", "apolonia", 1],
+  ["leite em pó", "Leite em Pó NAN 4 OptiPro", "Alimentação Infantil", "pingo-doce", 1],
+  ["leite em pó", "Leite em Pó Gordo", "Leite em Pó", "pingo-doce", 2],
+  ["cebolinho", "Cebolinho Vaso Primeira Folha", "", "apolonia", 1],
+  ["algodão", "Algodão Limpa Pratas Duraglit 75g", "", "apolonia", 1],
+  ["figos", "Figo com farinha auchan 1 kg", "", "auchan", 1],
+];
+
+test("pesquisas livres: marcas, imitações e parecidos", () => {
+  for (const [q, nome, categoria, loja, esperado] of LIVRES) {
+    assert.equal(classificar({ nome, categoria }, palavras(q), loja, undefined, q), esperado, `«${q}» → ${nome}`);
+  }
+});
+
+test("palavras soltas e marcas com vários produtos pedem o artigo", async () => {
+  const { eGenerico, exemplosGenerico, termoDePesquisa } = await import("../lib/comparacao.js");
+  for (const t of ["pão", "Leite", "queijo", "Café", "vinho", "refrigerante", "bolachas", "danone", "Nescafé", "fairy", "carne de vaca", "feijão", "couve", "detergente", "papa"]) {
+    assert.ok(eGenerico(t), `«${t}» devia pedir o artigo`);
+    assert.ok(exemplosGenerico(t).length > 3);
+  }
+  for (const t of ["pão de forma", "leite magro", "coca cola", "nutella", "queijo ralado", "café moído", "detergente loiça", "feijão verde", "sagres"]) {
+    assert.ok(!eGenerico(t), `«${t}» não devia pedir o artigo`);
+  }
+  // O que as lojas percebem.
+  assert.equal(termoDePesquisa("Yogurte natural"), "iogurte natural");
+  assert.equal(termoDePesquisa("hamburger"), "hambúrguer");
+  assert.equal(termoDePesquisa("chicletes"), "pastilhas elásticas");
+  assert.equal(termoDePesquisa("bifes de vaca"), "bifes de novilho");
+  // Abreviaturas só quando são abreviaturas: "máquina" e "embalagem" ficam como estão.
+  assert.equal(termoDePesquisa("pastilhas máquina loiça"), "pastilhas máquina loiça");
+  assert.equal(termoDePesquisa("Detergente máq. loiça"), "detergente máquina loiça");
+  assert.equal(termoDePesquisa("embalagem de ovos"), "embalagem de ovos");
+});
+
+test("cerejas em licor não são cerejas", async () => {
+  const { separarProcessados } = await import("../lib/supermercados/relevancia.js");
+  const ps = [{ loja: "auchan", nome: "Cereja nacional caixa 2 kg", relevancia: 2 }, { loja: "apolonia", nome: "Cerejas Pretas Luxardo Kirsch Opies 460g", relevancia: 2 },
+    { loja: "continente", nome: "Cereja Continente", relevancia: 2 }];
+  assert.deepEqual(separarProcessados(ps, "cerejas").map((p) => p.relevancia), [2, 1, 2]);
+});
