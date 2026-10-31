@@ -66,3 +66,19 @@ test("em cada loja, a versão normal ganha à variante; preços de leitura absur
   const sal = [p("a", "grosso", 0.29), p("b", "flor", 4.5), p("c", "flor2", 5), p("d", "flor3", 4.8), p("e", "fino", 0.45)];
   assert.equal(semAbsurdos(sal).length, 5);
 });
+
+test("palavra geral: as opções para escolher são artigos, não outra palavra geral", async () => {
+  const { opcoesGenerico, eGenerico, termoDePesquisa } = await import("../lib/comparacao.js");
+  const { doCatalogo } = await import("../lib/catalogoLista.js");
+  assert.deepEqual(opcoesGenerico("Pão").slice(0, 3), ["Pão de forma", "Carcaças", "Baguete"]);
+  assert.ok(opcoesGenerico("leite").includes("Leite magro"));
+  assert.deepEqual(opcoesGenerico("maçãs"), []); // não é geral
+  for (const palavra of ["pão", "leite", "queijo", "café", "iogurte", "sumo", "vinho", "refrigerante", "bolachas", "feijão", "couve", "detergente", "carne", "fruta", "peixe", "legumes"]) {
+    const ops = opcoesGenerico(palavra);
+    assert.ok(ops.length >= 2, `«${palavra}» sem opções`);
+    for (const o of ops) {
+      assert.ok(!eGenerico(o), `«${palavra}» → «${o}» é outra palavra geral`);
+      assert.ok(doCatalogo(o) || termoDePesquisa(o).length > 3, `«${o}» sem termo`);
+    }
+  }
+});

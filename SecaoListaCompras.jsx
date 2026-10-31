@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
 import { ArrowLeft, Bookmark, ShoppingBasket, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
+import { eGenerico, opcoesGenerico } from "./lib/comparacao";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, juntarPartilhada, ID_PARTILHA_RE, MAX_ARTIGOS } from "./lib/listaCompras";
@@ -151,6 +152,7 @@ function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onDefinirQ
 export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   const [itens, setItens]       = useState(lerItens);
   const [texto, setTexto]       = useState("");
+  const [perguntou, setPerguntou] = useState(false);   // tentou juntar uma palavra geral: as opções ficam à vista
   const [focado, setFocado]     = useState(false);
   const [editando, setEditando] = useState(null);
   const [verComprados, setVerComprados] = useState(false);
@@ -354,16 +356,30 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   });
   // Com a lista vazia, o "Já comparaste" aparece por baixo, à vista (não em menu).
   // O menu só aparece enquanto se escreve: com o campo vazio não tapa a lista.
-  const sugestoes = focado && texto.trim() && catalogo ? catalogo.sugerir(texto, { comparados }) : [];
+  // Palavra geral ("pão"): as opções vêm logo à frente, antes de se acabar de escrever.
+  const geral = focado && texto.trim() && eGenerico(texto) && !catalogo?.doCatalogo(texto) ? opcoesGenerico(texto) : [];
+  const opcoes = geral.map(nome => ({ nome, origem: "opcao" }));
+  const sugestoes = focado && texto.trim()
+    ? [...opcoes, ...(catalogo ? catalogo.sugerir(texto, { comparados }).filter(s => !geral.some(o => semAcentos(o) === semAcentos(s.nome))) : [])]
+    : [];
   const iniciais = !itens.length && !texto.trim() ? sugestoesIniciais(comparados) : [];
 
   // ── Ações ──
-  async function juntar(nome, { foco = true, categoria = "" } = {}) {
+  async function juntar(nome, { foco = true, categoria = "", forcar = false } = {}) {
     if (!String(nome || "").trim()) return;
-    setTexto("");
-    if (foco) inputRef.current?.focus();
     // O nome e a categoria certos vêm do catálogo (já carregado, quase sempre).
     const doCatalogo = (catalogo || await carregarCatalogo())?.doCatalogo;
+    // Palavra geral demais ("pão", "leite", "queijo"): não entra às cegas, pede-se
+    // o artigo ali mesmo, com as opções por baixo do campo. (O catálogo manda: "Esponjas" entra.)
+    if (!forcar && !doCatalogo?.(nome) && eGenerico(nome) && opcoesGenerico(nome).length) {
+      setPerguntou(true);
+      inputRef.current?.focus();
+      evento("lista_pediu_artigo", { palavra: String(nome).trim().toLowerCase().slice(0, 30) });
+      return;
+    }
+    setPerguntou(false);
+    setTexto("");
+    if (foco) inputRef.current?.focus();
     // Primeiro artigo de uma lista vazia = lista criada (GA4).
     if (!pendentes.length) evento("lista_criada", { origem: doCatalogo?.(nome) ? "catalogo" : "texto" });
     setItens(prev => adicionar(prev, nome, { doCatalogo, categoria }));
@@ -510,7 +526,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
             ref={inputRef}
             type="text"
             value={texto}
-            onChange={e => { setTexto(e.target.value); carregarCatalogo(); }}
+            onChange={e => { setTexto(e.target.value); setPerguntou(false); carregarCatalogo(); }}
             onFocus={() => { setFocado(true); setEditando(null); }}
             onBlur={() => setFocado(false)}
             onKeyDown={e => e.key === "Escape" && (setTexto(""), e.currentTarget.blur())}
@@ -534,6 +550,11 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
         {sugestoes.length > 0 && (
           <ul id="pj-lista-sugestoes" role="listbox" aria-label="Sugestões" className="absolute left-4 right-4"
             style={{ marginTop: 6, padding: "4px 0", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)", boxShadow: "0 12px 32px -12px rgba(20,35,28,0.28)" }}>
+            {opcoes.length > 0 && (
+              <li role="presentation" style={{ padding: "8px 14px 4px", fontSize: 13, fontWeight: 600, color: perguntou ? "var(--pj-brand-ink)" : "var(--pj-text-muted)" }}>
+                {perguntou ? `«${texto.trim()}» é muito geral. Qual?` : "Qual? Escolhe uma opção"}
+              </li>
+            )}
             {sugestoes.map(s => {
               const na = pendentes.find(i => semAcentos(i.nome) === semAcentos(s.nome));
               return (
@@ -549,6 +570,14 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
                 </li>
               );
             })}
+            {perguntou && opcoes.length > 0 && (
+              <li role="option" aria-selected={false} style={{ borderTop: "1px solid var(--pj-subtle)", marginTop: 4 }}>
+                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => juntar(texto, { forcar: true })}
+                  className="pj-tap w-full text-left" style={{ minHeight: 44, padding: "0 14px", background: "transparent", border: 0, fontSize: 13.5, color: "var(--pj-text-muted)" }}>
+                  Juntar «{texto.trim()}» mesmo assim
+                </button>
+              </li>
+            )}
           </ul>
         )}
       </div>
