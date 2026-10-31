@@ -200,3 +200,27 @@ test("cerejas em licor não são cerejas", async () => {
     { loja: "continente", nome: "Cereja Continente", relevancia: 2 }];
   assert.deepEqual(separarProcessados(ps, "cerejas").map((p) => p.relevancia), [2, 1, 2]);
 });
+
+test("embalagens pequenas: o preço «por 100» com a etiqueta «€/kg» corrige-se", async () => {
+  const { corrigirPrecoPorCem } = await import("../lib/supermercados/comum.js");
+  // Casos reais de 31/10/2026: o rótulo da loja vinha 10× abaixo do real.
+  assert.equal(corrigirPrecoPorCem(2.69, 2.99, { qtd: 0.09, unidade: "kg" }), 29.89);   // M&M's 90 g (Auchan)
+  assert.equal(corrigirPrecoPorCem(1.98, 2.64, { qtd: 0.075, unidade: "l" }), 26.4);    // pasta de dentes 75 ml (Continente)
+  assert.equal(corrigirPrecoPorCem(1.29, 2.69, { qtd: 0.048, unidade: "kg" }), 26.88);  // croissant 48 g (Continente)
+  // O que está certo fica como está.
+  assert.equal(corrigirPrecoPorCem(1.99, 13.27, { qtd: 0.15, unidade: "kg" }), 13.27);  // 150 g
+  assert.equal(corrigirPrecoPorCem(8.2, 20.5, { qtd: 0.4, unidade: "kg" }), 20.5);
+  assert.equal(corrigirPrecoPorCem(1.09, 10.38, { qtd: 0.23, unidade: "kg" }), 10.38);  // «230(105) g»: a loja usa o peso escorrido
+  assert.equal(corrigirPrecoPorCem(4.29, 4.29, { qtd: 12, unidade: "un" }), 4.29);      // unidades não
+  assert.equal(corrigirPrecoPorCem(0, 2.99, { qtd: 0.09, unidade: "kg" }), 2.99);
+  assert.equal(corrigirPrecoPorCem(2.69, 2.99, null), 2.99);
+});
+
+test("nutella & go, bebida láctea e multipacks de ml são variantes; batatas fritas pede o artigo", async () => {
+  const { eVariante } = await import("../lib/supermercados/relevancia.js");
+  const { eGenerico } = await import("../lib/comparacao.js");
+  assert.ok(eVariante("Bebida Láctea Cappuccino de Aveia", "bebida de aveia"));
+  assert.ok(eVariante("Gelado Fizz Limão Olá 6x60ml", "gelado"));
+  assert.equal(classificar({ nome: "Creme Nutella & Go Breadsticks 52g", categoria: "" }, palavras("nutella"), "apolonia", undefined, "nutella"), 1);
+  assert.ok(eGenerico("batatas fritas") && !eGenerico("batatas fritas lisas"));
+});
