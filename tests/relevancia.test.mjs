@@ -224,3 +224,20 @@ test("nutella & go, bebida láctea e multipacks de ml são variantes; batatas fr
   assert.equal(classificar({ nome: "Creme Nutella & Go Breadsticks 52g", categoria: "" }, palavras("nutella"), "apolonia", undefined, "nutella"), 1);
   assert.ok(eGenerico("batatas fritas") && !eGenerico("batatas fritas lisas"));
 });
+
+test("tamanho impossível na ficha da loja: a pasta de dentes de «750 ml» é de 75 ml", async () => {
+  const { corrigirTamanho, corrigirPrecoPorCem } = await import("../lib/supermercados/comum.js");
+  const pasta = "Pasta de Dentes Branqueadora Gengivas+Hálito e Sensibilidade Pastas de Dentes";
+  assert.deepEqual(corrigirTamanho(pasta, { qtd: 0.75, unidade: "l" }), { qtd: 0.075, unidade: "l" });
+  // O que é possível fica: pasta de 75 ml e de 125 ml; champô de 750 ml; elixir de 500 ml.
+  assert.deepEqual(corrigirTamanho(pasta, { qtd: 0.075, unidade: "l" }), { qtd: 0.075, unidade: "l" });
+  assert.deepEqual(corrigirTamanho("Pasta de dentes família 125 ml", { qtd: 0.125, unidade: "l" }), { qtd: 0.125, unidade: "l" });
+  assert.deepEqual(corrigirTamanho("Champô Hidratante", { qtd: 0.75, unidade: "l" }), { qtd: 0.75, unidade: "l" });
+  assert.deepEqual(corrigirTamanho("Elixir Listerine", { qtd: 0.5, unidade: "l" }), { qtd: 0.5, unidade: "l" });
+  // 5,34 € por 75 ml = 71,20 €/L (e não os 7,12 € que a ficha dava).
+  assert.equal(Math.round((5.34 / 0.075) * 100) / 100, 71.2);
+  // Rótulo impossível («0,01 €/kg» em 300 g a 3,99 €): vale o calculado.
+  assert.equal(corrigirPrecoPorCem(3.99, 0.01, { qtd: 0.3, unidade: "kg" }), 13.3);
+  assert.equal(corrigirPrecoPorCem(2.99, 0.01, { qtd: 0.2, unidade: "kg" }), 14.95);
+  assert.equal(corrigirPrecoPorCem(0.8, 0.16, { qtd: 5, unidade: "l" }), 0.16); // água a 0,16 €/L é verdade
+});
