@@ -1,0 +1,8700 @@
+{
+ "auditadoEm": "2026-11-01",
+ "artigos": {
+  "maçãs": {
+   "nome": "Maçãs",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Maça Golden",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Maçã golden beira alta igp 1kg",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Maçã Gala Embalada",
+     "preco": 1.66,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Maçã Fuji Nacional",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Maçã Granny Smith Continente",
+     "preco": 1.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Maçã Reineta Bio Biofrade 500g",
+     "preco": 6.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bananas": {
+   "nome": "Bananas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Banana",
+     "preco": 0.95,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Banana Continente",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Banana Importada",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Banana del monte kg",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Banana Del Monte Kg",
+     "preco": 1.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "laranjas": {
+   "nome": "Laranjas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Laranjas Embaladas",
+     "preco": 1.25,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Laranja Citrinos do Algarve - IGP IGP Algarve",
+     "preco": 1.33,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Laranja",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Laranja 2 kg",
+     "preco": 1.59,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Laranja Biológica Vasco Pinto 1Kg",
+     "preco": 5.19,
+     "unidade": "kg"
+    }
+   }
+  },
+  "peras": {
+   "nome": "Peras",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pêra rocha 1.5kg",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Pera Rocha",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pera Rocha DOP Oeste Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pera Rocha DOP Oeste Embalada",
+     "preco": 1.59,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pera Rocha Emb Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "clementinas": {
+   "nome": "Tangerinas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Mandarina Orri SanLucar",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Clementina algarve auchan igp kg",
+     "preco": 2.29,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Mandarina/Clementina",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Clementina Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "limões": {
+   "nome": "Limões",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Limão Continente",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Limão",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Limão kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Limão Bio Biofrade 500g",
+     "preco": 9.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "kiwis": {
+   "nome": "Kiwis",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Kiwi Amarelo sem Desperdício",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Kiwi auchan cultivamos o bom kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Kiwi Verde Embalado Kg",
+     "preco": 4.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Kiwi Zespri",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "uvas": {
+   "nome": "Uvas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Uva Red Globe com Grainha Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Uvas Red Globe",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Uva Roxa",
+     "preco": 2.59,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Uva branca auchan cultivamos o bom kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Uva Red Globe Kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "morangos": {
+   "nome": "Morangos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Morango Sem Resíduos de Pesticidas Candela",
+     "preco": 6.23,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Morango Embalado",
+     "preco": 6.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Morango auchan 500 g",
+     "preco": 7.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Morango 500g",
+     "preco": 11.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ananás": {
+   "nome": "Ananás",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Abacaxi Continente",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Abacaxi",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Ananás dos açores kg",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Ananás Açores Kg",
+     "preco": 14.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "melão": {
+   "nome": "Melão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Melão branco auchan kg",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Melão Verde Continente",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Melão Amarelo",
+     "preco": 2.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Melão Verde Kg",
+     "preco": 2.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "melancia": {
+   "nome": "Melancia",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Melancia kg produto local",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Melancia Riscada Poucas Sementes Continente",
+     "preco": 2.19,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Melancia com Pouca Semente",
+     "preco": 2.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Melancia Riscada Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "manga": {
+   "nome": "Manga",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Manga Palmer Maturada Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Manga palmer maturada kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Manga (Barco) Kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Manga Pronta a Comer",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Manga em Fatias",
+     "preco": 6.34,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pêssegos": {
+   "nome": "Pêssegos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Pêssego \"Roer\" Amarelo Continente",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pêssego Paraguaio Kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ameixas": {
+   "nome": "Ameixas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Ameixa Sem Resíduos de Pesticidas Continente",
+     "preco": 1.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Ameixa vermelha auchan kg",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Ameixa Preta Kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cerejas": {
+   "nome": "Cerejas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Cereja nacional caixa 2 kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cereja Kg",
+     "preco": 29.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "figos": {
+   "nome": "Figos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Figo Continente",
+     "preco": 6.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Figo da india 500g produto local",
+     "preco": 9.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Figo Fresco Kg",
+     "preco": 19.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "mirtilos": {
+   "nome": "Mirtilos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Mirtilos Continente",
+     "preco": 7.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Mirtilos Embalados",
+     "preco": 14.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Mirtilo auchan 500 g",
+     "preco": 14.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Mirtilos Crop`s 300g",
+     "preco": 16.63,
+     "unidade": "kg"
+    }
+   }
+  },
+  "framboesas": {
+   "nome": "Framboesas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Framboesas Continente",
+     "preco": 6.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Framboesas agroaguiar 300g",
+     "preco": 9.3,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Framboesas Embaladas",
+     "preco": 15.96,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Framboesa Crop`s 300g",
+     "preco": 19.97,
+     "unidade": "kg"
+    }
+   }
+  },
+  "abacate": {
+   "nome": "Abacate",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Abacate Hass",
+     "preco": 4.59,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Abacate Hass Continente",
+     "preco": 4.69,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Abacate hass kg",
+     "preco": 4.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Abacate Embalado Kg",
+     "preco": 5.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "castanhas": {
+   "nome": "Castanhas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Castanhas",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Castanha Continente",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Castanha Nacional",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Castanha kg",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Castanha Kg",
+     "preco": 7.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "batatas": {
+   "nome": "Batatas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Batata Roxa - Box",
+     "preco": 0.8,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Batata Vermelha Embalada",
+     "preco": 0.84,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Batata Branca",
+     "preco": 0.93,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Batata auchan 5 kg",
+     "preco": 1.1,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Batata Vermelha Continente",
+     "preco": 1.12,
+     "unidade": "kg"
+    }
+   }
+  },
+  "batata-doce": {
+   "nome": "Batata-doce",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Batata doce produto local kg",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Batata Doce Sem Resíduos de Pesticidas Continente",
+     "preco": 2.29,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Batata Doce Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Batata Doce",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Batata Doce Roxa",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cebolas": {
+   "nome": "Cebolas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Cebola",
+     "preco": 0.9,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Cebola Sem Resíduos de Pesticidas Continente",
+     "preco": 1.57,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Cebola Nacional sem Desperdício",
+     "preco": 1,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cebola kg",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cebola Pequena Kg",
+     "preco": 1.29,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cebola roxa": {
+   "nome": "Cebola roxa",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Cebola Roxa Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Cebola Roxa Embalada",
+     "preco": 2.29,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cebola roxa 1kg",
+     "preco": 2.29,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cebola Roxa Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "alho": {
+   "nome": "Alho",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Alho Seco Continente",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Alho Seco Embalado",
+     "preco": 5.16,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Alho seco auchan 250 g",
+     "preco": 5.16,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Alho Seco Darlic 500g",
+     "preco": 6.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "alho francês": {
+   "nome": "Alho-francês",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Alho Francês Cortado Continente",
+     "preco": 1.72,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Alho frances kg produto local",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Alho Francês Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Alho Francês Inteiro Embalado",
+     "preco": 3.13,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cenouras": {
+   "nome": "Cenouras",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cenoura Embalada",
+     "preco": 0.75,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cenoura auchan cultivamos o bom 1 kg",
+     "preco": 0.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cenoura Kg",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Cenoura Continente",
+     "preco": 1.09,
+     "unidade": "kg"
+    }
+   }
+  },
+  "tomate": {
+   "nome": "Tomate",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Tomate Cacho",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Tomate Chucha Continente",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Tomate Alongado 57/67",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Tomate kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Tomate Redondo Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "alface": {
+   "nome": "Alface",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Alface frisada kg produto local",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Alface Frisada Verde Kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Alface Frisada Continente",
+     "preco": 2.19,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Alface Frisada Embalada",
+     "preco": 2.19,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pepino": {
+   "nome": "Pepino",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "lidl": {
+     "produto": "Pepino Nacional",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pepino Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pepino",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pepino kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pepino Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pimentos": {
+   "nome": "Pimentos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Pimento Verde Continente",
+     "preco": 2.89,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pimento Verde",
+     "preco": 2.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pimento verde kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pimento Verde Kg",
+     "preco": 3.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "curgete": {
+   "nome": "Curgete",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Curgete Verde Continente",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Curgete",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Curgete kg produto local",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Curgete Verde Kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "beringela": {
+   "nome": "Beringela",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Beringela Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Beringela kg produto local",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Beringela Continente",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Beringela",
+     "preco": 2.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "brócolos": {
+   "nome": "Brócolos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Brócolos Continente",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Brócolos auchan em floretes 1kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Brócolos",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Brócolos Selecionados Kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "couve-flor": {
+   "nome": "Couve-flor",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Couve Flor Continente",
+     "preco": 1.85,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Couve flor kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Couve-Flor",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Couve Flor Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "couve portuguesa": {
+   "nome": "Couve portuguesa",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Couve Portuguesa",
+     "preco": 0.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Couve Portuguesa / Penca Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Couve Portuguesa",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Couve portuguesa kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Couve Portuguesa Embalada Kg",
+     "preco": 3.75,
+     "unidade": "kg"
+    }
+   }
+  },
+  "couve galega": {
+   "nome": "Couve galega",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Couve Galega Embalada Kg",
+     "preco": 9.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "grelos": {
+   "nome": "Grelos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Grelos em Folha Continente",
+     "preco": 2.65,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Grelos nabo auchan em folhas 750g",
+     "preco": 2.65,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Grelos de Couve",
+     "preco": 3.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "espinafres": {
+   "nome": "Espinafres",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Espinafres auchan folhas porções 1kg",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Espinafres em Folha Continente",
+     "preco": 1.72,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Espinafres Embalados",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Espinafres Folhas Iglo 450g",
+     "preco": 8.2,
+     "unidade": "kg"
+    }
+   }
+  },
+  "feijão verde": {
+   "nome": "Feijão-verde",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Feijão verde auchan extra fino 1kg",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Feijão Verde Redondo Continente",
+     "preco": 1.85,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Feijão Verde",
+     "preco": 4.89,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Feijão Verde Compal 410g",
+     "preco": 5.34,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cogumelos": {
+   "nome": "Cogumelos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Cogumelos Laminados Continente",
+     "preco": 2.48,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cogumelos brancos auchan cultivamos o bom 300 g",
+     "preco": 4.63,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Cogumelos Brancos Inteiros Embalados",
+     "preco": 4.97,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Cogumelos Marron",
+     "preco": 4.97,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cogumelo Branco Kg",
+     "preco": 5.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "abóbora": {
+   "nome": "Abóbora",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Abóbora Manteiga",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Abóbora inteira kg",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Abóbora Kabocha Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Abóbora Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Abóbora Halloween",
+     "preco": 3.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "beterraba": {
+   "nome": "Beterraba",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Beterraba Kg",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Beterraba sem Rama Sem Resíduos de Pesticidas Continente",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Beterraba",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Beterraba kg produto local",
+     "preco": 1.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "salsa": {
+   "nome": "Salsa",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Salsa Fresca Continente",
+     "preco": 21.8,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Salsa Fresca",
+     "preco": 19.8,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Salsa auchan 50 g",
+     "preco": 19.8,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Salsa Fresca Louriplanta 50g",
+     "preco": 33.8,
+     "unidade": "kg"
+    }
+   }
+  },
+  "coentros": {
+   "nome": "Coentros",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Coentros Frescos Continente",
+     "preco": 21.8,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Coentros Embalados",
+     "preco": 19.8,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Coentros auchan 50 g",
+     "preco": 19.8,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Coentros Kg",
+     "preco": 34.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "hortelã": {
+   "nome": "Hortelã",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Hortelã Fresca Continente",
+     "preco": 21.8,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Hortelã Embalada",
+     "preco": 19.8,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Hortelã fresca 50g",
+     "preco": 19.8,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Hortelã Fresca Louriplanta 50g",
+     "preco": 33.8,
+     "unidade": "kg"
+    }
+   }
+  },
+  "frango inteiro": {
+   "nome": "Frango inteiro",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Frango Inteiro com Miúdos Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Frango Inteiro com Miúdos",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Frango inteiro com miúdos em saco auchan kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Frango Inteiro sem Miúdos",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Frango Inteiro Biologic Kg",
+     "preco": 16.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "peito de frango": {
+   "nome": "Peito de frango",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Bife/Peito de Frango a granel",
+     "preco": 6.29,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Peito de frango kg",
+     "preco": 6.29,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Peito de Frango em Vácuo Continente",
+     "preco": 6.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Peito de Frango Selecionado Kg",
+     "preco": 9.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "coxa de frango": {
+   "nome": "Coxas de frango",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Coxas de Frango",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Coxas de Frango Continente",
+     "preco": 4.39,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Coxa de Frango Embalada",
+     "preco": 4.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Coxas de frango auchan kg",
+     "preco": 4.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Coxa de Frango Kg",
+     "preco": 11.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bifes de peru": {
+   "nome": "Bifes de peru",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Bifes da Perna de Peru Lusiaves",
+     "preco": 6.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Peito/Bife de Peru Embalado",
+     "preco": 8.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bife de peru auchan emb.familiar kg",
+     "preco": 8.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bife de Peru com Tomilho & Limão bio Kg",
+     "preco": 37.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "carne picada": {
+   "nome": "Carne picada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Carne Picada de Peru Embalada",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Carne Picada de Porco Kg",
+     "preco": 10.95,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Carne picada maturada de novilha skp 450g",
+     "preco": 13.31,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Carne Picada Angus Ultracongelada Prime Meat",
+     "preco": 13.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bife de novilho": {
+   "nome": "Bifes de vaca",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Bife da Vazia de Novilho Bellechalotte Kg",
+     "preco": 30.95,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bife de Alcatra de Novilho Fatiado no Balcão Angus",
+     "preco": 18.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bife Denver Steak de Novilho Angus",
+     "preco": 23.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "novilho para estufar": {
+   "nome": "Carne para estufar",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Novilho nacional para estufar kg",
+     "preco": 6.95,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Novilho para Estufar Continente",
+     "preco": 12.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "vitela": {
+   "nome": "Vitela",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Meia Mão de Vitelão",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bife do Coração de Alcatra de Vitela Fatiado no Balcão Continente",
+     "preco": 16.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Vitela barrosa assar dianteiro kg",
+     "preco": 19.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Vitela de 1ª Kg",
+     "preco": 25.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "febras": {
+   "nome": "Febras de porco",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Febra de Porco Kg",
+     "preco": 5.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "costeletas porco": {
+   "nome": "Costeletas de porco",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Porco nacional costeletas cachaço kg",
+     "preco": 4.39,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Costeletas do Cachaço de Porco Continente",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Costeleta do Cachaço de Porco",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Costeleta de Porco com Pele Kg",
+     "preco": 6.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "lombo de porco": {
+   "nome": "Lombo de porco",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Porco nacional lombo sem osso kg",
+     "preco": 4.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Lombo de Porco Embalado",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Lombo de Porco sem Osso para Assar Continente",
+     "preco": 5.29,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Lombo de Porco Kg",
+     "preco": 8.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "entrecosto": {
+   "nome": "Entrecosto",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Tiras de Entrecosto de Porco Continente",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Tiras de Entrecosto de Porco",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Entrecosto metade porco auchan kg",
+     "preco": 6.29,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Entrecosto de Porco Kg",
+     "preco": 10.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "entremeada": {
+   "nome": "Entremeada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Entremeada inteira de porco auchan kg",
+     "preco": 4.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Entremeada com Osso Continente",
+     "preco": 4.89,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Entremeada de Porco com Entrecosto",
+     "preco": 4.89,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Entremeada de Porco Kg",
+     "preco": 6.45,
+     "unidade": "kg"
+    }
+   }
+  },
+  "borrego": {
+   "nome": "Borrego",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Borrego em Quartos",
+     "preco": 12.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Borrego para churrasco kg",
+     "preco": 12.99,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Borrego",
+     "preco": 12.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Peito de Borrego Fatiado Continente",
+     "preco": 15.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "hambúrgueres": {
+   "nome": "Hambúrgueres",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Hamburguer: peru fresco 460 g",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Hambúrguer de Porco Continente",
+     "preco": 6.23,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Hambúrguer de Peru",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Hambúrguer de Porco Kg",
+     "preco": 9.95,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Hambúrgueres Crunchy de Frango",
+     "preco": 12.46,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bacalhau": {
+   "nome": "Bacalhau",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Bacalhau auchan postas 450g",
+     "preco": 11.09,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bacalhau Corrente 1ª da Noruega",
+     "preco": 17.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bacalhau do Chefe Riberalves",
+     "preco": 18.63,
+     "unidade": "kg"
+    }
+   }
+  },
+  "sardinha fresca": {
+   "nome": "Sardinha",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Sardinha Fresca",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Sardinha Fresca",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "carapau": {
+   "nome": "Carapau",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Carapau medio fresco inteiro kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Carapau Negrão Fresco",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Carapau Pequeno Fresco",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Carapau Médio Kg",
+     "preco": 6.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cavala": {
+   "nome": "Cavala",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cavala Fresca",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Cavala Fresca",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cavala kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cavala Inteira Kg",
+     "preco": 8.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "dourada": {
+   "nome": "Dourada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Dourada Média Fresca",
+     "preco": 7.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Dourada Fresca da Costa Mediterrânica até 800g",
+     "preco": 7.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Dourada fresca inteira 400/600 kg",
+     "preco": 8.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Dourada Inteira 4/5 Aquicultura Kg",
+     "preco": 14.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "robalo": {
+   "nome": "Robalo",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Robalo Médio Fresco",
+     "preco": 8.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Robalo fresco inteiro 300/600 kg",
+     "preco": 8.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Robalo Fresco até 600g",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Robalo Inteiro 4/5 Aquicultura Kg",
+     "preco": 14.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "salmão": {
+   "nome": "Salmão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Salmão Pequeno Fresco",
+     "preco": 8.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Salmão Inteiro Fresco",
+     "preco": 8.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Salmão fresco inteiro 2kg a 3kg",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "- Lombo de Salmão XXL",
+     "preco": 15.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Salmão Inteiro Aquicultura Kg",
+     "preco": 16.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pescada": {
+   "nome": "Pescada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Rabos de Pescada para Cozer Embalados",
+     "preco": 4.27,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pescada rede cabeça kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pescada Pequena Fresca",
+     "preco": 6.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pescada Média Inteira Kg",
+     "preco": 17.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "peixe espada": {
+   "nome": "Peixe-espada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Peixe Espada Preto Fresco",
+     "preco": 7.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Peixe Espada Preto Fresco",
+     "preco": 8.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Peixe espada preto grande kg",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Peixe-Espada Preto Inteiro Kg",
+     "preco": 14.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "polvo": {
+   "nome": "Polvo",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Polvo Cabeçudo Fresco",
+     "preco": 7.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Polvo cabeçudo kg",
+     "preco": 7.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Polvo Fresco",
+     "preco": 12.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Polvo Virgem do Algarve Portugalfish Kg",
+     "preco": 17.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "lulas": {
+   "nome": "Lulas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Lulas Frescas",
+     "preco": 10.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Lula limpa pescanova 800g",
+     "preco": 11.24,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Lulas Limpas 20/40 Pescanova 450g",
+     "preco": 19.97,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Lula de Boston",
+     "preco": 14.98,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Lulas Frescas",
+     "preco": 16.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "choco": {
+   "nome": "Choco",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Chocos com Tinta Frescos",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Choco Fresco",
+     "preco": 10.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Choco kg",
+     "preco": 11.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Choco Kg",
+     "preco": 22.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "camarão": {
+   "nome": "Camarão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Camarão Vannamei 24/40",
+     "preco": 11.86,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Camarão pescanova vannamei 40-48 800g",
+     "preco": 12.11,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Camarão da Nigéria 60/80 2Kg",
+     "preco": 14.97,
+     "unidade": "kg"
+    }
+   }
+  },
+  "amêijoas": {
+   "nome": "Amêijoas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Amêijoa Vietnamita 60/80 1Kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Amêijoa auchan vietnamita com casca 500g",
+     "preco": 4.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Amêijoa Branca Grande Fresca Embalada",
+     "preco": 12.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Amêijoa Macha Fresca",
+     "preco": 25.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "mexilhão": {
+   "nome": "Mexilhão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Mexilhão Fresco",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Mexilhão 1kg",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Mexilhão Kg",
+     "preco": 7.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "fiambre": {
+   "nome": "Fiambre",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Fiambre Maxi York",
+     "preco": 5.1,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Fiambre peru maxi ricura 900g",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Fiambre da Pá Fatiado Pack Familiar Continente",
+     "preco": 7.48,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Fiambre Económico Fatias Finas Nobre 200g",
+     "preco": 11.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "fiambre de peru": {
+   "nome": "Fiambre de peru",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Fiambre peru maxi ricura 900g",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Fiambre de Peru Maxi",
+     "preco": 8.38,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Fiambre de Peito de Peru Fatiado Pack Familiar Continente",
+     "preco": 11.63,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Fiambre de Peru Económico Fatias Finas Nobre 140g",
+     "preco": 15.36,
+     "unidade": "kg"
+    }
+   }
+  },
+  "presunto": {
+   "nome": "Presunto",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Presunto Inteiro com Osso Casa do Monte",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Presunto Fatiado 5 Meses de Cura",
+     "preco": 16.45,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Presunto fatias polegar 7 meses de cura 200 g",
+     "preco": 16.45,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Presunto Reserva 14 Meses Torre de Nuñez Kg",
+     "preco": 27.9,
+     "unidade": "kg"
+    }
+   }
+  },
+  "chouriço": {
+   "nome": "Chouriço",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Chouriço Corrente Continente",
+     "preco": 5.59,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Chouriço Corrente",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Chouriço de sangue kg",
+     "preco": 5.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chouriço Beirão Damatta 225g",
+     "preco": 15.51,
+     "unidade": "kg"
+    }
+   }
+  },
+  "salpicão": {
+   "nome": "Salpicão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Salpicão da Beira Litoral Arganil",
+     "preco": 13.46,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Salpicão fuminho 300 g",
+     "preco": 13.63,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Salpicão da Guarda Continente",
+     "preco": 14.26,
+     "unidade": "kg"
+    }
+   }
+  },
+  "alheira": {
+   "nome": "Alheira",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Alheira eurofumeiro detinha 400g",
+     "preco": 5.98,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Alheira Transmontana Pack Familiar Continente",
+     "preco": 6.73,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Alheira de Trás-os-Montes",
+     "preco": 7.45,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Alheira de Porco Bísaro 180g",
+     "preco": 9.94,
+     "unidade": "kg"
+    }
+   }
+  },
+  "farinheira": {
+   "nome": "Farinheira",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Farinheira terras do demo 200 g #",
+     "preco": 6.45,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Farinheira de Arganil",
+     "preco": 7.78,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Farinheira de Lamego Continente",
+     "preco": 8.45,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Farinheira Porco Preto Montaraz 160g",
+     "preco": 12.19,
+     "unidade": "kg"
+    }
+   }
+  },
+  "morcela": {
+   "nome": "Morcela",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Morcela Sangue de Arganil",
+     "preco": 7.17,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Morcela fumeiro de arganil tradicional 300g",
+     "preco": 7.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Morcela para Cozer de Arganil Continente",
+     "preco": 8.76,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bacon": {
+   "nome": "Bacon",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Bacon Fatiado",
+     "preco": 9.4,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bacon naco auchan 200g",
+     "preco": 9.95,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bacon Extra Naco Primor",
+     "preco": 15.16,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bacon Fatiado sem Couro Gildener 454g",
+     "preco": 15.4,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo flamengo": {
+   "nome": "Queijo flamengo",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Queijo Flamengo Barra Continente",
+     "preco": 6.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo flamengo olvegarden barra kg",
+     "preco": 6.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Queijo Flamengo Fatiado",
+     "preco": 7.11,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Queijo Flamengo Pack Familiar",
+     "preco": 7.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo Flamengo Mimosa Barra Kg",
+     "preco": 10.9,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo fresco": {
+   "nome": "Queijo fresco",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Queijo Fresco de Vaca Tete",
+     "preco": 7.89,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Queijo Fresco de Vaca",
+     "preco": 5.75,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo fresco auchan 200g",
+     "preco": 5.75,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo Fresco Médio Santiago",
+     "preco": 9.74,
+     "unidade": "kg"
+    }
+   }
+  },
+  "requeijão": {
+   "nome": "Requeijão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Requeijão de Vaca Continente",
+     "preco": 5.71,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Requeijão de Vaca",
+     "preco": 5.71,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Requeijao de vaca auchan 170g",
+     "preco": 5.82,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Requeijão Ovelha Pasteurizado Lactiser 250g",
+     "preco": 8.6,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo serra da estrela": {
+   "nome": "Queijo da Serra",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Queijo vale da estrela serra da estrela dop kg",
+     "preco": 23.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Queijo Serra da Estrela DOP Continente Seleção",
+     "preco": 33.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo Serra da Estrela DOP Estrela Coop Kg",
+     "preco": 41.9,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo de cabra": {
+   "nome": "Queijo de cabra",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Queijo Fresco de Cabra Lactimonte",
+     "preco": 10.6,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Queijo Fresco de Cabra",
+     "preco": 11.92,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo de cabra fresco auchan 150g",
+     "preco": 11.93,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo de Cabra Fresco Santiago",
+     "preco": 16.08,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo ralado": {
+   "nome": "Queijo ralado",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Queijo Ralado Especial Fundir",
+     "preco": 5.63,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo flamengo auchan ralado 200g",
+     "preco": 6.95,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Queijo Flamengo Ralado para Gratinar Continente",
+     "preco": 7.45,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo Flamengo Ralado Campainha 150g",
+     "preco": 13.27,
+     "unidade": "kg"
+    }
+   }
+  },
+  "mozzarella": {
+   "nome": "Mozarela",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Queijo Mozzarella Continente",
+     "preco": 7.92,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo mozzarella fresca auchan 125g",
+     "preco": 7.92,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo parmesão": {
+   "nome": "Queijo parmesão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Queijo Parmesão Parmigiano Reggiano DOP",
+     "preco": 28.6,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo Parmesão Grande Reserva Biológico Montanari & Gruzza 250g",
+     "preco": 63.8,
+     "unidade": "kg"
+    }
+   }
+  },
+  "carcaça": {
+   "nome": "Carcaças",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Carcaça Bijou",
+     "preco": 2.5,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Carcaça mistura un",
+     "preco": 2.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Carcaça Portuguesa",
+     "preco": 2.86,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Carcaça de Lenha 75g",
+     "preco": 4.27,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pão de forma": {
+   "nome": "Pão de forma",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pão de forma auchan 600g",
+     "preco": 1.63,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pão de Forma para Torradas",
+     "preco": 1.7,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pão de Forma com Côdea Continente",
+     "preco": 1.82,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pão de Forma de Rio Maior 530g",
+     "preco": 2.36,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pão integral": {
+   "nome": "Pão integral",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pão de forma auchan trigo integral 600 g",
+     "preco": 1.92,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pão de Forma Integral com Côdea",
+     "preco": 1.98,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pão de Forma Integral com Côdea Continente",
+     "preco": 2.62,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pão Integral Bimbo 480g",
+     "preco": 5.1,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pão centeio": {
+   "nome": "Pão de centeio",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Pão de Mistura Trigo e Centeio",
+     "preco": 2.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pão de Forma de Centeio Continente",
+     "preco": 3.48,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pão panrico forma 100% centeio 400g",
+     "preco": 3.72,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pão de Mistura Centeio e Trigo 320g",
+     "preco": 5.28,
+     "unidade": "kg"
+    }
+   }
+  },
+  "broa de milho": {
+   "nome": "Broa de milho",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Broa de Milho Doce",
+     "preco": 2.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Broa da Serra de Milho com Massa Mãe",
+     "preco": 3.11,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Broa de milho museu do pão 500g",
+     "preco": 4.38,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Broa de Milho 400g",
+     "preco": 4.97,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pão de leite": {
+   "nome": "Pão de leite",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pão auchan de leite 10un 350g",
+     "preco": 4.54,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pão de Leite Dulcesol",
+     "preco": 6.14,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pão de Leite com Massa Mãe",
+     "preco": 7.11,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pão de Leite Pasquier 10un = 350g",
+     "preco": 9.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "baguete": {
+   "nome": "Baguete",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Baguete Francesa",
+     "preco": 2.25,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Baguete de Trigo",
+     "preco": 2.45,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Baguete -25% sal 200g",
+     "preco": 2.45,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Baguete de Cereais",
+     "preco": 2.68,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Baguete Rústica 330g",
+     "preco": 4.52,
+     "unidade": "kg"
+    }
+   }
+  },
+  "tostas": {
+   "nome": "Tostas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Tostas de trigo polegar 100 un 830 g",
+     "preco": 3.43,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Tostas de Trigo Continente",
+     "preco": 3.45,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Tostas de Trigo",
+     "preco": 3.45,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Tostas Alho Dulcesol 160g",
+     "preco": 7.44,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Mini Tostas Crocantes",
+     "preco": 18.43,
+     "unidade": "kg"
+    }
+   }
+  },
+  "croissants": {
+   "nome": "Croissants",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Croissants auchan 400g 13un",
+     "preco": 4.5,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Croissant Simples",
+     "preco": 5.3,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Croissant Brioche",
+     "preco": 5.8,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Croissant Folhado Pack Poupança Continente",
+     "preco": 6.4,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Croissant Doce de Ovos 120g",
+     "preco": 10.75,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pastéis de nata": {
+   "nome": "Pastéis de nata",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Pastel de Nata",
+     "preco": 6,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pack Pastel de Nata",
+     "preco": 7.33,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pastéis de Nata Preli 4un = 240g",
+     "preco": 12.46,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pastel de nata panidor 360g",
+     "preco": 13.03,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bolo-rei": {
+   "nome": "Bolo-rei",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Bolo rei com coroa amendoa ls kg",
+     "preco": 9.19,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bolo-Rei Pastelaria Aloma",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bolo Rei Desmanchado",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bolo Rei 1Kg",
+     "preco": 22.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "leite meio gordo": {
+   "nome": "Leite meio-gordo",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Leite Meio Gordo Prado Verde",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Leite UHT Meio Gordo",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite uht auchan meio gordo 1l",
+     "preco": 0.85,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Leite Meio-Gordo Estrela do Atlântico 1L",
+     "preco": 0.85,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "MIMOSA Leite Meio-gordo",
+     "preco": 0.89,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Leite Meio-gordo",
+     "preco": 0.89,
+     "unidade": "l"
+    }
+   }
+  },
+  "leite magro": {
+   "nome": "Leite magro",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "apolonia": {
+     "produto": "Leite Magro Gresso 1L",
+     "preco": 0.8,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite uht polegar magro 1l",
+     "preco": 0.84,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Leite UHT Magro",
+     "preco": 0.85,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Leite UHT Magro Continente",
+     "preco": 0.85,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "MIMOSA Leite Magro",
+     "preco": 0.89,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Leite de Pastagem Magro",
+     "preco": 0.89,
+     "unidade": "l"
+    }
+   }
+  },
+  "leite gordo": {
+   "nome": "Leite gordo",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Leite UHT Gordo",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite vigor pasteurizado especial gordo 1l",
+     "preco": 1.08,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Leite UHT Gordo Mimosa",
+     "preco": 2.25,
+     "unidade": "l"
+    }
+   }
+  },
+  "leite sem lactose": {
+   "nome": "Leite sem lactose",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Leite UHT Magro sem Lactose",
+     "preco": 1.04,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite s/lactose gresso m/gordo 6x1l",
+     "preco": 1.08,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Leite UHT Magro sem Lactose Continente",
+     "preco": 1.07,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Leite Fresco sem Lactose Vigor 1L",
+     "preco": 1.35,
+     "unidade": "l"
+    }
+   }
+  },
+  "bebida de aveia": {
+   "nome": "Bebida vegetal",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Bebida aveia uht auchan barista sem adição de açúcares 1l",
+     "preco": 1.19,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Bebida Aveia Pleno 1L",
+     "preco": 2.15,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Bebida Láctea Cappuccino de Aveia",
+     "preco": 8.22,
+     "unidade": "l"
+    }
+   }
+  },
+  "iogurte natural": {
+   "nome": "Iogurte natural",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Iogurte Natural Pack 8",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Iogurte auchan natural 8x125g",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Iogurte Natural Continente",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Natural Mimosa 4x120g",
+     "preco": 3.23,
+     "unidade": "kg"
+    }
+   }
+  },
+  "iogurte grego": {
+   "nome": "Iogurte grego",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Iogurte Grego Mythos Natural Continente",
+     "preco": 2.25,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Iogurte Grego Natural Açucarado Pack 4",
+     "preco": 3.3,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Iogurte grego auchan natural 1kg",
+     "preco": 2.25,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Grego Natural Mimosa 4x110g",
+     "preco": 6.25,
+     "unidade": "kg"
+    }
+   }
+  },
+  "iogurte de aroma": {
+   "nome": "Iogurtes de fruta",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Iogurte Aroma Tutti Frutti, Coco, Morango, Bolacha e Banana Pack Poupança Continente",
+     "preco": 1.25,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Iogurte longa vida aroma pack económico 4 sabores 8x120g",
+     "preco": 2.01,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Aroma Morango, Ananás & Banana Mimosa 8x125g Leve 8 Pague 7",
+     "preco": 2.07,
+     "unidade": "kg"
+    }
+   }
+  },
+  "iogurte líquido": {
+   "nome": "Iogurte líquido",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Iogurte líquido auchan piña colada 4x160g",
+     "preco": 2.02,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Iogurte Líquido Cremoso Bolacha Continente",
+     "preco": 2.11,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Iogurte Líquido Cremoso Natural Açucarado",
+     "preco": 1.85,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Líquido Frutos Tropicais Yoggi 4x160g",
+     "preco": 3.28,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "DANONE Actimel Iogurte Líquido",
+     "preco": 4.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "manteiga": {
+   "nome": "Manteiga",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Manteiga com Sal Açores Continente",
+     "preco": 8.36,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Manteiga com Sal",
+     "preco": 7.96,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Manteiga com sal auchan à mesa em portugal açores 250g",
+     "preco": 8.36,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Manteiga com Sal Gresso 250g",
+     "preco": 9.16,
+     "unidade": "kg"
+    }
+   }
+  },
+  "creme vegetal": {
+   "nome": "Margarina",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Creme vegetal banquete culinária 1kg",
+     "preco": 1.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Creme Vegetal Culinário Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Creme Vegetal Culinário",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Creme Vegetal Schlagfix 200g",
+     "preco": 5.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "natas": {
+   "nome": "Natas",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Nata uht auchan para cozinhar 500ml",
+     "preco": 3.7,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Natas UHT para Culinária Continente",
+     "preco": 3.95,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Natas UHT para Culinária",
+     "preco": 3.95,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Natas UHT Cremosas Mimosa 200ml",
+     "preco": 3.95,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Nata para Culinária",
+     "preco": 4.45,
+     "unidade": "l"
+    }
+   }
+  },
+  "ovos": {
+   "nome": "Ovos",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "lidl": {
+     "produto": "Ovos Classe M Galinhas Criadas no Solo",
+     "preco": 0.2,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Ovos saborosos classe m 2 duzias",
+     "preco": 0.21,
+     "unidade": "un"
+    },
+    "aldi": {
+     "produto": "Ovos do Solo Classe M",
+     "preco": 0.23,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Ovos Classe S Casa do Aido",
+     "preco": 0.24,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Ovos de Solo Classe M",
+     "preco": 0.25,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Ovos de Oiro Categoria A Classe L 6un",
+     "preco": 0.33,
+     "unidade": "un"
+    }
+   }
+  },
+  "arroz carolino": {
+   "nome": "Arroz carolino",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Arroz Carolino Pack Poupança Continente",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Arroz carolino auchan extra longo 1kg",
+     "preco": 1.05,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Arroz Carolino",
+     "preco": 1.14,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Arroz Carolino Caçarola 1Kg",
+     "preco": 1.59,
+     "unidade": "kg"
+    }
+   }
+  },
+  "arroz agulha": {
+   "nome": "Arroz agulha",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "lidl": {
+     "produto": "Arroz Agulha Embalagem Familiar",
+     "preco": 0.8,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Arroz Agulha Pack Poupança Continente",
+     "preco": 1.08,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Arroz Agulha Europa",
+     "preco": 1.15,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Arroz agulha auchan extra longo branqueado 1kg",
+     "preco": 1.15,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Arroz Agulha Caçarola 1Kg",
+     "preco": 1.65,
+     "unidade": "kg"
+    }
+   }
+  },
+  "massa esparguete": {
+   "nome": "Massa esparguete",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Massa Esparguete Pack Poupança Continente",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Massa Esparguete Pack Poupança",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Massa esparguete integral delverde selection 500g",
+     "preco": 2.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Massa Esparguete Caçarola 500g",
+     "preco": 2.58,
+     "unidade": "kg"
+    }
+   }
+  },
+  "massa penne": {
+   "nome": "Massa penne",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Massa Penne 100% Trigo Duro Continente",
+     "preco": 1.3,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Massa penne auchan 500g",
+     "preco": 1.3,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Massa Macarronete Penne Grande Riscado",
+     "preco": 2.08,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Massa Penne Rigatte Buitoni 500g",
+     "preco": 3.9,
+     "unidade": "kg"
+    }
+   }
+  },
+  "macarrão": {
+   "nome": "Macarrão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Massa Macarrão Riscado Pack Poupança Continente",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Macarrão auchan riscado 500g",
+     "preco": 1.48,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Massa Macarrão Grande Riscado",
+     "preco": 1.78,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Massa Macarrão Grande Milaneza 500g",
+     "preco": 3.5,
+     "unidade": "kg"
+    }
+   }
+  },
+  "massinhas": {
+   "nome": "Massinhas para sopa",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Massinha letras auchan 500g",
+     "preco": 1.78,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Massinha Letras Continente",
+     "preco": 1.92,
+     "unidade": "kg"
+    }
+   }
+  },
+  "feijão encarnado": {
+   "nome": "Feijão encarnado",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Feijão Encarnado Seco",
+     "preco": 1.9,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Feijão auchan encarnado seco 500g",
+     "preco": 2.18,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Feijão Encarnado Cistér 520g",
+     "preco": 2.29,
+     "unidade": "kg"
+    }
+   }
+  },
+  "feijão frade": {
+   "nome": "Feijão-frade",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Feijão Frade Continente",
+     "preco": 1.95,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Feijão Frade Seco",
+     "preco": 1.96,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Feijão Frade Compal 845g",
+     "preco": 2.24,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Feijão auchan frade seco 500g",
+     "preco": 2.3,
+     "unidade": "kg"
+    }
+   }
+  },
+  "grão de bico": {
+   "nome": "Grão-de-bico",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Grão de Bico Continente",
+     "preco": 1.78,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Grão de Bico Seco",
+     "preco": 1.8,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Grão de bico auchan extra 1 kg",
+     "preco": 2.1,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Grão de Bico Seco Celeiro de Cistér 500g",
+     "preco": 2.38,
+     "unidade": "kg"
+    }
+   }
+  },
+  "lentilhas": {
+   "nome": "Lentilhas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Lentilhas auchan extra 1 kg",
+     "preco": 2.3,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Lentilhas Secas Continente",
+     "preco": 2.38,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Lentilhas Verdes",
+     "preco": 2.38,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Lentilhas Verdes Cimarrom 500g",
+     "preco": 3.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "farinha": {
+   "nome": "Farinha",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Farinha de Trigo T55 Sem Fermento Continente",
+     "preco": 0.59,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Farinha de Trigo Tipo 55 sem Fermento",
+     "preco": 0.59,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Farinha de trigo t55 auchan 1kg",
+     "preco": 0.6,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Farinha Extra Fina Nacional 1Kg",
+     "preco": 1.59,
+     "unidade": "kg"
+    }
+   }
+  },
+  "açúcar": {
+   "nome": "Açúcar",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Açúcar Branco Granulado",
+     "preco": 0.79,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Açúcar Branco Pack Poupança Continente",
+     "preco": 0.85,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Açúcar auchan branco granulado 1kg",
+     "preco": 0.89,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Açúcar Branco Granulado Sidul Papel 1Kg",
+     "preco": 0.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "sal": {
+   "nome": "Sal",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Sal Grosso Continente",
+     "preco": 0.29,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Sal Grosso",
+     "preco": 0.29,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Sal marinho auchan grosso 1kg",
+     "preco": 0.29,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Sal Grosso Perdiz 1Kg",
+     "preco": 0.35,
+     "unidade": "kg"
+    }
+   }
+  },
+  "azeite": {
+   "nome": "Azeite",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Azeite Continente",
+     "preco": 4.33,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Azeite auchan 3l",
+     "preco": 4.33,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Azeite",
+     "preco": 4.52,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Azeite Virgem",
+     "preco": 4.6,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Azeite Subtil Gallo 5L",
+     "preco": 6.6,
+     "unidade": "l"
+    }
+   }
+  },
+  "óleo alimentar": {
+   "nome": "Óleo",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Óleo Alimentar Frigi",
+     "preco": 1.45,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Óleo Alimentar",
+     "preco": 1.55,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Óleo alimentar auchan 3l",
+     "preco": 1.76,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Óleo Alimentar Frigi 1L",
+     "preco": 1.99,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "FULA Óleo Alimentar",
+     "preco": 2.19,
+     "unidade": "l"
+    }
+   }
+  },
+  "vinagre": {
+   "nome": "Vinagre",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Vinagre de Vinho Branco Continente",
+     "preco": 0.75,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Vinagre de Vinho Branco",
+     "preco": 0.75,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Vinagre auchan de vinho branco 1l",
+     "preco": 0.75,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Vinagre Vinho Branco Leziria 500ml",
+     "preco": 2.3,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Vinagre de Arroz",
+     "preco": 7.22,
+     "unidade": "l"
+    }
+   }
+  },
+  "polpa de tomate": {
+   "nome": "Polpa de tomate",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Polpa de Tomate Continente",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Polpa de tomate auchan 1000g",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Polpa de Tomate",
+     "preco": 1.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Polpa de Tomate Guloso 1Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "caldo de galinha": {
+   "nome": "Caldo de galinha",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Caldo de Galinha Pack Poupança Knorr",
+     "preco": 9.46,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Caldos Natura de Galinha",
+     "preco": 16.96,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Caldo de Galinha Knorr 24un = 240g",
+     "preco": 21.63,
+     "unidade": "kg"
+    }
+   }
+  },
+  "maionese": {
+   "nome": "Maionese",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Maionese latada 500ml",
+     "preco": 2.38,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Maionese Top Down",
+     "preco": 4.14,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Maionese Top Down XXL Paladin",
+     "preco": 4.21,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Maionese Top Down Calvé 434g",
+     "preco": 8.12,
+     "unidade": "l"
+    }
+   }
+  },
+  "ketchup": {
+   "nome": "Ketchup",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Ketchup Top Down",
+     "preco": 1.75,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Ketchup auchan top down 560g",
+     "preco": 1.75,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Ketchup Top Down XXL Paladin",
+     "preco": 4.21,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Ketchup Rubies in the Rubble 485g",
+     "preco": 5.96,
+     "unidade": "kg"
+    }
+   }
+  },
+  "mostarda": {
+   "nome": "Mostarda",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Mostarda top down auchan 250g",
+     "preco": 3.16,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Mostarda Top Down",
+     "preco": 3.18,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Mostarda Continente",
+     "preco": 3.8,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Mostarda Zaanse De Huizman 335g",
+     "preco": 11.61,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Mostarda em Frasco",
+     "preco": 11.79,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pimenta": {
+   "nome": "Pimenta",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pimenta auchan preta em grãos frasco 100g",
+     "preco": 19.9,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pimenta de Bico Vermelho Aroma D'Minas",
+     "preco": 24.95,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pimenta Preta Gorssa TRS 100g",
+     "preco": 29.5,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pimenta Preta com Moinho em Frasco",
+     "preco": 39.78,
+     "unidade": "kg"
+    }
+   }
+  },
+  "colorau": {
+   "nome": "Colorau",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Colorau-pimentão auchan doce 100g",
+     "preco": 10.9,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pimentão Doce em Frasco Continente",
+     "preco": 14.44,
+     "unidade": "kg"
+    }
+   }
+  },
+  "louro": {
+   "nome": "Louro",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Louro Fresco Continente",
+     "preco": 54.5,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Louro 25g",
+     "preco": 43.6,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Louro Fresco Louriplanta 20g",
+     "preco": 174.5,
+     "unidade": "kg"
+    }
+   }
+  },
+  "orégãos": {
+   "nome": "Orégãos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Oregãos Ramo 40g",
+     "preco": 74.75,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Orégão 20g",
+     "preco": 74.5,
+     "unidade": "kg"
+    }
+   }
+  },
+  "canela": {
+   "nome": "Canela",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Canela auchan frasco 32 g",
+     "preco": 20.31,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Canela em Pau em Frasco Margão",
+     "preco": 72.42,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Canela em Pau Especial Café",
+     "preco": 72.42,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Canela Condimar Pacote Pequeno 14g",
+     "preco": 89.29,
+     "unidade": "kg"
+    }
+   }
+  },
+  "fermento": {
+   "nome": "Fermento",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Fermento royal lata 226g",
+     "preco": 19.42,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Fermento de Padeiro Continente",
+     "preco": 22.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Fermento Padeiro Condi 4x11g",
+     "preco": 45.23,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Fermento de Padeiro 4 Saquetas",
+     "preco": 99.44,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pão ralado": {
+   "nome": "Pão ralado",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Pão Ralado",
+     "preco": 1.97,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pão Ralado",
+     "preco": 2,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pão ralado auchan 240g",
+     "preco": 2,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pão Ralado Espiga 200g",
+     "preco": 7.45,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Pão Ralado Japonês",
+     "preco": 13.03,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cereais": {
+   "nome": "Cereais",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cereais Corn Flakes",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cereais auchan corn flakes flocos de milho 500g",
+     "preco": 3.3,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Cereais Especial Silhueta Original Continente Equilíbrio",
+     "preco": 3.58,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cereais Amêndoa & Mel + Fibra Nacional 375g",
+     "preco": 7.97,
+     "unidade": "kg"
+    }
+   }
+  },
+  "flocos de aveia": {
+   "nome": "Flocos de aveia",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Flocos weetabix cereais aveia 500g",
+     "preco": 5.3,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Flocos de Aveia Finos Cem Porcento",
+     "preco": 1.78,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Flocos de Aveia Finos",
+     "preco": 1.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Flocos Aveia Cimarrom 400g",
+     "preco": 3.38,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bolacha maria": {
+   "nome": "Bolacha Maria",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Bolachas Maria Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bolacha Maria Pack 4",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bolacha maria vieira original 600g",
+     "preco": 4.2,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bolachas Maria Nacional 200g",
+     "preco": 4.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bolacha de água e sal": {
+   "nome": "Bolacha de água e sal",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Bolachas de Água e Sal Continente",
+     "preco": 3.6,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bolachas de Água e Sal",
+     "preco": 3.92,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bolachas Água e Sal Nacional 125g",
+     "preco": 7.6,
+     "unidade": "kg"
+    }
+   }
+  },
+  "chocolate": {
+   "nome": "Chocolate",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Chocolate de Leite dos Alpes",
+     "preco": 9.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Tablete de Chocolate de Leite Continente",
+     "preco": 9.9,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Chocolate auchan cultivamos o bom preto 100g",
+     "preco": 9.9,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Tablete de Chocolate para Culinária",
+     "preco": 11.95,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chocolate Leite Com Laranja Terry`s 145g",
+     "preco": 26.14,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "FERRERO ROCHER Bombons de Chocolate",
+     "preco": 25.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "chocolate em pó": {
+   "nome": "Chocolate em pó",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Chocolate em Pó",
+     "preco": 5.44,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Chocolate em Pó Continente",
+     "preco": 7.92,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Chocolate condi em pó 100g",
+     "preco": 13.9,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chocolate em Pó Pantagruel 125g",
+     "preco": 18.32,
+     "unidade": "kg"
+    }
+   }
+  },
+  "marmelada": {
+   "nome": "Marmelada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Marmelada auchan extra 900g",
+     "preco": 3.06,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Marmelada Continente",
+     "preco": 3.31,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Marmelada Extra",
+     "preco": 3.31,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Marmelada Ferbar 400g",
+     "preco": 5.72,
+     "unidade": "kg"
+    }
+   }
+  },
+  "compota": {
+   "nome": "Compota",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Compota Maçã Dieta Andros 730g",
+     "preco": 5.05,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Compota andros fresca maçã natural 8x100g",
+     "preco": 5.24,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Compota Figo Pur Natur",
+     "preco": 14.57,
+     "unidade": "kg"
+    }
+   }
+  },
+  "mel": {
+   "nome": "Mel",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Mel Mil Flores Continente",
+     "preco": 5.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Mel em Frasco",
+     "preco": 5.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Mel de flores auchan frasco 500g",
+     "preco": 5.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Mel de Rosmaninho Martins Frasco 1Kg",
+     "preco": 9.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "frutos secos": {
+   "nome": "Frutos secos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Mix Frutos Secos Mediterrâneo Continente",
+     "preco": 7.95,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Mistura frutos secos polegar party 500 g",
+     "preco": 7.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Mix 5 Frutos Secos",
+     "preco": 8.06,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Frutos Secos Mix Florette 70g",
+     "preco": 35.57,
+     "unidade": "kg"
+    }
+   }
+  },
+  "amendoins": {
+   "nome": "Amendoins",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Amendoim Torrado com Casca Continente",
+     "preco": 3.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Amendoim Torrado com Casca",
+     "preco": 3.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Amendoim com casca torrado auchan 500g",
+     "preco": 3.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Amendoins Cistér Nuts 200g",
+     "preco": 7.95,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Amendoins Estilo Indonesia",
+     "preco": 11.96,
+     "unidade": "kg"
+    }
+   }
+  },
+  "batatas fritas lisas": {
+   "nome": "Batatas fritas de pacote",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Batata Frita Lisa Pack Poupança Continente",
+     "preco": 5.96,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Batatas auchan fritas lisas girassol 200g",
+     "preco": 6.25,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Batatas Fritas Lisas Sal",
+     "preco": 6.45,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Batatas Fritas Lisas com Sal",
+     "preco": 8.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "atum": {
+   "nome": "Atum em lata",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Atum ao Natural",
+     "preco": 8.81,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Atum em óleo bom petisco pack poupança 120gx5",
+     "preco": 9.48,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Atum ao Natural Tritão",
+     "preco": 9.59,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Atum Ramirez 1.73Kg",
+     "preco": 12.11,
+     "unidade": "kg"
+    }
+   }
+  },
+  "sardinhas em azeite": {
+   "nome": "Sardinhas em lata",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Sardinha em Azeite Refinado Alva",
+     "preco": 14.71,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Sardinhas em Azeite",
+     "preco": 14.88,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Sardinhas em Azeite Ramirez 125g",
+     "preco": 15.92,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Sardinha bom petisco em azeite bio 120g",
+     "preco": 26,
+     "unidade": "kg"
+    }
+   }
+  },
+  "filetes de cavala": {
+   "nome": "Cavala em lata",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Filete de Cavala em Azeite Continente",
+     "preco": 17.53,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Filetes de Cavala em Azeite",
+     "preco": 23.69,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Filetes de Cavala Vinho Branco Petit Navire 175g",
+     "preco": 24.51,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Filete cavala piteu em mostarda 120g",
+     "preco": 25.75,
+     "unidade": "kg"
+    }
+   }
+  },
+  "salsichas frankfurt": {
+   "nome": "Salsichas em lata",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Salsichas Frankfurt Lata",
+     "preco": 4.25,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Salsichas de Frango Frankfurt Campofrio",
+     "preco": 9.93,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Salsichas frankfurt campofrio 140g",
+     "preco": 9.93,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Salsichas Frankfurt Nobre 8un = 200g",
+     "preco": 10.45,
+     "unidade": "kg"
+    }
+   }
+  },
+  "feijão cozido": {
+   "nome": "Feijão cozido",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Feijão Frade Cozido Continente",
+     "preco": 2.1,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Feijão Manteiga Cozido em Frasco",
+     "preco": 2.13,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Feijão preto auchan cozido 820(520)g",
+     "preco": 2.21,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Feijão Frade Cozido Caçarola 400g",
+     "preco": 3.47,
+     "unidade": "kg"
+    }
+   }
+  },
+  "grão cozido": {
+   "nome": "Grão cozido",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Grão de Bico Cozido Continente",
+     "preco": 2.29,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Grão de Bico Cozido em Frasco",
+     "preco": 2.13,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Grão de bico auchan cozido 820(520)g",
+     "preco": 2.21,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Grão Cozido Compal 845g",
+     "preco": 2.71,
+     "unidade": "kg"
+    }
+   }
+  },
+  "milho doce": {
+   "nome": "Milho doce",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Milho Doce Continente",
+     "preco": 2.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Milho Doce Lata",
+     "preco": 3.47,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Milho Doce Gigante Verde 340g",
+     "preco": 6.15,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Milho doce auchan bio em grão 285 g",
+     "preco": 6.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ervilhas cozidas": {
+   "nome": "Ervilhas em lata",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Ervilhas e cenouras auchan cozidas ultracongeladas 750g",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Ervilhas Cozidas Cistér 420g",
+     "preco": 2.74,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Ervilhas Cozidas em Lata sem Glúten Continente",
+     "preco": 3.42,
+     "unidade": "kg"
+    }
+   }
+  },
+  "azeitonas": {
+   "nome": "Azeitonas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Azeitonas Verdes Hojiblanc",
+     "preco": 4.62,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Azeitona Verde Continente",
+     "preco": 5.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Azeitonas Pretas Cimarrom 340g",
+     "preco": 6.74,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Azeitona verde com alho dittmann kg",
+     "preco": 16.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "água": {
+   "nome": "Água",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Água sem Gás Garrafão Continente",
+     "preco": 0.16,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Água sem Gás Garrafão",
+     "preco": 0.16,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Água auchan da nascente garrafão 6l",
+     "preco": 0.16,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Água São Martinho Volta 1,5L",
+     "preco": 0.17,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "LUSO Água Mineral",
+     "preco": 0.34,
+     "unidade": "l"
+    }
+   }
+  },
+  "água com gás": {
+   "nome": "Água com gás",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Água com gás auchan 1.5l",
+     "preco": 0.33,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Água com Gás Continente",
+     "preco": 0.33,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Água com Gás Cristaline Volta 1.5L",
+     "preco": 0.5,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Água com Gás Pack 4",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Água com Gás",
+     "preco": 0.9,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "Água com Gás de Limão",
+     "preco": 1.59,
+     "unidade": "l"
+    }
+   }
+  },
+  "sumo de laranja": {
+   "nome": "Sumo de laranja",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Sumo 100% Laranja Continente Equilíbrio",
+     "preco": 1.33,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Sumo de 100% Laranja",
+     "preco": 1.33,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Sumo Laranja & Cenoura Active Drink Santal Volta 1,5L",
+     "preco": 1.46,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Sumo compal 100% laranja 1l",
+     "preco": 2.29,
+     "unidade": "l"
+    }
+   }
+  },
+  "néctar": {
+   "nome": "Néctar de fruta",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Néctar Pera Continente",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Néctar de 8 Frutos",
+     "preco": 0.94,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Nectar compal família laranja tangerina 1l",
+     "preco": 1.09,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Néctar Multivitaminas Pfanner 2L",
+     "preco": 1.75,
+     "unidade": "l"
+    }
+   }
+  },
+  "coca cola": {
+   "nome": "Refrigerante de cola",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Refrigerante c/ gás coca-cola original 2x1.75l (sdr)",
+     "preco": 1.37,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Refrigerante com Gás Cola Zero Coca-Cola",
+     "preco": 1.08,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Refrigerante Coca-Cola Original Pack 2",
+     "preco": 1.28,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Coca-Cola Original Volta 1,5L",
+     "preco": 1.73,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Coca-cola",
+     "preco": 2.27,
+     "unidade": "l"
+    }
+   }
+  },
+  "ice tea": {
+   "nome": "Ice tea",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Ice Tea Limão",
+     "preco": 0.6,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Ice Tea Limão Continente",
+     "preco": 0.6,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Ice Tea Limão Lipton 1L",
+     "preco": 2.49,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Ice tea fuze tea maracujá 1.5l (sdr)",
+     "preco": 1.33,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "Ice Tea Limão",
+     "preco": 1,
+     "unidade": "l"
+    }
+   }
+  },
+  "cerveja": {
+   "nome": "Cerveja",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cerveja com Álcool",
+     "preco": 1.18,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Cerveja top beer lata 0.33l",
+     "preco": 1.18,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Cerveja com Álcool Gutbier",
+     "preco": 1.19,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Cerveja Cristal 6x1L",
+     "preco": 1.58,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "ARGUS Cerveja Preta",
+     "preco": 1.51,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Cerveja",
+     "preco": 5.12,
+     "unidade": "l"
+    }
+   }
+  },
+  "vinho tinto": {
+   "nome": "Vinho tinto",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Continente Vinho Tinto",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Vinho Tinto Pingo Doce",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Vinho tinto colheita secular tinto 1l",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "Vinho Tinto",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Vinho Tinto DOC Douro",
+     "preco": 3.32,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Vinho Tinto Meandro 75cl",
+     "preco": 21.27,
+     "unidade": "l"
+    }
+   }
+  },
+  "vinho branco": {
+   "nome": "Vinho branco",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Continente Vinho Branco",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Vinho Branco Pingo Doce",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Vinho branco colheita secular brick 1l",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Vinho Branco DOC Douro",
+     "preco": 3.32,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Vinho Branco Apolónia 75cl",
+     "preco": 7.99,
+     "unidade": "l"
+    }
+   }
+  },
+  "vinho verde": {
+   "nome": "Vinho verde",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Vinho tinto cruz minhota verde 1l",
+     "preco": 2.09,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Vinho Verde Branco Urbe Augusta",
+     "preco": 2.39,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "C.A.Felgueiras Vinho Verde Branco",
+     "preco": 2.65,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Vinho Verde Branco Gazela 75cl",
+     "preco": 5.59,
+     "unidade": "l"
+    }
+   }
+  },
+  "espumante": {
+   "nome": "Espumante",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Espumante Branco Sino Bruto",
+     "preco": 3.99,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Espumante contri moscato malvasia 0.75l",
+     "preco": 3.99,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Contemporal Espumante Bruto Branco",
+     "preco": 4.65,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Espumante Favaios Sparkling Rosé 75cl",
+     "preco": 9.99,
+     "unidade": "l"
+    }
+   }
+  },
+  "café moído": {
+   "nome": "Café moído",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Café moído delta mistura ibérica 220 g",
+     "preco": 10.41,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Café Moído Moagem Universal Intenso Int 10 Continente",
+     "preco": 11.8,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Café Moído Moagem Universal Envolvente",
+     "preco": 11.8,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Café Moído Torrado",
+     "preco": 15.96,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Café Moído Ritual Delta 220g",
+     "preco": 20.86,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cápsulas café": {
+   "nome": "Café em cápsulas",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cápsulas de Café Nespresso Clássico",
+     "preco": 0.16,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Cápsulas de Café Ristretto Int 10 Continente",
+     "preco": 0.16,
+     "unidade": "un"
+    },
+    "lidl": {
+     "produto": "BELLAROM Cápsulas de Café Lungo",
+     "preco": 0.17,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Capsulas de café auchan em aluminio compatíveis com máquinas nespresso expresso intense 20 un",
+     "preco": 0.19,
+     "unidade": "un"
+    },
+    "aldi": {
+     "produto": "Cápsulas de Café Colombia",
+     "preco": 0.36,
+     "unidade": "un"
+    }
+   }
+  },
+  "café em grão": {
+   "nome": "Café em grão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Café Torrado em Grão",
+     "preco": 10.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Café auchan torrado grão vivace 1kg",
+     "preco": 10.89,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Café em Grão Supremo Int 13 Continente",
+     "preco": 10.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Café em Grão Lote Bocage Nicola 1Kg",
+     "preco": 18.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cevada solúvel": {
+   "nome": "Cevada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cevada Solúvel",
+     "preco": 9.95,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cevada auchan solúvel 200g",
+     "preco": 9.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "chá": {
+   "nome": "Chá",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "continente": {
+     "produto": "Pack Chás e Infusões Tetley",
+     "preco": 0.13,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Chá Preto",
+     "preco": 0.04,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Chá preto auchan english breakfast 25 saq (50",
+     "preco": 0.04,
+     "unidade": "un"
+    },
+    "aldi": {
+     "produto": "Chá de Inverno",
+     "preco": 0.1,
+     "unidade": "un"
+    }
+   }
+  },
+  "bacalhau demolhado": {
+   "nome": "Bacalhau demolhado",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Bacalhau demolhado bomporto postas 800g #",
+     "preco": 11.24,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bacalhau Demolhado Lombos Centro Lugrade 600g",
+     "preco": 44.92,
+     "unidade": "kg"
+    }
+   }
+  },
+  "filetes pescada": {
+   "nome": "Filetes de pescada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Filetes de Pescada com Ovo Continente",
+     "preco": 8.82,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Filetes polegar pescada 600gr",
+     "preco": 9.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Filetes de Pescada Argentina sem Pele",
+     "preco": 11.1,
+     "unidade": "kg"
+    }
+   }
+  },
+  "douradinhos": {
+   "nome": "Douradinhos",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Douradinhos de Peixe Continente",
+     "preco": 7.09,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Douradinhos auchan de escamudo-do-alasca msc 450g",
+     "preco": 8.87,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Douradinhos de Salmão",
+     "preco": 11.07,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Douradinhos com Espinafres Iglo 10un = 284g",
+     "preco": 15.11,
+     "unidade": "kg"
+    }
+   }
+  },
+  "legumes para sopa": {
+   "nome": "Legumes para sopa",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Legumes para sopa auchan 1kg",
+     "preco": 2.2,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ervilhas congeladas": {
+   "nome": "Ervilhas congeladas",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Ervilhas Congeladas",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Ervilhas origens bio congeladas 300g",
+     "preco": 6.63,
+     "unidade": "kg"
+    }
+   }
+  },
+  "espinafres congelados": {
+   "nome": "Espinafres congelados",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Espinafres em Folha Congelados",
+     "preco": 1.88,
+     "unidade": "kg"
+    }
+   }
+  },
+  "batatas pré-fritas": {
+   "nome": "Batata frita congelada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Batatas Pré-Fritas Cubos",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Batata auchan pré-fritas classic para fritar 2.5kg",
+     "preco": 1.74,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Batatas Tradicional Pré-Fritas McCain 1Kg",
+     "preco": 4.39,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pizza": {
+   "nome": "Pizza congelada",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pizza polegar margherita 3un 900g",
+     "preco": 3.83,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pizza Marguerita Pack Poupança Continente",
+     "preco": 4.1,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pizza Capricciosa",
+     "preco": 6.48,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pizza Barbecue Campofrio 410g",
+     "preco": 9.73,
+     "unidade": "kg"
+    }
+   }
+  },
+  "gelado": {
+   "nome": "Gelado",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Gelado Nata Continente",
+     "preco": 2.69,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Gelado Tripla Delícia",
+     "preco": 1.65,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Gelado auchan de nata 1l",
+     "preco": 2.69,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Gelado Nutella 470ml",
+     "preco": 14.87,
+     "unidade": "l"
+    }
+   }
+  },
+  "papel higiénico": {
+   "nome": "Papel higiénico",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Papel renova higiénico olé 38 rolos +10 rolos",
+     "preco": 0.15,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Papel Higiénico 2 Folhas 32 Rolos",
+     "preco": 0.17,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Papel Higiénico 2 Folhas Suave Continente",
+     "preco": 0.2,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Papel Higiénico Ole XXL Renova 24un",
+     "preco": 0.33,
+     "unidade": "un"
+    }
+   }
+  },
+  "champô": {
+   "nome": "Champô",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Champô polegar amêndoa 1l",
+     "preco": 1.99,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Champô Brilho e Vitalidade MYLABEL",
+     "preco": 2.21,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Champô de Camomila",
+     "preco": 3.98,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Champô Curls Syoss 440ml",
+     "preco": 11.8,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Champô Gliss",
+     "preco": 9.23,
+     "unidade": "l"
+    }
+   }
+  },
+  "gel de banho": {
+   "nome": "Gel de banho",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Gel de Banho Frutado",
+     "preco": 0.99,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Gel de Banho Multifrutos MYLABEL",
+     "preco": 1.05,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Gel de banho cosmia recarga amora e romã 1l",
+     "preco": 1.59,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Gel de Banho Leite de Burra Confiança 800ml",
+     "preco": 5.61,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Gel de Banho de Rosa e Óleo de Amêndoas",
+     "preco": 5.72,
+     "unidade": "l"
+    }
+   }
+  },
+  "sabonete": {
+   "nome": "Sabonete",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Sabonete Azul Confiança 5x100g",
+     "preco": 4.78,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Sabonete polegar sólido 90g",
+     "preco": 5.44,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Sabonete Sólido Glicerina MYLABEL",
+     "preco": 5.9,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Sabonete Sólido Leite e Mel",
+     "preco": 6.56,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pasta de dentes": {
+   "nome": "Pasta de dentes",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Pasta de Dentes Anticáries",
+     "preco": 9.9,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Pasta de Dentes Anti-Cáries Continente",
+     "preco": 10.32,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Pasta de dentes menta fresca aquafresh 75ml",
+     "preco": 24.8,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Pasta de Dentes Pro-expert",
+     "preco": 39.87,
+     "unidade": "l"
+    }
+   }
+  },
+  "escova de dentes": {
+   "nome": "Escova de dentes",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Escovas de Dentes Clássicas Médias Pack 4",
+     "preco": 0.32,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Escova dentes auchan clássica média 4 un",
+     "preco": 0.32,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Escova de Dentes Freshstart Continente",
+     "preco": 0.4,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Escova Dentífrica Dentes Leite Aquafresh",
+     "preco": 3.49,
+     "unidade": "un"
+    }
+   }
+  },
+  "desodorizante": {
+   "nome": "Desodorizante",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Desodorizante roll on cosmia dry protect 50ml",
+     "preco": 17,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Desodorizante Roll-On Active MYLABEL",
+     "preco": 17,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Desodorizante Stick DRy Impact",
+     "preco": 6.98,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Desodorizante Shower Fresh 48H Rexona 200ml",
+     "preco": 23.25,
+     "unidade": "l"
+    }
+   }
+  },
+  "pensos higiénicos": {
+   "nome": "Pensos higiénicos",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Pensos higiénicos polegar maxi normal s/abas 20 un",
+     "preco": 0.05,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Pensos Higienicos Slip Normal Protect Ausonia 40un",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Pensos Higiénicos Normal com Abas",
+     "preco": 0.07,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Pensos Higiénicos Comfort Normal sem Abas Continente",
+     "preco": 0.07,
+     "unidade": "un"
+    }
+   }
+  },
+  "lâminas de barbear": {
+   "nome": "Lâminas de barbear",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "apolonia": {
+     "produto": "Lâmina Barbear Descartáveis M Soleil Bic 4Un",
+     "preco": 1.25,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Máquina de barbear com 1 recarga de lâminas mach3 gillette",
+     "preco": 10.99,
+     "unidade": "un"
+    }
+   }
+  },
+  "cotonetes": {
+   "nome": "Cotonetes",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cotonetes",
+     "preco": 0,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Cotonetes caixa cartão auchan clássicos 169 un",
+     "preco": 0,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Cotonetes Continente",
+     "preco": 0,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Cotonetes Pinoca 100un",
+     "preco": 0.01,
+     "unidade": "un"
+    }
+   }
+  },
+  "creme hidratante": {
+   "nome": "Creme hidratante",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Creme corpo e rosto polegar boião hidratante 300ml",
+     "preco": 6.17,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Creme de Corpo Hidratante Emerald Touch",
+     "preco": 9.97,
+     "unidade": "l"
+    },
+    "aldi": {
+     "produto": "Creme Hidratante Corporal para Uso Diário",
+     "preco": 9.99,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Creme de Pés Hidratante MYLABEL",
+     "preco": 10.8,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Creme Hidratante Corpo Hipoalergênico Soft&Co 1L",
+     "preco": 14.49,
+     "unidade": "l"
+    }
+   }
+  },
+  "protetor solar": {
+   "nome": "Protetor solar",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Protetor Solar Loção FPS 30 MYLABEL",
+     "preco": 23.96,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Protetor Solar Óleo Corporal Protect & Sun SPF25",
+     "preco": 27.45,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Protetor Solar Protect & Moisture FP30 Nivea 400ml",
+     "preco": 64.88,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Protetor solar ambre solaire sensitive adv ip50+ 270ml",
+     "preco": 87,
+     "unidade": "l"
+    }
+   }
+  },
+  "lenços de papel": {
+   "nome": "Lenços de papel",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "apolonia": {
+     "produto": "Lenços Faciais de Papel Mega Foxy 200un",
+     "preco": 0.02,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Lenços renova de papel 100% reciclado 10un",
+     "preco": 0.1,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Lenços de Papel de Bolso Mentol 3 Folhas Continente",
+     "preco": 0.14,
+     "unidade": "un"
+    }
+   }
+  },
+  "detergente roupa": {
+   "nome": "Detergente da roupa",
+   "origem": "catálogo",
+   "unidade": "dose",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Detergente Líquido Roupa Delicada",
+     "preco": 0.04,
+     "unidade": "dose"
+    },
+    "continente": {
+     "produto": "Detergente Máquina Roupa Delicada Líquido Continente",
+     "preco": 0.04,
+     "unidade": "dose"
+    },
+    "auchan": {
+     "produto": "Detergente roupa máquina líquido gama cuidado diário 80doses",
+     "preco": 0.07,
+     "unidade": "dose"
+    }
+   }
+  },
+  "amaciador": {
+   "nome": "Amaciador",
+   "origem": "catálogo",
+   "unidade": "dose",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Amaciador Lavanda",
+     "preco": 0.02,
+     "unidade": "dose"
+    },
+    "continente": {
+     "produto": "Amaciador Roupa Extra Eficácia Surf",
+     "preco": 0.03,
+     "unidade": "dose"
+    },
+    "auchan": {
+     "produto": "Amaciador surf tropical 95d",
+     "preco": 0.03,
+     "unidade": "dose"
+    }
+   }
+  },
+  "detergente loiça": {
+   "nome": "Detergente da loiça",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Detergente loiça manual higs limão 5l",
+     "preco": 0.73,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Detergente Loiça Manual Limão",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Detergente Manual Loiça Power+ Limão Continente",
+     "preco": 0.83,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Detergente Loiça Maçã Limpa Bem 1L",
+     "preco": 1.29,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "Detergente de Loiça Spray",
+     "preco": 7.38,
+     "unidade": "l"
+    }
+   }
+  },
+  "pastilhas máquina loiça": {
+   "nome": "Pastilhas da máquina da loiça",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Detergente auchan máquina loiça pastilha classic limão 45un",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Detergente Máquina Loiça Pastilhas Clássicas Continente",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Pastilhas para Máquina Loiça All in 1 Lemon Fresh",
+     "preco": 0.1,
+     "unidade": "un"
+    }
+   }
+  },
+  "lixívia": {
+   "nome": "Lixívia",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Lixívia Tradicional Continente",
+     "preco": 0.34,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Lixívia Tradicional",
+     "preco": 0.34,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Lixívia Tradicional Limpa Bem 5L",
+     "preco": 0.36,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Lixívia auchan tradicional 4l",
+     "preco": 0.37,
+     "unidade": "l"
+    }
+   }
+  },
+  "multiusos": {
+   "nome": "Multiusos",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Multiusos com Lixívia Spray Power+ Continente",
+     "preco": 2.12,
+     "unidade": "l"
+    }
+   }
+  },
+  "gel wc": {
+   "nome": "Gel WC",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "apolonia": {
+     "produto": "Gel WC Marinho Limpa Bem 750ml",
+     "preco": 2.25,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Gel de Wc Flores Primavera",
+     "preco": 3.59,
+     "unidade": "l"
+    }
+   }
+  },
+  "rolo de cozinha": {
+   "nome": "Papel de cozinha",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "continente": {
+     "produto": "Rolo de Cozinha Clássico Continente",
+     "preco": 0.46,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Rolo de Cozinha 2 Folhas - 4 un",
+     "preco": 0.46,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Rolo cozinha polegar folha dupla 4 rolos",
+     "preco": 0.46,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Rolo Cozinha Olé! Extra Resistente Renova 2un",
+     "preco": 0.47,
+     "unidade": "un"
+    },
+    "lidl": {
+     "produto": "Rolos de Cozinha Design 2 Folhas XXL",
+     "preco": 0.66,
+     "unidade": "un"
+    },
+    "aldi": {
+     "produto": "Rolo de Cozinha Multiusos Strong",
+     "preco": 2.99,
+     "unidade": "un"
+    }
+   }
+  },
+  "guardanapos": {
+   "nome": "Guardanapos",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "continente": {
+     "produto": "Guardanapo 1 Folha Branco Continente",
+     "preco": 0.01,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Guardanapos 2 Folhas - 100un",
+     "preco": 0.01,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Guardanapos actuel folha dupla 22x22cm 100 unidades",
+     "preco": 0.01,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Guardanapos Vermelho Hodecor 40x40cm 50un",
+     "preco": 0.07,
+     "unidade": "un"
+    }
+   }
+  },
+  "sacos do lixo": {
+   "nome": "Sacos do lixo",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Sacos do Lixo com Fecho Fácil 30L",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Sacos Lixo Fecho Fácil 20 lt Continente",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Sacos Lixo Alças Fapil 25L 30un",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Sacos do lixo handy bag antigotas 30l 12 uni",
+     "preco": 0.21,
+     "unidade": "un"
+    }
+   }
+  },
+  "esponjas": {
+   "nome": "Esponjas",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Esponja Puff",
+     "preco": 0.99,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Esponja Cozinha Natsil",
+     "preco": 1.19,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Esponja Salva Unhas Scotch-Brite 2un",
+     "preco": 1.04,
+     "unidade": "un"
+    }
+   }
+  },
+  "película aderente": {
+   "nome": "Película aderente",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Película auchan aderente 2em1 extensível e prática 20m",
+     "preco": 0.69,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Película Aderente Fapil 12m",
+     "preco": 0.95,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Película Aderente 30m Continente",
+     "preco": 0.99,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Película Aderente 60m",
+     "preco": 1.29,
+     "unidade": "un"
+    }
+   }
+  },
+  "folha de alumínio": {
+   "nome": "Papel de alumínio",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Folha de Alumínio 8 metros",
+     "preco": 1.39,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Folha Alumínio Fapil 8m",
+     "preco": 1.59,
+     "unidade": "un"
+    }
+   }
+  },
+  "fraldas": {
+   "nome": "Fraldas",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Fraldas Sensitive&Dry 3-6kg T2",
+     "preco": 0.11,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Fraldas Dodot Bebé Seco T3 62Un",
+     "preco": 0.34,
+     "unidade": "un"
+    }
+   }
+  },
+  "toalhitas": {
+   "nome": "Toalhitas",
+   "origem": "catálogo",
+   "unidade": "un",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Toalhitas Bebé",
+     "preco": 0.01,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Toalhitas nunex nature 99% água 54 un",
+     "preco": 0.02,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Toalhitas Dodot Básico Recarga 54Un",
+     "preco": 0.02,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Toalhitas Íntimas Sensitive Continente",
+     "preco": 0.05,
+     "unidade": "un"
+    }
+   }
+  },
+  "leite infantil": {
+   "nome": "Leite infantil",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Leite Meio Gordo UHT Infantil +3A Mimosa",
+     "preco": 1.79,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite mimosa infantil +3 anos uht 1l",
+     "preco": 2.24,
+     "unidade": "l"
+    }
+   }
+  },
+  "papa infantil": {
+   "nome": "Papa infantil",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Papa Infantil para Preparar com Leite +3A Cerelac",
+     "preco": 6.23,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Papa Infantil Farinha de Trigo Não Láctea",
+     "preco": 4.92,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Papa infantil auchan baby não láctea cereais 750g #",
+     "preco": 4.92,
+     "unidade": "kg"
+    }
+   }
+  },
+  "boião fruta": {
+   "nome": "Puré de fruta para bebé",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Boião de fruta auchan bio cultivamos o bom de maçã 580g",
+     "preco": 4.12,
+     "unidade": "kg"
+    }
+   }
+  },
+  "creme muda fralda": {
+   "nome": "Creme para a muda da fralda",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Creme para Muda da Fralda",
+     "preco": 38.9,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Creme Muda Fraldas Calendula Weleda 75ml",
+     "preco": 166.53,
+     "unidade": "l"
+    }
+   }
+  },
+  "ração cão": {
+   "nome": "Ração para cão",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Ração para cão furacão adult 20kg",
+     "preco": 0.7,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Comida Seca para Cão",
+     "preco": 0.77,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Ração para Cão Adulto Mypet",
+     "preco": 0.85,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Ração Húmida de Borrego para Cão Bribon 1250g",
+     "preco": 3.19,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ração gato": {
+   "nome": "Ração para gato",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Ração para gato auchan essencial mix cereais carne e peixe 7kg",
+     "preco": 1.21,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Comida Seca para Gato com Carne",
+     "preco": 1.35,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Ração para Gato Adulto Croquetes Carne Continente Pet Basic",
+     "preco": 1.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Ração Original Fish Select para Gato Felix 12x85g",
+     "preco": 8.32,
+     "unidade": "kg"
+    }
+   }
+  },
+  "comida húmida gato": {
+   "nome": "Comida húmida para gato",
+   "origem": "catálogo",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Comida Húmida para Gato Pedaços Frango e Vitela em Molho",
+     "preco": 1.86,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Comida húmida para gato polegar patê com peixe 400g",
+     "preco": 2.23,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Comida Húmida para Gato Adulto Sem Cereais Paté Peru e Frango Continente Pet",
+     "preco": 2.48,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Comida Húmida para Gato Adulto Paté",
+     "preco": 2.48,
+     "unidade": "kg"
+    }
+   }
+  },
+  "areia gato": {
+   "nome": "Areia para gato",
+   "origem": "catálogo",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Areia para gato auchan mineral aglomerante compacta 5l",
+     "preco": 0.58,
+     "unidade": "l"
+    }
+   }
+  },
+  "arroz": {
+   "nome": "arroz",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "lidl": {
+     "produto": "Arroz Agulha Embalagem Familiar",
+     "preco": 0.8,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Arroz longo comum polegar 1kg",
+     "preco": 0.89,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Arroz Carolino Pack Poupança Continente",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Arroz Carolino",
+     "preco": 1.14,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Arroz Carolino Caçarola 1Kg",
+     "preco": 1.59,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Arroz Asiático",
+     "preco": 7.96,
+     "unidade": "kg"
+    }
+   }
+  },
+  "massa": {
+   "nome": "massa",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Massa Esparguete Pack Poupança Continente",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Massa Espirais",
+     "preco": 1.29,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Massa penne auchan 500g",
+     "preco": 1.3,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Massa Esparguete Nacional 500g",
+     "preco": 2.7,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Massa Chinesa",
+     "preco": 3.98,
+     "unidade": "kg"
+    }
+   }
+  },
+  "frango": {
+   "nome": "frango",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Frango Inteiro com Miúdos Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Frango Inteiro com Miúdos",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Frango inteiro com miúdos em saco auchan kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Frango Inteiro sem Miúdos",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Frango do Campo com Miúdos em Vácuo",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Asa de Frango Kg",
+     "preco": 4.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cebola": {
+   "nome": "cebola",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Cebola",
+     "preco": 0.9,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Cebola Sem Resíduos de Pesticidas Continente",
+     "preco": 1.57,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Cebola Nacional sem Desperdício",
+     "preco": 1,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cebola kg",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cebola Pequena Kg",
+     "preco": 1.29,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cenoura": {
+   "nome": "cenoura",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Cenoura Embalada",
+     "preco": 0.75,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cenoura auchan cultivamos o bom 1 kg",
+     "preco": 0.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cenoura Kg",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Cenoura Continente",
+     "preco": 1.09,
+     "unidade": "kg"
+    }
+   }
+  },
+  "banana": {
+   "nome": "banana",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Banana",
+     "preco": 0.95,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Banana Continente",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Banana Importada",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Banana del monte kg",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Banana Del Monte Kg",
+     "preco": 1.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "maçã": {
+   "nome": "maçã",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Maça Golden",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Maçã golden beira alta igp 1kg",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Maçã Gala Embalada",
+     "preco": 1.66,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Maçã Fuji Nacional",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Maçã Granny Smith Continente",
+     "preco": 1.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Maçã Nacional Jonagold Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "laranja": {
+   "nome": "laranja",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Laranjas Embaladas",
+     "preco": 1.25,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Laranja Citrinos do Algarve - IGP IGP Algarve",
+     "preco": 1.33,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Laranja",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Laranja 2 kg",
+     "preco": 1.59,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Laranja Grada Nacional Selecionada Kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "limão": {
+   "nome": "limão",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Limão Continente",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Limão",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Limão kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Limão Selecionado Kg",
+     "preco": 2.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pera": {
+   "nome": "pera",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pêra rocha 1.5kg",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Pera Rocha",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pera Rocha DOP Oeste Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pera Rocha DOP Oeste Embalada",
+     "preco": 1.59,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pera Rocha Emb Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "kiwi": {
+   "nome": "kiwi",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Kiwi Amarelo sem Desperdício",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Kiwi auchan cultivamos o bom kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Kiwi Verde Embalado Kg",
+     "preco": 4.49,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Kiwi Zespri",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pêssego": {
+   "nome": "pêssego",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pêssego vermelho auchan kg",
+     "preco": 2.59,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pêssego \"Roer\" Amarelo Continente",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pêssego Paraguaio Kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "hamburguer": {
+   "nome": "hamburguer",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Hamburguer: peru fresco 460 g",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Hambúrguer de Porco Continente",
+     "preco": 6.23,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Hambúrguer de Peru",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Hambúrguer de Porco Kg",
+     "preco": 9.95,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Hambúrgueres Crunchy de Frango",
+     "preco": 12.46,
+     "unidade": "kg"
+    }
+   }
+  },
+  "hambúrguer": {
+   "nome": "hambúrguer",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Hamburguer: peru fresco 460 g",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Hambúrguer de Porco Continente",
+     "preco": 6.23,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Hambúrguer de Peru",
+     "preco": 6.5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Hambúrguer de Porco Kg",
+     "preco": 9.95,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Hambúrgueres Crunchy de Frango",
+     "preco": 12.46,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bifes": {
+   "nome": "bifes",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Bife/Peito de Frango a granel",
+     "preco": 6.29,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bifes de Frango Continente",
+     "preco": 6.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bife de frango auchan kg",
+     "preco": 6.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bife da Vazia de Novilho Bellechalotte Kg",
+     "preco": 30.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bifanas": {
+   "nome": "bifanas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Bifanas de Porco Continente",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bifanas de Porco Embaladas",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bifanas de porco auchan embalagem familiar kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "costeletas": {
+   "nome": "costeletas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Costeletas do Cachaço de Porco Continente",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Costeleta do Cachaço de Porco",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Costeletas do cachaço porco auchan kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Costeleta de Porco com Pele Kg",
+     "preco": 6.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "mortadela": {
+   "nome": "mortadela",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Mortadela de Porco Fatias Finas Continente",
+     "preco": 4.95,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Mortadela Fatiada",
+     "preco": 4.95,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Mortadela com azeitonas auchan fatias 200g",
+     "preco": 4.95,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Mortadela Económica Fatias Nobre 120g",
+     "preco": 11.67,
+     "unidade": "kg"
+    }
+   }
+  },
+  "peito de peru": {
+   "nome": "peito de peru",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Peito de Peru Continente",
+     "preco": 8.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Peito/Bife de Peru Embalado",
+     "preco": 8.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Peito de peru kg",
+     "preco": 8.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Peito de Peru Kg",
+     "preco": 12.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "sardinhas": {
+   "nome": "sardinhas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Sardinha Inteira Portugalfish 1Kg",
+     "preco": 3.69,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Sardinha inteira polegar 900g",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Sardinha Fresca",
+     "preco": 4.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Sardinha Fresca",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "iogurte": {
+   "nome": "yogurte",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Iogurte Natural Pack 8",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Iogurte auchan natural 8x125g",
+     "preco": 1.39,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Iogurte Natural Continente",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Líquido Frutos Tropicais Yoggi 4x160g",
+     "preco": 3.28,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Iogurte Batido com Maçã-canela",
+     "preco": 3.56,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "DANONE Actimel Iogurte Líquido",
+     "preco": 4.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "leite achocolatado": {
+   "nome": "leite achocolatado",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Leite Achocolatado Continente",
+     "preco": 1.58,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Leite Achocolatado Pack 4",
+     "preco": 1.65,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite meio gordo uht grandeur nature achocolatado bio 200ml",
+     "preco": 6.95,
+     "unidade": "l"
+    }
+   }
+  },
+  "leite de coco": {
+   "nome": "leite de coco",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Leite de Coco para Culinária",
+     "preco": 3.47,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Leite jerónimos côco 400ml",
+     "preco": 3.72,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Leite de Coco Continente",
+     "preco": 3.98,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Leite de Coco Valle Del Sole 400g",
+     "preco": 5.88,
+     "unidade": "l"
+    }
+   }
+  },
+  "leite condensado": {
+   "nome": "leite condensado",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Leite auchan condensado 397g",
+     "preco": 3.5,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Leite Condensado Continente",
+     "preco": 3.65,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Leite Condensado",
+     "preco": 3.65,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Leite Condensado Tradicional",
+     "preco": 5.38,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Leite Condensado Bella Holandesa 397g",
+     "preco": 6.02,
+     "unidade": "kg"
+    }
+   }
+  },
+  "leite em pó": {
+   "nome": "leite em pó",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Leite em pó incolac 250g",
+     "preco": 15.96,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Leite Creme Em Pó Bird`s 250g",
+     "preco": 17.96,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Leite em Pó Gordo",
+     "preco": 19.1,
+     "unidade": "kg"
+    }
+   }
+  },
+  "chantilly": {
+   "nome": "chantilly",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Chantilly",
+     "preco": 7.96,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Chantilly royal 72 g",
+     "preco": 30.42,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chantilly Mimosa 250g",
+     "preco": 11.96,
+     "unidade": "kg"
+    }
+   }
+  },
+  "queijo creme": {
+   "nome": "queijo creme",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Queijo Quark Creme 0.2% Gordura Exquisa 500g",
+     "preco": 7.98,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Queijo Creme com Alho e Ervas",
+     "preco": 11,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo creme philadelphia regular 150gr",
+     "preco": 11.93,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Queijo Creme Azul Reny Picot",
+     "preco": 12.72,
+     "unidade": "kg"
+    }
+   }
+  },
+  "philadelphia": {
+   "nome": "philadelphia",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Queijo para Barrar Light Philadelphia",
+     "preco": 10.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Queijo creme philadelphia regular 150gr",
+     "preco": 11.93,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Queijo Creme de Cabra com Alecrim Philadelphia 150g",
+     "preco": 18.6,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ovo": {
+   "nome": "ovo",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Ovos saborosos classe m 2 duzias",
+     "preco": 0.21,
+     "unidade": "un"
+    },
+    "aldi": {
+     "produto": "Ovos do Solo Classe M",
+     "preco": 0.23,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Ovos Classe S Casa do Aido",
+     "preco": 0.24,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Ovos de Solo Classe M",
+     "preco": 0.25,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Ovos de Oiro Categoria A Classe L 6un",
+     "preco": 0.33,
+     "unidade": "un"
+    }
+   }
+  },
+  "ovos de codorniz": {
+   "nome": "ovos de codorniz",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "continente": {
+     "produto": "Ovos de Codorniz Continente",
+     "preco": 0.11,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Ovos frescos codorniz auchan 12un",
+     "preco": 0.11,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Ovos de Codorniz",
+     "preco": 0.11,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Ovos Codorniz Gambel 12un",
+     "preco": 0.21,
+     "unidade": "un"
+    }
+   }
+  },
+  "bebida de soja": {
+   "nome": "bebida de soja",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Bebida Vegetal de Soja Continente",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Bebida Vegetal de Soja",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Bebida shoyce soja 1l",
+     "preco": 1.59,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Bebida de Soja Natural Cálcio Alpro 1L",
+     "preco": 2.09,
+     "unidade": "l"
+    }
+   }
+  },
+  "bebida de amêndoa": {
+   "nome": "bebida de amêndoa",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Bebida alpro de amêndoa 1l",
+     "preco": 2.59,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Bebida Amêndoa Pleno 1L",
+     "preco": 2.15,
+     "unidade": "l"
+    }
+   }
+  },
+  "activia": {
+   "nome": "activia",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Bifidus líquido activia aveia noz 000% 4x155g",
+     "preco": 2.89,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bifidus Líquido Aveia e Linhaça Activia Danone",
+     "preco": 3.21,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Líquido Cereais Activia 4x155g",
+     "preco": 3.47,
+     "unidade": "kg"
+    }
+   }
+  },
+  "actimel": {
+   "nome": "actimel",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Defesas Líquido Natural Actimel Danone",
+     "preco": 5.32,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Probiótico actimel natural 6x100g",
+     "preco": 5.32,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "DANONE Actimel Iogurte Líquido",
+     "preco": 4.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Iogurte Líquido Natural Actimel 6x100g",
+     "preco": 5.32,
+     "unidade": "kg"
+    }
+   }
+  },
+  "planta": {
+   "nome": "planta",
+   "origem": "escrita à mão",
+   "unidade": null,
+   "lojas": {}
+  },
+  "esparguete": {
+   "nome": "esparguete",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Massa Esparguete Pack Poupança Continente",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Massa Esparguete Pack Poupança",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Esparguete auchan 1kg",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Massa Esparguete Caçarola 500g",
+     "preco": 2.58,
+     "unidade": "kg"
+    }
+   }
+  },
+  "massa folhada": {
+   "nome": "massa folhada",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Massa Folhada Retangular Continente",
+     "preco": 3.6,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Massa Folhada Refrigerada",
+     "preco": 4.13,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Massa folhada polegar 230g",
+     "preco": 4.13,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Massa Folhada Pasta do Dia 230g",
+     "preco": 9.09,
+     "unidade": "kg"
+    }
+   }
+  },
+  "arroz basmati": {
+   "nome": "arroz basmati",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Arroz Basmati Pack Poupança Continente",
+     "preco": 1.74,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Arroz Basmati",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Arroz basmati auchan extra longo 1kg",
+     "preco": 1.89,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Arroz Basmati Oriente 1Kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "molho de tomate": {
+   "nome": "molho de tomate",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Molho de Tomate e Manjericão",
+     "preco": 4.09,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Molho mutti de tomate para pizza 400g",
+     "preco": 5.37,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Molho de Tomate Shakshouka Mézete 390g",
+     "preco": 6.13,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Molho de Tomate e Manjericão Guloso",
+     "preco": 9.97,
+     "unidade": "kg"
+    }
+   }
+  },
+  "tomate pelado": {
+   "nome": "tomate pelado",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Tomate Pelado Continente",
+     "preco": 1.65,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Tomate Pelado Inteiro",
+     "preco": 1.65,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Tomate auchan pelado em pedaços sem sal 780g",
+     "preco": 1.65,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Tomate Pelado Guloso 390g",
+     "preco": 3.05,
+     "unidade": "kg"
+    }
+   }
+  },
+  "caldo knorr": {
+   "nome": "caldo knorr",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Caldo de Galinha Pack Poupança Knorr",
+     "preco": 9.46,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Caldo de Galinha Knorr 24un = 240g",
+     "preco": 21.63,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Caldo knorr natura legumes 4x28g",
+     "preco": 22.68,
+     "unidade": "kg"
+    }
+   }
+  },
+  "puré de batata": {
+   "nome": "puré de batata",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Puré de Batata com Noz Moscada",
+     "preco": 2.39,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Puré de batata auchan cozinhado 1kg",
+     "preco": 2.39,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Puré de Batata com Noz Moscada Continente",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Puré de Batata Gelcampo 1Kg",
+     "preco": 4.39,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pipocas": {
+   "nome": "pipocas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Milho para Pipocas Continente",
+     "preco": 1.56,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Milho para Pipocas",
+     "preco": 1.56,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pipocas micro-ondas auchan com sal 270g (3x90",
+     "preco": 4.63,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pipocas com Manteiga para Microondas Bop 90g",
+     "preco": 11,
+     "unidade": "kg"
+    }
+   }
+  },
+  "manteiga de amendoim": {
+   "nome": "manteiga de amendoim",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Manteiga de Amendoim Cremosa",
+     "preco": 3.72,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Manteiga de Amendoim Cremosa Continente Equilíbrio",
+     "preco": 4.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Manteiga amendoim auchan 100% & cremosa 500g",
+     "preco": 4.98,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Manteiga Amendoim I`m Nat 260g",
+     "preco": 9.54,
+     "unidade": "kg"
+    }
+   }
+  },
+  "nutella": {
+   "nome": "nutella",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Creme para Barrar Chocolate e Avelãs Nutella",
+     "preco": 9.4,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Creme de barrar nutella 1 kg",
+     "preco": 9.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Creme de Avelãs Nutella 600g",
+     "preco": 12.15,
+     "unidade": "kg"
+    }
+   }
+  },
+  "croissant": {
+   "nome": "croissant",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Croissants auchan 400g 13un",
+     "preco": 4.5,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Croissant Simples",
+     "preco": 5.3,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Croissant Brioche",
+     "preco": 5.8,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Croissant Folhado Pack Poupança Continente",
+     "preco": 6.4,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Croissant Doce de Ovos 120g",
+     "preco": 10.75,
+     "unidade": "kg"
+    }
+   }
+  },
+  "torradas": {
+   "nome": "torradas",
+   "origem": "escrita à mão",
+   "unidade": null,
+   "lojas": {}
+  },
+  "wraps": {
+   "nome": "wraps",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Wrap de Trigo Continente",
+     "preco": 4.3,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Wraps auchan 6 tortillas de trigo 370g",
+     "preco": 4.3,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Wrap Clássico Bimbo 240g",
+     "preco": 10.38,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Wrap de Atum",
+     "preco": 15.13,
+     "unidade": "kg"
+    }
+   }
+  },
+  "tortilhas": {
+   "nome": "tortilhas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Tortilhas de Trigo Fajita Continente",
+     "preco": 3.41,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Tortilhas auchan trigo 8 un 320g",
+     "preco": 3.41,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Tortilhas Wraps de Trigo",
+     "preco": 5.92,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Tortilhas de Trigo Dürüm",
+     "preco": 5,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Tortilhas de Trigo Original Mission 370g",
+     "preco": 7.81,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cream crackers": {
+   "nome": "cream crackers",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Bolachas Cream Cracker Continente",
+     "preco": 3.25,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cream cracker auchan 3x200g",
+     "preco": 3.25,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bolachas Cream Cracker",
+     "preco": 3.45,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bolachas Cream Crackers Vieira 200g",
+     "preco": 7.45,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cereais crianças": {
+   "nome": "cereais crianças",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Cereais nacional criança chocomax 650g",
+     "preco": 4.6,
+     "unidade": "kg"
+    }
+   }
+  },
+  "corn flakes": {
+   "nome": "corn flakes",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Corn flakes nacional 500g",
+     "preco": 3.78,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Corn Flakes Estaladiços Cem Porcento",
+     "preco": 5.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "special k": {
+   "nome": "special k",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Granola Special K Natural Kellogg's",
+     "preco": 9.34,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Cereais Special K Classic",
+     "preco": 11.13,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cereais special k kellogg's classico 700g",
+     "preco": 11.13,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cereais High Protein Special K Kellogg`s 320g",
+     "preco": 16.53,
+     "unidade": "kg"
+    }
+   }
+  },
+  "granola": {
+   "nome": "granola",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Granola Cem Porcento",
+     "preco": 5.97,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Granola Suprema 5 Sementes",
+     "preco": 5.98,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Granola cem porcento aveia e mel 1 kg",
+     "preco": 6.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Granola Clássica Salutem 375g",
+     "preco": 10.64,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bicarbonato": {
+   "nome": "bicarbonato",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Bicarbonato de sódio auchan 300g",
+     "preco": 3.13,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bicarbonato de Sódio Alimentar Continente",
+     "preco": 3.16,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bicarbonato de Sódio Lartwist 1Kg",
+     "preco": 3.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bicarbonato de Sódio Alimentar",
+     "preco": 4.97,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pepsi": {
+   "nome": "pepsi",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Refrigerante com Gás Cola Zero Pepsi",
+     "preco": 0.79,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Refrigerante Pepsi Cola Original",
+     "preco": 0.91,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Refrigerante c/ gás pepsi regular 2x1.75l (sdr)",
+     "preco": 0.85,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Refrigerante Pepsi Maxi 1.75L",
+     "preco": 1.08,
+     "unidade": "l"
+    }
+   }
+  },
+  "fanta": {
+   "nome": "fanta",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Refrigerante com Gás Laranja Fanta",
+     "preco": 0.49,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Refrigerante Fanta Laranja",
+     "preco": 0.66,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Refrigerante c/gás fanta uva lata 6x0.33l (sdr)",
+     "preco": 2.18,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Refrigerante Fanta Laranja Volta 50cl",
+     "preco": 2.38,
+     "unidade": "l"
+    }
+   }
+  },
+  "sprite": {
+   "nome": "sprite",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Refrigerante com Gás Lima Limão sem Açúcar Sprite",
+     "preco": 0.66,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Refrigerante Sprite Original",
+     "preco": 0.66,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Refrigerante c/ gás sprite lima limão s/ açúcar 1.5l (sdr)",
+     "preco": 0.66,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Refrigerante Sprite Fresh PET Volta 1,5L",
+     "preco": 0.99,
+     "unidade": "l"
+    }
+   }
+  },
+  "7up": {
+   "nome": "7up",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Refrigerante com Gás Lima Limão Zero 7Up",
+     "preco": 0.86,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Refrigerante com Gás 7up Zero",
+     "preco": 0.86,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Refrigerante c/ gás 7up regular 2x1.75l (sdr)",
+     "preco": 1,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Refrigerante 7Up 6x1L",
+     "preco": 1.46,
+     "unidade": "l"
+    }
+   }
+  },
+  "sumol": {
+   "nome": "sumol",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Refrigerante com Gás de Ananás Sumol",
+     "preco": 0.66,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Refrigerante Sumol de Maracujá",
+     "preco": 0.66,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Refrigerante c/gás sumol limão 1.5l (sdr)",
+     "preco": 0.86,
+     "unidade": "l"
+    }
+   }
+  },
+  "compal": {
+   "nome": "compal",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Néctar Frutas Tropicais Compal Família",
+     "preco": 1.09,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Nectar compal família laranja tangerina 1l",
+     "preco": 1.09,
+     "unidade": "l"
+    },
+    "lidl": {
+     "produto": "COMPAL VITAL Vital Frutos Vermelhos",
+     "preco": 1.09,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Compal Clássico Maçã 1L",
+     "preco": 1.45,
+     "unidade": "l"
+    }
+   }
+  },
+  "água das pedras": {
+   "nome": "água das pedras",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Água com Gás Pedras Salgadas",
+     "preco": 0.89,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Agua c/gas pedras salgadas pet 6x1l (sdr)",
+     "preco": 0.9,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Água com Gás Pedras Pack 6",
+     "preco": 0.9,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Água com Gás Pedras Pet Volta 1L",
+     "preco": 1.69,
+     "unidade": "l"
+    }
+   }
+  },
+  "sagres": {
+   "nome": "sagres",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "apolonia": {
+     "produto": "Cerveja Sagres Bohemia Original 33cl",
+     "preco": 0.6,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Cerveja sagres com álcool lata 0.50l (sdr)",
+     "preco": 1.7,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Cerveja com Álcool Sagres",
+     "preco": 1.85,
+     "unidade": "l"
+    }
+   }
+  },
+  "super bock": {
+   "nome": "super bock",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Cerveja super bock lata 0.50l (sdr)",
+     "preco": 1.78,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Cerveja com Álcool Super Bock",
+     "preco": 1.89,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Cerveja Super Bock Cerveja 6x1L",
+     "preco": 2.17,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Cerveja Super Bock Abadia",
+     "preco": 2.39,
+     "unidade": "l"
+    }
+   }
+  },
+  "heineken": {
+   "nome": "heineken",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Cerveja com Álcool Heineken",
+     "preco": 2.5,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Cerveja heineken premium 24x0.25l",
+     "preco": 2.5,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Cerveja Heineken 24x25cl",
+     "preco": 3.32,
+     "unidade": "l"
+    }
+   }
+  },
+  "cerveja sem álcool": {
+   "nome": "cerveja sem álcool",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Cerveja sem alcool top beer lata 0.33l",
+     "preco": 1.18,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Cerveja Budweiser Sem Álcool Volta 33cl",
+     "preco": 1.28,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Cerveja sem Álcool",
+     "preco": 2.09,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Cerveja sem Álcool Super Bock",
+     "preco": 2.27,
+     "unidade": "l"
+    }
+   }
+  },
+  "licor beirão": {
+   "nome": "licor beirão",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Licor Beirão Morangão",
+     "preco": 7.96,
+     "unidade": "l"
+    },
+    "continente": {
+     "produto": "Licor Beirão",
+     "preco": 17.13,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Licor beirão 1l",
+     "preco": 18.49,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Licor Beirão 70cl",
+     "preco": 21.36,
+     "unidade": "l"
+    }
+   }
+  },
+  "nespresso": {
+   "nome": "nespresso",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Cápsulas bicafé café compatível nespresso pack ristretto 30un",
+     "preco": 0.16,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Cápsulas de Café Nespresso Clássico",
+     "preco": 0.16,
+     "unidade": "un"
+    }
+   }
+  },
+  "cápsulas de café": {
+   "nome": "cápsulas de café",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Cápsulas bicafé café compatível nespresso pack ristretto 30un",
+     "preco": 0.16,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Cápsulas de Café Nespresso Clássico",
+     "preco": 0.16,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Cápsulas de Café Ristretto Int 10 Continente",
+     "preco": 0.16,
+     "unidade": "un"
+    },
+    "lidl": {
+     "produto": "BELLAROM Cápsulas de Café Lungo",
+     "preco": 0.17,
+     "unidade": "un"
+    },
+    "aldi": {
+     "produto": "Cápsulas de Café Colombia",
+     "preco": 0.36,
+     "unidade": "un"
+    }
+   }
+  },
+  "chá verde": {
+   "nome": "chá verde",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "continente": {
+     "produto": "Chá Verde Saquetas Continente",
+     "preco": 0.04,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Chá Verde",
+     "preco": 0.04,
+     "unidade": "un"
+    },
+    "auchan": {
+     "produto": "Chá lipton verde menta 20 pyramides",
+     "preco": 0.1,
+     "unidade": "un"
+    }
+   }
+  },
+  "red bull": {
+   "nome": "red bull",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Bebida Energética Red Bull Original",
+     "preco": 5.16,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Bebida energética red bull original lata 0.25l (sdr)",
+     "preco": 5.16,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Red Bull Lata Volta 47,3cl",
+     "preco": 6.53,
+     "unidade": "l"
+    }
+   }
+  },
+  "monster": {
+   "nome": "monster",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Bebida Energética Monster Energy Pack 4",
+     "preco": 2.25,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Bebida energética monster ultra strawberry dreams 0.5l(sdr)",
+     "preco": 3.48,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Monster Energy Volta 50cl",
+     "preco": 3.98,
+     "unidade": "l"
+    }
+   }
+  },
+  "sumo de maçã": {
+   "nome": "sumo de maçã",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Sumo 100% Maçã Continente Equilíbrio",
+     "preco": 0.73,
+     "unidade": "l"
+    },
+    "pingo-doce": {
+     "produto": "Sumo de 100% Maçã",
+     "preco": 0.73,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Sumo polegar maçã 1l",
+     "preco": 0.89,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Sumo de Maçã Don Simon 1L",
+     "preco": 1.69,
+     "unidade": "l"
+    }
+   }
+  },
+  "pringles": {
+   "nome": "pringles",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Snacks Batata Sabor Presunto Pringles",
+     "preco": 13.46,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Snack de Batata Pringles Original",
+     "preco": 14.23,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Aperitivos pringles original 175g",
+     "preco": 14.23,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pringles de Presunto 185g",
+     "preco": 16.16,
+     "unidade": "kg"
+    }
+   }
+  },
+  "lays": {
+   "nome": "lays",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Batatas lisas lay's sal 265g",
+     "preco": 9.02,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Snacks Milho 3D's Cones Lay's",
+     "preco": 20.51,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Snack 3D Bacon Lay`s 150g",
+     "preco": 26.6,
+     "unidade": "kg"
+    }
+   }
+  },
+  "doritos": {
+   "nome": "doritos",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Snacks Doritos Rib'Session",
+     "preco": 9.93,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Snacks Milho Canela Doritos",
+     "preco": 11.36,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Snacks - base milho doritos texmex 225g",
+     "preco": 12.44,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Snack Rib`Session Doritos 140g",
+     "preco": 14.21,
+     "unidade": "kg"
+    }
+   }
+  },
+  "oreo": {
+   "nome": "oreo",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Bolachas Golden com Recheio de Creme Oreo",
+     "preco": 12.05,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bolachas Oreo com Recheio Original Pack 10",
+     "preco": 9.75,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bolacha oreo golden 220g",
+     "preco": 12.05,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bolachas Oreo Gingerbread 154g",
+     "preco": 12.92,
+     "unidade": "kg"
+    }
+   }
+  },
+  "m&m": {
+   "nome": "m&m",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Pastilhas de chocolate m&m's amendoim 330 g",
+     "preco": 15.88,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Drageias de Chocolate com Amendoim M&M's",
+     "preco": 16.64,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Chocolates M&M's Choco",
+     "preco": 19.7,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chocolates M&M`s Minis Fun Size 220g",
+     "preco": 26.32,
+     "unidade": "kg"
+    }
+   }
+  },
+  "gomas": {
+   "nome": "gomas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Gomas Sortido Ácido",
+     "preco": 4.97,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Gomas Tropifrutti/ Funky Mix",
+     "preco": 5.3,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Gomas Tijolos Continente",
+     "preco": 6.3,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Gomas auchan ácidas tijolos 200g",
+     "preco": 5.95,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Gomas Ursos Jake Winkeys 100g",
+     "preco": 9.9,
+     "unidade": "kg"
+    }
+   }
+  },
+  "rebuçados": {
+   "nome": "rebuçados",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Rebuçados polegar de mentol 400g",
+     "preco": 3.72,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Rebuçados de Mentol Continente",
+     "preco": 4.36,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Rebuçados de Mentol",
+     "preco": 4.36,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Rebuçados Sortido Fruta Candys 500g",
+     "preco": 9.38,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Rebuçados de Mentol e Eucalipto com Laranja",
+     "preco": 11.4,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pastilhas elásticas": {
+   "nome": "chiclete",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Pastilhas Elásticas Melões",
+     "preco": 10.4,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Pastilhas Elásticas Sortidas Continente",
+     "preco": 12.9,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pastilhas bubballo elásticas cola 38g",
+     "preco": 17.11,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bolachas recheadas": {
+   "nome": "bolachas recheadas",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Bolachas Recheadas Choco Bom Splash",
+     "preco": 7.24,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Bolacha cuétara bocaditos recheada limão 150g",
+     "preco": 7.27,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bolachas Recheadas Choco Flakes Cuétara",
+     "preco": 6.68,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bolachas Recheadas com Creme Kitkat Grisbi 112g",
+     "preco": 17.41,
+     "unidade": "kg"
+    }
+   }
+  },
+  "barras de cereais": {
+   "nome": "barras de cereais",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "pingo-doce": {
+     "produto": "Barras de Cereais Lion",
+     "preco": 5.96,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Barra de cereais polegar alperce e maçã 126g 6un",
+     "preco": 8.65,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Barras de Cereais Original Shape & Go Continente",
+     "preco": 11.03,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Barra Cereais Aveia & Mel Nature Valley 5un = 210g",
+     "preco": 18.05,
+     "unidade": "kg"
+    }
+   }
+  },
+  "bombons": {
+   "nome": "bombons",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Bombons konti romashka 200g",
+     "preco": 14.95,
+     "unidade": "kg"
+    },
+    "aldi": {
+     "produto": "Bombons de Chocolate Belga com Recheio de Creme de Avelã",
+     "preco": 11.96,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Bombons Pocket Coffee T5 Ferrero Rocher",
+     "preco": 36.09,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Bombons de Chocolate Recheados com Creme",
+     "preco": 19.9,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Bombons Sortido LaCasa 192g",
+     "preco": 25.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "kit kat": {
+   "nome": "kit kat",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Snack de Chocloate de Leite Kit Kat",
+     "preco": 27.05,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Snack kit kat carro f1 29g",
+     "preco": 44.48,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Snack de Chocolate Kit Kat Mini",
+     "preco": 17.95,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chocolate Chunky Kit Kat Nestlé 4x40g",
+     "preco": 24.94,
+     "unidade": "kg"
+    }
+   }
+  },
+  "toblerone": {
+   "nome": "toblerone",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Tablete de Chocolate de Leite com Mel e Amêndoas Toblerone",
+     "preco": 22.7,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Chocolate negro toblerone negro 360g",
+     "preco": 24.97,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Chocolate com Mel Toblerone 200g",
+     "preco": 32.95,
+     "unidade": "kg"
+    }
+   }
+  },
+  "maca": {
+   "nome": "maca",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "aldi": {
+     "produto": "Maça Golden",
+     "preco": 1.19,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Maçã golden beira alta igp 1kg",
+     "preco": 1.49,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Maçã Gala Embalada",
+     "preco": 1.66,
+     "unidade": "kg"
+    },
+    "lidl": {
+     "produto": "Maçã Fuji Nacional",
+     "preco": 1.69,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Maçã Granny Smith Continente",
+     "preco": 1.79,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Maçã Nacional Jonagold Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "limao": {
+   "nome": "limao",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Limão Continente",
+     "preco": 2.69,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Limão",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Limão kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Limão Selecionado Kg",
+     "preco": 2.69,
+     "unidade": "kg"
+    }
+   }
+  },
+  "pimento": {
+   "nome": "pimento",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Pimento Verde Continente",
+     "preco": 2.89,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Pimento Verde",
+     "preco": 2.89,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Pimento verde kg",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Pimento Verde Kg",
+     "preco": 3.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "cebolinho": {
+   "nome": "cebolinho",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Cebolinho Fresco Continente",
+     "preco": 49.5,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Cebolinho auchan 25 g",
+     "preco": 50,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Cebolinho Embalado Kg",
+     "preco": 79.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "frutos vermelhos": {
+   "nome": "frutos vermelhos",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Frutos Vermelhos Bio Origens 300g",
+     "preco": 13.3,
+     "unidade": "kg"
+    }
+   }
+  },
+  "meloa": {
+   "nome": "meloa",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "auchan": {
+     "produto": "Meloa kg produto local",
+     "preco": 0.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Meloa Galia Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Meloa Galia",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Meloa Gália Kg",
+     "preco": 3.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "romã": {
+   "nome": "romã",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Romã Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Romã Vermelha",
+     "preco": 2.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Romã auchan cultivamos o bom kg",
+     "preco": 3.49,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Romã Kg",
+     "preco": 4.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "toranja": {
+   "nome": "toranja",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Toranja Continente",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Toranja",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Toranja vermelha kg",
+     "preco": 1.99,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Toranja Vermelha Kg",
+     "preco": 2.49,
+     "unidade": "kg"
+    }
+   }
+  },
+  "lima": {
+   "nome": "lima",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "apolonia": {
+     "produto": "Lima Kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "continente": {
+     "produto": "Lima Continente",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Lima",
+     "preco": 3.99,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Lima kg",
+     "preco": 3.99,
+     "unidade": "kg"
+    }
+   }
+  },
+  "lava loiça": {
+   "nome": "lava loiça",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "auchan": {
+     "produto": "Abrilhantador lava loiça líquido máquina l arbre vert 750 ml",
+     "preco": 12.52,
+     "unidade": "l"
+    }
+   }
+  },
+  "algodão": {
+   "nome": "algodão",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Cotonetes auchan bio 100% algodão 200 un",
+     "preco": 0,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Algodão Bolas Brancas",
+     "preco": 0.01,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Cotonetes de Algodão Pinoca",
+     "preco": 0.01,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Algodão Desmaquilhante Doris 80un",
+     "preco": 0.02,
+     "unidade": "un"
+    }
+   }
+  },
+  "tampões": {
+   "nome": "tampões",
+   "origem": "escrita à mão",
+   "unidade": "un",
+   "lojas": {
+    "auchan": {
+     "produto": "Tampões auchan normal sem aplicador 24un",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "continente": {
+     "produto": "Tampão sem Aplicador Regular MYLABEL",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "pingo-doce": {
+     "produto": "Tampão Digital Normal",
+     "preco": 0.06,
+     "unidade": "un"
+    },
+    "apolonia": {
+     "produto": "Tampões O.B. Pro Comfort Super 16un",
+     "preco": 0.21,
+     "unidade": "un"
+    }
+   }
+  },
+  "sal máquina loiça": {
+   "nome": "sal máquina loiça",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Sal Máquina Loiça Power+ Continente",
+     "preco": 0.43,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Sal auchan máquina loiça 2kg",
+     "preco": 0.43,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Sal para Máquina da Loiça",
+     "preco": 0.44,
+     "unidade": "kg"
+    }
+   }
+  },
+  "ajax": {
+   "nome": "ajax",
+   "origem": "escrita à mão",
+   "unidade": "l",
+   "lojas": {
+    "continente": {
+     "produto": "Lava Tudo Limão Ajax",
+     "preco": 1.5,
+     "unidade": "l"
+    },
+    "auchan": {
+     "produto": "Limpeza chão ajax limão 2l",
+     "preco": 1.5,
+     "unidade": "l"
+    },
+    "apolonia": {
+     "produto": "Detergente Montanha Fabuloso Ajax 1.25L",
+     "preco": 2.6,
+     "unidade": "l"
+    }
+   }
+  },
+  "skip": {
+   "nome": "skip",
+   "origem": "escrita à mão",
+   "unidade": "dose",
+   "lojas": {
+    "continente": {
+     "produto": "Detergente Máquina Roupa Líquido Sabão Natural Skip",
+     "preco": 0.13,
+     "unidade": "dose"
+    },
+    "auchan": {
+     "produto": "Det. roupa máq. skip sabão natural 110d",
+     "preco": 0.14,
+     "unidade": "dose"
+    }
+   }
+  },
+  "ariel": {
+   "nome": "ariel",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Intensificador Perfume Pérolas Unstoppables Ariel Lenor",
+     "preco": 26.24,
+     "unidade": "kg"
+    }
+   }
+  },
+  "grao": {
+   "nome": "grao",
+   "origem": "escrita à mão",
+   "unidade": "kg",
+   "lojas": {
+    "continente": {
+     "produto": "Grão de Bico Continente",
+     "preco": 1.78,
+     "unidade": "kg"
+    },
+    "pingo-doce": {
+     "produto": "Grão de Bico Seco",
+     "preco": 1.8,
+     "unidade": "kg"
+    },
+    "auchan": {
+     "produto": "Grão auchan seco 500g",
+     "preco": 2.1,
+     "unidade": "kg"
+    },
+    "apolonia": {
+     "produto": "Grão de Bico Seco Celeiro de Cistér 500g",
+     "preco": 2.38,
+     "unidade": "kg"
+    }
+   }
+  }
+ }
+}
