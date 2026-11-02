@@ -364,7 +364,7 @@ function PoupeJa() {
     return () => { cancelado = true; clearTimeout(timer); };
   }, [user?.id, user?.convidado]);
 
-  /* Convite a instalar: logo na 1ª visita e depois a relembrar (3ª e a cada 5) */
+  /* Convite a instalar: na 2ª visita (a 1ª é para ver o que a app faz), depois na 5ª e a cada 5 */
   useEffect(() => {
     if (!hydrated || !installModo || installModo === "instalado") return;
     if (sessionStorage.getItem("poupeja_modal_ja_aberto")) return;
@@ -372,7 +372,7 @@ function PoupeJa() {
     if (ndispensas >= 3) return; // já dispensou 3+ vezes, não forçar mais
     const visitas = parseInt(localStorage.getItem("poupeja_visitas") || "0") + 1;
     localStorage.setItem("poupeja_visitas", String(visitas));
-    if (visitas === 1 || visitas === 3 || (visitas > 3 && visitas % 5 === 0)) {
+    if (visitas === 2 || (visitas >= 5 && visitas % 5 === 0)) {
       sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
       setTimeout(() => setModalInstalarAberto(true), 2500);
     }

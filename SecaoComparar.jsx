@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, ExternalLink, Plus, Check, RefreshCw, ChevronDown, Info, ScanBarcode } from "lucide-react";
+import { Search, ExternalLink, Plus, Check, RefreshCw, ChevronDown, Info, ScanBarcode, Share2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import LogoLoja from "./LogoLoja";
 import { Preco } from "./Preco";
@@ -7,7 +7,8 @@ import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { valorComparacao, melhoresPorLoja, termoDePesquisa, eGenerico, opcoesGenerico } from "./lib/comparacao";
 import CompararLista from "./CompararLista";
-import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe } from "./AlertasPreco";
+import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe, AvisarQuandoHouver } from "./AlertasPreco";
+import { partilharComparacao } from "./lib/partilhar";
 import { ITENS, CATEGORIAS as CATS_CATALOGO, itemPorNome } from "./data/catalogo-lista";
 
 // Direto dos dados (sem a pesquisa tolerante da lista): é o que este ecrã precisa.
@@ -183,6 +184,7 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
   const [alertaAberto, setAlertaAberto] = useState(abrirAlerta);
   const [alerta, setAlerta] = useState(() => alertaDe(q));
   const [avisoAlerta, setAvisoAlerta] = useState("");
+  const [avisoPartilha, setAvisoPartilha] = useState("");
   const v = valorComparacao(p, modo);
   const v2 = segundo ? valorComparacao(segundo, modo) : null;
   const poupanca = segundo && (modo === "embalagem" || segundo.unidade === p.unidade) && v2 > v
@@ -190,6 +192,11 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
     : null;
   const m = comoMostrar(p, modo);
   const desc = descontoPct(p);
+  async function partilhar() {
+    const lojas = empatados.length > 1 ? empatados.map((e) => e.lojaNome).join(" e no ") : p.lojaNome;
+    const r = await partilharComparacao({ q, loja: lojas, preco: m.valor, sufixo: m.sufixo });
+    if (r === "copiado") { setAvisoPartilha("Link copiado. Cola-o numa conversa."); setTimeout(() => setAvisoPartilha(""), 4000); }
+  }
   return (
     <div className="anim-up" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 20, overflow: "hidden" }}>
       <div style={{ background: "var(--pj-brand)", color: "#fff", padding: "8px 16px", fontSize: 12, fontWeight: 700, letterSpacing: "0.02em" }}>
@@ -244,7 +251,12 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
             {naLista ? <><Check size={14} /> Na lista</> : <><Plus size={14} /> Lista</>}
           </button>
           <BotaoAlerta ativo={!!alerta} aberto={alertaAberto} onClick={() => { setAlertaAberto((a) => !a); setAvisoAlerta(""); }} />
+          <button onClick={partilhar} aria-label="Partilhar esta comparação" className="pj-tap press flex items-center justify-center"
+            style={{ background: "var(--pj-subtle)", color: "var(--pj-text)", width: 44, borderRadius: 12, border: 0 }}>
+            <Share2 size={16} />
+          </button>
         </div>
+        {avisoPartilha && <p role="status" style={{ fontSize: 12.5, color: "var(--pj-brand-ink)", fontWeight: 600, marginTop: 8 }}>{avisoPartilha}</p>}
 
         {alertaAberto && (
           <CriarAlerta
@@ -755,6 +767,7 @@ export default function SecaoComparar() {
                   ? "Não comparamos preços de produtos diferentes. Estes são parecidos; experimenta um nome mais simples."
                   : "Experimenta uma palavra mais simples, como «arroz» em vez de «arroz agulha extra longo»."}
               </p>
+              <AvisarQuandoHouver q={pesquisa} />
               </>}
             </div>
             {marca === "todas" && vista.parecidos.length > 0 && (

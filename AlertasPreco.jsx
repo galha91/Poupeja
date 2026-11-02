@@ -284,3 +284,65 @@ export function BotaoAlerta({ ativo, aberto, onClick }) {
     </button>
   );
 }
+
+/* ── Pesquisa sem resultado: «avisa-me por email quando houver» ──
+ * Um aviso único (tipo "aparecer"): o cron-alertas-email procura a pesquisa
+ * todos os dias e escreve quando passa a haver um produto igual ao pedido. */
+export function AvisarQuandoHouver({ q }) {
+  const [aberto, setAberto] = useState(false);
+  const [email, setEmail] = useState("");
+  const [aceito, setAceito] = useState(false);
+  const [estado, setEstado] = useState("pronto"); // pronto | a-guardar | feito
+  const [erro, setErro] = useState("");
+
+  useEffect(() => { setEstado("pronto"); setErro(""); setAberto(false); setEmail(lerEmail()); }, [q]);
+
+  async function guardar() {
+    setErro("");
+    if (!aceito) return setErro("Marca a caixa para receberes o aviso por email.");
+    setEstado("a-guardar");
+    try {
+      await criarAlertaEmail({ email, q, tipo: "aparecer", unidade: "embalagem", modo: "unidade", valorAtual: 1 });
+      evento("alerta_email_criado", { origem: "sem_resultado" });
+      setEstado("feito");
+    } catch (e) {
+      setErro(e.message);
+      setEstado("pronto");
+    }
+  }
+
+  if (estado === "feito") {
+    return (
+      <p className="flex items-start gap-2 mt-3" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--pj-brand-ink)", fontWeight: 600 }}>
+        <BellRing size={15} style={{ flexShrink: 0, marginTop: 2 }} />
+        Combinado. Escrevemos-te quando houver «{q}» nos supermercados comparados.
+      </p>
+    );
+  }
+  if (!aberto) {
+    return (
+      <button onClick={() => { setAberto(true); evento("sem_resultado_alerta_aberto"); }} className="pj-tap press inline-flex items-center gap-1.5 mt-3"
+        style={{ background: "var(--pj-brand-wash)", color: "var(--pj-brand-ink)", border: 0, borderRadius: 12, padding: "9px 14px", fontSize: 13, fontWeight: 600 }}>
+        <Bell size={14} /> Avisa-me por email quando houver
+      </button>
+    );
+  }
+  return (
+    <div className="mt-3" style={{ padding: 12, borderRadius: 14, background: "var(--pj-surface)", border: "1px solid var(--pj-border)" }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text)" }}>Escrevemos-te uma vez, quando aparecer.</p>
+      <div className="flex items-center gap-2 mt-2">
+        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" inputMode="email" autoComplete="email" placeholder="o-teu@email.pt" aria-label="O teu email"
+          style={{ flex: 1, minWidth: 0, background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "10px 12px", fontSize: 14, color: "var(--pj-text)", outline: "none" }} />
+        <button onClick={guardar} disabled={estado === "a-guardar" || !email.includes("@")} className="pj-tap press"
+          style={{ flexShrink: 0, background: "var(--pj-brand)", color: "#fff", border: 0, borderRadius: 12, padding: "11px 14px", fontSize: 13.5, fontWeight: 600, opacity: email.includes("@") ? 1 : 0.5 }}>
+          {estado === "a-guardar" ? "A guardar…" : "Avisar"}
+        </button>
+      </div>
+      <label className="flex items-start gap-2 mt-2.5" style={{ fontSize: 12, color: "var(--pj-text-muted)", lineHeight: 1.45 }}>
+        <input type="checkbox" checked={aceito} onChange={(e) => setAceito(e.target.checked)} style={{ marginTop: 2 }} />
+        Aceito receber este aviso por email. Só uso o email para isto e posso cancelar no próprio email.
+      </label>
+      {erro && <p role="alert" style={{ fontSize: 12.5, color: "#b4472e", marginTop: 6 }}>{erro}</p>}
+    </div>
+  );
+}

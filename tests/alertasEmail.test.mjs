@@ -44,3 +44,15 @@ test("vigiar: avisa uma vez por descida e limpa quando sobe", () => {
   assert.equal(decidirAviso({ ...a, ultimo_aviso: d1.registo }, { valor: 4.5, unidade: "l" }, "2026-11-11").avisar, false);
   assert.equal(decidirAviso({ ...a, ultimo_aviso: d1.registo }, { valor: 5.2, unidade: "l" }, "2026-11-12").registo, null);
 });
+
+test("aparecer: pedido sem preço; avisa quando há resultado e termina", () => {
+  const { alerta } = validarPedido({ email: "ana@mail.pt", q: "Tofu Fumado", consentimento: true, tipo: "aparecer" });
+  assert.equal(alerta.tipo, "aparecer");
+  assert.equal(alerta.q, "tofu fumado");
+  assert.equal(alerta.referencia, 0);
+  assert.equal(decidirAviso(alerta, undefined, "2026-11-10").avisar, false);
+  const d = decidirAviso(alerta, { valor: 3.2, unidade: "kg" }, "2026-11-10");
+  assert.equal(d.avisar, true);
+  assert.equal(d.motivo, "apareceu");
+  assert.equal(d.terminar, true);
+});

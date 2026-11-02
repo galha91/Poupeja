@@ -22,9 +22,12 @@ const porUnid = (u) => (u === "embalagem" ? "" : `/${u}`);
 
 function construirEmail(itens, base) {
   const linhas = itens.map(({ alerta: a, atual, motivo }) => {
-    const titulo = motivo === "promo" ? `${cap(a.q)} em promoção` : `${cap(a.q)} a ${eur(atual.valor, 2)} €${porUnid(atual.unidade)}`;
+    const titulo = motivo === "promo" ? `${cap(a.q)} em promoção`
+      : motivo === "apareceu" ? `${cap(a.q)} já tem preço: ${eur(atual.valor, 2)} €${porUnid(atual.unidade)}`
+      : `${cap(a.q)} a ${eur(atual.valor, 2)} €${porUnid(atual.unidade)}`;
     const detalhe = motivo === "alvo"
       ? `Abaixo do teu alvo de ${eur(Number(a.alvo), 2)} €${porUnid(a.unidade)}`
+      : motivo === "apareceu" ? "Pediste para avisarmos quando houvesse"
       : motivo === "desceu" ? `Estava a ${eur(Number(a.referencia), 2)} €${porUnid(a.unidade)} quando começaste a vigiar` : `A ${eur(atual.valor, 2)} €${porUnid(atual.unidade)}`;
     const abrir = `${base}/?atalho=mercados&q=${encodeURIComponent(a.q)}&o=email-alerta`;
     return `<tr><td style="padding:14px 0;border-top:1px solid #eee;">
@@ -38,7 +41,9 @@ function construirEmail(itens, base) {
   <table width="100%" style="max-width:520px;margin:0 auto;background:#fff;border-radius:16px;padding:24px;">
     <tr><td>
       <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#636d66;">Alerta de preço</div>
-      <h1 style="font-size:20px;margin:6px 0 4px;color:#14231c;">${itens.length === 1 ? "Baixou o preço que estavas a vigiar" : `Baixaram ${itens.length} preços que estavas a vigiar`}</h1>
+      <h1 style="font-size:20px;margin:6px 0 4px;color:#14231c;">${itens.every(i => i.motivo === "apareceu")
+        ? (itens.length === 1 ? "Já encontrámos o que procuravas" : `Já encontrámos ${itens.length} artigos que procuravas`)
+        : itens.length === 1 ? "Baixou o preço que estavas a vigiar" : `Baixaram ${itens.length} preços que estavas a vigiar`}</h1>
       <p style="font-size:14px;color:#5c6b62;margin:0 0 8px;">Verificámos hoje nos supermercados que comparamos.</p>
     </td></tr>
     ${linhas}
@@ -77,7 +82,7 @@ async function handler(req, res) {
     const d = decidirAviso(a, atual, hoje);
     if (d.avisar) {
       (porEmail[a.email] ||= []).push({ alerta: a, atual, motivo: d.motivo });
-      atualizar.push({ id: a.id, ultimo_aviso: d.registo, avisos: (a.avisos || 0) + 1 });
+      atualizar.push({ id: a.id, ultimo_aviso: d.registo, avisos: (a.avisos || 0) + 1, ...(d.terminar ? { cancelado_em: new Date().toISOString() } : {}) });
     } else if (d.registo === null && a.ultimo_aviso) {
       atualizar.push({ id: a.id, ultimo_aviso: null });
     }
