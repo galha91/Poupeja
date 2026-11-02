@@ -178,6 +178,8 @@ export default async function handler(req, res) {
       android: Object.values(dispositivoMap).filter(d => d?.platform === "android").length,
       desktop: Object.values(dispositivoMap).filter(d => d?.platform === "desktop").length,
     };
+    // Contas que nunca registaram o aparelho (só entraram antes de isso existir).
+    porPlataforma.semInfo = Math.max(0, total - porPlataforma.ios - porPlataforma.android - porPlataforma.desktop);
 
     // Listas de compras partilhadas (funcionalidade de recomendação/boca-a-boca)
     let listasPartilhadas = 0, listasAtivas7 = 0;
@@ -225,14 +227,14 @@ export default async function handler(req, res) {
       ativouPush: totalPush,
     };
 
-    // Recentes com última visita e dispositivo: as 50 contas mais novas
-    // mais as 50 com login mais recente (uma conta antiga que entra agora
+    // Contas com última visita e dispositivo: as 500 mais novas
+    // mais as 500 com login mais recente (com menos de 500, são todas) (uma conta antiga que entra agora
     // não pode ficar de fora da lista "Último login")
-    const maisNovas = [...todos].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 50);
+    const maisNovas = [...todos].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 500);
     const ultimosLogins = todos
       .filter(u => u.last_sign_in_at)
       .sort((a, b) => new Date(b.last_sign_in_at) - new Date(a.last_sign_in_at))
-      .slice(0, 50);
+      .slice(0, 500);
     const recentes = [...new Map([...maisNovas, ...ultimosLogins].map(u => [u.id, u])).values()]
       .map(u => ({
         email: u.email,

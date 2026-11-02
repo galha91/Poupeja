@@ -64,7 +64,7 @@ const NOMES_ORIGEM = {
   direto: "Direto / app", google: "Google", pesquisa: "Outros motores", facebook: "Facebook",
   instagram: "Instagram", tiktok: "TikTok", whatsapp: "WhatsApp", outro: "Outros sites", interno: "Navegação interna",
 };
-const NOMES_PLATAFORMA = { ios: "iOS", android: "Android", desktop: "Computador" };
+const NOMES_PLATAFORMA = { ios: "iOS", android: "Android", desktop: "Computador", semInfo: "Sem informação" };
 
 // Paleta discreta para séries: verde da marca primeiro, depois tons neutros.
 const CORES = ["#0b6b4f", "#3f9070", "#82b09b", "#c8a26a", "#8a978e", "#cfccbf"];
@@ -636,7 +636,7 @@ function Utilizadores({ stats, cresc }) {
   return (
     <div className="space-y-4">
       <Grelha4>
-        <Kpi rotulo="Contas" ajuda={`${num(stats.confirmados)} com email confirmado`} valor={stats.total} />
+        <Kpi rotulo="Contas registadas" ajuda={`${num(stats.confirmados)} com email confirmado · no total`} valor={stats.total} />
         <Kpi rotulo="Ativas" ajuda={`fizeram login, ${txt}`} valor={stats.periodo?.ativos ?? stats.ativos7 ?? "—"} />
         <Kpi rotulo="Convidados" ajuda={conv ? `${num(conv.converteram)} criaram conta (${pct(conv.converteram, conv.total)}%)` : "sem conta"} valor={conv?.total ?? stats.convidados ?? 0} />
         <Kpi rotulo="Nunca voltaram" ajuda="contas sem 2.º login" valor={stats.nuncaVoltaram ?? "—"} />
@@ -801,8 +801,8 @@ function ListaContas({ stats }) {
     <section className="bg-white rounded-2xl border border-slate-200">
       <button onClick={() => setAberta(v => !v)} aria-expanded={aberta} className="w-full flex items-center gap-2 px-5 py-4 text-left">
         <h2 className="font-semibold text-slate-800">Contas</h2>
-        <span className="text-xs font-semibold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 tabular-nums">{stats.recentes.length}</span>
-        <span className="text-xs text-slate-400 hidden sm:inline">mais recentes e últimos logins</span>
+        <span className="text-xs font-semibold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 tabular-nums">{stats.recentes.length < stats.total ? `${stats.recentes.length} de ${stats.total}` : stats.recentes.length}</span>
+        <span className="text-xs text-slate-400 hidden sm:inline">{stats.recentes.length < stats.total ? "mais recentes e últimos logins" : "todas"}</span>
         <ChevronDown size={18} className={`ml-auto text-slate-400 transition-transform ${aberta ? "rotate-180" : ""}`} />
       </button>
       {aberta && (
