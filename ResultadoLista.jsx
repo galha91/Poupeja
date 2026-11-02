@@ -12,7 +12,7 @@ import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
 import { resumoAtual, avaliarVigia } from "./lib/alertas";
 import { registarEscolha, chaveLista, lerRegistos, somarPeriodos } from "./lib/poupancaListas";
-import { lerAlertas, vigiar, deixarDeVigiar } from "./AlertasPreco";
+import { lerAlertas, vigiar, deixarDeVigiar, criarAlertaEmail, juntarEmailAoAlerta, lerEmail } from "./AlertasPreco";
 import { estadoPush, ativarPush, temConta } from "./lib/push";
 
 /*
@@ -67,6 +67,8 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
   const [alertas, setAlertas] = useState([]);
   const [avisoVigiar, setAvisoVigiar] = useState("");
   const [pedirContaVigia, setPedirContaVigia] = useState(false);
+  // Vigiar sem notificações: oferece o aviso por email (sem conta).
+  const [vigiaEmail, setVigiaEmail] = useState(null); // { q, valor, unidade, modo, promo, nome }
   useEffect(() => { setAlertas(lerAlertas()); }, []);
   // Ao atualizar chegam linhas novas: a escolha anterior deixa de valer.
   useEffect(() => { setEscolha(null); }, [linhas]);
@@ -124,6 +126,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
     if (ativo) {
       deixarDeVigiar(l.q);
       setAvisoVigiar("");
+      setVigiaEmail(null);
       setPedirContaVigia(false);
     } else {
       const atual = atualDe(l.dados);
@@ -139,6 +142,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
         if (push === "inativo") push = await ativarPush().catch(() => "inativo");
       }
       setPedirContaVigia(push === "sem-conta" && !!onCriarConta);
+      setVigiaEmail(push !== "ativo" ? { q: l.q, valor: atual.valor, unidade: atual.unidade, modo: atual.modo, promo: atual.promo, nome: l.item.nome } : null);
       setAvisoVigiar(push === "ativo"
         ? `A vigiar «${l.item.nome}». Mandamos uma notificação quando descer ou entrar em promoção.`
         : push === "sem-conta"
@@ -406,15 +410,16 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
             )}
 
             {avisoVigiar && (
-              <p role="status" style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+              <div role="status" style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
                 {avisoVigiar}
-                {pedirContaVigia && (
+                {vigiaEmail && <VigiarPorEmail dados={vigiaEmail} onFeito={(txt) => { setVigiaEmail(null); setPedirContaVigia(false); setAvisoVigiar(txt); setAlertas(lerAlertas()); }} />}
+                {pedirContaVigia && !vigiaEmail && (
                   <button onClick={() => { evento("pedir_conta", { onde: "sino" }); registarMarcoConvidado("pediu_conta"); onCriarConta(); }} className="pj-tap press"
                     style={{ display: "block", marginTop: 6, padding: "7px 14px", borderRadius: 999, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 12.5, fontWeight: 700 }}>
                     Criar conta grátis · 10 segundos
                   </button>
                 )}
-              </p>
+              </div>
             )}
             {desceram.length > 0 && (
               <p style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
@@ -541,5 +546,54 @@ function EscolherProduto({ dados, loja, atualId, onEscolher }) {
         );
       })}
     </div>
+  );
+}
+
+/*
+ * Avisar por email quando um artigo vigiado descer (sem conta). Com o email
+ * já usado neste aparelho, basta um toque; senão, email + consentimento.
+ */
+function VigiarPorEmail({ dados, onFeito }) {
+  const conhecido = lerEmail();
+  const [email, setEmail] = useState(conhecido);
+  const [aceito, setAceito] = useState(false);
+  const [estado, setEstado] = useState("");
+  async function guardar(e) {
+    e?.preventDefault();
+    if (!conhecido && !aceito) return setEstado("Marca a caixa para receberes o aviso por email.");
+    setEstado("a-guardar");
+    try {
+      const viaEmail = await criarAlertaEmail({ email, q: dados.q, tipo: "vigiar", unidade: dados.unidade, modo: dados.modo, valorAtual: dados.valor, promo: dados.promo });
+      juntarEmailAoAlerta(dados.q, viaEmail);
+      evento("alerta_email_criado", { origem: "lista" });
+      onFeito(`A vigiar «${dados.nome}». Mandamos um email para ${viaEmail.email} quando descer ou entrar em promoção.`);
+    } catch (err) {
+      setEstado(err.message);
+    }
+  }
+  const botao = { padding: "8px 14px", borderRadius: 999, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 12.5, fontWeight: 700 };
+  if (conhecido) {
+    return (
+      <span style={{ display: "block", marginTop: 6 }}>
+        <button onClick={guardar} disabled={estado === "a-guardar"} className="pj-tap press" style={botao}>
+          {estado === "a-guardar" ? "…" : `Avisar também por email (${conhecido})`}
+        </button>
+        {estado && estado !== "a-guardar" && <span role="alert" style={{ display: "block", marginTop: 4, color: "var(--pj-danger)", fontWeight: 600 }}>{estado}</span>}
+      </span>
+    );
+  }
+  return (
+    <form onSubmit={guardar} style={{ display: "block", marginTop: 8, fontWeight: 400 }}>
+      <span style={{ display: "flex", gap: 6 }}>
+        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Avisar por email: o.teu@email.pt" aria-label="Email para o aviso"
+          style={{ flex: 1, minWidth: 0, padding: "8px 11px", borderRadius: 10, border: "1px solid var(--pj-border)", background: "var(--pj-card)", fontSize: 13, color: "var(--pj-text)" }} />
+        <button type="submit" disabled={estado === "a-guardar"} className="pj-tap press" style={botao}>{estado === "a-guardar" ? "…" : "Avisar"}</button>
+      </span>
+      <label style={{ display: "flex", gap: 6, alignItems: "flex-start", marginTop: 6, fontSize: 11.5, color: "var(--pj-text-muted)", lineHeight: 1.45 }}>
+        <input type="checkbox" checked={aceito} onChange={(e) => setAceito(e.target.checked)} style={{ marginTop: 2 }} />
+        <span>Aceito receber por email os avisos deste artigo. Cancelo num toque em cada email.</span>
+      </label>
+      {estado && estado !== "a-guardar" && <span role="alert" style={{ display: "block", marginTop: 4, color: "var(--pj-danger)", fontWeight: 600, fontSize: 12 }}>{estado}</span>}
+    </form>
   );
 }

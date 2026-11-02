@@ -6,6 +6,7 @@ import { dadosMunicipio } from "../../lib/municipios";
 import { descreverFrescura } from "../../lib/frescura";
 import { urlCancelarComb } from "../../lib/subscritoresToken";
 import { construirEmailCombustivel } from "../../lib/emailCombustivel";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Email semanal de combustível por concelho (segundas-feiras — ver
@@ -14,7 +15,7 @@ import { construirEmailCombustivel } from "../../lib/emailCombustivel";
  *
  * Requer: SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, CRON_SECRET.
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
@@ -80,3 +81,6 @@ export default async function handler(req, res) {
   console.log(`cron-email-combustiveis: enviados=${enviados} ignorados=${ignorados} falhas=${falhas}`);
   return res.status(200).json({ ok: true, enviados, ignorados, falhas });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-email-combustiveis", handler);

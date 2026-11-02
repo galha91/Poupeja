@@ -6,7 +6,7 @@ import {
   ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Bell, Send, ChevronDown, Search,
   LayoutDashboard, BarChart3, Users, Megaphone, ArrowUpRight, ArrowDownRight, Minus,
   MousePointerClick, Gauge, Store, Bug, Repeat, Mail, Globe, Activity, SearchX, Route, AlertTriangle, Hourglass,
-  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao,
+  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao, Timer, MessageSquare,
 } from "lucide-react";
 
 // Painel privado do dono, do mais geral para o mais detalhado:
@@ -40,9 +40,16 @@ const NOMES_EVENTO = {
   copia_seguranca: "Cópia de segurança", inicio_combustivel: "Combustível no início", comparar_exemplo: "Viu exemplo do Mercado",
   comparar_pesquisa: "Pesquisou um produto", comparar_sem_resultados: "Pesquisa sem resultados", desconto_combustivel: "Desconto de combustível",
   codigo_barras: "Leitor de código de barras", ementas_plano: "Plano de jantares", receita_cozinhada: "Cozinhou uma receita",
-  abrir_poupeja: "Abriu a app a partir do site", arranque_cabaz: "Comparou o cabaz básico (1 toque)",
+  abrir_poupeja: "Abriu a app a partir do site", feedback_util: "Respondeu «Isto foi útil?»", arranque_cabaz: "Comparou o cabaz básico (1 toque)",
   lembrete_compras_criado: "Pediu lembrete do dia das compras", lembrete_compras_cancelado: "Cancelou o lembrete", lista_guardada_usada: "Usou uma lista guardada",
   lista_pediu_artigo: "Escreveu palavra geral na lista", pedir_conta: "Tocou em criar conta", subscrever_folhetos: "Subscreveu os folhetos",
+};
+const NOMES_TAREFA = {
+  "cron-precos": "Preços dos combustíveis (DGEG)", "cron-saude-precos": "Verificação dos preços das lojas", "cron-historico-precos": "Histórico de preços (1/3)",
+  "cron-historico-precos-2": "Histórico de preços (2/3)", "cron-historico-precos-3": "Histórico de preços (3/3)", "cron-avisos": "Notificações personalizadas",
+  "cron-alertas-email": "Alertas de preço por email", "cron-lembrete-compras": "Lembrete do dia das compras", "cron-email-semanal": "Resumo semanal dos folhetos",
+  "cron-email-combustiveis": "Email semanal de combustível", "cron-previsao-combustiveis": "Previsão dos combustíveis", "cron-validar-urls": "Validação de links",
+  "cron-indexnow": "Aviso de páginas novas aos motores (IndexNow)", "cron-resumo-admin": "Resumo do admin por email", "push-enviar": "Notificação geral de quinta",
 };
 const NOMES_VITAL = {
   LCP: ["Conteúdo principal", "tempo até aparecer o maior elemento"],
@@ -940,7 +947,18 @@ function Estado({ cresc, irPara }) {
       valor: taxaVazias != null ? `${Math.round(taxaVazias * 100)}%` : null,
       nota: m?.pesquisas?.semResultado?.[0] ? `ex.: «${m.pesquisas.semResultado[0].termo}»` : "a recolher", alerta: taxaVazias > 0.15 },
   ];
+  const tarefasMal = (cresc.tarefas || []).filter(t => t.ok === false || t.atrasada);
   return (
+    <>
+    {tarefasMal.length > 0 && (
+      <button onClick={() => irPara("qualidade")} className="w-full text-left rounded-2xl border border-[color:var(--pj-danger-border)] bg-[color:var(--pj-danger-wash)] px-4 py-3 flex items-start gap-3">
+        <AlertTriangle size={16} className="mt-0.5 shrink-0 text-[color:var(--pj-danger)]" />
+        <span className="text-sm text-slate-800">
+          <b>{tarefasMal.length === 1 ? "Uma tarefa automática" : `${tarefasMal.length} tarefas automáticas`} com problemas:</b>{" "}
+          {tarefasMal.map(t => `${NOMES_TAREFA[t.nome] || t.nome} (${t.ok === false ? "falhou" : "atrasada"})`).join(", ")}
+        </span>
+      </button>
+    )}
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {itens.map(({ Icone, rotulo, valor, nota, alerta, aba }) => (
         <button key={rotulo} onClick={() => irPara(aba)} className={`min-w-0 text-left rounded-2xl border px-4 py-3 flex items-start gap-3 hover:bg-white ${alerta ? "border-[color:var(--pj-danger-border)] bg-[color:var(--pj-danger-wash)]" : "border-slate-200 bg-slate-50"}`}>
@@ -953,6 +971,7 @@ function Estado({ cresc, irPara }) {
         </button>
       ))}
     </div>
+    </>
   );
 }
 
@@ -1026,6 +1045,29 @@ function Uso({ stats, cresc }) {
               csv={() => [["Ação", "Fizeram", "Voltaram (fizeram)", "Voltaram (não fizeram)"], ...(r.oQueFazVoltar || []).map(a => [a.rotulo, a.fizeram, a.comAcao == null ? "" : Math.round(a.comAcao * 100), a.semAcao == null ? "" : Math.round(a.semAcao * 100)])]} nomeCsv="o-que-faz-voltar">
               {r.oQueFazVoltar?.length ? <OQueFazVoltar acoes={r.oQueFazVoltar} /> : <EmRecolha>Precisa de convidados com pelo menos 7 dias.</EmRecolha>}
             </Painel>
+            <Painel titulo="Funil por origem" nota={`quem entrou nos últimos ${txt}: que canal traz gente que usa a app`}
+              csv={() => [["Origem", "Entraram", "Compararam", "Escolheram loja", "Deram email", "Criaram conta"], ...(r.porOrigem || []).map(c => [c.chave, c.entraram, c.comparou, c.escolheu, c.email, c.converteram])]} nomeCsv="funil-origem">
+              {r.porOrigem?.some(c => c.chave !== "sem registo") ? (
+                <div className="overflow-x-auto -mx-1">
+                  <table className="w-full text-sm tabular-nums">
+                    <thead><tr className="text-xs text-slate-500">
+                      {["Origem", "Entraram", "Compararam", "Escolheram", "Email", "Conta"].map((h, i) => <th key={h} className={`${i ? "text-right" : "text-left"} font-semibold pb-2 px-1`}>{h}</th>)}
+                    </tr></thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {r.porOrigem.map(c => (
+                        <tr key={c.chave}>
+                          <td className="py-2 px-1 text-slate-700">{NOMES_ORIGEM[c.chave] || c.chave}</td>
+                          <td className="py-2 px-1 text-right font-semibold text-slate-900">{num(c.entraram)}</td>
+                          {[c.comparou, c.escolheu, c.email, c.converteram].map((v, i) => (
+                            <td key={i} className="py-2 px-1 text-right text-slate-600">{c.entraram ? `${pct(v || 0, c.entraram)}%` : "—"}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : <EmRecolha>A origem dos convidados começou a ser guardada a 2 de novembro.</EmRecolha>}
+            </Painel>
             <Painel titulo="Por origem" nota={`quem entrou nos últimos ${txt}, pelo sítio de onde veio da primeira vez`}
               csv={() => [["Origem", "Entraram", "1 dia", "7 dias", "30 dias", "Conta"], ...(r.porOrigem || []).map(c => [c.chave, c.entraram, c.d1, c.d7, c.d30, c.converteram])]} nomeCsv="retencao-origem">
               {r.porOrigem?.some(c => c.chave !== "sem registo") ? (
@@ -1033,6 +1075,29 @@ function Uso({ stats, cresc }) {
               ) : <EmRecolha>A origem dos convidados começa a ser guardada com esta versão.</EmRecolha>}
             </Painel>
           </>
+        )}
+      </Grupo>
+
+      <Grupo Icone={MessageSquare} titulo="Opinião" nota="«Isto foi útil?» no fim da comparação da lista (uma vez a cada 14 dias por aparelho).">
+        {!cresc.opiniao ? <EmRecolha>Precisa da migração tarefas_feedback.</EmRecolha> : !cresc.opiniao.total && !cresc.opiniao.comentarios.length ? <EmRecolha /> : (
+          <div className="grid gap-4 md:grid-cols-5">
+            <div className="md:col-span-2 grid grid-cols-2 gap-3 content-start">
+              <Kpi rotulo="Acharam útil" ajuda={`${num(cresc.opiniao.uteis)} de ${num(cresc.opiniao.total)} respostas`} valor={cresc.opiniao.total ? `${pct(cresc.opiniao.uteis, cresc.opiniao.total)}%` : "—"} />
+              <Kpi rotulo="Respostas" ajuda={txt} valor={cresc.opiniao.total} />
+            </div>
+            <Painel className="md:col-span-3" titulo="O que disseram" nota="últimos comentários" csv={() => [["Dia", "Útil", "Comentário"], ...cresc.opiniao.comentarios.map(c => [c.dia, c.util ? "sim" : "não", c.texto])]} nomeCsv="opiniao">
+              {cresc.opiniao.comentarios.length ? (
+                <ul className="divide-y divide-slate-100">
+                  {cresc.opiniao.comentarios.map((c, i) => (
+                    <li key={i} className="py-2 first:pt-0 last:pb-0 text-sm">
+                      <span className="text-slate-800">“{c.texto}”</span>
+                      <span className="block text-xs text-slate-400 mt-0.5">{rotuloDia(c.dia)} · {c.util ? "achou útil" : "não achou útil"}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : <Vazio>Ainda sem comentários escritos.</Vazio>}
+            </Painel>
+          </div>
         )}
       </Grupo>
 
@@ -1209,6 +1274,34 @@ function Qualidade({ cresc }) {
   const comDados = m?.vitais?.some(v => v.n > 0);
   return (
     <div className="space-y-4">
+      <Grupo Icone={Timer} titulo="Tarefas automáticas" nota="O que corre sozinho todos os dias: preços, emails, notificações. Vermelho = falhou; âmbar = não correu quando devia.">
+        {!cresc.tarefas ? <EmRecolha>Precisa da migração tarefas_feedback.</EmRecolha> : (
+          <Painel titulo="Última execução" csv={() => [["Tarefa", "Horário", "Última", "Estado", "Duração (ms)", "Falhas seguidas", "Resumo / erro"], ...cresc.tarefas.map(t => [NOMES_TAREFA[t.nome] || t.nome, t.horario, t.ultima_em || "", !t.registada ? "sem registo" : t.ok ? "ok" : "falhou", t.duracao_ms ?? "", t.falhas_seguidas ?? "", t.erro || t.resumo || ""])]} nomeCsv="tarefas">
+            <ul className="divide-y divide-slate-100">
+              {cresc.tarefas.map(t => (
+                <li key={t.nome} className="py-2.5 first:pt-0 last:pb-0 flex items-start gap-3">
+                  <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${!t.registada ? "bg-slate-300" : t.ok === false ? "bg-[color:var(--pj-danger)]" : t.atrasada ? "bg-[#c8a26a]" : "bg-emerald-500"}`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-800">{NOMES_TAREFA[t.nome] || t.nome}</p>
+                    <p className="text-xs text-slate-500">{t.horario}</p>
+                    {t.ok === false && t.erro && <p className="text-xs text-[color:var(--pj-danger)] break-words mt-0.5">{t.erro}</p>}
+                    {t.ok !== false && t.resumo && <p className="text-[11px] text-slate-400 font-mono break-all mt-0.5 line-clamp-2">{t.resumo}</p>}
+                  </div>
+                  <span className="text-xs text-slate-500 shrink-0 text-right tabular-nums">
+                    {!t.registada ? "ainda sem registo" : <>
+                      {fmtRelativo(t.ultima_em)}{t.duracao_ms != null && <> · {t.duracao_ms >= 1000 ? `${(t.duracao_ms / 1000).toLocaleString("pt-PT", { maximumFractionDigits: 1 })} s` : `${t.duracao_ms} ms`}</>}
+                      {t.ok === false && <><br />{t.falhas_seguidas} {t.falhas_seguidas === 1 ? "falha" : "falhas seguidas"}</>}
+                      {t.atrasada && t.ok !== false && <><br />atrasada</>}
+                    </>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-slate-400 mt-3">Cada tarefa passa a ficar registada a partir desta versão: até à primeira execução aparece "ainda sem registo".</p>
+          </Painel>
+        )}
+      </Grupo>
+
       <Grupo Icone={Store} titulo="Preços das lojas" nota="Verificação diária do Comparar preços: cada loja tem de devolver produtos com preço plausível.">
         {!lojas?.length ? <EmRecolha>Aparece depois da próxima verificação diária (cron-saude-precos).</EmRecolha> : (
           <Painel titulo="Estado por loja" nota={`última verificação ${fmtRelativo(lojas[0].verificado_em)}`}>

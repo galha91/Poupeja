@@ -2,6 +2,7 @@ import webpush from "web-push";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { lerFolhetos } from "../../lib/emailFolhetos";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Envia notificações push a todos os utilizadores com subscrição ativa.
@@ -17,7 +18,7 @@ import { lerFolhetos } from "../../lib/emailFolhetos";
  * Body (opcional, via POST com JSON):
  *   { title, body, url }
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
@@ -110,3 +111,6 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ enviadas, expiradas: expiradas.length });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("push-enviar", handler);

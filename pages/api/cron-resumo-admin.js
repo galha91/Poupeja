@@ -4,6 +4,7 @@ import { bearerValido } from "../../lib/seguranca";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { EMAILS_EXCLUIDOS } from "../../lib/adminAuth";
 import { trafegoProprio, metricas, retencao, emails, saude, lerMetas, DIA } from "../../lib/adminDados";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Resumo do /admin por email (Vercel Cron, todos os dias de manhã).
@@ -91,7 +92,7 @@ function construirResumo({ trafego, metr, ret, mails, lojas, metas, contas, aler
   return { subject: `📊 PoupeJá: ${n(visit)} visitantes, ${n(conv)} convidados novos esta semana`, html };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
@@ -128,3 +129,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ enviado: false, erro: e?.message });
   }
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-resumo-admin", handler);

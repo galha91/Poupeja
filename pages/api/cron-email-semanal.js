@@ -6,6 +6,7 @@ import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../
 import { urlUnsub } from "../../lib/unsubscribeToken";
 import { urlCancelarSub } from "../../lib/subscritoresToken";
 import { bearerValido } from "../../lib/seguranca";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
@@ -16,7 +17,7 @@ import { bearerValido } from "../../lib/seguranca";
  *
  * Requer env vars: SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, CRON_SECRET.
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   // 1. Autenticação do cron
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
@@ -177,3 +178,6 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ ok: true, enviados, ignorados, falhas });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-email-semanal", handler);

@@ -35,9 +35,9 @@ export function alertaDe(q) {
  * O último email usado fica neste aparelho para vir preenchido.
  */
 const LS_EMAIL = "poupeja_email_alertas";
-const lerEmail = () => { try { return localStorage.getItem(LS_EMAIL) || ""; } catch { return ""; } };
+export const lerEmail = () => { try { return localStorage.getItem(LS_EMAIL) || ""; } catch { return ""; } };
 
-async function criarAlertaEmail(dados) {
+export async function criarAlertaEmail(dados) {
   const r = await fetch("/api/alerta-email", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -67,6 +67,11 @@ export function vigiar({ q, valor, unidade, modo, promo }) {
   evento("alerta_preco_criado", { q, tipo: "vigiar", origem: "lista" });
   return novo;
 }
+/* Junta o aviso por email a um alerta que já existe neste aparelho. */
+export function juntarEmailAoAlerta(q, email) {
+  guardarAlertas(lerAlertas().map((a) => (a.q === q ? { ...a, email } : a)));
+}
+
 export function deixarDeVigiar(q) {
   cancelarAlertaEmail(alertaDe(q));
   guardarAlertas(lerAlertas().filter((a) => a.q !== q));

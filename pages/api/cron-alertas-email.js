@@ -6,6 +6,7 @@ import { precosDosAlertas } from "../../lib/precosAlertas";
 import { decidirAviso } from "../../lib/alertasEmail";
 import { urlCancelarAlerta } from "../../lib/subscritoresToken";
 import { eur } from "../../lib/formato";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Alertas de preço por email (Vercel Cron, diário, depois do cron-avisos).
@@ -50,7 +51,7 @@ function construirEmail(itens, base) {
   return { subject, html };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) return res.status(401).json({ erro: "Não autorizado." });
   const admin = getSupabaseAdmin();
   if (!admin) return res.status(503).json({ erro: "Sem Supabase." });
@@ -107,3 +108,6 @@ export default async function handler(req, res) {
   }
   return res.status(200).json({ alertas: alertas.length, pesquisas: Object.keys(precos).length, emails: Object.keys(porEmail).length, enviados });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-alertas-email", handler);
