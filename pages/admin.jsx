@@ -1441,7 +1441,7 @@ function EmailsEntrega({ cresc }) {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-slate-400 mt-2">Devolvidos inclui queixas de spam. Um email devolvido de vez ou com queixa é cancelado sozinho, para não voltarmos a escrever-lhe.{wh?.estado === "ligado" && " Estatísticas do Resend ligadas."}</p>
+          <p className="text-xs text-slate-400 mt-2">Devolvidos inclui queixas de spam. Um email devolvido de vez ou com queixa é cancelado sozinho, para não voltarmos a escrever-lhe.{wh?.estado === "ligado" && !wh.aviso && " Estatísticas do Resend ligadas (entregas, aberturas e cliques)."}{wh?.aviso && ` Aviso: ${wh.aviso}.`}</p>
         </Painel>
       )}
     </Grupo>
