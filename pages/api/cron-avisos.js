@@ -3,10 +3,8 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { DESAFIOS_MENSAIS } from "../../lib/desafios";
 import { eur } from "../../lib/formato";
-import { pesquisarTudo } from "../../lib/supermercados";
-import { registar } from "../../lib/supermercados/historico";
-import { melhoresPorLoja, valorComparacao } from "../../lib/comparacao";
-import { avaliarVigia, resumoAtual } from "../../lib/alertas";
+import { avaliarVigia } from "../../lib/alertas";
+import { precosDosAlertas } from "../../lib/precosAlertas";
 import { lembretesDoDia } from "../../lib/avisos";
 
 /*
@@ -44,32 +42,6 @@ const CHAVES = ["poupeja_alertas_precos", "poupeja_avisos", "poupeja_taloes", "p
 const MAX_POR_USER = 3;
 const SUPRESSAO_COMBUSTIVEL_DIAS = 6;
 const SUPRESSAO_PRECO_DIAS = 3;
-const MAX_PESQUISAS_ALERTAS = 30;
-
-/*
- * O mais barato de cada pesquisa com alertas — uma vez por pesquisa, por
- * muitos utilizadores que a tenham. Duas de cada vez, com pausa: em
- * rajada, o Continente recusa pedidos.
- */
-async function precosDosAlertas(qs) {
-  const lista = [...qs].slice(0, MAX_PESQUISAS_ALERTAS);
-  const out = {};
-  let i = 0;
-  await Promise.all([0, 1].map(async () => {
-    while (i < lista.length) {
-      const q = lista[i++];
-      try {
-        const r = await pesquisarTudo(q);
-        await registar(r).catch(() => {});
-        const { modo, ranking } = melhoresPorLoja(r);
-        const p = ranking[0];
-        if (p) out[q] = { ...resumoAtual(p, modo), valor: valorComparacao(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade };
-      } catch (_) {}
-      await new Promise((ok) => setTimeout(ok, 600));
-    }
-  }));
-  return out;
-}
 
 function hojeLisboa() {
   const s = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" }); // YYYY-MM-DD

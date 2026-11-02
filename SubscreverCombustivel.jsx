@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { idConvidadoAtual } from "./lib/convidado";
 import { evento } from "./lib/analytics";
 
 /*
@@ -25,7 +26,7 @@ export default function SubscreverCombustivel({ concelho, nome, onFeito, destaqu
       const r = await fetch("/api/subscrever-combustivel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, concelho, consentimento: true, alerta }),
+        body: JSON.stringify({ email, concelho, consentimento: true, alerta, convidado: idConvidadoAtual() }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.erro || "Não foi possível guardar.");

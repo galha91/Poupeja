@@ -33,7 +33,7 @@ const NOMES_EVENTO = {
   screen_view: "Abriu um separador", sign_up: "Criou conta", login: "Iniciou sessão", receipt_scanned: "Fotografou um talão",
   share: "Partilhou", app_installed: "Instalou a app", push_subscribed: "Ativou notificações", push_soft: "Convite às notificações",
   lista_criada: "Criou uma lista", comparar_lista: "Comparou a lista", lista_escolha: "Escolheu onde comprar",
-  alerta_preco_criado: "Criou alerta de preço", alerta_preco_removido: "Removeu alerta de preço", cobertura_ver: "Viu supermercados comparados",
+  alerta_preco_criado: "Criou alerta de preço", alerta_email_criado: "Pediu alerta por email", alerta_preco_removido: "Removeu alerta de preço", cobertura_ver: "Viu supermercados comparados",
   sugerir_supermercado: "Pediu um supermercado", conta_renovacao_registada: "Registou conta que renova", erse_aberto: "Abriu simulador ERSE",
   erse_resultado_guardado: "Guardou resultado ERSE", garantia_registada: "Registou garantia", garantia_exportada: "Exportou garantia",
   lembrete_ativado: "Ativou lembrete", calendario_exportado: "Exportou para calendário", prazos_filtro: "Filtrou prazos do Estado",
@@ -291,7 +291,7 @@ export default function Admin() {
             {aba === "geral" && <VisaoGeral stats={stats} trafego={trafego} cresc={crescimento} irPara={setAba} pedir={pedir} atualizarCresc={atualizarCresc} />}
             {aba === "aquisicao" && <Trafego dados={trafego} cresc={crescimento} onRepor={reporVisitas} estadoRepor={estadoRepor} pedir={pedir} atualizarCresc={atualizarCresc} />}
             {aba === "uso" && <Uso stats={stats} cresc={crescimento} />}
-            {aba === "utilizadores" && <Utilizadores stats={stats} />}
+            {aba === "utilizadores" && <Utilizadores stats={stats} cresc={crescimento} />}
             {aba === "qualidade" && <Qualidade cresc={crescimento} />}
             {aba === "avisos" && (
               <Avisos
@@ -361,7 +361,7 @@ function VisaoGeral({ stats, trafego, cresc, irPara, pedir, atualizarCresc }) {
         >
           {p ? (
             <>
-              <Linha3 a={["Hoje", p.hoje.visitantes]} b={["Vistas hoje", p.hoje.vistas]} c={[`Vistas ${txt}`, p.periodo.vistas]} />
+              <Linha3 a={["Pessoas hoje", p.hoje.visitantes]} b={["Páginas abertas hoje", p.hoje.vistas]} c={[`Páginas abertas ${txt}`, p.periodo.vistas]} />
               <Barras dados={p.serie.map(s => ({ dia: s.dia, n: s.visitantes }))} notas={cresc?.notas} />
             </>
           ) : <Carregando />}
@@ -437,7 +437,7 @@ function Trafego({ dados, cresc, onRepor, estadoRepor, pedir, atualizarCresc }) 
     <div className="space-y-4">
       <Grupo Icone={Activity} titulo="Visitas" nota={`Contador próprio: toda a gente, com ou sem cookies, sem bots. Desde ${new Date(p.desdeDia + "T12:00:00").toLocaleDateString("pt-PT")}.`} />
       <Grelha4>
-        <Kpi rotulo="Visitantes hoje" valor={p.hoje.visitantes} />
+        <Kpi rotulo="Pessoas hoje" ajuda={`${num(p.hoje.vistas)} páginas abertas`} valor={p.hoje.visitantes} />
         <Kpi rotulo="Visitantes" ajuda={txt} valor={p.periodo.visitantes} antes={p.anterior.visitantes} />
         <Kpi rotulo="Páginas vistas" ajuda={txt} valor={p.periodo.vistas} antes={p.anterior.vistas} />
         <Kpi rotulo="Páginas por visitante" ajuda={txt} valor={p.periodo.visitantes ? (p.periodo.vistas / p.periodo.visitantes).toLocaleString("pt-PT", { maximumFractionDigits: 1 }) : "—"} />
@@ -617,7 +617,7 @@ function Publicacoes({ cresc, pedir, atualizarCresc }) {
   );
 }
 
-function Utilizadores({ stats }) {
+function Utilizadores({ stats, cresc }) {
   const { txt } = usePeriodo();
   const conv = stats.entradasConvidado;
   const totalPush = (stats.pushSubscritores?.length || 0) + (stats.pushConvidados || 0);
@@ -681,8 +681,88 @@ function Utilizadores({ stats }) {
         </Painel>
       </div>
 
+      <Contactos lista={cresc?.contactos} />
+
       <ListaContas stats={stats} />
     </div>
+  );
+}
+
+// Quem deu o email sem criar conta: alertas de preço, folhetos e combustível.
+// Quando o email foi dado dentro da app, mostra a ficha do convidado.
+function Contactos({ lista }) {
+  const [aberta, setAberta] = useState(false);
+  const [busca, setBusca] = useState("");
+  const [limite, setLimite] = useState(20);
+  const filtrada = useMemo(() => {
+    const q = busca.trim().toLowerCase();
+    return (lista || []).filter(p => !q || p.email.includes(q) || p.alertas.some(a => a.q.includes(q)));
+  }, [lista, busca]);
+  if (lista === undefined) return null;
+  const marcos = (c) => [
+    c.comparou_em && "comparou", c.escolheu_em && "escolheu loja", c.alerta_em && "ligou o sino", c.pediu_conta_em && "pediu conta", c.converteu_em && "criou conta",
+  ].filter(Boolean);
+
+  return (
+    <section className="bg-white rounded-2xl border border-slate-200">
+      <button onClick={() => setAberta(v => !v)} aria-expanded={aberta} className="w-full flex items-center gap-2 px-5 py-4 text-left">
+        <Mail size={16} className="text-emerald-600" />
+        <h2 className="font-semibold text-slate-800">Contactos sem conta</h2>
+        <span className="text-xs font-semibold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 tabular-nums">{lista ? lista.length : "—"}</span>
+        <span className="text-xs text-slate-400 hidden sm:inline">deram o email para alertas, folhetos ou combustível</span>
+        <ChevronDown size={18} className={`ml-auto text-slate-400 transition-transform ${aberta ? "rotate-180" : ""}`} />
+      </button>
+      {aberta && (!lista ? <div className="px-5 pb-5"><EmRecolha>Não foi possível ler os contactos.</EmRecolha></div> : (
+        <>
+          <div className="flex flex-wrap items-center gap-2 px-5 pb-3 border-b border-slate-100">
+            <label className="relative flex-1 min-w-[180px]">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input value={busca} onChange={e => { setBusca(e.target.value); setLimite(20); }} placeholder="Procurar email ou produto"
+                className="w-full h-9 pl-8 pr-3 rounded-lg border border-slate-200 bg-slate-50 text-sm outline-none focus:border-emerald-300 focus:bg-white" />
+            </label>
+            <BotaoCsv nome="contactos" linhas={() => [["Email", "Desde", "Alertas", "Folhetos", "Combustível", "Origem", "Campanha", "Entrou na app", "Aberturas", "Criou conta"],
+              ...filtrada.map(p => [p.email, p.desde, p.alertas.filter(a => a.ativo).map(a => a.q).join(", "), p.folhetos?.ativo ? "sim" : "", p.combustivel.filter(c => c.ativo).map(c => c.concelho).join(", "),
+                p.convidado?.origem || "", p.convidado?.campanha || "", p.convidado?.primeira_em || "", p.convidado?.aberturas || "", p.convidado?.converteu_em ? "sim" : ""])]} />
+          </div>
+          <ul className="divide-y divide-slate-100">
+            {filtrada.slice(0, limite).map(p => {
+              const c = p.convidado;
+              const ativos = p.alertas.filter(a => a.ativo);
+              return (
+                <li key={p.email} className="px-5 py-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 text-xs font-semibold">{p.email[0]?.toUpperCase()}</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 truncate">{p.email}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {ativos.length > 0 && <Etiqueta forte>{ativos.length} {ativos.length === 1 ? "alerta" : "alertas"}: {ativos.slice(0, 3).map(a => a.q).join(", ")}{ativos.length > 3 ? "…" : ""}</Etiqueta>}
+                        {p.folhetos?.ativo && <Etiqueta>Folhetos</Etiqueta>}
+                        {p.combustivel.filter(x => x.ativo).map(x => <Etiqueta key={x.concelho}>Combustível · {x.concelho}</Etiqueta>)}
+                        {!ativos.length && !p.folhetos?.ativo && !p.combustivel.some(x => x.ativo) && <Etiqueta>cancelou tudo</Etiqueta>}
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1.5 tabular-nums">
+                        Deu o email {fmtRelativo(p.desde)}
+                        {c ? <>
+                          <span className="text-slate-300"> · </span>veio de {NOMES_ORIGEM[c.origem] || c.origem || "origem desconhecida"}{c.campanha && <span className="font-mono"> ({c.campanha})</span>}
+                          <span className="text-slate-300"> · </span>entrou {fmtRelativo(c.primeira_em)}, abriu {num(c.aberturas)}×, última {fmtRelativo(c.ultima_em)}
+                          {marcos(c).length > 0 && <><span className="text-slate-300"> · </span>{marcos(c).join(", ")}</>}
+                        </> : <span className="text-slate-400"> · sem ficha de convidado (deu o email numa página pública ou antes desta versão)</span>}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+            {filtrada.length === 0 && <li className="px-5 py-8 text-center text-sm text-slate-400">Ainda ninguém deu o email sem conta.</li>}
+          </ul>
+          {filtrada.length > limite && (
+            <button onClick={() => setLimite(l => l + 30)} className="w-full py-3 text-sm font-semibold text-emerald-700 border-t border-slate-100 hover:bg-slate-50 rounded-b-2xl">
+              Mostrar mais ({filtrada.length - limite})
+            </button>
+          )}
+        </>
+      ))}
+    </section>
   );
 }
 
@@ -1428,9 +1508,11 @@ function Funil({ etapas }) {
 function FunilConvidados({ f, compacto = false }) {
   const todas = [
     ["Entraram", f.entraram], ["Voltaram a abrir", f.voltaram], ["Compararam a lista", f.comparou],
-    ["Escolheram onde comprar", f.escolheu], ["Ligaram o sino", f.alerta], ["Tocaram em criar conta", f.pediuConta], ["Criaram conta", f.converteram],
+    ["Escolheram onde comprar", f.escolheu], ["Ligaram o sino", f.alerta],
+    ...(f.deuEmail !== undefined ? [["Deixaram email", f.deuEmail]] : []),
+    ["Tocaram em criar conta", f.pediuConta], ["Criaram conta", f.converteram],
   ];
-  const etapas = compacto ? todas.filter(([r]) => ["Entraram", "Voltaram a abrir", "Compararam a lista", "Criaram conta"].includes(r)) : todas;
+  const etapas = compacto ? todas.filter(([r]) => ["Entraram", "Voltaram a abrir", "Compararam a lista", "Deixaram email", "Criaram conta"].includes(r)) : todas;
   return <Funil etapas={etapas} />;
 }
 

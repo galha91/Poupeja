@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { evento } from "./lib/analytics";
+import { idConvidadoAtual } from "./lib/convidado";
 
 /*
  * Resumo semanal dos folhetos por email, sem conta. Consentimento explícito
@@ -21,7 +22,7 @@ export default function SubscreverFolhetos({ origem = "pagina" }) {
       const r = await fetch("/api/subscrever", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, origem, consentimento: true }),
+        body: JSON.stringify({ email, origem, consentimento: true, convidado: idConvidadoAtual() }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.erro || "Não foi possível guardar.");

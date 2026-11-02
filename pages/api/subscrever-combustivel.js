@@ -3,6 +3,8 @@ import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { emailValido, normalizarEmail, slugConcelhoValido } from "../../lib/subscritores";
 import { encontrarMunicipio } from "../../lib/municipios";
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /*
  * Subscrição do email semanal de combustível de um concelho, sem conta.
  * Consentimento explícito; cada email traz link de cancelamento.
@@ -14,7 +16,8 @@ export default async function handler(req, res) {
     return res.status(429).json({ erro: "Demasiados pedidos. Tenta daqui a pouco." });
   }
 
-  const { email, concelho, consentimento, alerta } = req.body || {};
+  const { email, concelho, consentimento, alerta, convidado } = req.body || {};
+  const convidadoId = typeof convidado === "string" && UUID.test(convidado) ? convidado : null;
   const alertaSubidas = alerta === true; // segundo consentimento, opcional
   if (consentimento !== true) return res.status(400).json({ erro: "Falta aceitar receber o email." });
   if (!emailValido(email)) return res.status(400).json({ erro: "Escreve um email válido." });
@@ -45,7 +48,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, concelho: municipio.nome });
   }
 
-  const { error } = await admin.from("subscritores_combustivel").insert({ email: limpo, concelho, alerta_subidas: alertaSubidas });
+  const { error } = await admin.from("subscritores_combustivel").insert({ email: limpo, concelho, alerta_subidas: alertaSubidas, convidado_id: convidadoId });
+  if (convidadoId) await admin.from("convidados_site").update({ email_em: new Date().toISOString() }).eq("id", convidadoId).is("email_em", null).then(() => {}, () => {});
   if (error && error.code !== "23505") {
     console.error("subscrever-combustivel: erro a gravar:", error.message);
     return res.status(500).json({ erro: "Não foi possível guardar. Tenta novamente." });
