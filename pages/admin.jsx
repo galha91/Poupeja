@@ -33,7 +33,7 @@ const NOMES_EVENTO = {
   screen_view: "Abriu um separador", sign_up: "Criou conta", login: "Iniciou sessão", receipt_scanned: "Fotografou um talão",
   share: "Partilhou", app_installed: "Instalou a app", push_subscribed: "Ativou notificações", push_soft: "Convite às notificações",
   lista_criada: "Criou uma lista", comparar_lista: "Comparou a lista", lista_escolha: "Escolheu onde comprar",
-  alerta_preco_criado: "Criou alerta de preço", alerta_email_criado: "Pediu alerta por email", sem_resultado_alerta_aberto: "Abriu «avisa-me» numa pesquisa sem resultado", alerta_preco_removido: "Removeu alerta de preço", cobertura_ver: "Viu supermercados comparados",
+  alerta_preco_criado: "Criou alerta de preço", alerta_email_criado: "Pediu alerta por email", inicio_porta: "Escolheu por onde começar (1.ª visita)", sem_resultado_alerta_aberto: "Abriu «avisa-me» numa pesquisa sem resultado", alerta_preco_removido: "Removeu alerta de preço", cobertura_ver: "Viu supermercados comparados",
   sugerir_supermercado: "Pediu um supermercado", conta_renovacao_registada: "Registou conta que renova", erse_aberto: "Abriu simulador ERSE",
   erse_resultado_guardado: "Guardou resultado ERSE", garantia_registada: "Registou garantia", garantia_exportada: "Exportou garantia",
   lembrete_ativado: "Ativou lembrete", calendario_exportado: "Exportou para calendário", prazos_filtro: "Filtrou prazos do Estado",
