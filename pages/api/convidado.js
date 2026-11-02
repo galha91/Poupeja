@@ -26,13 +26,14 @@ export default async function handler(req, res) {
     return res.status(error ? 500 : 204).end();
   }
 
-  const params = { p_id: id, p_converteu: converteu === true };
-  if (ORIGENS.has(origem)) params.p_origem = origem;
-  if (campanhaValida(campanha)) params.p_campanha = campanhaValida(campanha);
+  // Versão de 4 argumentos (com a origem do primeiro toque). A de 2 continua
+  // na base de dados e serve de recurso se a de 4 falhar.
+  const params = {
+    p_id: id, p_converteu: converteu === true,
+    p_origem: ORIGENS.has(origem) ? origem : null,
+    p_campanha: campanhaValida(campanha),
+  };
   let { error } = await admin.rpc("registar_convidado", params);
-  // Antes da migração a função só aceita (p_id, p_converteu).
-  if (error && (params.p_origem || params.p_campanha)) {
-    ({ error } = await admin.rpc("registar_convidado", { p_id: id, p_converteu: converteu === true }));
-  }
+  if (error) ({ error } = await admin.rpc("registar_convidado", { p_id: id, p_converteu: converteu === true }));
   return res.status(error ? 500 : 204).end();
 }

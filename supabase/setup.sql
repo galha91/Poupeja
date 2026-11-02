@@ -510,9 +510,10 @@ alter table public.convidados_site
   add column if not exists origem   text,
   add column if not exists campanha text;
 
-drop function if exists public.registar_convidado(uuid, boolean);
+-- Versão com origem e campanha. Os 4 argumentos são obrigatórios para não
+-- colidir com registar_convidado(uuid, boolean), que continua a existir.
 create or replace function public.registar_convidado(
-  p_id uuid, p_converteu boolean default false, p_origem text default null, p_campanha text default null
+  p_id uuid, p_converteu boolean, p_origem text, p_campanha text
 )
 returns void language sql security definer set search_path = public as $$
   insert into public.convidados_site (id, converteu_em, origem, campanha)
