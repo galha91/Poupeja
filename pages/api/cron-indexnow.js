@@ -8,6 +8,7 @@ import { TIPOS_PAGINA } from "../../lib/combustivelTipo";
 import dadosApoios from "../../public/apoios.json";
 import dadosPrazos from "../../data/prazos-estado.json";
 import { slugApoio, slugPrazo } from "../../lib/seoEstado";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Aviso diário IndexNow (Vercel Cron, ver vercel.json) — depois do cron
@@ -24,7 +25,7 @@ import { slugApoio, slugPrazo } from "../../lib/seoEstado";
  */
 const MAX_CONCELHOS = 40;
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
@@ -81,3 +82,6 @@ export default async function handler(req, res) {
     return res.status(502).json({ erro: e.message, enviados: 0 });
   }
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-indexnow", handler);

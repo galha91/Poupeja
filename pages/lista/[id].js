@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import { ShoppingCart, Check, Plus, X, Minus } from "lucide-react";
+import { ShoppingCart, Check, Plus, X, ChevronRight } from "lucide-react";
 import { URL_SITE } from "../../lib/site";
 import { ID_PARTILHA_RE } from "../../lib/listaCompras";
+import { N_COMPARADAS } from "../../lib/cobertura";
+import { evento } from "../../lib/analytics";
 
 function gerarId() { return Date.now() + Math.random(); }
 
@@ -141,7 +143,7 @@ export default function ListaPartilhada({ id }) {
         {/* Header */}
         <div
           className="px-4 pt-12 pb-5"
-          style={{ background: "linear-gradient(135deg,#5b21b6,#7c3aed,#a855f7)" }}
+          style={{ background: "var(--pj-brand)" }}
         >
           <div className="flex items-center gap-2 mb-4">
             <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
@@ -173,7 +175,7 @@ export default function ListaPartilhada({ id }) {
           {/* Adicionar item */}
           <div className="flex gap-2 mb-4">
             <input
-              className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400"
+              className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-300"
               placeholder="Adicionar artigo…"
               value={novoItem}
               onChange={e => setNovoItem(e.target.value)}
@@ -182,11 +184,27 @@ export default function ListaPartilhada({ id }) {
             <button
               onClick={adicionar}
               className="w-12 h-12 rounded-2xl flex items-center justify-center text-white flex-shrink-0"
-              style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+              style={{ background: "var(--pj-brand)" }}
             >
               <Plus size={20} />
             </button>
           </div>
+
+          {/* Montra: quem recebe a lista vê logo para que serve o PoupeJá. */}
+          {pendentes.length >= 2 && (
+            <a
+              href={ID_PARTILHA_RE.test(id) ? `/?lista=${id}&o=lista` : "/?o=lista"}
+              onClick={() => evento("abrir_poupeja", { origem: "lista", tipo: "lista" })}
+              className="flex items-center gap-3 mb-4 rounded-2xl px-4 py-3.5"
+              style={{ background: "var(--pj-brand-wash)", border: "1px solid var(--pj-border)", textDecoration: "none" }}
+            >
+              <span className="flex-1 min-w-0">
+                <span className="block text-[14.5px] font-semibold" style={{ color: "var(--pj-text)" }}>Onde fica mais barata esta lista?</span>
+                <span className="block text-[12.5px] mt-0.5" style={{ color: "var(--pj-text-muted)" }}>Compara os {pendentes.length} artigos em {N_COMPARADAS} supermercados. Grátis, sem conta.</span>
+              </span>
+              <ChevronRight size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+            </a>
+          )}
 
           {(verificando || carregando) && (
             <div className="flex flex-col gap-3">
@@ -205,7 +223,7 @@ export default function ListaPartilhada({ id }) {
 
           {!verificando && !carregando && !erro && itens.length === 0 && (
             <div className="bg-white rounded-2xl border border-slate-100 p-10 flex flex-col items-center text-center">
-              <ShoppingCart size={28} className="text-violet-300 mb-3" />
+              <ShoppingCart size={28} className="text-emerald-300 mb-3" />
               <p className="text-sm font-black text-slate-600">Lista vazia</p>
               <p className="text-xs text-slate-400 mt-1">Adiciona artigos acima</p>
             </div>
@@ -252,7 +270,7 @@ export default function ListaPartilhada({ id }) {
                   >
                     <button
                       onClick={() => toggle(item.id)}
-                      className="w-7 h-7 rounded-full bg-violet-500 flex items-center justify-center flex-shrink-0"
+                      className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0"
                     >
                       <Check size={14} className="text-white" />
                     </button>
@@ -272,7 +290,7 @@ export default function ListaPartilhada({ id }) {
             <div className="px-4 py-4">
               <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">PoupeJá</p>
               <p className="text-[14px] font-black text-white leading-snug mb-3">
-                Poupa nas compras do dia a dia com a família
+                Lista comparada no PoupeJá — compara também a tua
               </p>
               <div className="flex gap-2 flex-wrap">
                 <button
@@ -282,7 +300,8 @@ export default function ListaPartilhada({ id }) {
                   {copiado ? "Copiado ✓" : "📤 Partilhar"}
                 </button>
                 <a
-                  href={ID_PARTILHA_RE.test(id) ? `/?lista=${id}` : "/"}
+                  href={ID_PARTILHA_RE.test(id) ? `/?lista=${id}&o=lista` : "/?o=lista"}
+                  onClick={() => evento("abrir_poupeja", { origem: "lista", tipo: "lista" })}
                   className="px-4 py-2 rounded-xl bg-white text-emerald-700 text-[12px] font-black"
                 >
                   Abrir PoupeJá →

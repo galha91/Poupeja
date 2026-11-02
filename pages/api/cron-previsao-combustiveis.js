@@ -6,6 +6,7 @@ import { bearerValido } from "../../lib/seguranca";
 import { urlCancelarComb } from "../../lib/subscritoresToken";
 import { pesquisarPrevisao } from "../../lib/pesquisarPrevisao";
 import { hojeLisboa, proximaSegunda, validarPrevisao, vaiSubir, construirEmailPrevisao, construirPushPrevisao } from "../../lib/previsaoCombustivel";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Alerta "os combustíveis sobem na segunda" — sexta à tarde, com nova
@@ -25,7 +26,7 @@ import { hojeLisboa, proximaSegunda, validarPrevisao, vaiSubir, construirEmailPr
  */
 const EMAIL_ADMIN = process.env.EMAIL_ADMIN || "poupeja.portugal@gmail.com";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
@@ -146,3 +147,6 @@ async function enviarPush(admin, mensagem) {
   if (expiradas.length) await admin.from("push_subscriptions").delete().in("id", expiradas);
   return enviadas;
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-previsao-combustiveis", handler);

@@ -4,6 +4,7 @@ import { registar, registarEmbalagens, registarMarcas } from "../../lib/supermer
 import { ARTIGOS_SEO, CATEGORIAS_SEO, LOJAS_SEO, normalizarQ } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
 import { filaDoDia, PARTES } from "../../lib/filaHistorico";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Histórico diário de preços (Vercel Cron, ver vercel.json).
@@ -83,7 +84,7 @@ const HUBS = ["/precos", "/comparar", ...CATEGORIAS_SEO.map((c) => `/precos/cate
  */
 export const config = { maxDuration: 60 };
 
-export default function handler(req, res) {
+function handler(req, res) {
   return executar(req, res);
 }
 
@@ -137,3 +138,6 @@ export async function executar(req, res, parteFixa) {
   console.log(`cron-historico-precos: parte ${parte}, volta ${volta}, desde ${desde}, ${feitos} registadas, ${falhas} falhadas, ${ficaramPorFazer} por fazer${hubs ? `, ${hubs} hubs refeitos` : ""}`);
   return res.status(200).json({ ok: true, parte, volta, desde, feitos, falhas, ficaramPorFazer, hubs });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-historico-precos", handler);

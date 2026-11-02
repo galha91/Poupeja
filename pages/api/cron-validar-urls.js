@@ -3,6 +3,7 @@ import { enviarEmail } from "../../lib/enviarEmail";
 import { lerFolhetos } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
 import { bearerValido } from "../../lib/seguranca";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Validação DIÁRIA de todas as URLs (promoções + folhetos).
@@ -12,7 +13,7 @@ import { bearerValido } from "../../lib/seguranca";
  * - 403 → só alerta à quinta-feira (junto do email semanal), para não
  *   encher a caixa de correio todos os dias com avisos repetidos
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
@@ -56,3 +57,6 @@ export default async function handler(req, res) {
     corrigidas: corrigidas.length,
   });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-validar-urls", handler);

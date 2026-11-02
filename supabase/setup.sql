@@ -596,3 +596,48 @@ create unique index if not exists lembretes_compras_ativo_uq
   on public.lembretes_compras (lower(email)) where cancelado_em is null;
 create index if not exists lembretes_compras_dia on public.lembretes_compras (dia) where cancelado_em is null;
 alter table public.lembretes_compras enable row level security;
+
+-- ── Tarefas automáticas e opinião (2026-11-02) ──────────────────────────────
+-- Última execução de cada cron (lib/cronRegisto.js), para o /admin mostrar
+-- o que correu, quando, e o que falhou. (Migração tarefas_feedback.)
+create table if not exists public.cron_execucoes (
+  nome            text primary key,
+  ultima_em       timestamptz not null default now(),
+  ok              boolean not null,
+  duracao_ms      integer,
+  resumo          text,
+  erro            text,
+  ultimo_ok_em    timestamptz,
+  falhas_seguidas integer not null default 0,
+  execucoes       integer not null default 0
+);
+alter table public.cron_execucoes enable row level security;
+
+create or replace function public.registar_cron(p_nome text, p_ok boolean, p_duracao integer, p_resumo text, p_erro text)
+returns void language sql security definer set search_path = public as $$
+  insert into public.cron_execucoes (nome, ultima_em, ok, duracao_ms, resumo, erro, ultimo_ok_em, falhas_seguidas, execucoes)
+  values (p_nome, now(), p_ok, p_duracao, p_resumo, p_erro, case when p_ok then now() end, case when p_ok then 0 else 1 end, 1)
+  on conflict (nome) do update set
+    ultima_em       = now(),
+    ok              = p_ok,
+    duracao_ms      = p_duracao,
+    resumo          = p_resumo,
+    erro            = p_erro,
+    ultimo_ok_em    = case when p_ok then now() else cron_execucoes.ultimo_ok_em end,
+    falhas_seguidas = case when p_ok then 0 else cron_execucoes.falhas_seguidas + 1 end,
+    execucoes       = cron_execucoes.execucoes + 1;
+$$;
+revoke all on function public.registar_cron(text, boolean, integer, text, text) from public, anon, authenticated;
+
+-- "Isto foi útil?" depois de comparar a lista. Sem id de pessoa: só o dia,
+-- a resposta e, se a pessoa quiser, uma frase.
+create table if not exists public.feedback_app (
+  id        uuid primary key default gen_random_uuid(),
+  dia       date not null default ((now() at time zone 'Europe/Lisbon')::date),
+  contexto  text not null,
+  util      boolean not null,
+  texto     text,
+  criado_em timestamptz not null default now()
+);
+create index if not exists feedback_app_dia on public.feedback_app (dia);
+alter table public.feedback_app enable row level security;

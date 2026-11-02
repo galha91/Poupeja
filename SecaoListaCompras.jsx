@@ -9,6 +9,7 @@ import { evento } from "./lib/analytics";
 import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, juntarPartilhada, ID_PARTILHA_RE, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 import LembreteCompras from "./LembreteCompras";
+import FoiUtil from "./FoiUtil";
 import { LS_LISTAS_GUARDADAS, LISTA_ARRANQUE, completarPronta, marcarUsada, nArtigos, prontasPorGuardar, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
 
 // A folha "As minhas listas" só se descarrega quando se abre.
@@ -805,6 +806,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
           <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo} onCriarConta={onCriarConta ? () => { setVerResultado(false); onCriarConta(); } : null}
             onEscolher={(id, escolha) => setItens(prev => prev.map(x => x.id === id ? (escolha ? { ...x, escolha } : (({ escolha: _, ...resto }) => resto)(x)) : x))}
             onAtualizar={() => comparar(true)} />
+          <FoiUtil contexto="lista" />
           <LembreteCompras itens={pendentes} />
         </Folha>,
         document.body,

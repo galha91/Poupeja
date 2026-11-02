@@ -3,6 +3,7 @@ import { enviarEmail } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { verificarLojas } from "../../lib/supermercados/saude";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Verificação DIÁRIA de "Comparar preços" (Vercel Cron, ver vercel.json).
@@ -66,7 +67,7 @@ async function guardarSaude(resultados) {
   }
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
@@ -98,3 +99,6 @@ export default async function handler(req, res) {
   // 200 mesmo com falhas: o cron correu bem; o resultado está no corpo.
   return res.status(200).json({ ok: !falhas.length, resultados, emailEnviado });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-saude-precos", handler);

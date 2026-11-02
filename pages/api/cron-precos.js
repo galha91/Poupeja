@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { enviarEmail } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { atualizarSnapshot, idadeSnapshot, IDADE_PREOCUPANTE } from "../../lib/precosSnapshot";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Actualização HORÁRIA dos preços da DGEG.
@@ -17,7 +18,7 @@ import { atualizarSnapshot, idadeSnapshot, IDADE_PREOCUPANTE } from "../../lib/p
  *  - se ficar horas sem conseguir actualizar, avisar por email, porque um
  *    site a mostrar preços de anteontem em silêncio é o pior dos casos.
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
@@ -75,3 +76,6 @@ export default async function handler(req, res) {
     avisoEnviado: preocupante,
   });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-precos", handler);

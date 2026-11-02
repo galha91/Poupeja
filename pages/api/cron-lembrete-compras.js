@@ -3,6 +3,7 @@ import { bearerValido } from "../../lib/seguranca";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { diaDaSemanaLisboa, DIAS } from "../../lib/lembreteCompras";
 import { urlCancelarLembrete } from "../../lib/subscritoresToken";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Lembrete do dia das compras (Vercel Cron, todas as manhãs). Escreve só a
@@ -30,7 +31,7 @@ function emailLembrete(l, base) {
   return { subject: itens.length ? `🛒 Dia de compras: ${itens.length} ${itens.length === 1 ? "artigo" : "artigos"} na tua lista` : "🛒 Dia de compras", html };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) return res.status(401).json({ erro: "Não autorizado." });
   const admin = getSupabaseAdmin();
   if (!admin) return res.status(503).json({ erro: "Sem Supabase." });
@@ -56,3 +57,6 @@ export default async function handler(req, res) {
   }
   return res.status(200).json({ lembretes: data?.length || 0, enviados });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-lembrete-compras", handler);

@@ -6,6 +6,7 @@ import { eur } from "../../lib/formato";
 import { avaliarVigia } from "../../lib/alertas";
 import { precosDosAlertas } from "../../lib/precosAlertas";
 import { lembretesDoDia } from "../../lib/avisos";
+import { comRegisto } from "../../lib/cronRegisto";
 
 /*
  * Avisos personalizados por utilizador — cron diário (Vercel, 18:00 UTC).
@@ -53,7 +54,7 @@ function diasAte(dataISO, hojeISO) {
   return Math.round((new Date(dataISO) - new Date(hojeISO)) / 86400000);
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
@@ -355,3 +356,6 @@ export default async function handler(req, res) {
     expiradas: expiradas.length,
   });
 }
+
+// Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
+export default comRegisto("cron-avisos", handler);
