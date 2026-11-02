@@ -5,18 +5,49 @@ import { supabase } from "../lib/supabase";
 import {
   ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Bell, Send, ChevronDown, Search,
   LayoutDashboard, BarChart3, Users, Megaphone, ArrowUpRight, ArrowDownRight, Minus,
+  MousePointerClick, Gauge, Store, Bug, Repeat, Mail, Globe, Activity, SearchX, Route, AlertTriangle, Hourglass,
 } from "lucide-react";
 
-// Painel privado do dono. Quatro separadores, do mais geral para o mais
-// detalhado: Visão geral (o que mudou esta semana), Tráfego (visitas e
-// Google), Utilizadores (contas, convidados, alcance) e Avisos (push).
+// Painel privado do dono, do mais geral para o mais detalhado:
+//   Geral       — o que mudou esta semana e se há alguma coisa partida
+//   Aquisição   — de onde vêm as visitas (contador próprio, Google, emails)
+//   Uso         — o que fazem cá dentro: funcionalidades, pesquisas, retenção
+//   Utilizadores— contas, alcance e lista
+//   Qualidade   — saúde dos preços, velocidade e erros
+//   Avisos      — notificações push
+// Os blocos marcados "a recolher" dependem de métricas novas (lib/metricas.js)
+// e enchem-se sozinhos à medida que as pessoas usam a app.
 
 const ABAS = [
-  { id: "geral", rotulo: "Visão geral", Icone: LayoutDashboard },
-  { id: "trafego", rotulo: "Tráfego", Icone: BarChart3 },
+  { id: "geral", rotulo: "Geral", Icone: LayoutDashboard },
+  { id: "aquisicao", rotulo: "Aquisição", Icone: BarChart3 },
+  { id: "uso", rotulo: "Uso", Icone: MousePointerClick },
   { id: "utilizadores", rotulo: "Utilizadores", Icone: Users },
+  { id: "qualidade", rotulo: "Qualidade", Icone: Gauge },
   { id: "avisos", rotulo: "Avisos", Icone: Megaphone },
 ];
+
+// Nomes legíveis dos eventos de lib/analytics.js.
+const NOMES_EVENTO = {
+  screen_view: "Abriu um separador", sign_up: "Criou conta", login: "Iniciou sessão", receipt_scanned: "Fotografou um talão",
+  share: "Partilhou", app_installed: "Instalou a app", push_subscribed: "Ativou notificações", push_soft: "Convite às notificações",
+  lista_criada: "Criou uma lista", comparar_lista: "Comparou a lista", lista_escolha: "Escolheu onde comprar",
+  alerta_preco_criado: "Criou alerta de preço", alerta_preco_removido: "Removeu alerta de preço", cobertura_ver: "Viu supermercados comparados",
+  sugerir_supermercado: "Pediu um supermercado", conta_renovacao_registada: "Registou conta que renova", erse_aberto: "Abriu simulador ERSE",
+  erse_resultado_guardado: "Guardou resultado ERSE", garantia_registada: "Registou garantia", garantia_exportada: "Exportou garantia",
+  lembrete_ativado: "Ativou lembrete", calendario_exportado: "Exportou para calendário", prazos_filtro: "Filtrou prazos do Estado",
+  copia_seguranca: "Cópia de segurança", inicio_combustivel: "Combustível no início", comparar_exemplo: "Viu exemplo do Mercado",
+  comparar_pesquisa: "Pesquisou um produto", comparar_sem_resultados: "Pesquisa sem resultados", desconto_combustivel: "Desconto de combustível",
+  codigo_barras: "Leitor de código de barras", ementas_plano: "Plano de jantares", receita_cozinhada: "Cozinhou uma receita",
+  abrir_poupeja: "Abriu a app a partir do site",
+};
+const NOMES_VITAL = {
+  LCP: ["Conteúdo principal", "tempo até aparecer o maior elemento"],
+  INP: ["Resposta ao toque", "atraso entre tocar e o ecrã reagir"],
+  CLS: ["Estabilidade", "quanto a página salta enquanto carrega"],
+  FCP: ["Primeiro conteúdo", "tempo até aparecer alguma coisa"],
+  TTFB: ["Resposta do servidor", "tempo até chegar o primeiro byte"],
+};
 
 const NOMES_MODO = { "app-android": "App Android", pwa: "App instalada", browser: "Browser" };
 const NOMES_ORIGEM = {
@@ -58,6 +89,7 @@ export default function Admin() {
   const [estado, setEstado] = useState("a-carregar"); // a-carregar | negado | ok | erro
   const [stats, setStats] = useState(null);
   const [trafego, setTrafego] = useState(null);
+  const [crescimento, setCrescimento] = useState(null);
   const [erro, setErro] = useState("");
   const [sessaoEmail, setSessaoEmail] = useState(null);
   const [aba, setAba] = useState("geral");
@@ -88,8 +120,10 @@ export default function Admin() {
       setEstado("ok");
       // Este dispositivo é do dono: deixa de contar nas visitas e nos convidados.
       try { localStorage.setItem("poupeja_nao_contar", "1"); } catch {}
-      const t = await fetch("/api/admin-trafego", { headers: auth }).then(x => (x.ok ? x.json() : null)).catch(() => null);
+      const ler = (u) => fetch(u, { headers: auth }).then(x => (x.ok ? x.json() : null)).catch(() => null);
+      const [t, c] = await Promise.all([ler("/api/admin-trafego"), ler("/api/admin-crescimento")]);
       setTrafego(t);
+      setCrescimento(c || {});
     } catch {
       setErro("Falha de ligação.");
       setEstado("erro");
@@ -220,9 +254,11 @@ export default function Admin() {
 
         {estado === "ok" && stats && (
           <div role="tabpanel">
-            {aba === "geral" && <VisaoGeral stats={stats} trafego={trafego} irPara={setAba} />}
-            {aba === "trafego" && <Trafego dados={trafego} onRepor={reporVisitas} estadoRepor={estadoRepor} />}
+            {aba === "geral" && <VisaoGeral stats={stats} trafego={trafego} cresc={crescimento} irPara={setAba} />}
+            {aba === "aquisicao" && <Trafego dados={trafego} cresc={crescimento} onRepor={reporVisitas} estadoRepor={estadoRepor} />}
+            {aba === "uso" && <Uso stats={stats} cresc={crescimento} />}
             {aba === "utilizadores" && <Utilizadores stats={stats} />}
+            {aba === "qualidade" && <Qualidade cresc={crescimento} />}
             {aba === "avisos" && (
               <Avisos
                 stats={stats}
@@ -244,7 +280,7 @@ export default function Admin() {
 
 /* ───────────────────────── Separadores ───────────────────────── */
 
-function VisaoGeral({ stats, trafego, irPara }) {
+function VisaoGeral({ stats, trafego, cresc, irPara }) {
   const p = trafego?.proprio;
   const conv = stats.entradasConvidado;
   const emails = (stats.subFolhetos ?? 0) + (stats.subCombustivel ?? 0);
@@ -260,12 +296,14 @@ function VisaoGeral({ stats, trafego, irPara }) {
         <Kpi rotulo="Subscritores email" ajuda={`${num(stats.subFolhetos ?? 0)} folhetos · ${num(stats.subCombustivel ?? 0)} combustível`} valor={emails} />
       </Grelha4>
 
+      <Estado cresc={cresc} irPara={irPara} />
+
       <div className="grid gap-4 md:grid-cols-5">
         <Painel
           className="md:col-span-3"
           titulo="Visitantes por dia"
           nota="últimos 14 dias"
-          acao={<LinkAba onClick={() => irPara("trafego")}>Tráfego</LinkAba>}
+          acao={<LinkAba onClick={() => irPara("aquisicao")}>Aquisição</LinkAba>}
         >
           {p ? (
             <>
@@ -283,7 +321,7 @@ function VisaoGeral({ stats, trafego, irPara }) {
           className="md:col-span-2"
           titulo="Percurso dos convidados"
           nota="quem entrou nos últimos 7 dias"
-          acao={<LinkAba onClick={() => irPara("utilizadores")}>Utilizadores</LinkAba>}
+          acao={<LinkAba onClick={() => irPara("uso")}>Uso</LinkAba>}
         >
           {conv?.funil7?.entraram > 0 ? <FunilConvidados f={conv.funil7} compacto /> : <Vazio>Sem entradas nos últimos 7 dias.</Vazio>}
         </Painel>
@@ -301,7 +339,7 @@ function VisaoGeral({ stats, trafego, irPara }) {
   );
 }
 
-function Trafego({ dados, onRepor, estadoRepor }) {
+function Trafego({ dados, cresc, onRepor, estadoRepor }) {
   if (!dados) return <Esqueleto />;
   const { proprio: p, google: g } = dados;
   const ga = g?.ga;
@@ -314,7 +352,7 @@ function Trafego({ dados, onRepor, estadoRepor }) {
 
   return (
     <div className="space-y-4">
-      <Secao titulo="Contador próprio" nota={`Conta toda a gente, com ou sem cookies, sem bots. Desde ${new Date(p.desdeDia + "T12:00:00").toLocaleDateString("pt-PT")}.`} />
+      <Grupo Icone={Activity} titulo="Visitas" nota={`Contador próprio: toda a gente, com ou sem cookies, sem bots. Desde ${new Date(p.desdeDia + "T12:00:00").toLocaleDateString("pt-PT")}.`} />
       <Grelha4>
         <Kpi rotulo="Visitantes hoje" valor={p.hoje.visitantes} />
         <Kpi rotulo="Visitantes" ajuda="7 dias" valor={p.sete.visitantes} antes={p.anteriores7} />
@@ -345,7 +383,7 @@ function Trafego({ dados, onRepor, estadoRepor }) {
         </Painel>
       </div>
 
-      <Secao titulo="Google" />
+      <Grupo Icone={Globe} titulo="Google" nota="Quanto o Google nos mostra e quantos clicam. É o canal que mais cresce sozinho." />
       {!ga && !sc && !g?.gaErro && !g?.scErro ? (
         <Vazio>Google Analytics e Search Console ainda não estão ligados ao admin.</Vazio>
       ) : (
@@ -376,6 +414,8 @@ function Trafego({ dados, onRepor, estadoRepor }) {
           </Painel>
         </div>
       )}
+
+      <EmailsCrescimento dados={cresc?.emails} />
 
       <div className="text-right">
         <button onClick={onRepor} disabled={estadoRepor === "a-repor"} className="text-xs font-semibold text-slate-500 underline hover:text-[color:var(--pj-danger)]">
@@ -417,17 +457,6 @@ function Utilizadores({ stats }) {
               <Barras dados={stats.crescimento.map(d => ({ dia: String(d.dia).slice(0, 10), n: d.n }))} />
             </div>
           )}
-        </Painel>
-
-        <Painel titulo="Percurso dos convidados" nota="quem entrou nos últimos 7 dias">
-          {conv?.funil7?.entraram > 0 ? (
-            <>
-              <FunilConvidados f={conv.funil7} />
-              <p className="text-xs text-slate-400 mt-3">
-                {num(conv.aberturas)} aberturas no total. Contagem desde 1 out 2026; antes disso ver Google Analytics (login · convidado_local).
-              </p>
-            </>
-          ) : <Vazio>Sem entradas nos últimos 7 dias.</Vazio>}
         </Painel>
 
         <Painel titulo="Funil das contas" nota="em relação às contas registadas">
@@ -597,6 +626,340 @@ function Avisos({ stats, titulo, setTitulo, corpo, setCorpo, url, setUrl, estado
   );
 }
 
+/* ───────────────────────── Estado, uso e qualidade ───────────────────────── */
+
+const fmtVital = (nome, v) => {
+  if (v == null) return "—";
+  if (nome === "CLS") return v.toLocaleString("pt-PT", { maximumFractionDigits: 2 });
+  return v >= 1000 ? `${(v / 1000).toLocaleString("pt-PT", { maximumFractionDigits: 1 })} s` : `${Math.round(v)} ms`;
+};
+// O Google considera uma página "boa" quando 75% das visitas ficam dentro do limite.
+const corBons = (f) => (f == null ? "bg-slate-300" : f >= 0.75 ? "bg-emerald-500" : f >= 0.5 ? "bg-[#c8a26a]" : "bg-[color:var(--pj-danger)]");
+
+// Resumo do que pode estar partido, no topo da visão geral.
+function Estado({ cresc, irPara }) {
+  if (!cresc) return null;
+  const m = cresc.metricas;
+  const lojas = cresc.saude;
+  const falhas = (lojas || []).filter(l => !l.ok);
+  const lcp = m?.vitais?.find(v => v.nome === "LCP");
+  const taxaVazias = m?.pesquisas?.total ? m.pesquisas.vazias / m.pesquisas.total : null;
+  const itens = [
+    { Icone: Store, rotulo: "Preços das lojas", aba: "qualidade",
+      valor: lojas?.length ? (falhas.length ? `${falhas.length} em falha` : `${lojas.length} a funcionar`) : null,
+      nota: falhas.length ? falhas.map(f => f.nome).join(", ") : lojas?.length ? `verificado ${fmtRelativo(lojas[0].verificado_em)}` : "após a próxima verificação diária",
+      alerta: falhas.length > 0 },
+    { Icone: Gauge, rotulo: "Velocidade", aba: "qualidade",
+      valor: lcp?.n ? `${Math.round(lcp.bons * 100)}% rápidas` : null,
+      nota: lcp?.n ? `conteúdo principal em ${fmtVital("LCP", lcp.media)} em média` : "a recolher", alerta: lcp?.n > 0 && lcp.bons < 0.75 },
+    { Icone: Bug, rotulo: "Erros no browser", aba: "qualidade",
+      valor: m ? `${num(m.erros.total)} em 7 dias` : null, nota: m?.erros?.lista?.[0] ? `mais comum em ${m.erros.lista[0].pagina}` : m ? "nenhum registado" : "a recolher",
+      alerta: (m?.erros?.total || 0) > 20 },
+    { Icone: SearchX, rotulo: "Pesquisas sem resultado", aba: "uso",
+      valor: taxaVazias != null ? `${Math.round(taxaVazias * 100)}%` : null,
+      nota: m?.pesquisas?.semResultado?.[0] ? `ex.: «${m.pesquisas.semResultado[0].termo}»` : "a recolher", alerta: taxaVazias > 0.15 },
+  ];
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {itens.map(({ Icone, rotulo, valor, nota, alerta, aba }) => (
+        <button key={rotulo} onClick={() => irPara(aba)} className={`min-w-0 text-left rounded-2xl border px-4 py-3 flex items-start gap-3 hover:bg-white ${alerta ? "border-[color:var(--pj-danger-border)] bg-[color:var(--pj-danger-wash)]" : "border-slate-200 bg-slate-50"}`}>
+          <Icone size={16} className={`mt-0.5 shrink-0 ${alerta ? "text-[color:var(--pj-danger)]" : "text-emerald-600"}`} />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">{rotulo}{alerta && <AlertTriangle size={12} className="text-[color:var(--pj-danger)]" />}</p>
+            <p className="text-sm font-semibold text-slate-900">{valor ?? <span className="text-slate-400 font-medium">sem dados ainda</span>}</p>
+            <p className="text-xs text-slate-500 truncate">{nota}</p>
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Uso({ stats, cresc }) {
+  if (!cresc) return <Esqueleto />;
+  const m = cresc.metricas;
+  const r = cresc.retencao;
+  const conv = stats.entradasConvidado;
+  const eventos = (m?.eventos || []).filter(e => !["screen_view", "comparar_exemplo"].includes(e.chave));
+  const ecras = m?.eventos?.find(e => e.chave === "screen_view");
+
+  return (
+    <div className="space-y-4">
+      <Grupo Icone={MousePointerClick} titulo="Funcionalidades" nota="O que as pessoas fazem cá dentro, nos últimos 7 dias. Conta toda a gente, sem cookies.">
+        {!m?.eventos?.length ? <EmRecolha /> : (
+          <div className="grid gap-4 md:grid-cols-5">
+            <Painel className="md:col-span-3" titulo="Ações mais feitas" nota="vs. 7 dias anteriores">
+              <ListaEventos eventos={eventos} />
+            </Painel>
+            <div className="md:col-span-2 space-y-4">
+              <Painel titulo="Atividade por dia" nota="ações registadas, 14 dias">
+                <Barras dados={m.eventosDia} />
+              </Painel>
+              {ecras?.variantes?.length > 0 && (
+                <Painel titulo="Separadores mais abertos" nota="7 dias">
+                  <ListaBarras itens={ecras.variantes.map(v => ({ rotulo: v.detalhe, n: v.n }))} />
+                </Painel>
+              )}
+            </div>
+          </div>
+        )}
+      </Grupo>
+
+      <Grupo Icone={Search} titulo="Pesquisas de produtos" nota="O que procuram no Comparar preços — e o que não encontram (o que falta cobrir).">
+        {!m?.pesquisas?.total ? <EmRecolha /> : (
+          <>
+            <Grelha4>
+              <Kpi rotulo="Pesquisas" ajuda="7 dias" valor={m.pesquisas.total} />
+              <Kpi rotulo="Sem resultado" ajuda={`${num(m.pesquisas.vazias)} pesquisas`} valor={`${pct(m.pesquisas.vazias, m.pesquisas.total)}%`} />
+              <Kpi rotulo="Por dia" ajuda="média, 7 dias" valor={Math.round(m.pesquisas.total / 7)} />
+              <Kpi rotulo="Por visitante" ajuda="pesquisas ÷ convidados ativos 7 d" valor={r?.ativos7 ? (m.pesquisas.total / r.ativos7).toLocaleString("pt-PT", { maximumFractionDigits: 1 }) : "—"} />
+            </Grelha4>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Painel titulo="Mais pesquisados" nota="7 dias">
+                <ListaBarras itens={m.pesquisas.topo.map(t => ({ rotulo: t.termo, n: t.n, extra: t.vazias ? `${t.vazias} sem result.` : null }))} limite={8} />
+              </Painel>
+              <Painel titulo="Sem nenhum resultado" nota="candidatos a melhorar a pesquisa">
+                <ListaBarras itens={m.pesquisas.semResultado.map(t => ({ rotulo: t.termo, n: t.n }))} limite={8} />
+              </Painel>
+            </div>
+          </>
+        )}
+      </Grupo>
+
+      <Grupo Icone={Repeat} titulo="Retenção" nota="Quem entra volta? É o melhor sinal de que a app é útil. Convidados por semana de entrada.">
+        {!r?.coortes?.length ? <EmRecolha>Ainda não há convidados nas últimas 8 semanas.</EmRecolha> : (
+          <>
+            <Grelha4>
+              <Kpi rotulo="Ativos hoje" ajuda="convidados" valor={r.ativos1} />
+              <Kpi rotulo="Ativos 7 dias" ajuda="convidados" valor={r.ativos7} />
+              <Kpi rotulo="Ativos 30 dias" ajuda="convidados" valor={r.ativos30} />
+              <Kpi rotulo="Hábito" ajuda="ativos hoje ÷ ativos 30 dias" valor={r.ativos30 ? `${pct(r.ativos1, r.ativos30)}%` : "—"} />
+            </Grelha4>
+            <Painel titulo="Voltaram depois de…" nota="% de quem entrou nessa semana; “—” quando ainda não passou tempo suficiente">
+              <TabelaCoortes coortes={r.coortes} />
+            </Painel>
+          </>
+        )}
+      </Grupo>
+
+      <Grupo Icone={Route} titulo="Percurso dos convidados" nota="Do primeiro abrir até criar conta, para quem entrou nos últimos 7 dias.">
+        <Painel titulo="Funil">
+          {conv?.funil7?.entraram > 0 ? (
+            <>
+              <FunilConvidados f={conv.funil7} />
+              <p className="text-xs text-slate-400 mt-3">{num(conv.aberturas)} aberturas no total. Contagem desde 1 out 2026.</p>
+            </>
+          ) : <Vazio>Sem entradas nos últimos 7 dias.</Vazio>}
+        </Painel>
+      </Grupo>
+    </div>
+  );
+}
+
+function ListaEventos({ eventos }) {
+  const [tudo, setTudo] = useState(false);
+  if (!eventos.length) return <Vazio>Sem ações registadas.</Vazio>;
+  const max = Math.max(1, ...eventos.map(e => e.n));
+  const visiveis = tudo ? eventos : eventos.slice(0, 10);
+  return (
+    <div>
+      <ul className="space-y-2.5">
+        {visiveis.map(e => (
+          <li key={e.chave}>
+            <div className="flex items-baseline justify-between gap-3 text-sm">
+              <span className="min-w-0 truncate text-slate-700" title={e.chave}>{NOMES_EVENTO[e.chave] || e.chave}</span>
+              <span className="shrink-0 flex items-center gap-2 tabular-nums">
+                {e.antes > 0 && <Variacao agora={e.n} antes={e.antes} />}
+                <span className="font-semibold text-slate-900">{num(e.n)}</span>
+              </span>
+            </div>
+            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1">
+              <div className="h-full rounded-full bg-emerald-400" style={{ width: `${(e.n / max) * 100}%` }} />
+            </div>
+            {e.variantes?.length > 0 && (
+              <p className="text-xs text-slate-400 mt-1 truncate">{e.variantes.map(v => `${v.detalhe} ${v.n}`).join(" · ")}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+      {eventos.length > 10 && (
+        <button onClick={() => setTudo(v => !v)} className="mt-3 text-xs font-semibold text-emerald-700">
+          {tudo ? "Mostrar menos" : `Ver todas (${eventos.length})`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function TabelaCoortes({ coortes }) {
+  const celula = (n, base) => {
+    if (!base) return <span className="text-slate-300">—</span>;
+    const p = pct(n, base);
+    return <span className={`inline-block min-w-[3rem] rounded px-1.5 py-0.5 ${p >= 30 ? "bg-emerald-100 text-emerald-800" : p >= 10 ? "bg-emerald-50 text-emerald-700" : "text-slate-600"}`}>{p}%</span>;
+  };
+  return (
+    <div className="overflow-x-auto -mx-1">
+      <table className="w-full text-sm tabular-nums">
+        <thead>
+          <tr className="text-xs text-slate-500">
+            <th className="text-left font-semibold pb-2 px-1">Semana de</th>
+            <th className="text-right font-semibold pb-2 px-1">Entraram</th>
+            <th className="text-right font-semibold pb-2 px-1">1 dia</th>
+            <th className="text-right font-semibold pb-2 px-1">7 dias</th>
+            <th className="text-right font-semibold pb-2 px-1">30 dias</th>
+            <th className="text-right font-semibold pb-2 px-1">Conta</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {coortes.map(c => (
+            <tr key={c.semana}>
+              <td className="py-2 px-1 text-slate-700">{rotuloDia(c.semana)}</td>
+              <td className="py-2 px-1 text-right font-semibold text-slate-900">{num(c.entraram)}</td>
+              <td className="py-2 px-1 text-right">{celula(c.d1, c.entraram)}</td>
+              <td className="py-2 px-1 text-right">{celula(c.d7, c.elegivel7)}</td>
+              <td className="py-2 px-1 text-right">{celula(c.d30, c.elegivel30)}</td>
+              <td className="py-2 px-1 text-right">{celula(c.converteram, c.entraram)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function EmailsCrescimento({ dados }) {
+  return (
+    <Grupo Icone={Mail} titulo="Emails sem conta" nota="Quem pede o resumo de folhetos ou o preço do combustível por email: o canal que traz as pessoas de volta.">
+      {!dados ? <EmRecolha>Sem dados de subscritores.</EmRecolha> : (
+        <div className="grid gap-4 md:grid-cols-5">
+          <Painel className="md:col-span-3" titulo="Novos por semana" nota="últimas 8 semanas">
+            <table className="w-full text-sm tabular-nums">
+              <thead>
+                <tr className="text-xs text-slate-500">
+                  <th className="text-left font-semibold pb-2">Semana de</th>
+                  <th className="text-right font-semibold pb-2">Folhetos</th>
+                  <th className="text-right font-semibold pb-2">Combustível</th>
+                  <th className="text-right font-semibold pb-2">Cancelaram</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {dados.semanas.map(w => (
+                  <tr key={w.semana}>
+                    <td className="py-1.5 text-slate-700">{rotuloDia(w.semana)}</td>
+                    <td className="py-1.5 text-right text-slate-900">{num(w.folhetos)}</td>
+                    <td className="py-1.5 text-right text-slate-900">{num(w.combustivel)}</td>
+                    <td className={`py-1.5 text-right ${w.cancelaram ? "text-[color:var(--pj-danger)]" : "text-slate-400"}`}>{num(w.cancelaram)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Painel>
+          <div className="md:col-span-2 space-y-4">
+            <Painel titulo="Onde subscreveram" nota="folhetos, 8 semanas">
+              <ListaBarras itens={dados.origens} limite={5} />
+            </Painel>
+            <Painel titulo="Concelhos" nota="combustível, ativos">
+              <ListaBarras itens={dados.concelhos} limite={5} />
+            </Painel>
+          </div>
+        </div>
+      )}
+    </Grupo>
+  );
+}
+
+function Qualidade({ cresc }) {
+  if (!cresc) return <Esqueleto />;
+  const m = cresc.metricas;
+  const lojas = cresc.saude;
+  const comDados = m?.vitais?.some(v => v.n > 0);
+  return (
+    <div className="space-y-4">
+      <Grupo Icone={Store} titulo="Preços das lojas" nota="Verificação diária do Comparar preços: cada loja tem de devolver produtos com preço plausível.">
+        {!lojas?.length ? <EmRecolha>Aparece depois da próxima verificação diária (cron-saude-precos).</EmRecolha> : (
+          <Painel titulo="Estado por loja" nota={`última verificação ${fmtRelativo(lojas[0].verificado_em)}`}>
+            <ul className="divide-y divide-slate-100">
+              {lojas.map(l => (
+                <li key={l.loja} className="py-2.5 first:pt-0 last:pb-0 flex items-start gap-3">
+                  <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${l.ok ? "bg-emerald-500" : "bg-[color:var(--pj-danger)]"}`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-800">{l.nome}</p>
+                    {!l.ok && <p className="text-xs text-[color:var(--pj-danger)] break-words">{l.erro}</p>}
+                  </div>
+                  <span className="text-xs text-slate-500 shrink-0 text-right">
+                    {l.ok ? "a funcionar" : `falha há ${l.falhas_seguidas} ${l.falhas_seguidas === 1 ? "dia" : "dias"}`}
+                    {!l.ok && l.ultimo_ok_em && <><br />último ok {fmtRelativo(l.ultimo_ok_em)}</>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Painel>
+        )}
+      </Grupo>
+
+      <Grupo Icone={Gauge} titulo="Velocidade" nota="Medida no telemóvel de quem usa a app, 7 dias. O Google pede 75% das visitas dentro do limite — também conta para o SEO.">
+        {!comDados ? <EmRecolha /> : (
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+              {m.vitais.map(v => (
+                <div key={v.nome} className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs font-semibold text-slate-500">{NOMES_VITAL[v.nome][0]}</p>
+                  <p className="font-display text-2xl font-semibold text-slate-900 mt-1 tabular-nums">{fmtVital(v.nome, v.media)}</p>
+                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                    <div className={`h-full rounded-full ${corBons(v.bons)}`} style={{ width: `${Math.round((v.bons || 0) * 100)}%` }} />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1 tabular-nums">{v.n ? `${Math.round(v.bons * 100)}% boas · ${num(v.n)}` : "sem medições"}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">{NOMES_VITAL[v.nome][1]} · bom ≤ {fmtVital(v.nome, v.limite)}</p>
+                </div>
+              ))}
+            </div>
+            <Painel titulo="Páginas mais lentas" nota="conteúdo principal (LCP), média · só páginas com 3+ medições">
+              {m.paginasLentas.length ? (
+                <ul className="divide-y divide-slate-100">
+                  {m.paginasLentas.map(p => (
+                    <li key={p.pagina} className="py-2 first:pt-0 last:pb-0 flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-slate-700 truncate">{p.pagina}</span>
+                      <span className="shrink-0 tabular-nums">
+                        <span className="text-xs text-slate-400 mr-2">{Math.round(p.bons * 100)}% boas · {num(p.n)}</span>
+                        <span className={`font-semibold ${p.media > 2500 ? "text-[color:var(--pj-danger)]" : "text-slate-900"}`}>{fmtVital("LCP", p.media)}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : <Vazio>Ainda poucas medições por página.</Vazio>}
+            </Painel>
+          </>
+        )}
+      </Grupo>
+
+      <Grupo Icone={Bug} titulo="Erros no browser" nota="Falhas de JavaScript que as pessoas apanharam, por página (sem dados pessoais). Corrigir o topo desta lista resolve a maioria.">
+        {!m ? <EmRecolha /> : !m.erros.total ? (
+          <Painel titulo="Últimos 7 dias"><Vazio>Nenhum erro registado.</Vazio></Painel>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-5">
+            <Painel className="md:col-span-2" titulo="Erros por dia" nota="14 dias">
+              <Barras dados={m.erros.porDia} />
+            </Painel>
+            <Painel className="md:col-span-3" titulo="Mais frequentes" nota="7 dias">
+              <ul className="divide-y divide-slate-100">
+                {m.erros.lista.map((e, i) => (
+                  <li key={i} className="py-2 first:pt-0 last:pb-0 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm text-slate-800 break-words font-mono text-[13px]">{e.mensagem}</p>
+                      <p className="text-xs text-slate-500">{e.pagina}</p>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-900 tabular-nums shrink-0">{num(e.n)}</span>
+                  </li>
+                ))}
+              </ul>
+            </Painel>
+          </div>
+        )}
+      </Grupo>
+    </div>
+  );
+}
+
 /* ───────────────────────── Peças ───────────────────────── */
 
 function Painel({ titulo, nota, acao, className = "", children }) {
@@ -614,11 +977,34 @@ function Painel({ titulo, nota, acao, className = "", children }) {
   );
 }
 
-function Secao({ titulo, nota }) {
+// Agrupador: cabeçalho de um conjunto de painéis sobre o mesmo assunto.
+function Grupo({ Icone, titulo, nota, children }) {
   return (
-    <div className="pt-2">
-      <h2 className="font-display text-base font-semibold text-slate-700">{titulo}</h2>
-      {nota && <p className="text-xs text-slate-500 mt-0.5">{nota}</p>}
+    <div className="pt-3 first:pt-0">
+      <div className="flex items-start gap-2.5">
+        {Icone && (
+          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <Icone size={16} />
+          </div>
+        )}
+        <div className="min-w-0">
+          <h2 className="font-display text-base font-semibold text-slate-800 leading-tight">{titulo}</h2>
+          {nota && <p className="text-xs text-slate-500 mt-0.5">{nota}</p>}
+        </div>
+      </div>
+      {children && <div className="mt-3 space-y-4">{children}</div>}
+    </div>
+  );
+}
+
+// Medição nova, ainda sem dados: explica o que vai aparecer e porquê.
+function EmRecolha({ children }) {
+  return (
+    <div className="flex items-start gap-2.5 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3">
+      <Hourglass size={15} className="text-slate-400 mt-0.5 shrink-0" />
+      <p className="text-sm text-slate-500">
+        <span className="font-semibold text-slate-600">A recolher.</span> {children || "Esta medição é nova e enche-se à medida que as pessoas usam a app."}
+      </p>
     </div>
   );
 }

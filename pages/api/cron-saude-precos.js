@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { enviarEmail } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { verificarLojas } from "../../lib/supermercados/saude";
+import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 
 /*
  * Verificação DIÁRIA de "Comparar preços" (Vercel Cron, ver vercel.json).
@@ -39,6 +40,32 @@ function construirEmail(resultados, base) {
   return { subject, html };
 }
 
+// Guarda o último resultado por loja (tabela saude_precos) para o /admin.
+// Falhar aqui nunca impede o email.
+async function guardarSaude(resultados) {
+  const admin = getSupabaseAdmin();
+  if (!admin) return;
+  try {
+    const { data: antes } = await admin.from("saude_precos").select("loja, ultimo_ok_em, falhas_seguidas");
+    const porLoja = Object.fromEntries((antes || []).map((l) => [l.loja, l]));
+    const agora = new Date().toISOString();
+    const linhas = resultados.map((r) => ({
+      loja: r.id,
+      nome: r.nome,
+      ok: r.ok,
+      erro: r.ok ? null : String(r.erro || "").slice(0, 300),
+      detalhes: r.ok ? r.detalhes : null,
+      verificado_em: agora,
+      ultimo_ok_em: r.ok ? agora : porLoja[r.id]?.ultimo_ok_em || null,
+      falhas_seguidas: r.ok ? 0 : (porLoja[r.id]?.falhas_seguidas || 0) + 1,
+    }));
+    const { error } = await admin.from("saude_precos").upsert(linhas);
+    if (error) console.error("cron-saude-precos: falha a guardar:", error.message);
+  } catch (e) {
+    console.error("cron-saude-precos: falha a guardar:", e?.message);
+  }
+}
+
 export default async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ erro: "Não autorizado." });
@@ -48,6 +75,8 @@ export default async function handler(req, res) {
   const falhas = resultados.filter((r) => !r.ok);
   const segunda = new Date().getUTCDay() === 1;
   console.log("cron-saude-precos:", resultados.map((r) => `${r.id}=${r.ok ? "ok" : `FALHA (${r.erro})`}`).join("; "));
+
+  await guardarSaude(resultados);
 
   let emailEnviado = false;
   if ((falhas.length || segunda) && process.env.RESEND_API_KEY) {

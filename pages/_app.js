@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { URL_SITE } from '../lib/site';
 import { modoExecucao } from '../lib/plataforma';
 import AvisoCookies from '../AvisoCookies';
+import { metrica } from '../lib/analytics';
 
 function temSessaoGuardada() {
   try {
@@ -131,6 +132,23 @@ function MyApp({ Component, pageProps }) {
     }).catch(() => {});
   }, []);
 
+  // Erros no browser, contados por página (sem stack nem dados da pessoa):
+  // mostram no /admin onde a app parte. No máximo 5 por carregamento.
+  useEffect(() => {
+    let n = 0;
+    const IGNORAR = /ResizeObserver loop|Script error\.|Load failed|NetworkError|Failed to fetch|AbortError/i;
+    const registar = (msg, ficheiro) => {
+      if (n >= 5 || !msg || IGNORAR.test(msg) || /extension:\/\//.test(ficheiro || '')) return;
+      n++;
+      metrica({ tipo: 'erro', chave: paginaAtual(), detalhe: String(msg) });
+    };
+    const aoErro = (e) => registar(e.message || e.error?.message, e.filename);
+    const aoRejeitar = (e) => registar(e.reason?.message || (typeof e.reason === 'string' ? e.reason : ''));
+    window.addEventListener('error', aoErro);
+    window.addEventListener('unhandledrejection', aoRejeitar);
+    return () => { window.removeEventListener('error', aoErro); window.removeEventListener('unhandledrejection', aoRejeitar); };
+  }, []);
+
   // Aplica/atualiza o tema escuro quando a preferência muda noutra parte da app
   useEffect(() => {
     function aplicarTema() {
@@ -179,6 +197,18 @@ function MyApp({ Component, pageProps }) {
       <AvisoCookies />
     </>
   )
+}
+
+// Página como o Next a conhece ("/combustiveis/[distrito]"), para agrupar.
+function paginaAtual() {
+  try { return window.next?.router?.pathname || window.__NEXT_DATA__?.page || window.location.pathname; } catch (_) { return '/'; }
+}
+
+// Velocidade real das páginas (Core Web Vitals), medida no aparelho de quem
+// as abre. O /admin mostra a média e a percentagem de visitas "boas".
+export function reportWebVitals({ name, value }) {
+  if (!['LCP', 'INP', 'CLS', 'FCP', 'TTFB'].includes(name)) return;
+  metrica({ tipo: 'vital', chave: name, valor: value, detalhe: paginaAtual() });
 }
 
 export default MyApp

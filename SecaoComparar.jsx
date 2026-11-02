@@ -469,6 +469,7 @@ export default function SecaoComparar() {
       // O exemplo só aparece se tiver resultados: um "Não encontrámos" no
       // ecrã de quem nada pesquisou parecia um erro da app.
       if (eExemplo && !j.produtos.length) throw new Error("exemplo vazio");
+      if (!eExemplo && !j.produtos.length) evento("comparar_sem_resultados", { q });
       setDados(j);
       setEstado("pronto");
       if (!eExemplo) setRecentes(guardarRecente(q));
