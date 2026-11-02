@@ -40,7 +40,9 @@ const NOMES_EVENTO = {
   copia_seguranca: "Cópia de segurança", inicio_combustivel: "Combustível no início", comparar_exemplo: "Viu exemplo do Mercado",
   comparar_pesquisa: "Pesquisou um produto", comparar_sem_resultados: "Pesquisa sem resultados", desconto_combustivel: "Desconto de combustível",
   codigo_barras: "Leitor de código de barras", ementas_plano: "Plano de jantares", receita_cozinhada: "Cozinhou uma receita",
-  abrir_poupeja: "Abriu a app a partir do site",
+  abrir_poupeja: "Abriu a app a partir do site", arranque_cabaz: "Comparou o cabaz básico (1 toque)",
+  lembrete_compras_criado: "Pediu lembrete do dia das compras", lembrete_compras_cancelado: "Cancelou o lembrete", lista_guardada_usada: "Usou uma lista guardada",
+  lista_pediu_artigo: "Escreveu palavra geral na lista", pedir_conta: "Tocou em criar conta", subscrever_folhetos: "Subscreveu os folhetos",
 };
 const NOMES_VITAL = {
   LCP: ["Conteúdo principal", "tempo até aparecer o maior elemento"],
@@ -709,7 +711,7 @@ function Contactos({ lista }) {
         <Mail size={16} className="text-emerald-600" />
         <h2 className="font-semibold text-slate-800">Contactos sem conta</h2>
         <span className="text-xs font-semibold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 tabular-nums">{lista ? lista.length : "—"}</span>
-        <span className="text-xs text-slate-400 hidden sm:inline">deram o email para alertas, folhetos ou combustível</span>
+        <span className="text-xs text-slate-400 hidden sm:inline">deram o email para alertas, lembretes, folhetos ou combustível</span>
         <ChevronDown size={18} className={`ml-auto text-slate-400 transition-transform ${aberta ? "rotate-180" : ""}`} />
       </button>
       {aberta && (!lista ? <div className="px-5 pb-5"><EmRecolha>Não foi possível ler os contactos.</EmRecolha></div> : (
@@ -737,8 +739,9 @@ function Contactos({ lista }) {
                       <div className="flex flex-wrap gap-1 mt-1">
                         {ativos.length > 0 && <Etiqueta forte>{ativos.length} {ativos.length === 1 ? "alerta" : "alertas"}: {ativos.slice(0, 3).map(a => a.q).join(", ")}{ativos.length > 3 ? "…" : ""}</Etiqueta>}
                         {p.folhetos?.ativo && <Etiqueta>Folhetos</Etiqueta>}
+                        {p.lembrete?.ativo && <Etiqueta>Lembrete · {["seg", "ter", "qua", "qui", "sex", "sáb", "dom"][p.lembrete.dia - 1]}</Etiqueta>}
                         {p.combustivel.filter(x => x.ativo).map(x => <Etiqueta key={x.concelho}>Combustível · {x.concelho}</Etiqueta>)}
-                        {!ativos.length && !p.folhetos?.ativo && !p.combustivel.some(x => x.ativo) && <Etiqueta>cancelou tudo</Etiqueta>}
+                        {!ativos.length && !p.folhetos?.ativo && !p.lembrete?.ativo && !p.combustivel.some(x => x.ativo) && <Etiqueta>cancelou tudo</Etiqueta>}
                       </div>
                       <p className="text-xs text-slate-500 mt-1.5 tabular-nums">
                         Deu o email {fmtRelativo(p.desde)}
@@ -1019,6 +1022,10 @@ function Uso({ stats, cresc }) {
               csv={() => [["Semana", "Entraram", "1 dia", "7 dias", "30 dias", "Conta"], ...r.coortes.map(c => [c.semana, c.entraram, c.d1, c.elegivel7 ? c.d7 : "", c.elegivel30 ? c.d30 : "", c.converteram])]} nomeCsv="retencao-semanas">
               <TabelaCoortes coortes={r.coortes} primeira="Semana de" rotulo={c => rotuloDia(c.semana)} />
             </Painel>
+            <Painel titulo="O que faz voltar" nota={`quem entrou há 7+ dias (${num(r.base7 || 0)} convidados): % que ainda usava a app 7 dias depois`}
+              csv={() => [["Ação", "Fizeram", "Voltaram (fizeram)", "Voltaram (não fizeram)"], ...(r.oQueFazVoltar || []).map(a => [a.rotulo, a.fizeram, a.comAcao == null ? "" : Math.round(a.comAcao * 100), a.semAcao == null ? "" : Math.round(a.semAcao * 100)])]} nomeCsv="o-que-faz-voltar">
+              {r.oQueFazVoltar?.length ? <OQueFazVoltar acoes={r.oQueFazVoltar} /> : <EmRecolha>Precisa de convidados com pelo menos 7 dias.</EmRecolha>}
+            </Painel>
             <Painel titulo="Por origem" nota={`quem entrou nos últimos ${txt}, pelo sítio de onde veio da primeira vez`}
               csv={() => [["Origem", "Entraram", "1 dia", "7 dias", "30 dias", "Conta"], ...(r.porOrigem || []).map(c => [c.chave, c.entraram, c.d1, c.d7, c.d30, c.converteram])]} nomeCsv="retencao-origem">
               {r.porOrigem?.some(c => c.chave !== "sem registo") ? (
@@ -1074,6 +1081,43 @@ function ListaEventos({ eventos }) {
           {tudo ? "Mostrar menos" : `Ver todas (${eventos.length})`}
         </button>
       )}
+    </div>
+  );
+}
+
+// Com e sem cada ação: quanto mais volta quem a fez. Indica onde investir.
+function OQueFazVoltar({ acoes }) {
+  return (
+    <div className="overflow-x-auto -mx-1">
+      <table className="w-full text-sm tabular-nums">
+        <thead><tr className="text-xs text-slate-500">
+          <th className="text-left font-semibold pb-2 px-1">Ação</th>
+          <th className="text-right font-semibold pb-2 px-1">Fizeram</th>
+          <th className="text-right font-semibold pb-2 px-1">Voltaram</th>
+          <th className="text-right font-semibold pb-2 px-1">Sem a ação</th>
+          <th className="text-right font-semibold pb-2 px-1">Efeito</th>
+        </tr></thead>
+        <tbody className="divide-y divide-slate-100">
+          {acoes.map(a => {
+            const efeito = a.comAcao != null && a.semAcao ? a.comAcao / a.semAcao : null;
+            return (
+              <tr key={a.campo}>
+                <td className="py-2 px-1 text-slate-700">{a.rotulo}</td>
+                <td className="py-2 px-1 text-right text-slate-600">{num(a.fizeram)}</td>
+                <td className="py-2 px-1 text-right font-semibold text-slate-900">{a.comAcao == null ? "—" : `${Math.round(a.comAcao * 100)}%`}</td>
+                <td className="py-2 px-1 text-right text-slate-500">{a.semAcao == null ? "—" : `${Math.round(a.semAcao * 100)}%`}</td>
+                <td className="py-2 px-1 text-right">
+                  {efeito == null ? <span className="text-slate-300">—</span>
+                    : <span className={`inline-block rounded px-1.5 py-0.5 font-semibold ${efeito >= 1.5 ? "bg-emerald-100 text-emerald-800" : efeito >= 1 ? "text-emerald-700" : "text-[color:var(--pj-danger)]"}`}>
+                        {efeito.toLocaleString("pt-PT", { maximumFractionDigits: 1 })}×
+                      </span>}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="text-xs text-slate-400 mt-2">“Efeito” = quantas vezes mais volta quem fez a ação. Mostra associação, não prova causa; com poucos convidados, os números variam muito.</p>
     </div>
   );
 }

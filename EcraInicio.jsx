@@ -621,6 +621,20 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           />
         )}
 
+        {/* Primeira visita (nada feito ainda): o caminho mais curto até ao
+            valor — o cabaz básico comparado num toque, sem escrever nada. */}
+        {explorar && (
+          <button
+            onClick={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
+            className="pj-tap w-full text-left anim-up anim-up-2"
+            style={{ marginTop: 18, padding: "16px 16px", borderRadius: 16, background: "var(--pj-brand)", color: "#fff", border: 0 }}>
+            <span style={{ display: "block", fontSize: 12, fontWeight: 600, letterSpacing: ".04em", textTransform: "uppercase", color: "#a7cbbb" }}>Experimenta em 10 segundos</span>
+            <span className="font-display" style={{ display: "block", fontSize: 19, fontWeight: 600, marginTop: 4, lineHeight: 1.25 }}>Onde fica mais barata a tua compra?</span>
+            <span style={{ display: "block", fontSize: 13, color: "#d9e7df", marginTop: 4, lineHeight: 1.45 }}>Comparamos 6 básicos (leite, ovos, pão, arroz…) nos {N_COMPARADAS} supermercados. Sem conta.</span>
+            <span className="flex items-center gap-1" style={{ marginTop: 10, fontSize: 14, fontWeight: 600 }}>Comparar o cabaz <ChevronRight size={16} /></span>
+          </button>
+        )}
+
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
             ou o convite para planear a semana. */}
         <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />
