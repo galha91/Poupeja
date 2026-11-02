@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { lerFolhetos } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
 import { bearerValido } from "../../lib/seguranca";
@@ -40,7 +40,7 @@ async function handler(req, res) {
   const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
   const { subject, html } = construirEmailAlerta({ partidas, avisos: [], corrigidas, base });
   try {
-    await enviarEmail(resend, {
+    await enviarEmail(resend, { tags: etiqueta("admin"),
       from: "PoupeJá <noreply@xn--poupej-uta.com>",
       to: adminEmail,
       subject,

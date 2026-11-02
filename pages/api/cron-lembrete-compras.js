@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { etiqueta, contarEnviados } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { diaDaSemanaLisboa, DIAS } from "../../lib/lembreteCompras";
@@ -48,11 +49,12 @@ async function handler(req, res) {
   for (let i = 0; i < (data || []).length; i += 100) {
     const lote = data.slice(i, i + 100);
     const { error: e } = await resend.batch.send(lote.map(l => ({
-      from: "PoupeJá <noreply@xn--poupej-uta.com>", to: l.email, ...emailLembrete(l, base),
+      from: "PoupeJá <noreply@xn--poupej-uta.com>", to: l.email, ...emailLembrete(l, base), tags: etiqueta("lembrete_compras"),
       headers: { "List-Unsubscribe": `<${urlCancelarLembrete(base, l.id)}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
     })));
     if (e) { console.error("cron-lembrete-compras:", e.message); continue; }
     enviados += lote.length;
+    await contarEnviados("lembrete_compras", lote.length);
     await Promise.all(lote.map(l => admin.from("lembretes_compras").update({ ultimo_envio: hoje, envios: (l.envios || 0) + 1 }).eq("id", l.id).then(() => {}, () => {})));
   }
   return res.status(200).json({ lembretes: data?.length || 0, enviados });

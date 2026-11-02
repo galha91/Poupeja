@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { registarCusto } from "../../lib/custos";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { linhasTalao } from "../../lib/precosTalao";
@@ -67,6 +68,7 @@ Responde APENAS com JSON válido.`,
         ],
       }],
     });
+    await registarCusto("ler-talao", msg.model, msg.usage);
 
     const texto = msg.content[0]?.text?.trim() ?? "";
 

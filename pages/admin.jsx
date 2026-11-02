@@ -6,7 +6,7 @@ import {
   ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Bell, Send, ChevronDown, Search,
   LayoutDashboard, BarChart3, Users, Megaphone, ArrowUpRight, ArrowDownRight, Minus,
   MousePointerClick, Gauge, Store, Bug, Repeat, Mail, Globe, Activity, SearchX, Route, AlertTriangle, Hourglass,
-  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao, Timer, MessageSquare,
+  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao, Timer, MessageSquare, Wallet,
 } from "lucide-react";
 
 // Painel privado do dono, do mais geral para o mais detalhado:
@@ -512,6 +512,8 @@ function Trafego({ dados, cresc, onRepor, estadoRepor, pedir, atualizarCresc }) 
 
       <EmailsCrescimento dados={cresc?.emails} />
 
+      <EmailsEntrega cresc={cresc} />
+
       <div className="text-right">
         <button onClick={onRepor} disabled={estadoRepor === "a-repor"} className="text-xs font-semibold text-slate-500 underline hover:text-[color:var(--pj-danger)]">
           {estadoRepor === "a-repor" ? "A repor…" : estadoRepor === "ok" ? "Contador reposto a zero" : estadoRepor === "erro" ? "Erro — tenta de novo" : "Pôr contador de visitas a zero"}
@@ -703,6 +705,7 @@ function Contactos({ lista }) {
   const [aberta, setAberta] = useState(false);
   const [busca, setBusca] = useState("");
   const [limite, setLimite] = useState(20);
+  const [aberto, setAberto] = useState(null);
   const filtrada = useMemo(() => {
     const q = busca.trim().toLowerCase();
     return (lista || []).filter(p => !q || p.email.includes(q) || p.alertas.some(a => a.q.includes(q)));
@@ -739,7 +742,7 @@ function Contactos({ lista }) {
               const ativos = p.alertas.filter(a => a.ativo);
               return (
                 <li key={p.email} className="px-5 py-3">
-                  <div className="flex items-start gap-3">
+                  <button onClick={() => setAberto(a => (a === p.email ? null : p.email))} aria-expanded={aberto === p.email} className="w-full text-left flex items-start gap-3">
                     <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 text-xs font-semibold">{p.email[0]?.toUpperCase()}</div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-slate-800 truncate">{p.email}</p>
@@ -759,7 +762,9 @@ function Contactos({ lista }) {
                         </> : <span className="text-slate-400"> · sem ficha de convidado (deu o email numa página pública ou antes desta versão)</span>}
                       </p>
                     </div>
-                  </div>
+                    <ChevronDown size={16} className={`mt-1 shrink-0 text-slate-400 transition-transform ${aberto === p.email ? "rotate-180" : ""}`} />
+                  </button>
+                  {aberto === p.email && <FichaContacto p={p} />}
                 </li>
               );
             })}
@@ -1302,6 +1307,8 @@ function Qualidade({ cresc }) {
         )}
       </Grupo>
 
+      <Custos cresc={cresc} />
+
       <Grupo Icone={Store} titulo="Preços das lojas" nota="Verificação diária do Comparar preços: cada loja tem de devolver produtos com preço plausível.">
         {!lojas?.length ? <EmRecolha>Aparece depois da próxima verificação diária (cron-saude-precos).</EmRecolha> : (
           <Painel titulo="Estado por loja" nota={`última verificação ${fmtRelativo(lojas[0].verificado_em)}`}>
@@ -1385,6 +1392,139 @@ function Qualidade({ cresc }) {
         )}
       </Grupo>
     </div>
+  );
+}
+
+const NOMES_EMAIL = {
+  folhetos: "Folhetos (sem conta)", folhetos_conta: "Folhetos (com conta)", combustivel: "Combustível semanal", previsao_combustivel: "Aviso de subida do combustível",
+  alerta_preco: "Alertas de preço", lembrete_compras: "Lembrete do dia das compras", admin: "Para ti (admin)", outro: "Outros",
+};
+const NOMES_CUSTO = { "ler-talao": "Leitura de talões", "previsao-combustiveis": "Previsão dos combustíveis" };
+const usd = (v) => `${(v || 0).toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
+
+// Entrega e leitura dos emails, por tipo (envios contados por nós; o resto vem do Resend).
+function EmailsEntrega({ cresc }) {
+  const { txt } = usePeriodo();
+  const linhas = (cresc?.metricas?.emails || []).filter(e => e.tipo !== "admin");
+  const canc = cresc?.cancelamentos || {};
+  const wh = cresc?.resendWebhook;
+  const taxa = (v, base) => (base ? `${pct(v || 0, base)}%` : "—");
+  return (
+    <Grupo Icone={Send} titulo="Emails: entrega e leitura" nota={`Por tipo de email, ${txt}. Abertos é aproximado: o Mail da Apple abre tudo sozinho.`}>
+      {wh?.estado === "erro" && <EmRecolha>Não foi possível ligar as estatísticas do Resend ({wh.erro}). Tenta abrir o admin mais tarde.</EmRecolha>}
+      {wh?.estado === "sem-chave" && <EmRecolha>Sem RESEND_API_KEY neste ambiente: só os envios são contados.</EmRecolha>}
+      {!linhas.length && !Object.keys(canc).length ? <EmRecolha>Os envios contam a partir desta versão; entregas e aberturas chegam do Resend a partir de agora.</EmRecolha> : (
+        <Painel titulo="Por tipo de email" csv={() => [["Tipo", "Enviados", "Entregues", "Abertos", "Cliques", "Devolvidos", "Queixas", "Cancelaram", "Ativos"],
+          ...Object.keys({ ...Object.fromEntries(linhas.map(l => [l.tipo, 1])), ...canc }).map(t => { const l = linhas.find(x => x.tipo === t) || {}; return [NOMES_EMAIL[t] || t, l.enviado || 0, l.entregue || 0, l.aberto || 0, l.clique || 0, l.devolvido || 0, l.queixa || 0, canc[t]?.cancelaram ?? "", canc[t]?.ativos ?? ""]; })]} nomeCsv="emails-entrega">
+          <div className="overflow-x-auto -mx-1">
+            <table className="w-full text-sm tabular-nums">
+              <thead><tr className="text-xs text-slate-500">
+                {["Tipo", "Enviados", "Entregues", "Abertos", "Cliques", "Devolvidos", "Cancelaram", "Ativos"].map((h, i) => <th key={h} className={`${i ? "text-right" : "text-left"} font-semibold pb-2 px-1 whitespace-nowrap`}>{h}</th>)}
+              </tr></thead>
+              <tbody className="divide-y divide-slate-100">
+                {Object.keys({ ...Object.fromEntries(linhas.map(l => [l.tipo, 1])), ...canc }).map(t => {
+                  const l = linhas.find(x => x.tipo === t) || {};
+                  const base = l.entregue || l.enviado || 0;
+                  return (
+                    <tr key={t}>
+                      <td className="py-2 px-1 text-slate-700 whitespace-nowrap">{NOMES_EMAIL[t] || t}</td>
+                      <td className="py-2 px-1 text-right font-semibold text-slate-900">{num(l.enviado || 0)}</td>
+                      <td className="py-2 px-1 text-right text-slate-600">{taxa(l.entregue, l.enviado)}</td>
+                      <td className="py-2 px-1 text-right text-slate-600">{taxa(l.aberto, base)}</td>
+                      <td className="py-2 px-1 text-right text-slate-600">{taxa(l.clique, base)}</td>
+                      <td className={`py-2 px-1 text-right ${(l.devolvido || 0) + (l.queixa || 0) ? "text-[color:var(--pj-danger)] font-semibold" : "text-slate-400"}`}>{num((l.devolvido || 0) + (l.queixa || 0))}</td>
+                      <td className="py-2 px-1 text-right text-slate-600">{canc[t] ? num(canc[t].cancelaram) : "—"}</td>
+                      <td className="py-2 px-1 text-right text-slate-600">{canc[t] ? num(canc[t].ativos) : "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-slate-400 mt-2">Devolvidos inclui queixas de spam. Um email devolvido de vez ou com queixa é cancelado sozinho, para não voltarmos a escrever-lhe.{wh?.estado === "ligado" && " Estatísticas do Resend ligadas."}</p>
+        </Painel>
+      )}
+    </Grupo>
+  );
+}
+
+// Custos do mês: o que se paga por uso (Anthropic) e a quota de emails.
+function Custos({ cresc }) {
+  const c = cresc?.custos;
+  if (!c) return (
+    <Grupo Icone={Wallet} titulo="Custos do mês"><EmRecolha>Sem dados de custos.</EmRecolha></Grupo>
+  );
+  const proj = (v) => (c.diaDoMes ? (v / c.diaDoMes) * c.diasMes : v);
+  const usos = Object.entries(c.mes.anthropic);
+  const emailsProj = Math.round(proj(c.mes.emails));
+  const pctEmails = Math.min(100, Math.round((c.mes.emails / c.limiteEmails) * 100));
+  return (
+    <Grupo Icone={Wallet} titulo="Custos do mês" nota="Estimados a partir do uso registado pela app (contam a partir desta versão). A fatura real manda.">
+      <Grelha4>
+        <Kpi rotulo="Anthropic este mês" ajuda={`previsão ${usd(proj(c.mes.anthropicUsd))} no fim do mês`} valor={usd(c.mes.anthropicUsd)} />
+        <Kpi rotulo="Anthropic mês passado" ajuda="estimado" valor={usd(c.mesAnterior.anthropicUsd)} />
+        <Kpi rotulo="Emails este mês" ajuda={`previsão ${num(emailsProj)} · limite ${num(c.limiteEmails)}`} valor={c.mes.emails} />
+        <Kpi rotulo="Emails mês passado" valor={c.mesAnterior.emails} />
+      </Grelha4>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Painel titulo="Anthropic por uso" nota="este mês">
+          {usos.length ? (
+            <ul className="divide-y divide-slate-100">
+              {usos.map(([onde, x]) => (
+                <li key={onde} className="py-2 first:pt-0 last:pb-0 flex items-baseline justify-between gap-3 text-sm">
+                  <span className="text-slate-700">{NOMES_CUSTO[onde] || onde}<span className="block text-xs text-slate-400">{num(x.chamadas)} {x.chamadas === 1 ? "chamada" : "chamadas"} · {usd(x.chamadas ? x.usd / x.chamadas : 0)} cada</span></span>
+                  <span className="font-semibold text-slate-900 tabular-nums">{usd(x.usd)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : <Vazio>Ainda sem chamadas registadas este mês.</Vazio>}
+        </Painel>
+        <Painel titulo="Quota de emails" nota="Resend, este mês">
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div className={`h-full rounded-full ${emailsProj > c.limiteEmails ? "bg-[color:var(--pj-danger)]" : "bg-emerald-500"}`} style={{ width: `${pctEmails}%` }} />
+          </div>
+          <p className="text-sm text-slate-700 mt-2 tabular-nums">{num(c.mes.emails)} de {num(c.limiteEmails)} ({pctEmails}%)</p>
+          <p className="text-xs text-slate-500 mt-1">{emailsProj > c.limiteEmails ? `Ao ritmo atual passa o limite (${num(emailsProj)} previstos): considera subir de plano.` : `Ao ritmo atual ficas nos ${num(emailsProj)} emails.`}</p>
+        </Painel>
+      </div>
+    </Grupo>
+  );
+}
+
+// Ficha de um contacto: a cronologia do que fez, do primeiro abrir até hoje.
+function FichaContacto({ p }) {
+  const c = p.convidado;
+  const ev = [];
+  const juntar = (quando, texto) => quando && ev.push({ quando, texto });
+  if (c) {
+    juntar(c.primeira_em, `Entrou na app${c.origem ? ` (veio de ${NOMES_ORIGEM[c.origem] || c.origem}${c.campanha ? ` · ${c.campanha}` : ""})` : ""}`);
+    juntar(c.comparou_em, "Comparou a lista pela primeira vez");
+    juntar(c.escolheu_em, "Escolheu onde comprar");
+    juntar(c.alerta_em, "Ligou o sino de um artigo");
+    juntar(c.email_em, "Deixou o email");
+    juntar(c.pediu_conta_em, "Tocou em criar conta");
+    juntar(c.converteu_em, "Criou conta");
+    juntar(c.ultima_em, `Última vez que abriu (${num(c.aberturas)} aberturas no total)`);
+  }
+  for (const a of p.alertas) {
+    juntar(a.desde, `Alerta por email: ${a.q}${a.tipo === "vigiar" ? " (a vigiar)" : a.alvo ? ` abaixo de ${Number(a.alvo).toLocaleString("pt-PT", { minimumFractionDigits: 2 })} €` : ""}${a.avisos ? ` · ${a.avisos} ${a.avisos === 1 ? "aviso enviado" : "avisos enviados"}` : ""}`);
+    juntar(a.cancelado, `Cancelou o alerta: ${a.q}`);
+  }
+  if (p.folhetos) { juntar(p.folhetos.desde, `Subscreveu os folhetos${p.folhetos.origem ? ` (${p.folhetos.origem})` : ""}`); juntar(p.folhetos.cancelado, "Cancelou os folhetos"); }
+  for (const x of p.combustivel) { juntar(x.desde, `Subscreveu o combustível de ${x.concelho}`); juntar(x.cancelado, `Cancelou o combustível de ${x.concelho}`); }
+  if (p.lembrete) { juntar(p.lembrete.desde, `Pediu o lembrete do dia das compras (${["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"][p.lembrete.dia - 1]}) · ${num(p.lembrete.envios || 0)} enviados`); juntar(p.lembrete.cancelado, "Cancelou o lembrete"); }
+  ev.sort((a, b) => (a.quando < b.quando ? -1 : 1));
+  return (
+    <ol className="mt-3 ml-11 border-l-2 border-emerald-100 pl-4 space-y-2">
+      {ev.map((e, i) => (
+        <li key={i} className="relative text-sm">
+          <span className="absolute -left-[22px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white" />
+          <span className="text-slate-700">{e.texto}</span>
+          <span className="block text-xs text-slate-400 tabular-nums">{fmtData(e.quando)}</span>
+        </li>
+      ))}
+      {!c && <li className="text-xs text-slate-400">Sem ficha de convidado: deu o email numa página pública ou antes de 2 de novembro.</li>}
+    </ol>
   );
 }
 

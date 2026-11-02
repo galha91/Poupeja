@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { dadosMunicipio } from "../../lib/municipios";
@@ -53,7 +53,7 @@ async function handler(req, res) {
       base, unsubscribeUrl, rotulo: idade.rotulo,
     });
     try {
-      await enviarEmail(resend, {
+      await enviarEmail(resend, { tags: etiqueta("combustivel"),
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: sub.email,
         replyTo: "ricardogalha1@hotmail.com",
