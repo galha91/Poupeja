@@ -1,5 +1,8 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
+import { campanhaValida } from "../../lib/visitas";
+
+const ORIGENS = new Set(["direto", "google", "pesquisa", "facebook", "instagram", "tiktok", "whatsapp", "email", "outro"]);
 
 // Regista aberturas e conversões do modo convidado (ver lib/convidado.js).
 const MARCOS = ["comparou", "escolheu", "alerta", "pediu_conta"];
@@ -10,7 +13,7 @@ export default async function handler(req, res) {
   if (!origemValida(req)) return res.status(403).end();
   if (excedeuLimite(req, "convidado", 20)) return res.status(429).end();
 
-  const { id, converteu, marco } = req.body || {};
+  const { id, converteu, marco, origem, campanha } = req.body || {};
   if (typeof id !== "string" || !UUID.test(id)) return res.status(400).end();
   if (marco !== undefined && !MARCOS.includes(marco)) return res.status(400).end();
 
@@ -23,6 +26,13 @@ export default async function handler(req, res) {
     return res.status(error ? 500 : 204).end();
   }
 
-  const { error } = await admin.rpc("registar_convidado", { p_id: id, p_converteu: converteu === true });
+  const params = { p_id: id, p_converteu: converteu === true };
+  if (ORIGENS.has(origem)) params.p_origem = origem;
+  if (campanhaValida(campanha)) params.p_campanha = campanhaValida(campanha);
+  let { error } = await admin.rpc("registar_convidado", params);
+  // Antes da migração a função só aceita (p_id, p_converteu).
+  if (error && (params.p_origem || params.p_campanha)) {
+    ({ error } = await admin.rpc("registar_convidado", { p_id: id, p_converteu: converteu === true }));
+  }
   return res.status(error ? 500 : 204).end();
 }

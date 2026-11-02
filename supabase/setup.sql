@@ -500,3 +500,44 @@ create table if not exists public.saude_precos (
   falhas_seguidas integer not null default 0
 );
 alter table public.saude_precos enable row level security;
+
+-- ── Admin: origem dos convidados, notas e metas (2026-11-02) ────────────────
+-- Origem e campanha do primeiro toque de cada convidado (de onde veio da
+-- primeira vez: google, instagram, "ig-reel-azeite"…), para medir a retenção
+-- por canal e por publicação. Só se grava quando o convidado é novo.
+-- (Migração admin_crescimento.)
+alter table public.convidados_site
+  add column if not exists origem   text,
+  add column if not exists campanha text;
+
+drop function if exists public.registar_convidado(uuid, boolean);
+create or replace function public.registar_convidado(
+  p_id uuid, p_converteu boolean default false, p_origem text default null, p_campanha text default null
+)
+returns void language sql security definer set search_path = public as $$
+  insert into public.convidados_site (id, converteu_em, origem, campanha)
+  values (p_id, case when p_converteu then now() end, p_origem, p_campanha)
+  on conflict (id) do update set
+    ultima_em    = now(),
+    aberturas    = convidados_site.aberturas + case when p_converteu then 0 else 1 end,
+    converteu_em = coalesce(convidados_site.converteu_em, case when p_converteu then now() end);
+$$;
+revoke all on function public.registar_convidado(uuid, boolean, text, text) from public, anon, authenticated;
+
+-- Notas do /admin: publicações e mudanças, marcadas nos gráficos.
+create table if not exists public.admin_notas (
+  id        uuid primary key default gen_random_uuid(),
+  dia       date not null,
+  texto     text not null,
+  campanha  text,
+  criado_em timestamptz not null default now()
+);
+alter table public.admin_notas enable row level security;
+
+-- Configuração do /admin (para já: metas semanais).
+create table if not exists public.admin_config (
+  chave         text primary key,
+  valor         jsonb not null,
+  atualizado_em timestamptz not null default now()
+);
+alter table public.admin_config enable row level security;

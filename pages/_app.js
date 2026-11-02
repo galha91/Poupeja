@@ -5,6 +5,7 @@ import { URL_SITE } from '../lib/site';
 import { modoExecucao } from '../lib/plataforma';
 import AvisoCookies from '../AvisoCookies';
 import { metrica } from '../lib/analytics';
+import { classificarOrigem, origemEtiqueta, campanhaValida } from '../lib/visitas';
 
 function temSessaoGuardada() {
   try {
@@ -39,6 +40,17 @@ function MyApp({ Component, pageProps }) {
         rec = primeiroDia === hoje ? 'novo' : 'recorrente';
       } catch (_) {}
       const o = primeira ? new URLSearchParams(window.location.search).get('o') : null;
+      // Primeiro toque deste aparelho (de onde veio da primeira vez): fica só
+      // aqui; vai com o convidado quando ele entra na app (lib/convidado.js),
+      // para o /admin medir a retenção por origem e por publicação.
+      if (primeira) {
+        try {
+          if (!localStorage.getItem('poupeja_primeiro_toque')) {
+            const origem = origemEtiqueta(o) || classificarOrigem(document.referrer, window.location.hostname);
+            localStorage.setItem('poupeja_primeiro_toque', JSON.stringify({ origem: origem === 'interno' ? 'direto' : origem, campanha: campanhaValida(o) }));
+          }
+        } catch (_) {}
+      }
       primeira = false;
       const headers = { 'Content-Type': 'application/json' };
       /*

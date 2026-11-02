@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
@@ -6,6 +6,7 @@ import {
   ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Bell, Send, ChevronDown, Search,
   LayoutDashboard, BarChart3, Users, Megaphone, ArrowUpRight, ArrowDownRight, Minus,
   MousePointerClick, Gauge, Store, Bug, Repeat, Mail, Globe, Activity, SearchX, Route, AlertTriangle, Hourglass,
+  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao,
 } from "lucide-react";
 
 // Painel privado do dono, do mais geral para o mais detalhado:
@@ -59,6 +60,12 @@ const NOMES_PLATAFORMA = { ios: "iOS", android: "Android", desktop: "Computador"
 // Paleta discreta para séries: verde da marca primeiro, depois tons neutros.
 const CORES = ["#0b6b4f", "#3f9070", "#82b09b", "#c8a26a", "#8a978e", "#cfccbf"];
 
+// Período escolhido no cabeçalho (7, 30 ou 90 dias), para os textos dos painéis.
+const PeriodoCtx = createContext(7);
+const usePeriodo = () => { const dias = useContext(PeriodoCtx); return { dias, txt: `${dias} dias` }; };
+const PERIODOS = [[7, "7 d"], [30, "30 d"], [90, "90 d"]];
+const URL_SITE = "https://poupejá.com";
+
 const num = (v) => (typeof v === "number" ? v.toLocaleString("pt-PT") : v ?? "—");
 const pct = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0);
 
@@ -93,6 +100,7 @@ export default function Admin() {
   const [erro, setErro] = useState("");
   const [sessaoEmail, setSessaoEmail] = useState(null);
   const [aba, setAba] = useState("geral");
+  const [dias, setDias] = useState(7);
   const [aAtualizar, setAAtualizar] = useState(false);
   const [estadoRepor, setEstadoRepor] = useState(""); // "", "a-repor", "ok", "erro"
 
@@ -102,7 +110,7 @@ export default function Admin() {
   const [pushEstado, setPushEstado] = useState(""); // "", "a-enviar", "ok", "erro"
   const [pushResultado, setPushResultado] = useState(null);
 
-  async function carregar() {
+  async function carregar(d = dias) {
     // Na primeira carga mostra o ecrã de espera; depois só roda o botão.
     if (!stats) setEstado("a-carregar");
     setAAtualizar(true);
@@ -112,7 +120,7 @@ export default function Admin() {
     if (!session?.access_token) { setEstado("negado"); setAAtualizar(false); return; }
     const auth = { Authorization: `Bearer ${session.access_token}` };
     try {
-      const r = await fetch("/api/admin-stats", { headers: auth });
+      const r = await fetch(`/api/admin-stats?dias=${d}`, { headers: auth });
       if (r.status === 403 || r.status === 401) { setEstado("negado"); return; }
       const data = await r.json();
       if (!r.ok) { setErro(data.erro || "Erro a obter dados."); setEstado("erro"); return; }
@@ -121,7 +129,7 @@ export default function Admin() {
       // Este dispositivo é do dono: deixa de contar nas visitas e nos convidados.
       try { localStorage.setItem("poupeja_nao_contar", "1"); } catch {}
       const ler = (u) => fetch(u, { headers: auth }).then(x => (x.ok ? x.json() : null)).catch(() => null);
-      const [t, c] = await Promise.all([ler("/api/admin-trafego"), ler("/api/admin-crescimento")]);
+      const [t, c] = await Promise.all([ler(`/api/admin-trafego?dias=${d}`), ler(`/api/admin-crescimento?dias=${d}`)]);
       setTrafego(t);
       setCrescimento(c || {});
     } catch {
@@ -132,7 +140,29 @@ export default function Admin() {
     }
   }
 
-  useEffect(() => { carregar(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    let d = 7;
+    try { d = Number(localStorage.getItem("poupeja_admin_dias")) || 7; } catch {}
+    if (![7, 30, 90].includes(d)) d = 7;
+    setDias(d);
+    carregar(d);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function mudarPeriodo(d) {
+    setDias(d);
+    try { localStorage.setItem("poupeja_admin_dias", String(d)); } catch {}
+    carregar(d);
+  }
+
+  // Pedidos autenticados das ações do admin (notas, metas).
+  async function pedir(url, opcoes = {}) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const r = await fetch(url, { ...opcoes, headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` } });
+    const corpo = r.status === 204 ? null : await r.json().catch(() => null);
+    if (!r.ok) throw new Error(corpo?.erro || "Não foi possível guardar.");
+    return corpo;
+  }
+  const atualizarCresc = (f) => setCrescimento(c => ({ ...(c || {}), ...f(c || {}) }));
 
   async function reporVisitas() {
     if (!window.confirm("Pôr o contador de visitas a zero? Apaga as visitas contadas até agora.")) return;
@@ -186,8 +216,11 @@ export default function Admin() {
               </p>
             </div>
             {estado === "ok" && (
+              <Segmentado valor={dias} onChange={mudarPeriodo} opcoes={PERIODOS} rotulo="Período" />
+            )}
+            {estado === "ok" && (
               <button
-                onClick={carregar}
+                onClick={() => carregar()}
                 disabled={aAtualizar}
                 className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-60"
               >
@@ -246,16 +279,17 @@ export default function Admin() {
         {estado === "erro" && (
           <div className="max-w-md mx-auto bg-white rounded-2xl border border-slate-200 p-6 text-center">
             <p className="font-semibold text-[color:var(--pj-danger)]">{erro}</p>
-            <button onClick={carregar} className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 text-white font-semibold text-sm">
+            <button onClick={() => carregar()} className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 text-white font-semibold text-sm">
               <RefreshCw size={14} /> Tentar de novo
             </button>
           </div>
         )}
 
         {estado === "ok" && stats && (
-          <div role="tabpanel">
-            {aba === "geral" && <VisaoGeral stats={stats} trafego={trafego} cresc={crescimento} irPara={setAba} />}
-            {aba === "aquisicao" && <Trafego dados={trafego} cresc={crescimento} onRepor={reporVisitas} estadoRepor={estadoRepor} />}
+          <PeriodoCtx.Provider value={dias}>
+          <div role="tabpanel" className={aAtualizar ? "opacity-60 transition-opacity" : "transition-opacity"}>
+            {aba === "geral" && <VisaoGeral stats={stats} trafego={trafego} cresc={crescimento} irPara={setAba} pedir={pedir} atualizarCresc={atualizarCresc} />}
+            {aba === "aquisicao" && <Trafego dados={trafego} cresc={crescimento} onRepor={reporVisitas} estadoRepor={estadoRepor} pedir={pedir} atualizarCresc={atualizarCresc} />}
             {aba === "uso" && <Uso stats={stats} cresc={crescimento} />}
             {aba === "utilizadores" && <Utilizadores stats={stats} />}
             {aba === "qualidade" && <Qualidade cresc={crescimento} />}
@@ -272,6 +306,7 @@ export default function Admin() {
               Este dispositivo e as tuas contas não contam nas estatísticas.
             </p>
           </div>
+          </PeriodoCtx.Provider>
         )}
       </main>
     </div>
@@ -280,20 +315,39 @@ export default function Admin() {
 
 /* ───────────────────────── Separadores ───────────────────────── */
 
-function VisaoGeral({ stats, trafego, cresc, irPara }) {
+function VisaoGeral({ stats, trafego, cresc, irPara, pedir, atualizarCresc }) {
+  const { dias, txt } = usePeriodo();
+  const [editarMetas, setEditarMetas] = useState(false);
   const p = trafego?.proprio;
+  const r = cresc?.retencao;
+  const e = cresc?.emails;
   const conv = stats.entradasConvidado;
-  const emails = (stats.subFolhetos ?? 0) + (stats.subCombustivel ?? 0);
+  const metas = cresc?.metas || {};
+  const escala = dias / 7; // as metas são semanais
+  const meta = (k) => (metas[k] ? Math.round(metas[k] * escala) : null);
+  const totalEmails = (stats.subFolhetos ?? 0) + (stats.subCombustivel ?? 0);
   const origens = (p?.origens || []).filter(o => o.origem !== "interno").map(o => ({ rotulo: NOMES_ORIGEM[o.origem] || o.origem, n: o.n }));
   const paginas = (p?.paginas || []).map(o => ({ rotulo: o.caminho === "/" ? "/ (app)" : o.caminho, n: o.n }));
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-500">Últimos {txt}, comparado com os {txt} anteriores</p>
+        <button onClick={() => setEditarMetas(v => !v)} className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+          <Target size={13} /> {editarMetas ? "Fechar metas" : Object.keys(metas).length ? "Editar metas" : "Definir metas"}
+        </button>
+      </div>
+      {editarMetas && (
+        <EditorMetas
+          metas={metas}
+          onGuardar={async (novas) => { const m = await pedir("/api/admin-metas", { method: "PUT", body: JSON.stringify(novas) }); atualizarCresc(() => ({ metas: m })); setEditarMetas(false); }}
+        />
+      )}
       <Grelha4>
-        <Kpi rotulo="Visitantes" ajuda="7 dias" valor={p ? p.sete.visitantes : "…"} antes={p?.anteriores7} />
-        <Kpi rotulo="Novos na app" ajuda="convidados, 7 dias" valor={conv?.novos7 ?? "—"} antes={conv?.novosAnteriores7} />
-        <Kpi rotulo="Contas novas" ajuda="7 dias" valor={stats.ultimos7} antes={stats.anteriores7} />
-        <Kpi rotulo="Subscritores email" ajuda={`${num(stats.subFolhetos ?? 0)} folhetos · ${num(stats.subCombustivel ?? 0)} combustível`} valor={emails} />
+        <Kpi rotulo="Visitantes" ajuda={txt} valor={p ? p.periodo.visitantes : "…"} antes={p?.anterior?.visitantes} meta={meta("visitantes")} />
+        <Kpi rotulo="Novos na app" ajuda={`convidados, ${txt}`} valor={r ? r.novos : conv?.novos7 ?? "—"} antes={r ? r.novosAntes : conv?.novosAnteriores7} meta={meta("convidados")} />
+        <Kpi rotulo="Contas novas" ajuda={txt} valor={stats.periodo?.contasNovas ?? stats.ultimos7} antes={stats.periodo?.contasAntes ?? stats.anteriores7} meta={meta("contas")} />
+        <Kpi rotulo="Emails novos" ajuda={`${num(totalEmails)} subscritores no total`} valor={e ? e.novos : "—"} antes={e?.novosAntes} meta={meta("emails")} />
       </Grelha4>
 
       <Estado cresc={cresc} irPara={irPara} />
@@ -302,17 +356,13 @@ function VisaoGeral({ stats, trafego, cresc, irPara }) {
         <Painel
           className="md:col-span-3"
           titulo="Visitantes por dia"
-          nota="últimos 14 dias"
+          nota={`últimos ${Math.max(14, dias)} dias · os pontos são as tuas notas`}
           acao={<LinkAba onClick={() => irPara("aquisicao")}>Aquisição</LinkAba>}
         >
           {p ? (
             <>
-              <Linha3
-                a={["Hoje", p.hoje.visitantes]}
-                b={["Vistas hoje", p.hoje.vistas]}
-                c={["Vistas 30 dias", p.trinta.vistas]}
-              />
-              <Barras dados={p.serie.map(s => ({ dia: s.dia, n: s.visitantes }))} />
+              <Linha3 a={["Hoje", p.hoje.visitantes]} b={["Vistas hoje", p.hoje.vistas]} c={[`Vistas ${txt}`, p.periodo.vistas]} />
+              <Barras dados={p.serie.map(s => ({ dia: s.dia, n: s.visitantes }))} notas={cresc?.notas} />
             </>
           ) : <Carregando />}
         </Painel>
@@ -328,10 +378,10 @@ function VisaoGeral({ stats, trafego, cresc, irPara }) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Painel titulo="De onde vêm" nota="páginas vistas, 7 dias">
+        <Painel titulo="De onde vêm" nota={`páginas vistas, ${txt}`} csv={() => [["Origem", "Páginas vistas"], ...origens.map(o => [o.rotulo, o.n])]} nomeCsv="origens">
           {p ? <ListaBarras itens={origens} limite={5} /> : <Carregando />}
         </Painel>
-        <Painel titulo="Páginas mais vistas" nota="7 dias">
+        <Painel titulo="Páginas mais vistas" nota={txt} csv={() => [["Página", "Vistas"], ...paginas.map(o => [o.rotulo, o.n])]} nomeCsv="paginas">
           {p ? <ListaBarras itens={paginas} limite={5} /> : <Carregando />}
         </Painel>
       </div>
@@ -339,9 +389,42 @@ function VisaoGeral({ stats, trafego, cresc, irPara }) {
   );
 }
 
-function Trafego({ dados, cresc, onRepor, estadoRepor }) {
+function EditorMetas({ metas, onGuardar }) {
+  const [v, setV] = useState({ visitantes: metas.visitantes || "", convidados: metas.convidados || "", contas: metas.contas || "", emails: metas.emails || "" });
+  const [estado, setEstado] = useState("");
+  const campos = [["visitantes", "Visitantes"], ["convidados", "Convidados novos"], ["contas", "Contas novas"], ["emails", "Emails novos"]];
+  return (
+    <Painel titulo="Metas por semana" nota="nos períodos de 30 e 90 dias a meta é ajustada; deixa vazio para não ter meta">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {campos.map(([k, rotulo]) => (
+          <label key={k} className="block">
+            <span className="text-xs font-semibold text-slate-600">{rotulo}</span>
+            <input type="number" min="0" inputMode="numeric" value={v[k]} onChange={e => setV({ ...v, [k]: e.target.value })}
+              className="mt-1 w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm tabular-nums outline-none focus:border-emerald-300" />
+          </label>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          onClick={async () => { setEstado("a-guardar"); try { await onGuardar(v); } catch (e) { setEstado(e.message); } }}
+          disabled={estado === "a-guardar"}
+          className="h-9 px-4 rounded-lg bg-emerald-500 text-white text-sm font-semibold disabled:opacity-60"
+        >
+          {estado === "a-guardar" ? "A guardar…" : "Guardar metas"}
+        </button>
+        {estado && estado !== "a-guardar" && <span className="text-xs text-[color:var(--pj-danger)]">{estado}</span>}
+      </div>
+    </Painel>
+  );
+}
+
+function Trafego({ dados, cresc, onRepor, estadoRepor, pedir, atualizarCresc }) {
+  const { dias, txt } = usePeriodo();
   if (!dados) return <Esqueleto />;
   const { proprio: p, google: g } = dados;
+  if (!p) return <EmRecolha>Não foi possível ler o contador de visitas.</EmRecolha>;
+  const origens = p.origens.filter(o => o.origem !== "interno").map(o => ({ rotulo: NOMES_ORIGEM[o.origem] || o.origem, n: o.n, antes: o.antes }));
+  const paginas = p.paginas.map(o => ({ rotulo: o.caminho === "/" ? "/ (app)" : o.caminho, n: o.n, antes: o.antes }));
   const ga = g?.ga;
   const sc = g?.sc;
   const gaHoje = ga?.dias?.at(-1);
@@ -355,43 +438,46 @@ function Trafego({ dados, cresc, onRepor, estadoRepor }) {
       <Grupo Icone={Activity} titulo="Visitas" nota={`Contador próprio: toda a gente, com ou sem cookies, sem bots. Desde ${new Date(p.desdeDia + "T12:00:00").toLocaleDateString("pt-PT")}.`} />
       <Grelha4>
         <Kpi rotulo="Visitantes hoje" valor={p.hoje.visitantes} />
-        <Kpi rotulo="Visitantes" ajuda="7 dias" valor={p.sete.visitantes} antes={p.anteriores7} />
-        <Kpi rotulo="Páginas vistas" ajuda="7 dias" valor={p.sete.vistas} />
-        <Kpi rotulo="Páginas vistas" ajuda="30 dias" valor={p.trinta.vistas} />
+        <Kpi rotulo="Visitantes" ajuda={txt} valor={p.periodo.visitantes} antes={p.anterior.visitantes} />
+        <Kpi rotulo="Páginas vistas" ajuda={txt} valor={p.periodo.vistas} antes={p.anterior.vistas} />
+        <Kpi rotulo="Páginas por visitante" ajuda={txt} valor={p.periodo.visitantes ? (p.periodo.vistas / p.periodo.visitantes).toLocaleString("pt-PT", { maximumFractionDigits: 1 }) : "—"} />
       </Grelha4>
 
-      <Painel titulo="Visitantes por dia" nota="últimos 14 dias">
-        <Barras dados={p.serie.map(s => ({ dia: s.dia, n: s.visitantes }))} alto />
+      <Painel titulo="Visitantes por dia" nota={`últimos ${Math.max(14, dias)} dias · os pontos são as tuas notas`}
+        csv={() => [["Dia", "Visitantes", "Páginas vistas"], ...p.serie.map(s => [s.dia, s.visitantes, s.vistas])]} nomeCsv="visitantes-por-dia">
+        <Barras dados={p.serie.map(s => ({ dia: s.dia, n: s.visitantes }))} notas={cresc?.notas} alto />
       </Painel>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Painel titulo="De onde vêm" nota="páginas vistas, 7 dias">
-          <ListaBarras itens={p.origens.filter(o => o.origem !== "interno").map(o => ({ rotulo: NOMES_ORIGEM[o.origem] || o.origem, n: o.n }))} />
+        <Painel titulo="De onde vêm" nota={`páginas vistas, ${txt} · vs. período anterior`} csv={() => [["Origem", "Páginas vistas", "Período anterior"], ...origens.map(o => [o.rotulo, o.n, o.antes])]} nomeCsv="origens">
+          <ListaBarras itens={origens} comparar />
         </Painel>
-        <Painel titulo="Páginas mais vistas" nota="7 dias">
-          <ListaBarras itens={p.paginas.map(o => ({ rotulo: o.caminho === "/" ? "/ (app)" : o.caminho, n: o.n }))} />
+        <Painel titulo="Páginas mais vistas" nota={txt} csv={() => [["Página", "Vistas", "Período anterior"], ...paginas.map(o => [o.rotulo, o.n, o.antes])]} nomeCsv="paginas">
+          <ListaBarras itens={paginas} comparar />
         </Painel>
-        <Painel titulo="Perfil dos visitantes" nota="visitantes-dia, 7 dias">
+        <Painel titulo="Perfil dos visitantes" nota={`visitantes-dia, ${txt}`}>
           <div className="space-y-4">
             <Divisao titulo="Aparelho" itens={(perfil.dispositivo || []).map(o => ({ rotulo: o.valor, n: o.n }))} />
             <Divisao titulo="Como usam" itens={(perfil.modo || []).map(o => ({ rotulo: NOMES_MODO[o.valor] || o.valor, n: o.n }))} />
             <Divisao titulo="Visita" itens={(perfil.recorrencia || []).map(o => ({ rotulo: o.valor === "novo" ? "Primeira" : "Recorrente", n: o.n }))} />
           </div>
         </Painel>
-        <Painel titulo="Distrito" nota="visitantes-dia, 7 dias · aproximado pelo IP">
+        <Painel titulo="Distrito" nota={`visitantes-dia, ${txt} · aproximado pelo IP`} csv={() => [["Distrito", "Visitantes-dia"], ...(perfil.regiao || []).map(o => [o.valor, o.n])]} nomeCsv="distritos">
           <ListaBarras itens={(perfil.regiao || []).map(o => ({ rotulo: o.valor, n: o.n }))} limite={6} />
         </Painel>
       </div>
+
+      <Publicacoes cresc={cresc} pedir={pedir} atualizarCresc={atualizarCresc} />
 
       <Grupo Icone={Globe} titulo="Google" nota="Quanto o Google nos mostra e quantos clicam. É o canal que mais cresce sozinho." />
       {!ga && !sc && !g?.gaErro && !g?.scErro ? (
         <Vazio>Google Analytics e Search Console ainda não estão ligados ao admin.</Vazio>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          <Painel titulo="Google Analytics" nota="só quem aceitou cookies">
+          <Painel titulo="Google Analytics" nota="só quem aceitou cookies · intervalo próprio do Google">
             {ga ? (
               <>
-                <Linha3 a={["Hoje", gaHoje?.utilizadores ?? 0]} b={["7 dias", ga7]} c={["Vistas hoje", gaHoje?.vistas ?? 0]} />
+                <Linha3 a={["Hoje", gaHoje?.utilizadores ?? 0]} b={["Últimos 7 dias", ga7]} c={["Vistas hoje", gaHoje?.vistas ?? 0]} />
                 <Barras dados={ga.dias.map(d => ({ dia: d.dia, n: d.utilizadores }))} />
                 <div className="mt-4"><ListaBarras titulo="Canais (sessões, 7 dias)" itens={ga.canais.map(c => ({ rotulo: c.canal, n: c.sessoes }))} limite={5} /></div>
               </>
@@ -426,7 +512,113 @@ function Trafego({ dados, cresc, onRepor, estadoRepor }) {
   );
 }
 
+// Notas do que publicaste ou mudaste, com o link etiquetado de cada
+// publicação e o que ela trouxe: visitas, convidados, retenção e contas.
+function Publicacoes({ cresc, pedir, atualizarCresc }) {
+  const { txt } = usePeriodo();
+  const hoje = new Date().toLocaleDateString("sv-SE");
+  const [form, setForm] = useState({ dia: hoje, texto: "", campanha: "" });
+  const [estado, setEstado] = useState("");
+  const [copiado, setCopiado] = useState("");
+  if (!cresc) return null;
+  const notas = cresc.notas;
+  const visitas = Object.fromEntries((cresc.metricas?.campanhas || []).map(c => [c.chave, c.n]));
+  const porCampanha = Object.fromEntries((cresc.retencao?.porCampanha || []).map(c => [c.chave, c]));
+  const etiquetas = [...new Set([...(notas || []).map(n => n.campanha).filter(Boolean), ...Object.keys(visitas), ...Object.keys(porCampanha)])];
+  const link = (c) => `${URL_SITE}/?o=${c}`;
+  const copiar = async (c) => { try { await navigator.clipboard.writeText(link(c)); setCopiado(c); setTimeout(() => setCopiado(""), 1500); } catch {} };
+
+  async function guardar(e) {
+    e.preventDefault();
+    setEstado("a-guardar");
+    try {
+      const nota = await pedir("/api/admin-notas", { method: "POST", body: JSON.stringify({ ...form, campanha: form.campanha.trim() || undefined }) });
+      atualizarCresc(c => ({ notas: [nota, ...(c.notas || [])].sort((a, b) => (a.dia < b.dia ? 1 : -1)) }));
+      setForm({ dia: hoje, texto: "", campanha: "" });
+      setEstado("");
+    } catch (err) { setEstado(err.message); }
+  }
+  async function apagar(id) {
+    if (!window.confirm("Apagar esta nota?")) return;
+    try { await pedir(`/api/admin-notas?id=${id}`, { method: "DELETE" }); atualizarCresc(c => ({ notas: (c.notas || []).filter(n => n.id !== id) })); } catch {}
+  }
+
+  return (
+    <Grupo Icone={Publicacao} titulo="Publicações e notas" nota="Regista o que publicas ou mudas. Usa um link etiquetado por publicação para saber o que cada uma trouxe.">
+      {notas === null ? <EmRecolha>Precisa da migração admin_crescimento (supabase/setup.sql).</EmRecolha> : (
+        <div className="grid gap-4 md:grid-cols-5">
+          <Painel className="md:col-span-2" titulo="Nova nota">
+            <form onSubmit={guardar} className="space-y-3">
+              <div className="grid grid-cols-[auto_1fr] gap-2">
+                <input type="date" value={form.dia} onChange={e => setForm({ ...form, dia: e.target.value })} className="h-10 px-2 rounded-xl border border-slate-200 bg-white text-sm" required />
+                <input value={form.texto} onChange={e => setForm({ ...form, texto: e.target.value })} maxLength={140} placeholder="Reel do azeite no Instagram" className="min-w-0 h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm" required />
+              </div>
+              <label className="block">
+                <span className="text-xs font-semibold text-slate-600">Etiqueta do link (opcional)</span>
+                <input value={form.campanha} onChange={e => setForm({ ...form, campanha: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-") })} maxLength={40} placeholder="ig-reel-azeite"
+                  className="mt-1 w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm font-mono" />
+                <span className="text-[11px] text-slate-400">Começa por ig, tt, fb, wa ou email para contar no canal certo. Link: {link(form.campanha || "ig-exemplo")}</span>
+              </label>
+              <button disabled={estado === "a-guardar"} className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-emerald-500 text-white text-sm font-semibold disabled:opacity-60">
+                <Plus size={14} /> {estado === "a-guardar" ? "A guardar…" : "Guardar nota"}
+              </button>
+              {estado && estado !== "a-guardar" && <p className="text-xs text-[color:var(--pj-danger)]">{estado}</p>}
+            </form>
+          </Painel>
+
+          <Painel className="md:col-span-3" titulo="Resultado por publicação" nota={`entradas pelo link, ${txt}`}
+            csv={() => [["Etiqueta", "Visitas", "Convidados", "Voltaram (1 dia)", "Contas"], ...etiquetas.map(c => [c, visitas[c] || 0, porCampanha[c]?.entraram || 0, porCampanha[c]?.d1 || 0, porCampanha[c]?.converteram || 0])]} nomeCsv="publicacoes">
+            {!etiquetas.length ? <Vazio>Ainda nenhum link etiquetado trouxe visitas neste período.</Vazio> : (
+              <div className="overflow-x-auto -mx-1">
+                <table className="w-full text-sm tabular-nums">
+                  <thead><tr className="text-xs text-slate-500">
+                    <th className="text-left font-semibold pb-2 px-1">Etiqueta</th>
+                    <th className="text-right font-semibold pb-2 px-1">Visitas</th>
+                    <th className="text-right font-semibold pb-2 px-1">Convidados</th>
+                    <th className="text-right font-semibold pb-2 px-1">Voltaram</th>
+                    <th className="text-right font-semibold pb-2 px-1">Contas</th>
+                  </tr></thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {etiquetas.map(c => (
+                      <tr key={c}>
+                        <td className="py-2 px-1">
+                          <button onClick={() => copiar(c)} title="Copiar link" className="inline-flex items-center gap-1 font-mono text-[13px] text-slate-700 hover:text-emerald-700">
+                            {c} <Copy size={11} className="text-slate-400" />{copiado === c && <span className="text-[11px] text-emerald-700 font-sans">copiado</span>}
+                          </button>
+                        </td>
+                        <td className="py-2 px-1 text-right font-semibold text-slate-900">{num(visitas[c] || 0)}</td>
+                        <td className="py-2 px-1 text-right">{num(porCampanha[c]?.entraram || 0)}</td>
+                        <td className="py-2 px-1 text-right text-slate-600">{porCampanha[c]?.entraram ? `${pct(porCampanha[c].d1, porCampanha[c].entraram)}%` : "—"}</td>
+                        <td className="py-2 px-1 text-right text-slate-600">{num(porCampanha[c]?.converteram || 0)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {notas?.length > 0 && (
+              <div className="mt-5">
+                <p className="text-xs font-semibold text-slate-500 mb-2">Notas</p>
+                <ul className="divide-y divide-slate-100">
+                  {notas.slice(0, 12).map(n => (
+                    <li key={n.id} className="py-2 flex items-start gap-3 text-sm">
+                      <span className="text-xs text-slate-500 tabular-nums w-12 shrink-0 pt-0.5">{rotuloDia(n.dia)}</span>
+                      <span className="min-w-0 flex-1 text-slate-700">{n.texto}{n.campanha && <span className="ml-1.5 font-mono text-[11px] text-slate-400">{n.campanha}</span>}</span>
+                      <button onClick={() => apagar(n.id)} aria-label="Apagar nota" className="text-slate-300 hover:text-[color:var(--pj-danger)]"><Trash2 size={14} /></button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </Painel>
+        </div>
+      )}
+    </Grupo>
+  );
+}
+
 function Utilizadores({ stats }) {
+  const { txt } = usePeriodo();
   const conv = stats.entradasConvidado;
   const totalPush = (stats.pushSubscritores?.length || 0) + (stats.pushConvidados || 0);
 
@@ -434,7 +626,7 @@ function Utilizadores({ stats }) {
     <div className="space-y-4">
       <Grelha4>
         <Kpi rotulo="Contas" ajuda={`${num(stats.confirmados)} com email confirmado`} valor={stats.total} />
-        <Kpi rotulo="Ativas" ajuda="fizeram login, 7 dias" valor={stats.ativos7 ?? "—"} />
+        <Kpi rotulo="Ativas" ajuda={`fizeram login, ${txt}`} valor={stats.periodo?.ativos ?? stats.ativos7 ?? "—"} />
         <Kpi rotulo="Convidados" ajuda={conv ? `${num(conv.converteram)} criaram conta (${pct(conv.converteram, conv.total)}%)` : "sem conta"} valor={conv?.total ?? stats.convidados ?? 0} />
         <Kpi rotulo="Nunca voltaram" ajuda="contas sem 2.º login" valor={stats.nuncaVoltaram ?? "—"} />
       </Grelha4>
@@ -518,6 +710,12 @@ function ListaContas({ stats }) {
         <span className="text-xs text-slate-400 hidden sm:inline">mais recentes e últimos logins</span>
         <ChevronDown size={18} className={`ml-auto text-slate-400 transition-transform ${aberta ? "rotate-180" : ""}`} />
       </button>
+      {aberta && (
+        <div className="px-5 -mt-2 pb-2 text-right">
+          <BotaoCsv nome="contas" linhas={() => [["Email", "Registo", "Último login", "Confirmado", "Google", "Plataforma", "App", "Push"],
+            ...lista.map(u => [u.convidado ? "Convidado" : u.email, u.criado, u.ultimoAcesso || "", u.confirmado ? "sim" : "não", u.google ? "sim" : "não", u.dispositivo?.platform || "", u.dispositivo?.pwa ? "sim" : "não", comPush.has(u.email) ? "sim" : "não"])]} />
+        </div>
+      )}
 
       {aberta && (
         <>
@@ -653,7 +851,7 @@ function Estado({ cresc, irPara }) {
       valor: lcp?.n ? `${Math.round(lcp.bons * 100)}% rápidas` : null,
       nota: lcp?.n ? `conteúdo principal em ${fmtVital("LCP", lcp.media)} em média` : "a recolher", alerta: lcp?.n > 0 && lcp.bons < 0.75 },
     { Icone: Bug, rotulo: "Erros no browser", aba: "qualidade",
-      valor: m ? `${num(m.erros.total)} em 7 dias` : null, nota: m?.erros?.lista?.[0] ? `mais comum em ${m.erros.lista[0].pagina}` : m ? "nenhum registado" : "a recolher",
+      valor: m ? `${num(m.erros.total)} no período` : null, nota: m?.erros?.lista?.[0] ? `mais comum em ${m.erros.lista[0].pagina}` : m ? "nenhum registado" : "a recolher",
       alerta: (m?.erros?.total || 0) > 20 },
     { Icone: SearchX, rotulo: "Pesquisas sem resultado", aba: "uso",
       valor: taxaVazias != null ? `${Math.round(taxaVazias * 100)}%` : null,
@@ -676,6 +874,7 @@ function Estado({ cresc, irPara }) {
 }
 
 function Uso({ stats, cresc }) {
+  const { txt } = usePeriodo();
   if (!cresc) return <Esqueleto />;
   const m = cresc.metricas;
   const r = cresc.retencao;
@@ -685,18 +884,19 @@ function Uso({ stats, cresc }) {
 
   return (
     <div className="space-y-4">
-      <Grupo Icone={MousePointerClick} titulo="Funcionalidades" nota="O que as pessoas fazem cá dentro, nos últimos 7 dias. Conta toda a gente, sem cookies.">
+      <Grupo Icone={MousePointerClick} titulo="Funcionalidades" nota={`O que as pessoas fazem cá dentro, nos últimos ${txt}. Conta toda a gente, sem cookies.`}>
         {!m?.eventos?.length ? <EmRecolha /> : (
           <div className="grid gap-4 md:grid-cols-5">
-            <Painel className="md:col-span-3" titulo="Ações mais feitas" nota="vs. 7 dias anteriores">
+            <Painel className="md:col-span-3" titulo="Ações mais feitas" nota="vs. período anterior"
+              csv={() => [["Ação", "Evento", "Vezes", "Período anterior"], ...eventos.map(e => [NOMES_EVENTO[e.chave] || e.chave, e.chave, e.n, e.antes])]} nomeCsv="funcionalidades">
               <ListaEventos eventos={eventos} />
             </Painel>
             <div className="md:col-span-2 space-y-4">
-              <Painel titulo="Atividade por dia" nota="ações registadas, 14 dias">
+              <Painel titulo="Atividade por dia" nota="ações registadas">
                 <Barras dados={m.eventosDia} />
               </Painel>
               {ecras?.variantes?.length > 0 && (
-                <Painel titulo="Separadores mais abertos" nota="7 dias">
+                <Painel titulo="Separadores mais abertos" nota={txt}>
                   <ListaBarras itens={ecras.variantes.map(v => ({ rotulo: v.detalhe, n: v.n }))} />
                 </Painel>
               )}
@@ -709,16 +909,16 @@ function Uso({ stats, cresc }) {
         {!m?.pesquisas?.total ? <EmRecolha /> : (
           <>
             <Grelha4>
-              <Kpi rotulo="Pesquisas" ajuda="7 dias" valor={m.pesquisas.total} />
+              <Kpi rotulo="Pesquisas" ajuda={txt} valor={m.pesquisas.total} antes={m.pesquisas.antes} />
               <Kpi rotulo="Sem resultado" ajuda={`${num(m.pesquisas.vazias)} pesquisas`} valor={`${pct(m.pesquisas.vazias, m.pesquisas.total)}%`} />
-              <Kpi rotulo="Por dia" ajuda="média, 7 dias" valor={Math.round(m.pesquisas.total / 7)} />
-              <Kpi rotulo="Por visitante" ajuda="pesquisas ÷ convidados ativos 7 d" valor={r?.ativos7 ? (m.pesquisas.total / r.ativos7).toLocaleString("pt-PT", { maximumFractionDigits: 1 }) : "—"} />
+              <Kpi rotulo="Por dia" ajuda="média" valor={Math.round(m.pesquisas.total / (cresc.dias || 7))} />
+              <Kpi rotulo="Termos sem resultado" ajuda="diferentes" valor={m.pesquisas.semResultado.length} />
             </Grelha4>
             <div className="grid gap-4 md:grid-cols-2">
-              <Painel titulo="Mais pesquisados" nota="7 dias">
+              <Painel titulo="Mais pesquisados" nota={txt} csv={() => [["Termo", "Pesquisas", "Sem resultado"], ...m.pesquisas.topo.map(t => [t.termo, t.n, t.vazias])]} nomeCsv="pesquisas">
                 <ListaBarras itens={m.pesquisas.topo.map(t => ({ rotulo: t.termo, n: t.n, extra: t.vazias ? `${t.vazias} sem result.` : null }))} limite={8} />
               </Painel>
-              <Painel titulo="Sem nenhum resultado" nota="candidatos a melhorar a pesquisa">
+              <Painel titulo="Sem nenhum resultado" nota="candidatos a melhorar a pesquisa" csv={() => [["Termo", "Pesquisas"], ...m.pesquisas.semResultado.map(t => [t.termo, t.n])]} nomeCsv="pesquisas-sem-resultado">
                 <ListaBarras itens={m.pesquisas.semResultado.map(t => ({ rotulo: t.termo, n: t.n }))} limite={8} />
               </Painel>
             </div>
@@ -735,8 +935,15 @@ function Uso({ stats, cresc }) {
               <Kpi rotulo="Ativos 30 dias" ajuda="convidados" valor={r.ativos30} />
               <Kpi rotulo="Hábito" ajuda="ativos hoje ÷ ativos 30 dias" valor={r.ativos30 ? `${pct(r.ativos1, r.ativos30)}%` : "—"} />
             </Grelha4>
-            <Painel titulo="Voltaram depois de…" nota="% de quem entrou nessa semana; “—” quando ainda não passou tempo suficiente">
-              <TabelaCoortes coortes={r.coortes} />
+            <Painel titulo="Voltaram depois de…" nota="por semana de entrada; “—” quando ainda não passou tempo suficiente"
+              csv={() => [["Semana", "Entraram", "1 dia", "7 dias", "30 dias", "Conta"], ...r.coortes.map(c => [c.semana, c.entraram, c.d1, c.elegivel7 ? c.d7 : "", c.elegivel30 ? c.d30 : "", c.converteram])]} nomeCsv="retencao-semanas">
+              <TabelaCoortes coortes={r.coortes} primeira="Semana de" rotulo={c => rotuloDia(c.semana)} />
+            </Painel>
+            <Painel titulo="Por origem" nota={`quem entrou nos últimos ${txt}, pelo sítio de onde veio da primeira vez`}
+              csv={() => [["Origem", "Entraram", "1 dia", "7 dias", "30 dias", "Conta"], ...(r.porOrigem || []).map(c => [c.chave, c.entraram, c.d1, c.d7, c.d30, c.converteram])]} nomeCsv="retencao-origem">
+              {r.porOrigem?.some(c => c.chave !== "sem registo") ? (
+                <TabelaCoortes coortes={r.porOrigem} primeira="Origem" rotulo={c => NOMES_ORIGEM[c.chave] || c.chave} />
+              ) : <EmRecolha>A origem dos convidados começa a ser guardada com esta versão.</EmRecolha>}
             </Painel>
           </>
         )}
@@ -791,7 +998,7 @@ function ListaEventos({ eventos }) {
   );
 }
 
-function TabelaCoortes({ coortes }) {
+function TabelaCoortes({ coortes, primeira = "Semana de", rotulo = (c) => rotuloDia(c.semana) }) {
   const celula = (n, base) => {
     if (!base) return <span className="text-slate-300">—</span>;
     const p = pct(n, base);
@@ -802,7 +1009,7 @@ function TabelaCoortes({ coortes }) {
       <table className="w-full text-sm tabular-nums">
         <thead>
           <tr className="text-xs text-slate-500">
-            <th className="text-left font-semibold pb-2 px-1">Semana de</th>
+            <th className="text-left font-semibold pb-2 px-1">{primeira}</th>
             <th className="text-right font-semibold pb-2 px-1">Entraram</th>
             <th className="text-right font-semibold pb-2 px-1">1 dia</th>
             <th className="text-right font-semibold pb-2 px-1">7 dias</th>
@@ -812,8 +1019,8 @@ function TabelaCoortes({ coortes }) {
         </thead>
         <tbody className="divide-y divide-slate-100">
           {coortes.map(c => (
-            <tr key={c.semana}>
-              <td className="py-2 px-1 text-slate-700">{rotuloDia(c.semana)}</td>
+            <tr key={c.chave || c.semana}>
+              <td className="py-2 px-1 text-slate-700">{rotulo(c)}</td>
               <td className="py-2 px-1 text-right font-semibold text-slate-900">{num(c.entraram)}</td>
               <td className="py-2 px-1 text-right">{celula(c.d1, c.entraram)}</td>
               <td className="py-2 px-1 text-right">{celula(c.d7, c.elegivel7)}</td>
@@ -828,11 +1035,13 @@ function TabelaCoortes({ coortes }) {
 }
 
 function EmailsCrescimento({ dados }) {
+  const { txt } = usePeriodo();
   return (
     <Grupo Icone={Mail} titulo="Emails sem conta" nota="Quem pede o resumo de folhetos ou o preço do combustível por email: o canal que traz as pessoas de volta.">
       {!dados ? <EmRecolha>Sem dados de subscritores.</EmRecolha> : (
         <div className="grid gap-4 md:grid-cols-5">
-          <Painel className="md:col-span-3" titulo="Novos por semana" nota="últimas 8 semanas">
+          <Painel className="md:col-span-3" titulo="Novos por semana" nota={`últimas ${dados?.semanas?.length || 8} semanas`}
+            csv={() => [["Semana", "Folhetos", "Combustível", "Cancelaram"], ...dados.semanas.map(w => [w.semana, w.folhetos, w.combustivel, w.cancelaram])]} nomeCsv="emails">
             <table className="w-full text-sm tabular-nums">
               <thead>
                 <tr className="text-xs text-slate-500">
@@ -855,7 +1064,7 @@ function EmailsCrescimento({ dados }) {
             </table>
           </Painel>
           <div className="md:col-span-2 space-y-4">
-            <Painel titulo="Onde subscreveram" nota="folhetos, 8 semanas">
+            <Painel titulo="Onde subscreveram" nota={`folhetos, ${txt}`}>
               <ListaBarras itens={dados.origens} limite={5} />
             </Painel>
             <Painel titulo="Concelhos" nota="combustível, ativos">
@@ -869,6 +1078,7 @@ function EmailsCrescimento({ dados }) {
 }
 
 function Qualidade({ cresc }) {
+  const { txt } = usePeriodo();
   if (!cresc) return <Esqueleto />;
   const m = cresc.metricas;
   const lojas = cresc.saude;
@@ -897,7 +1107,7 @@ function Qualidade({ cresc }) {
         )}
       </Grupo>
 
-      <Grupo Icone={Gauge} titulo="Velocidade" nota="Medida no telemóvel de quem usa a app, 7 dias. O Google pede 75% das visitas dentro do limite — também conta para o SEO.">
+      <Grupo Icone={Gauge} titulo="Velocidade" nota={`Medida no telemóvel de quem usa a app, ${txt}. O Google`+" pede 75% das visitas dentro do limite — também conta para o SEO."}>
         {!comDados ? <EmRecolha /> : (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -913,7 +1123,8 @@ function Qualidade({ cresc }) {
                 </div>
               ))}
             </div>
-            <Painel titulo="Páginas mais lentas" nota="conteúdo principal (LCP), média · só páginas com 3+ medições">
+            <Painel titulo="Páginas mais lentas" nota="conteúdo principal (LCP), média · só páginas com 3+ medições"
+              csv={() => [["Página", "LCP médio (ms)", "% boas", "Medições"], ...m.paginasLentas.map(p => [p.pagina, Math.round(p.media), Math.round(p.bons * 100), p.n])]} nomeCsv="paginas-lentas">
               {m.paginasLentas.length ? (
                 <ul className="divide-y divide-slate-100">
                   {m.paginasLentas.map(p => (
@@ -934,13 +1145,13 @@ function Qualidade({ cresc }) {
 
       <Grupo Icone={Bug} titulo="Erros no browser" nota="Falhas de JavaScript que as pessoas apanharam, por página (sem dados pessoais). Corrigir o topo desta lista resolve a maioria.">
         {!m ? <EmRecolha /> : !m.erros.total ? (
-          <Painel titulo="Últimos 7 dias"><Vazio>Nenhum erro registado.</Vazio></Painel>
+          <Painel titulo={`Últimos ${txt}`}><Vazio>Nenhum erro registado.</Vazio></Painel>
         ) : (
           <div className="grid gap-4 md:grid-cols-5">
-            <Painel className="md:col-span-2" titulo="Erros por dia" nota="14 dias">
+            <Painel className="md:col-span-2" titulo="Erros por dia">
               <Barras dados={m.erros.porDia} />
             </Painel>
-            <Painel className="md:col-span-3" titulo="Mais frequentes" nota="7 dias">
+            <Painel className="md:col-span-3" titulo="Mais frequentes" nota={txt} csv={() => [["Mensagem", "Página", "Vezes"], ...m.erros.lista.map(e => [e.mensagem, e.pagina, e.n])]} nomeCsv="erros">
               <ul className="divide-y divide-slate-100">
                 {m.erros.lista.map((e, i) => (
                   <li key={i} className="py-2 first:pt-0 last:pb-0 flex items-start justify-between gap-3">
@@ -962,7 +1173,7 @@ function Qualidade({ cresc }) {
 
 /* ───────────────────────── Peças ───────────────────────── */
 
-function Painel({ titulo, nota, acao, className = "", children }) {
+function Painel({ titulo, nota, acao, csv, nomeCsv, className = "", children }) {
   return (
     <section className={`min-w-0 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 ${className}`}>
       <header className="flex items-start gap-3 mb-4">
@@ -970,7 +1181,12 @@ function Painel({ titulo, nota, acao, className = "", children }) {
           <h2 className="font-semibold text-slate-800 leading-snug">{titulo}</h2>
           {nota && <p className="text-xs text-slate-400 mt-0.5">{nota}</p>}
         </div>
-        {acao && <span className="ml-auto shrink-0 pt-0.5">{acao}</span>}
+        {(acao || csv) && (
+          <span className="ml-auto shrink-0 pt-0.5 flex items-center gap-3">
+            {csv && <BotaoCsv nome={nomeCsv || titulo} linhas={csv} />}
+            {acao}
+          </span>
+        )}
       </header>
       {children}
     </section>
@@ -1013,7 +1229,8 @@ function Grelha4({ children }) {
   return <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{children}</div>;
 }
 
-function Kpi({ rotulo, ajuda, valor, antes }) {
+function Kpi({ rotulo, ajuda, valor, antes, meta }) {
+  const progresso = meta && typeof valor === "number" ? Math.min(100, Math.round((valor / meta) * 100)) : null;
   return (
     <div className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4">
       <p className="text-xs font-semibold text-slate-500">{rotulo}</p>
@@ -1022,7 +1239,35 @@ function Kpi({ rotulo, ajuda, valor, antes }) {
         {antes !== undefined && typeof valor === "number" && <Variacao agora={valor} antes={antes} />}
         {ajuda && <span>{ajuda}</span>}
       </div>
+      {progresso !== null && (
+        <div className="mt-2" title={`Meta: ${num(meta)}`}>
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className={`h-full rounded-full ${progresso >= 100 ? "bg-emerald-500" : "bg-emerald-300"}`} style={{ width: `${progresso}%` }} />
+          </div>
+          <p className="text-[11px] text-slate-500 mt-1 tabular-nums">{progresso}% da meta de {num(meta)}</p>
+        </div>
+      )}
     </div>
+  );
+}
+
+// Descarrega uma tabela como CSV (separador ";" e BOM, para o Excel em português).
+function baixarCsv(nome, linhas) {
+  const cel = (v) => { const t = v == null ? "" : String(v); return /[;"\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
+  const texto = "\ufeff" + linhas.map(l => l.map(cel).join(";")).join("\r\n");
+  const url = URL.createObjectURL(new Blob([texto], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `poupeja-${String(nome).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-")}-${new Date().toLocaleDateString("sv-SE")}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function BotaoCsv({ nome, linhas }) {
+  return (
+    <button onClick={() => baixarCsv(nome, linhas())} title="Descarregar CSV" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-emerald-700">
+      <Download size={13} /> CSV
+    </button>
   );
 }
 
@@ -1032,7 +1277,7 @@ function Variacao({ agora, antes }) {
   const v = Math.round(((agora - antes) / antes) * 100);
   const [Icone, cor] = v > 0 ? [ArrowUpRight, "text-emerald-600"] : v < 0 ? [ArrowDownRight, "text-[color:var(--pj-danger)]"] : [Minus, "text-slate-400"];
   return (
-    <span className={`inline-flex items-center gap-0.5 font-semibold tabular-nums ${cor}`} title="vs. 7 dias anteriores">
+    <span className={`inline-flex items-center gap-0.5 font-semibold tabular-nums ${cor}`} title="vs. período anterior">
       <Icone size={13} /> {Math.abs(v)}%
     </span>
   );
@@ -1051,15 +1296,20 @@ function Linha3({ a, b, c }) {
   );
 }
 
-function Barras({ dados, alto = false }) {
+// Barras por dia. As notas do admin (publicações) aparecem como um ponto
+// por baixo do dia, com o texto ao passar o rato.
+function Barras({ dados, alto = false, notas }) {
   const max = Math.max(1, ...dados.map(d => d.n));
   const h = alto ? 140 : 96;
   const hoje = dados.length - 1;
+  const porDia = {};
+  for (const n of notas || []) (porDia[n.dia] ||= []).push(n.texto);
+  const temNotas = dados.some(d => porDia[d.dia]);
   return (
     <div>
-      <div className="flex items-end gap-1" style={{ height: h }}>
+      <div className={`flex items-end ${dados.length > 40 ? "gap-px" : "gap-1"}`} style={{ height: h }}>
         {dados.map((d, i) => (
-          <div key={i} className="flex-1 h-full flex flex-col justify-end group relative" title={`${new Date(d.dia + "T12:00:00").toLocaleDateString("pt-PT")}: ${d.n}`}>
+          <div key={i} className="flex-1 h-full flex flex-col justify-end group relative" title={`${new Date(d.dia + "T12:00:00").toLocaleDateString("pt-PT")}: ${d.n}${porDia[d.dia] ? " · " + porDia[d.dia].join(" · ") : ""}`}>
             <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-slate-600 opacity-0 group-hover:opacity-100 tabular-nums">{d.n}</span>
             <div
               className={`w-full rounded-t ${i === hoje ? "bg-emerald-500" : "bg-emerald-200 group-hover:bg-emerald-300"}`}
@@ -1068,6 +1318,15 @@ function Barras({ dados, alto = false }) {
           </div>
         ))}
       </div>
+      {temNotas && (
+        <div className={`flex ${dados.length > 40 ? "gap-px" : "gap-1"} mt-1`}>
+          {dados.map((d, i) => (
+            <div key={i} className="flex-1 flex justify-center" title={porDia[d.dia]?.join(" · ")}>
+              {porDia[d.dia] && <span className="w-1.5 h-1.5 rounded-full bg-[#c8a26a]" />}
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex justify-between mt-1.5 text-[10px] text-slate-400 tabular-nums">
         <span>{rotuloDia(dados[0]?.dia)}</span>
         <span>{rotuloDia(dados[Math.floor(dados.length / 2)]?.dia)}</span>
@@ -1078,7 +1337,7 @@ function Barras({ dados, alto = false }) {
 }
 const rotuloDia = (d) => { if (!d) return ""; const x = new Date(d + "T12:00:00"); return `${x.getDate()}/${x.getMonth() + 1}`; };
 
-function ListaBarras({ titulo, itens, limite = 10 }) {
+function ListaBarras({ titulo, itens, limite = 10, comparar = false }) {
   const [tudo, setTudo] = useState(false);
   if (!itens?.length) return <Vazio>Sem dados.</Vazio>;
   const max = Math.max(1, ...itens.map(i => i.n));
@@ -1092,8 +1351,10 @@ function ListaBarras({ titulo, itens, limite = 10 }) {
           <li key={k}>
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span className="text-slate-700 truncate" title={i.rotulo}>{i.rotulo}</span>
-              <span className="shrink-0 tabular-nums">
-                {i.extra && <span className="text-xs text-slate-400 mr-2">{i.extra}</span>}
+              <span className="shrink-0 tabular-nums inline-flex items-baseline gap-2">
+                {comparar && i.antes > 0 && <span className="text-xs"><Variacao agora={i.n} antes={i.antes} /></span>}
+                {comparar && !i.antes && i.n > 0 && <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded px-1">novo</span>}
+                {i.extra && <span className="text-xs text-slate-400">{i.extra}</span>}
                 <span className="font-semibold text-slate-900">{num(i.n)}</span>
                 {!i.extra && <span className="text-xs text-slate-400 ml-1.5 inline-block w-8 text-right">{pct(i.n, total)}%</span>}
               </span>
@@ -1208,9 +1469,9 @@ function LinhaDado({ rotulo, valor, nota }) {
   );
 }
 
-function Segmentado({ valor, onChange, opcoes }) {
+function Segmentado({ valor, onChange, opcoes, rotulo }) {
   return (
-    <div className="inline-flex bg-slate-100 p-0.5 rounded-lg">
+    <div className="inline-flex bg-slate-100 p-0.5 rounded-lg" role="group" aria-label={rotulo}>
       {opcoes.map(([id, rotulo]) => (
         <button
           key={id}
