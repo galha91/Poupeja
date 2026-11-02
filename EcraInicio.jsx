@@ -23,6 +23,44 @@ import SubscreverCombustivel from "./SubscreverCombustivel";
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
 
+/* ─── Primeira visita: as três coisas que a app faz, ao mesmo nível ───
+ * Quem ainda não fez nada vê o cabaz, o gasóleo e o jantar da semana com o
+ * mesmo peso: cada pessoa chega por uma coisa diferente. (Dos primeiros 442
+ * convidados só 2,5% chegaram a comparar um preço.) */
+function TresPortas({ gasoleo, onComparar, onCombustivel, onEmentas }) {
+  const { dados } = gasoleo;
+  const onde = !dados || dados.nivel === "pais" ? "no país" : dados.nivel === "exata" ? "perto de ti" : dados.cidade ? `perto de ${dados.cidade}` : "perto de ti";
+  const porta = (acao, fn) => () => { evento("inicio_porta", { acao }); fn(); };
+  const Cartao = ({ Icone, titulo, sub, direita, aoTocar }) => (
+    <button onClick={aoTocar} className="pj-tap press w-full text-left flex items-center"
+      style={{ gap: 14, padding: "16px 14px", borderRadius: 16, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+      <span className="flex items-center justify-center flex-none" style={{ width: 44, height: 44, borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+        <Icone size={21} strokeWidth={1.8} style={{ color: "var(--pj-brand-ink)" }} />
+      </span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.25 }}>{titulo}</span>
+        <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2, lineHeight: 1.4 }}>{sub}</span>
+      </span>
+      {direita || <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />}
+    </button>
+  );
+  return (
+    <div style={{ marginTop: 40 }} className="anim-up anim-up-1">
+      <Rotulo>Por onde queres começar?</Rotulo>
+      <div className="flex flex-col" style={{ gap: 10, marginTop: 14 }}>
+        <Cartao Icone={Search} titulo="Onde fica mais barata a tua compra?"
+          sub={`Compara 6 básicos nos ${N_COMPARADAS} supermercados, num toque. Sem conta.`}
+          aoTocar={porta("comparar", onComparar)} />
+        <Cartao Icone={Fuel} titulo="Gasóleo mais barato" sub={`${onde[0].toUpperCase()}${onde.slice(1)} · ver os postos`}
+          direita={dados ? <span className="pj-num flex-none" style={{ fontSize: 17, fontWeight: 700, color: "var(--pj-text)" }}>{eur(dados.preco, 3)} €</span> : null}
+          aoTocar={porta("combustivel", onCombustivel)} />
+        <Cartao Icone={ChefHat} titulo="O jantar da semana, planeado" sub="Diz o orçamento e o que não comes. Sai a lista e onde é mais barata."
+          aoTocar={porta("ementas", onEmentas)} />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Lista de compras: o estado real, no topo do Início ─── */
 function CartaoLista({ lista, onAbrir }) {
   const { n, resumo } = lista;
@@ -584,7 +622,14 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             a seguir, mais pequena, para quem já a tem. Se a DGEG falhar,
             fica só a poupança, como antes. Antes de ler o localStorage,
             só o espaço — sem saltos. */}
-        {!lido ? (
+        {explorar ? (
+          <TresPortas
+            gasoleo={gasoleo}
+            onComparar={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
+            onCombustivel={() => setTab("mobilidade")}
+            onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))}
+          />
+        ) : !lido ? (
           <div style={{ marginTop: 44, minHeight: 190 }} />
         ) : !gasoleo.falhou ? (
           <>
@@ -621,29 +666,15 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           />
         )}
 
-        {/* Primeira visita (nada feito ainda): o caminho mais curto até ao
-            valor — o cabaz básico comparado num toque, sem escrever nada. */}
-        {explorar && (
-          <button
-            onClick={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
-            className="pj-tap w-full text-left anim-up anim-up-2"
-            style={{ marginTop: 18, padding: "16px 16px", borderRadius: 16, background: "var(--pj-brand)", color: "#fff", border: 0 }}>
-            <span style={{ display: "block", fontSize: 12, fontWeight: 600, letterSpacing: ".04em", textTransform: "uppercase", color: "#a7cbbb" }}>Experimenta em 10 segundos</span>
-            <span className="font-display" style={{ display: "block", fontSize: 19, fontWeight: 600, marginTop: 4, lineHeight: 1.25 }}>Onde fica mais barata a tua compra?</span>
-            <span style={{ display: "block", fontSize: 13, color: "#d9e7df", marginTop: 4, lineHeight: 1.45 }}>Comparamos 6 básicos (leite, ovos, pão, arroz…) nos {N_COMPARADAS} supermercados. Sem conta.</span>
-            <span className="flex items-center gap-1" style={{ marginTop: 10, fontSize: 14, fontWeight: 600 }}>Comparar o cabaz <ChevronRight size={16} /></span>
-          </button>
-        )}
-
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
             ou o convite para planear a semana. */}
-        <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />
+        {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />}
 
         {/* Lista de compras — com o resultado da lista otimizada, quando há */}
-        <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />
+        {!explorar && <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />}
 
         {/* Comparar preços — a pergunta que traz as pessoas de volta */}
-        <button onClick={() => setTab("mercados", "comparar")} className="pj-tap w-full text-left flex items-center anim-up anim-up-2"
+        {!explorar && <button onClick={() => setTab("mercados", "comparar")} className="pj-tap w-full text-left flex items-center anim-up anim-up-2"
           style={{ gap: 12, marginTop: 10, padding: "13px 14px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           <Search size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0 }}>
@@ -651,7 +682,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Compara laranjas, leite, azeite… em {N_COMPARADAS} supermercados</span>
           </span>
           <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
-        </button>
+        </button>}
 
         <Divisoria />
 
