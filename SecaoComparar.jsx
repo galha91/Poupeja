@@ -257,6 +257,7 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
               setAlerta(novo);
               setAlertaAberto(false);
               setAvisoAlerta(!novo ? "Alerta apagado."
+                : estadoPush === "email" ? `Alerta criado. Mandamos um email quando baixar de ${eur(novo.alvo, 2)} €.`
                 : estadoPush === "ativo" ? `Alerta criado. Avisamos quando baixar de ${eur(novo.alvo, 2)} €.`
                 : "Alerta guardado — ativa as notificações para receberes o aviso.");
             }}

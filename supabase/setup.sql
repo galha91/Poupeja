@@ -542,3 +542,37 @@ create table if not exists public.admin_config (
   atualizado_em timestamptz not null default now()
 );
 alter table public.admin_config enable row level security;
+
+-- ── Alertas de preço por email, sem conta (2026-11-02) ──────────────────────
+-- O convidado escreve o email no alerta do "Comparar preços" (consentimento
+-- explícito); o cron-alertas-email verifica uma vez por dia. Cada email traz
+-- link para cancelar. convidado_id liga o email ao convidado do site, para o
+-- /admin ver de onde veio e o que fez (o email é dado por ele, com consentimento).
+-- (Migração alertas_email.)
+create table if not exists public.alertas_email (
+  id               uuid primary key default gen_random_uuid(),
+  email            text not null,
+  q                text not null,
+  tipo             text not null default 'alvo',   -- alvo | vigiar
+  alvo             numeric,
+  referencia       numeric not null,
+  unidade          text not null,
+  modo             text not null default 'unidade',
+  promo_na_criacao boolean not null default false,
+  convidado_id     uuid,
+  criado_em        timestamptz not null default now(),
+  cancelado_em     timestamptz,
+  ultimo_aviso     jsonb,
+  avisos           integer not null default 0
+);
+create unique index if not exists alertas_email_ativo_uq
+  on public.alertas_email (lower(email), q) where cancelado_em is null;
+create index if not exists alertas_email_convidado on public.alertas_email (convidado_id);
+alter table public.alertas_email enable row level security;
+
+-- O mesmo elo nos emails de folhetos e de combustível sem conta.
+alter table public.subscritores_folhetos    add column if not exists convidado_id uuid;
+alter table public.subscritores_combustivel add column if not exists convidado_id uuid;
+
+-- Marco "deixou email" no percurso do convidado.
+alter table public.convidados_site add column if not exists email_em timestamptz;

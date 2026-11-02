@@ -82,7 +82,7 @@ export default async function handler(req, res) {
     try {
       const { data: conv, error: convErr } = await admin
         .from("convidados_site")
-        .select("primeira_em, ultima_em, aberturas, converteu_em, comparou_em, escolheu_em, alerta_em, pediu_conta_em")
+        .select("primeira_em, ultima_em, aberturas, converteu_em, comparou_em, escolheu_em, alerta_em, pediu_conta_em, email_em")
         .limit(100000);
       if (convErr) throw convErr;
       const linhas = conv || [];
@@ -115,6 +115,7 @@ export default async function handler(req, res) {
             escolheu: n(c => c.escolheu_em),
             alerta: n(c => c.alerta_em),
             pediuConta: n(c => c.pediu_conta_em),
+            deuEmail: n(c => c.email_em),
             converteram: n(c => c.converteu_em),
           };
         })(),

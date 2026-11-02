@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Bell, BellRing, X, TrendingDown, ChartLine } from "lucide-react";
+import { Bell, BellRing, X, TrendingDown, ChartLine, Mail } from "lucide-react";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { estadoPush, ativarPush } from "./lib/push";
 import { avaliarPreco } from "./lib/historicoPrecos";
 import { N_COMPARADAS } from "./lib/cobertura";
+import { idConvidadoAtual } from "./lib/convidado";
 
 /*
  * Alertas de preço e histórico do "Comparar preços".
@@ -29,6 +30,31 @@ export function alertaDe(q) {
 }
 
 /*
+ * Aviso por email, sem conta (pages/api/alerta-email.js). O alerta local
+ * guarda { id, t } do servidor para o poder cancelar quando é apagado.
+ * O último email usado fica neste aparelho para vir preenchido.
+ */
+const LS_EMAIL = "poupeja_email_alertas";
+const lerEmail = () => { try { return localStorage.getItem(LS_EMAIL) || ""; } catch { return ""; } };
+
+async function criarAlertaEmail(dados) {
+  const r = await fetch("/api/alerta-email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...dados, consentimento: true, convidado: idConvidadoAtual() }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.erro || "Não foi possível guardar o aviso por email.");
+  try { localStorage.setItem(LS_EMAIL, dados.email.trim()); } catch {}
+  return { id: j.id, t: j.t, email: dados.email.trim() };
+}
+
+function cancelarAlertaEmail(alerta) {
+  if (!alerta?.email?.id) return;
+  fetch(`/api/alerta-email?s=${encodeURIComponent(alerta.email.id)}&t=${encodeURIComponent(alerta.email.t)}`, { method: "DELETE", keepalive: true }).catch(() => {});
+}
+
+/*
  * "Vigiar" um artigo da lista: sem preço-alvo. A referência é o melhor
  * preço de hoje; avisa quando descer ou entrar em promoção (lib/alertas).
  * Uma pesquisa tem um alerta só — vigiar substitui um alvo que lá estivesse.
@@ -42,6 +68,7 @@ export function vigiar({ q, valor, unidade, modo, promo }) {
   return novo;
 }
 export function deixarDeVigiar(q) {
+  cancelarAlertaEmail(alertaDe(q));
   guardarAlertas(lerAlertas().filter((a) => a.q !== q));
   evento("alerta_preco_removido", { q, origem: "lista" });
 }
@@ -91,26 +118,54 @@ export function CriarAlerta({ q, valorAtual, unidade, modo, onFechar, onGuardado
   const [valor, setValor] = useState(String(existente?.alvo ?? sugestao).replace(".", ","));
   const [push, setPush] = useState("a-ver");
   const [aGuardar, setAGuardar] = useState(false);
+  const [email, setEmail] = useState(existente?.email?.email || "");
+  const [porEmail, setPorEmail] = useState(!!existente?.email);
+  const [aceito, setAceito] = useState(!!existente?.email);
+  const [erro, setErro] = useState("");
 
-  useEffect(() => { estadoPush().then(setPush); }, []);
+  useEffect(() => {
+    estadoPush().then((e) => {
+      setPush(e);
+      // Sem notificações possíveis, o email é o caminho: abre-se já.
+      if (e === "bloqueado" || e === "sem-suporte") setPorEmail(true);
+    });
+    if (!existente?.email) setEmail(lerEmail());
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const alvo = parseFloat(String(valor).replace(",", "."));
   const valido = alvo > 0 && alvo < 10000;
 
   async function guardar() {
     if (!valido) return;
+    setErro("");
+    if (porEmail && email.trim() && !aceito) return setErro("Marca a caixa para receberes o aviso por email.");
     setAGuardar(true);
+    let viaEmail = null;
+    if (porEmail && email.trim()) {
+      try {
+        viaEmail = await criarAlertaEmail({ email, q, alvo: Math.round(alvo * 100) / 100, unidade, modo, valorAtual });
+        evento("alerta_email_criado", { origem: "comparar" });
+      } catch (e) {
+        setErro(e.message);
+        setAGuardar(false);
+        return;
+      }
+    } else if (existente?.email) {
+      cancelarAlertaEmail(existente);
+    }
+    // Com email, não se insiste nas notificações; sem email, pede-as.
     let estado = push;
-    if (estado === "inativo") estado = await ativarPush().catch(() => "inativo");
+    if (!viaEmail && estado === "inativo") estado = await ativarPush().catch(() => "inativo");
     setPush(estado);
-    const novo = { id: existente?.id || Date.now(), q, alvo: Math.round(alvo * 100) / 100, unidade, modo, valorNaCriacao: valorAtual, criadoEm: new Date().toISOString() };
+    const novo = { id: existente?.id || Date.now(), q, alvo: Math.round(alvo * 100) / 100, unidade, modo, valorNaCriacao: valorAtual, criadoEm: new Date().toISOString(), ...(viaEmail ? { email: viaEmail } : {}) };
     guardarAlertas([novo, ...lerAlertas().filter((a) => a.q !== q)]);
     evento("alerta_preco_criado", { q });
     setAGuardar(false);
-    onGuardado?.(novo, estado);
+    onGuardado?.(novo, viaEmail ? "email" : estado);
   }
 
   function apagar() {
+    cancelarAlertaEmail(existente);
     guardarAlertas(lerAlertas().filter((a) => a.q !== q));
     onGuardado?.(null);
   }
@@ -139,10 +194,32 @@ export function CriarAlerta({ q, valorAtual, unidade, modo, onFechar, onGuardado
         </button>
       </div>
       <p style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 8, lineHeight: 1.5 }}>
-        Hoje está a {eur(valorAtual, 2)} €{sufixo(unidade)}. Verificamos todos os dias nos {N_COMPARADAS} supermercados comparados e mandamos uma notificação quando baixar.
-        {push === "bloqueado" && " As notificações estão bloqueadas neste telemóvel — ativa-as nas definições do sistema para receberes o aviso."}
-        {push === "sem-suporte" && " Este browser não recebe notificações; instala a app para receberes o aviso."}
+        Hoje está a {eur(valorAtual, 2)} €{sufixo(unidade)}. Verificamos todos os dias nos {N_COMPARADAS} supermercados comparados e avisamos quando baixar
+        {porEmail ? " — por email" : " — por notificação"}.
+        {!porEmail && push === "bloqueado" && " As notificações estão bloqueadas neste telemóvel: recebe o aviso por email."}
+        {!porEmail && push === "sem-suporte" && " Este browser não recebe notificações: recebe o aviso por email."}
       </p>
+
+      {/* Aviso por email: sem conta, com consentimento explícito. */}
+      {!porEmail ? (
+        <button onClick={() => setPorEmail(true)} className="pj-tap flex items-center gap-1.5 mt-2.5"
+          style={{ background: "transparent", border: 0, padding: 0, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+          <Mail size={14} /> {push === "ativo" ? "Receber também por email" : "Receber o aviso por email"}
+        </button>
+      ) : (
+        <div className="mt-3" style={{ paddingTop: 10, borderTop: "1px solid var(--pj-border)" }}>
+          <label className="flex items-center gap-2" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "0 12px" }}>
+            <Mail size={15} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="o.teu@email.pt" autoComplete="email" aria-label="Email para o aviso"
+              style={{ flex: 1, minWidth: 0, background: "transparent", border: 0, outline: "none", fontSize: 14, padding: "11px 0", color: "var(--pj-text)" }} />
+          </label>
+          <label className="flex items-start gap-2 mt-2" style={{ fontSize: 11.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
+            <input type="checkbox" checked={aceito} onChange={(e) => setAceito(e.target.checked)} style={{ marginTop: 2 }} />
+            <span>Aceito receber por email os avisos deste alerta. Sem conta; cancelo num toque em cada email. <a href="/privacidade" style={{ color: "var(--pj-brand-ink)", textDecoration: "underline" }}>Privacidade</a></span>
+          </label>
+        </div>
+      )}
+      {erro && <p role="alert" style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-danger)", marginTop: 8 }}>{erro}</p>}
       {existente && (
         <button onClick={apagar} className="pj-tap mt-2" style={{ background: "transparent", border: 0, padding: 0, fontSize: 12, fontWeight: 600, color: "var(--pj-danger)" }}>
           Apagar este alerta
@@ -159,6 +236,7 @@ export function ListaAlertas({ onAbrir }) {
   if (!alertas.length) return null;
 
   function apagar(q) {
+    cancelarAlertaEmail(alertaDe(q));
     const l = lerAlertas().filter((a) => a.q !== q);
     guardarAlertas(l);
     setAlertas(l);
@@ -178,6 +256,7 @@ export function ListaAlertas({ onAbrir }) {
               {a.tipo === "vigiar"
                 ? `A vigiar · avisamos se descer de ${eur(a.referencia, 2)} €${sufixo(a.unidade)}`
                 : `Avisar abaixo de ${eur(a.alvo, 2)} €${sufixo(a.unidade)}`}
+              {a.email && " · por email"}
             </span>
           </button>
           <button onClick={() => apagar(a.q)} aria-label={`Apagar alerta de ${a.q}`} className="pj-tap flex items-center justify-center"
