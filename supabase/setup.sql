@@ -452,3 +452,93 @@ create table if not exists public.produtos_marca_dia (
 );
 alter table public.produtos_marca_dia enable row level security;
 create index if not exists produtos_marca_dia_dia on public.produtos_marca_dia (dia);
+
+-- ── Métricas de produto sem cookies (2026-11-02) ────────────────────────────
+-- Para o /admin: que funcionalidades se usam, o que se pesquisa (e não se
+-- encontra), erros no browser e velocidade das páginas (Core Web Vitals).
+-- Só contagens por dia — nunca um id de pessoa, IP ou URL completo.
+-- Validação em lib/metricas.js; escrita só pela API (service role).
+-- (Migração metricas_dia.)
+create table if not exists public.metricas_dia (
+  dia     date    not null,
+  tipo    text    not null,               -- evento | pesquisa | pesquisa_vazia | erro | vital
+  chave   text    not null,               -- nome do evento, termo, página ou métrica
+  detalhe text    not null default '',    -- variante, mensagem de erro ou página
+  n       integer not null default 0,
+  soma    double precision not null default 0, -- só vitais: soma dos valores (média = soma / n)
+  bons    integer not null default 0,     -- só vitais: quantos ficaram dentro do limite "bom"
+  primary key (dia, tipo, chave, detalhe)
+);
+alter table public.metricas_dia enable row level security;
+create index if not exists metricas_dia_tipo on public.metricas_dia (tipo, dia);
+
+create or replace function public.registar_metricas(p_itens jsonb)
+returns void language sql security definer set search_path = public as $$
+  insert into public.metricas_dia (dia, tipo, chave, detalhe, n, soma, bons)
+  select (now() at time zone 'Europe/Lisbon')::date, i.tipo, i.chave, coalesce(i.detalhe, ''),
+         count(*), coalesce(sum(i.valor), 0), count(*) filter (where i.bom)
+  from jsonb_to_recordset(p_itens) as i(tipo text, chave text, detalhe text, valor double precision, bom boolean)
+  group by i.tipo, i.chave, coalesce(i.detalhe, '')
+  on conflict (dia, tipo, chave, detalhe) do update set
+    n    = metricas_dia.n + excluded.n,
+    soma = metricas_dia.soma + excluded.soma,
+    bons = metricas_dia.bons + excluded.bons;
+$$;
+
+revoke all on function public.registar_metricas(jsonb) from public, anon, authenticated;
+
+-- Último resultado da verificação diária de "Comparar preços", por loja
+-- (pages/api/cron-saude-precos.js). O /admin mostra-o sem ir aos sites.
+create table if not exists public.saude_precos (
+  loja            text primary key,
+  nome            text not null,
+  ok              boolean not null,
+  erro            text,
+  detalhes        jsonb,
+  verificado_em   timestamptz not null default now(),
+  ultimo_ok_em    timestamptz,
+  falhas_seguidas integer not null default 0
+);
+alter table public.saude_precos enable row level security;
+
+-- ── Admin: origem dos convidados, notas e metas (2026-11-02) ────────────────
+-- Origem e campanha do primeiro toque de cada convidado (de onde veio da
+-- primeira vez: google, instagram, "ig-reel-azeite"…), para medir a retenção
+-- por canal e por publicação. Só se grava quando o convidado é novo.
+-- (Migração admin_crescimento.)
+alter table public.convidados_site
+  add column if not exists origem   text,
+  add column if not exists campanha text;
+
+-- Versão com origem e campanha. Os 4 argumentos são obrigatórios para não
+-- colidir com registar_convidado(uuid, boolean), que continua a existir.
+create or replace function public.registar_convidado(
+  p_id uuid, p_converteu boolean, p_origem text, p_campanha text
+)
+returns void language sql security definer set search_path = public as $$
+  insert into public.convidados_site (id, converteu_em, origem, campanha)
+  values (p_id, case when p_converteu then now() end, p_origem, p_campanha)
+  on conflict (id) do update set
+    ultima_em    = now(),
+    aberturas    = convidados_site.aberturas + case when p_converteu then 0 else 1 end,
+    converteu_em = coalesce(convidados_site.converteu_em, case when p_converteu then now() end);
+$$;
+revoke all on function public.registar_convidado(uuid, boolean, text, text) from public, anon, authenticated;
+
+-- Notas do /admin: publicações e mudanças, marcadas nos gráficos.
+create table if not exists public.admin_notas (
+  id        uuid primary key default gen_random_uuid(),
+  dia       date not null,
+  texto     text not null,
+  campanha  text,
+  criado_em timestamptz not null default now()
+);
+alter table public.admin_notas enable row level security;
+
+-- Configuração do /admin (para já: metas semanais).
+create table if not exists public.admin_config (
+  chave         text primary key,
+  valor         jsonb not null,
+  atualizado_em timestamptz not null default now()
+);
+alter table public.admin_config enable row level security;

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
-import { caminhoValido, eBot, classificarOrigem, origemEtiqueta, regiaoDe, tipoDispositivo, modoValido, recorrenciaValida } from "../../lib/visitas";
+import { caminhoValido, eBot, classificarOrigem, origemEtiqueta, campanhaValida, regiaoDe, tipoDispositivo, modoValido, recorrenciaValida } from "../../lib/visitas";
 import { EMAILS_EXCLUIDOS } from "../../lib/adminAuth";
 
 // Conta uma página vista, sem cookies nem identificadores. O visitante do dia
@@ -49,5 +49,11 @@ export default async function handler(req, res) {
     p_modo: modoValido(modo),
     p_recorrencia: recorrenciaValida(rec),
   });
+  // Link com etiqueta (?o=ig-reel-azeite): conta uma entrada nessa campanha,
+  // para o /admin dizer que publicação trouxe gente. Só na primeira página.
+  const campanha = campanhaValida(o);
+  if (campanha && !error) {
+    await admin.rpc("registar_metricas", { p_itens: [{ tipo: "campanha", chave: campanha, detalhe: origem, valor: 0, bom: false }] }).then(() => {}, () => {});
+  }
   return res.status(error ? 500 : 204).end();
 }

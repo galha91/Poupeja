@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { EMAILS_EXCLUIDOS } from "../../lib/adminAuth";
+import { periodoValido } from "../../lib/adminDados";
 
 // Email autorizado a ver as estatísticas de administração.
 // Configurável por env var; fallback para o email do dono do site.
@@ -62,6 +63,15 @@ export default async function handler(req, res) {
       return t >= 7 * DIA && t < 14 * DIA;
     }).length;
     const ultimos30 = todos.filter(u => u.created_at && agora - new Date(u.created_at).getTime() < 30 * DIA).length;
+    // Período escolhido no /admin (7, 30 ou 90 dias) e o anterior, para comparar.
+    const dias = periodoValido(req.query.dias);
+    const idade = (t) => (t ? agora - new Date(t).getTime() : Infinity);
+    const periodo = {
+      dias,
+      contasNovas: todos.filter(u => idade(u.created_at) < dias * DIA).length,
+      contasAntes: todos.filter(u => idade(u.created_at) >= dias * DIA && idade(u.created_at) < 2 * dias * DIA).length,
+      ativos: todos.filter(u => idade(u.last_sign_in_at) < dias * DIA).length,
+    };
     const confirmados = todos.filter(u => u.email_confirmed_at || u.confirmed_at).length;
     const convidados = todos.filter(u => u.is_anonymous).length; // contas anónimas ativas (ainda não converteram)
 
@@ -260,6 +270,7 @@ export default async function handler(req, res) {
       emailDesativado,
       emailAtivos,
       funil,
+      periodo,
       atualizadoEm: new Date().toISOString(),
     });
   } catch (e) {

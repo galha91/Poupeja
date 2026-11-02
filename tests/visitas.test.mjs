@@ -60,3 +60,15 @@ test("modo e recorrência: só valores conhecidos", () => {
   assert.equal(recorrenciaValida("novo"), "novo");
   assert.equal(recorrenciaValida("<script>"), null);
 });
+
+test("etiquetas por publicação: origem pelo prefixo e campanha válida", async () => {
+  const { origemEtiqueta, campanhaValida } = await import("../lib/visitas.js");
+  assert.equal(origemEtiqueta("ig"), "instagram");
+  assert.equal(origemEtiqueta("ig-reel-azeite"), "instagram");
+  assert.equal(origemEtiqueta("tt3"), "tiktok");
+  assert.equal(origemEtiqueta("email-semanal"), "email");
+  assert.equal(origemEtiqueta("igreja"), null);
+  assert.equal(campanhaValida("IG-Reel-Azeite"), "ig-reel-azeite");
+  assert.equal(campanhaValida("a b"), null);
+  assert.equal(campanhaValida("x".repeat(50)), null);
+});

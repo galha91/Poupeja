@@ -1,5 +1,8 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
+import { campanhaValida } from "../../lib/visitas";
+
+const ORIGENS = new Set(["direto", "google", "pesquisa", "facebook", "instagram", "tiktok", "whatsapp", "email", "outro"]);
 
 // Regista aberturas e conversões do modo convidado (ver lib/convidado.js).
 const MARCOS = ["comparou", "escolheu", "alerta", "pediu_conta"];
@@ -10,7 +13,7 @@ export default async function handler(req, res) {
   if (!origemValida(req)) return res.status(403).end();
   if (excedeuLimite(req, "convidado", 20)) return res.status(429).end();
 
-  const { id, converteu, marco } = req.body || {};
+  const { id, converteu, marco, origem, campanha } = req.body || {};
   if (typeof id !== "string" || !UUID.test(id)) return res.status(400).end();
   if (marco !== undefined && !MARCOS.includes(marco)) return res.status(400).end();
 
@@ -23,6 +26,14 @@ export default async function handler(req, res) {
     return res.status(error ? 500 : 204).end();
   }
 
-  const { error } = await admin.rpc("registar_convidado", { p_id: id, p_converteu: converteu === true });
+  // Versão de 4 argumentos (com a origem do primeiro toque). A de 2 continua
+  // na base de dados e serve de recurso se a de 4 falhar.
+  const params = {
+    p_id: id, p_converteu: converteu === true,
+    p_origem: ORIGENS.has(origem) ? origem : null,
+    p_campanha: campanhaValida(campanha),
+  };
+  let { error } = await admin.rpc("registar_convidado", params);
+  if (error) ({ error } = await admin.rpc("registar_convidado", { p_id: id, p_converteu: converteu === true }));
   return res.status(error ? 500 : 204).end();
 }
