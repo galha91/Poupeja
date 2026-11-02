@@ -576,11 +576,11 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
         {/* Cabeçalho */}
         <div className="flex items-center justify-between anim-up">
-          <div style={{ fontSize: 15, color: "var(--pj-text-muted)", fontWeight: 500 }}>
+          <h1 style={{ fontSize: 15, color: "var(--pj-text-muted)", fontWeight: 500, margin: 0 }}>
             {saudacaoHora()}{primeiroNome && <>, <span className="capitalize" style={{ color: "var(--pj-text)", fontWeight: 600 }}>{primeiroNome}</span></>}
-          </div>
+          </h1>
           <div className="flex items-center" style={{ gap: 16, color: "var(--pj-text)" }}>
-            <button onClick={onAbrirAvisos} className="pj-tap relative flex" aria-label="Avisos">
+            <button onClick={onAbrirAvisos} className="pj-tap pj-alvo relative flex" aria-label="Avisos">
               <Bell size={21} strokeWidth={1.7} />
               {avisosCount > 0 && <span className="absolute rounded-full" style={{ top: -1, right: -1, width: 7, height: 7, background: "var(--pj-danger)", border: "1.5px solid var(--pj-surface)" }} />}
             </button>
@@ -776,9 +776,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {user?.convidado && !convPendente && (
           <p style={{ marginTop: 28, fontSize: 12, color: "var(--pj-text-faint)", textAlign: "center" }}>
             Queres guardar os teus dados noutros dispositivos?{" "}
-            <button onClick={onCriarConta} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
+            <button onClick={onCriarConta} className="pj-tap pj-alvo" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Criar conta</button>
             {" · "}
-            <button onClick={onEntrar} className="pj-tap" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
+            <button onClick={onEntrar} className="pj-tap pj-alvo" style={{ fontWeight: 600, color: "var(--pj-brand-ink)", textDecoration: "underline", textUnderlineOffset: 2 }}>Entrar</button>
           </p>
         )}
 
