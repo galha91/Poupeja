@@ -18,7 +18,7 @@ const SECOES = [
   },
   {
     titulo: "4. Para que usamos os dados e com que base legal",
-    texto: "• Para te fornecer o serviço e sincronizar a tua conta entre dispositivos — base legal: execução do serviço que pediste.\n• Para te enviar o resumo semanal de folhetos, o email de combustível ou os alertas de preço por email — base legal: o teu consentimento (podes cancelar a qualquer momento).\n• Para te enviar notificações push — base legal: o teu consentimento (só se as ativares).\nNão usamos os teus dados para publicidade, perfilagem comercial ou venda a terceiros.",
+    texto: "• Para te fornecer o serviço e sincronizar a tua conta entre dispositivos — base legal: execução do serviço que pediste.\n• Para te enviar o resumo semanal de folhetos, o email de combustível, os alertas de preço ou o lembrete do dia das compras por email — base legal: o teu consentimento (podes cancelar a qualquer momento).\n• Para te enviar notificações push — base legal: o teu consentimento (só se as ativares).\nNão usamos os teus dados para publicidade, perfilagem comercial ou venda a terceiros.",
   },
   {
     titulo: "5. Com quem partilhamos (subprocessadores)",
@@ -30,7 +30,7 @@ const SECOES = [
   },
   {
     titulo: "7. Emails semanais e notificações",
-    texto: "O resumo semanal de folhetos, o email semanal de combustível de um concelho (para quem o pede nas páginas públicas, sem conta; guardamos o email, o concelho e os últimos preços enviados, para dizer se subiram ou desceram), o alerta de sexta-feira quando os combustíveis vão subir na semana seguinte (só para quem marca essa opção ao subscrever), os alertas de preço por email do Comparar preços (para quem pede o aviso por email, sem conta; guardamos o email, o produto, o preço de referência ou alvo e a data do último aviso) e as notificações push são opcionais e baseados no teu consentimento. Podes desativar o email a qualquer momento em Definições → Resumo automático semanal, ou através da ligação \"cancelar subscrição\" presente em cada email (também para quem subscreveu sem conta). As notificações podem ser desativadas em Definições ou nas definições do teu dispositivo.",
+    texto: "O resumo semanal de folhetos, o email semanal de combustível de um concelho (para quem o pede nas páginas públicas, sem conta; guardamos o email, o concelho e os últimos preços enviados, para dizer se subiram ou desceram), o alerta de sexta-feira quando os combustíveis vão subir na semana seguinte (só para quem marca essa opção ao subscrever), os alertas de preço por email do Comparar preços (para quem pede o aviso por email, sem conta; guardamos o email, o produto, o preço de referência ou alvo e a data do último aviso), o lembrete semanal do dia das compras (para quem o pede no fim da comparação da lista; guardamos o email, o dia escolhido e os nomes dos artigos da lista, atualizados quando a lista muda) e as notificações push são opcionais e baseados no teu consentimento. Podes desativar o email a qualquer momento em Definições → Resumo automático semanal, ou através da ligação \"cancelar subscrição\" presente em cada email (também para quem subscreveu sem conta). As notificações podem ser desativadas em Definições ou nas definições do teu dispositivo.",
   },
   {
     titulo: "8. Os teus direitos (RGPD)",

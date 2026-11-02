@@ -8,7 +8,8 @@ import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, juntarPartilhada, ID_PARTILHA_RE, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
-import { LS_LISTAS_GUARDADAS, completarPronta, marcarUsada, nArtigos, prontasPorGuardar, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
+import LembreteCompras from "./LembreteCompras";
+import { LS_LISTAS_GUARDADAS, LISTA_ARRANQUE, completarPronta, marcarUsada, nArtigos, prontasPorGuardar, quando, usarLista, validarListas, mesmaLista } from "./lib/listasGuardadas";
 
 // A folha "As minhas listas" só se descarrega quando se abre.
 const ListasGuardadas = dynamic(() => import("./ListasGuardadas"), { ssr: false, loading: () => null });
@@ -170,6 +171,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   const [comparacao, setComparacao] = useState({ estado: "inicio", feitos: 0, linhas: null });
   const [resumo, setResumo]     = useState(null);
   const [verResultado, setVerResultado] = useState(false);
+  const compararAoJuntar = useRef(false);   // cabaz de arranque: compara logo que os artigos entram
   const inputRef       = useRef(null);
   const ultimoPull     = useRef(null);   // JSON do último estado vindo do servidor
   const primeiraRender = useRef(true);
@@ -462,6 +464,27 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
     setVerResultado(true);
   }
 
+  /*
+   * Cabaz de arranque: quem chega com a lista vazia vê, num toque, onde
+   * fica mais barata uma compra de 6 básicos — sem ter de escrever nada.
+   * Vem do botão da lista vazia ou do cartão do Início (sessionStorage).
+   */
+  async function arrancar(origem) {
+    evento("arranque_cabaz", { origem });
+    compararAoJuntar.current = true;
+    await usarGuardada(LISTA_ARRANQUE);
+  }
+  useEffect(() => {
+    if (!compararAoJuntar.current || !pendentes.length) return;
+    compararAoJuntar.current = false;
+    comparar();
+  }, [itens]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    let pedido = false;
+    try { pedido = sessionStorage.getItem("poupeja_arranque") === "1"; sessionStorage.removeItem("poupeja_arranque"); } catch {}
+    if (pedido && !itens.length) arrancar("inicio");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   function aoResumo(r) {
     setResumo(guardarResumo(pendentes, r));
   }
@@ -585,8 +608,19 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
       {/* Lista vazia */}
       {!itens.length && (
         <div className="px-4">
+          {/* Primeiro minuto: ver o resultado antes de escrever o que quer que seja. */}
+          <div style={{ marginTop: 14, padding: "14px 14px 12px", borderRadius: 16, background: "var(--pj-brand-wash)" }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>Experimenta com o cabaz básico</p>
+            <p style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 3, lineHeight: 1.45 }}>
+              {LISTA_ARRANQUE.itens.map(a => a.nome.toLowerCase()).join(", ")} — vê em segundos onde fica mais barato, nos {N_COMPARADAS} supermercados.
+            </p>
+            <button onClick={() => arrancar("lista")} className="pj-tap press w-full flex items-center justify-center gap-1.5"
+              style={{ marginTop: 10, minHeight: 44, borderRadius: 12, border: 0, background: "var(--pj-brand)", color: "#fff", fontSize: 14.5, fontWeight: 600 }}>
+              Comparar já <ChevronRight size={16} aria-hidden />
+            </button>
+          </div>
           <p className="px-1" style={{ marginTop: 14, fontSize: 14.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
-            A lista está vazia.
+            Ou escreve os teus artigos acima.
           </p>
           {/* As minhas listas e, por baixo, as listas prontas recomendadas */}
           {(() => {
@@ -771,6 +805,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
           <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo} onCriarConta={onCriarConta ? () => { setVerResultado(false); onCriarConta(); } : null}
             onEscolher={(id, escolha) => setItens(prev => prev.map(x => x.id === id ? (escolha ? { ...x, escolha } : (({ escolha: _, ...resto }) => resto)(x)) : x))}
             onAtualizar={() => comparar(true)} />
+          <LembreteCompras itens={pendentes} />
         </Folha>,
         document.body,
       )}

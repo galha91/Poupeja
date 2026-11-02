@@ -101,3 +101,10 @@ test("listas prontas: nomes do catálogo, completar e copiar", async () => {
   assert.equal(minhas[0].itens.length, basicos.itens.length);
   assert.equal(prontasPorGuardar(minhas).length, LISTAS_PRONTAS.length - 1);
 });
+
+test("cabaz de arranque: pequeno e com nomes do catálogo", async () => {
+  const { doCatalogo } = await import("../lib/catalogoLista.js");
+  const { LISTA_ARRANQUE } = await import("../lib/listasGuardadas.js");
+  assert.ok(LISTA_ARRANQUE.itens.length <= 8);
+  for (const a of LISTA_ARRANQUE.itens) assert.equal(doCatalogo(a.nome)?.nome, a.nome, `${a.nome} não está no catálogo`);
+});

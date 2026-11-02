@@ -576,3 +576,23 @@ alter table public.subscritores_combustivel add column if not exists convidado_i
 
 -- Marco "deixou email" no percurso do convidado.
 alter table public.convidados_site add column if not exists email_em timestamptz;
+
+-- ── Lembrete do dia das compras, por email, sem conta (2026-11-02) ─────────
+-- A pessoa escolhe o dia (1 = segunda … 7 = domingo); nessa manhã recebe a
+-- lista e um botão para comparar. Um lembrete ativo por email.
+-- (Migração lembretes_compras.)
+create table if not exists public.lembretes_compras (
+  id           uuid primary key default gen_random_uuid(),
+  email        text not null,
+  dia          smallint not null check (dia between 1 and 7),
+  itens        jsonb not null default '[]'::jsonb,
+  convidado_id uuid,
+  criado_em    timestamptz not null default now(),
+  cancelado_em timestamptz,
+  ultimo_envio date,
+  envios       integer not null default 0
+);
+create unique index if not exists lembretes_compras_ativo_uq
+  on public.lembretes_compras (lower(email)) where cancelado_em is null;
+create index if not exists lembretes_compras_dia on public.lembretes_compras (dia) where cancelado_em is null;
+alter table public.lembretes_compras enable row level security;
