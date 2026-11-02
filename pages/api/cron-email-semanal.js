@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { lerFolhetos, construirEmailFolhetos, calcularResumoUtilizador } from "../../lib/emailFolhetos";
 import { validarTodasUrls, autoCorrigirUrls, construirEmailAlerta } from "../../lib/validarUrls";
@@ -90,7 +90,7 @@ async function handler(req, res) {
       const resumo = calcularResumoUtilizador(taloesPorUser.get(u.id));
       const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl, resumo });
       try {
-        await enviarEmail(resend, {
+        await enviarEmail(resend, { tags: etiqueta("folhetos_conta"),
           from: "PoupeJá <noreply@xn--poupej-uta.com>",
           to: u.email,
           replyTo: "ricardogalha1@hotmail.com",
@@ -129,7 +129,7 @@ async function handler(req, res) {
       const unsubscribeUrl = urlCancelarSub(base, sub.id);
       const { subject, html, text } = construirEmailFolhetos({ nome: "", folhetos, base, unsubscribeUrl });
       try {
-        await enviarEmail(resend, {
+        await enviarEmail(resend, { tags: etiqueta("folhetos"),
           from: "PoupeJá <noreply@xn--poupej-uta.com>",
           to: sub.email,
           replyTo: "ricardogalha1@hotmail.com",
@@ -162,7 +162,7 @@ async function handler(req, res) {
     if (partidas.length > 0 || avisos.length > 0) {
       const adminEmail = process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com";
       const { subject, html } = construirEmailAlerta({ partidas, avisos, corrigidas, base });
-      await enviarEmail(resend, {
+      await enviarEmail(resend, { tags: etiqueta("admin"),
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: adminEmail,
         subject,

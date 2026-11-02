@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { atualizarSnapshot, idadeSnapshot, IDADE_PREOCUPANTE } from "../../lib/precosSnapshot";
 import { comRegisto } from "../../lib/cronRegisto";
@@ -48,7 +48,7 @@ async function handler(req, res) {
   const preocupante = !idade || idade.idadeMs > IDADE_PREOCUPANTE;
   if (preocupante && process.env.RESEND_API_KEY) {
     try {
-      await enviarEmail(new Resend(process.env.RESEND_API_KEY), {
+      await enviarEmail(new Resend(process.env.RESEND_API_KEY), { tags: etiqueta("admin"),
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: "poupeja.portugal@gmail.com",
         subject: `PoupeJá — preços da DGEG sem actualizar há ${idadeH ?? "?"}h`,

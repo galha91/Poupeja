@@ -1,8 +1,9 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { EMAILS_EXCLUIDOS } from "../../lib/adminAuth";
+import { garantirWebhook } from "../../lib/resendWebhook";
 import { trafegoProprio, metricas, retencao, emails, saude, lerMetas, DIA } from "../../lib/adminDados";
 import { comRegisto } from "../../lib/cronRegisto";
 
@@ -103,6 +104,7 @@ async function handler(req, res) {
   const seguro = (p) => p.catch(() => null);
   const [trafego, metr] = await Promise.all([seguro(trafegoProprio(admin, 7)), seguro(metricas(admin, 7))]);
   const alertas = detetarAlertas({ trafego, metr });
+  await garantirWebhook(admin).catch(() => null); // estatísticas dos emails (uma vez)
 
   if (!segunda && !alertas.length) return res.status(200).json({ enviado: false, alertas });
   if (!process.env.RESEND_API_KEY) return res.status(200).json({ enviado: false, alertas, motivo: "Sem RESEND_API_KEY." });
@@ -122,7 +124,7 @@ async function handler(req, res) {
     };
   }
   try {
-    await enviarEmail(new Resend(process.env.RESEND_API_KEY), { from: "PoupeJá <noreply@xn--poupej-uta.com>", to: para, ...mensagem });
+    await enviarEmail(new Resend(process.env.RESEND_API_KEY), { tags: etiqueta("admin"), from: "PoupeJá <noreply@xn--poupej-uta.com>", to: para, ...mensagem });
     return res.status(200).json({ enviado: true, resumo: segunda, alertas });
   } catch (e) {
     console.error("cron-resumo-admin:", e?.message);

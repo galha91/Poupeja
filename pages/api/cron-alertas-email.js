@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { precosDosAlertas } from "../../lib/precosAlertas";
@@ -90,7 +90,7 @@ async function handler(req, res) {
   for (const [email, itens] of Object.entries(porEmail)) {
     const { subject, html } = construirEmail(itens, base);
     try {
-      await enviarEmail(resend, {
+      await enviarEmail(resend, { tags: etiqueta("alerta_preco"),
         from: "PoupeJá <noreply@xn--poupej-uta.com>", to: email, subject, html,
         headers: itens.length === 1 ? { "List-Unsubscribe": `<${urlCancelarAlerta(base, itens[0].alerta.id)}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } : undefined,
       });

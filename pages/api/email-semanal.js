@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
 
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base });
 
   try {
-    await enviarEmail(resend, {
+    await enviarEmail(resend, { tags: etiqueta("folhetos_conta"),
       from: "PoupeJá <noreply@xn--poupej-uta.com>",
       to: email,
       replyTo: "ricardogalha1@hotmail.com",

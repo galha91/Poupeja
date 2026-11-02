@@ -1,6 +1,6 @@
 import webpush from "web-push";
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { bearerValido } from "../../lib/seguranca";
 import { urlCancelarComb } from "../../lib/subscritoresToken";
@@ -57,7 +57,7 @@ async function handler(req, res) {
 
   if (teste) {
     const { subject, html, text } = construirEmailPrevisao({ previsao, base, unsubscribeUrl: `${base}/privacidade` });
-    await enviarEmail(resend, { from: "PoupeJá <noreply@xn--poupej-uta.com>", to: EMAIL_ADMIN, subject: `[teste] ${subject}`, html, text });
+    await enviarEmail(resend, { tags: etiqueta("admin"), from: "PoupeJá <noreply@xn--poupej-uta.com>", to: EMAIL_ADMIN, subject: `[teste] ${subject}`, html, text });
     return res.status(200).json({ ok: true, teste: true, previsao, subir, push: construirPushPrevisao(previsao) });
   }
 
@@ -86,7 +86,7 @@ async function handler(req, res) {
         previsao, base, pagina: `${base}/combustiveis/${sub.concelho}`, unsubscribeUrl,
       });
       try {
-        await enviarEmail(resend, {
+        await enviarEmail(resend, { tags: etiqueta("previsao_combustivel"),
           from: "PoupeJá <noreply@xn--poupej-uta.com>",
           to: sub.email,
           replyTo: "ricardogalha1@hotmail.com",

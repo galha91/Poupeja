@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { enviarEmail } from "../../lib/enviarEmail";
+import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
 import { bearerValido } from "../../lib/seguranca";
 import { verificarLojas } from "../../lib/supermercados/saude";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
@@ -84,7 +84,7 @@ async function handler(req, res) {
     const base = process.env.NEXT_PUBLIC_URL || "https://xn--poupej-uta.com";
     const { subject, html } = construirEmail(resultados, base);
     try {
-      await enviarEmail(new Resend(process.env.RESEND_API_KEY), {
+      await enviarEmail(new Resend(process.env.RESEND_API_KEY), { tags: etiqueta("admin"),
         from: "PoupeJá <noreply@xn--poupej-uta.com>",
         to: process.env.ADMIN_EMAIL || "ricardogalha1@hotmail.com",
         subject,
