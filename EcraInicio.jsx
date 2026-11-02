@@ -27,9 +27,7 @@ const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
  * Quem ainda não fez nada vê o cabaz, o gasóleo e o jantar da semana com o
  * mesmo peso: cada pessoa chega por uma coisa diferente. (Dos primeiros 442
  * convidados só 2,5% chegaram a comparar um preço.) */
-function TresPortas({ gasoleo, onComparar, onCombustivel, onEmentas }) {
-  const { dados } = gasoleo;
-  const onde = !dados || dados.nivel === "pais" ? "no país" : dados.nivel === "exata" ? "perto de ti" : dados.cidade ? `perto de ${dados.cidade}` : "perto de ti";
+function TresPortas({ onComparar, onCombustivel, onEmentas }) {
   const porta = (acao, fn) => () => { evento("inicio_porta", { acao }); fn(); };
   const Cartao = ({ Icone, titulo, sub, direita, aoTocar }) => (
     <button onClick={aoTocar} className="pj-tap press w-full text-left flex items-center"
@@ -51,8 +49,8 @@ function TresPortas({ gasoleo, onComparar, onCombustivel, onEmentas }) {
         <Cartao Icone={Search} titulo="Onde fica mais barata a tua compra?"
           sub={`Compara 6 básicos nos ${N_COMPARADAS} supermercados, num toque. Sem conta.`}
           aoTocar={porta("comparar", onComparar)} />
-        <Cartao Icone={Fuel} titulo="Gasóleo mais barato" sub={`${onde[0].toUpperCase()}${onde.slice(1)} · ver os postos`}
-          direita={dados ? <span className="pj-num flex-none" style={{ fontSize: 17, fontWeight: 700, color: "var(--pj-text)" }}>{eur(dados.preco, 3)} €</span> : null}
+        <Cartao Icone={Fuel} titulo="Onde está o combustível mais barato perto de ti?"
+          sub="Gasolina e gasóleo, nos postos à tua volta."
           aoTocar={porta("combustivel", onCombustivel)} />
         <Cartao Icone={ChefHat} titulo="O jantar da semana, planeado" sub="Diz o orçamento e o que não comes. Sai a lista e onde é mais barata."
           aoTocar={porta("ementas", onEmentas)} />
@@ -624,7 +622,6 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             só o espaço — sem saltos. */}
         {explorar ? (
           <TresPortas
-            gasoleo={gasoleo}
             onComparar={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
             onCombustivel={() => setTab("mobilidade")}
             onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))}
