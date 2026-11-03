@@ -4,7 +4,7 @@ import {
   Download, Share, Plus, Check, CheckCircle2, Bell, Zap,
   WifiOff, Home, Smartphone, Monitor, ArrowRight, MoreVertical,
 } from "lucide-react";
-import { instalado, URL_PLAY_STORE } from "../lib/plataforma";
+import { instalado, URL_PLAY_STORE, PLAY_STORE_PUBLICADA } from "../lib/plataforma";
 import { detetarNavegador } from "../lib/navegador";
 
 /*
@@ -176,7 +176,7 @@ function AcaoInstalar({ modo, nav, aInstalar, temPrompt, onInstalar }) {
         </button>
       )}
 
-      {modo === "android" && nav === "app" && (
+      {PLAY_STORE_PUBLICADA && modo === "android" && nav === "app" && (
         <a
           href={URL_PLAY_STORE}
           className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2"
