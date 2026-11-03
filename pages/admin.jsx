@@ -525,6 +525,8 @@ function Trafego({ dados, cresc, onRepor, estadoRepor, pedir, atualizarCresc }) 
 
 // Notas do que publicaste ou mudaste, com o link etiquetado de cada
 // publicação e o que ela trouxe: visitas, convidados, retenção e contas.
+const DOMINIO_CURTO = "poupejá.com";
+
 function Publicacoes({ cresc, pedir, atualizarCresc }) {
   const { txt } = usePeriodo();
   const hoje = new Date().toLocaleDateString("sv-SE");
@@ -536,7 +538,7 @@ function Publicacoes({ cresc, pedir, atualizarCresc }) {
   const visitas = Object.fromEntries((cresc.metricas?.campanhas || []).map(c => [c.chave, c.n]));
   const porCampanha = Object.fromEntries((cresc.retencao?.porCampanha || []).map(c => [c.chave, c]));
   const etiquetas = [...new Set([...(notas || []).map(n => n.campanha).filter(Boolean), ...Object.keys(visitas), ...Object.keys(porCampanha)])];
-  const link = (c) => `${URL_SITE}/?o=${c}`;
+  const link = (c) => (c.endsWith("|curto") ? `${URL_SITE}/${c.replace("|curto", "")}` : `${URL_SITE}/?o=${c}`);
   const copiar = async (c) => { try { await navigator.clipboard.writeText(link(c)); setCopiado(c); setTimeout(() => setCopiado(""), 1500); } catch {} };
 
   async function guardar(e) {
@@ -558,6 +560,17 @@ function Publicacoes({ cresc, pedir, atualizarCresc }) {
     <Grupo Icone={Publicacao} titulo="Publicações e notas" nota="Regista o que publicas ou mudas. Usa um link etiquetado por publicação para saber o que cada uma trouxe.">
       {notas === null ? <EmRecolha>Precisa da migração admin_crescimento (supabase/setup.sql).</EmRecolha> : (
         <div className="grid gap-4 md:grid-cols-5">
+          <Painel className="md:col-span-5" titulo="Links curtos para as redes" nota="Já levam a etiqueta: usa sempre estes em vez do link normal.">
+            <div className="grid gap-2 sm:grid-cols-2">
+              {[["Instagram (bio)", "/ig"], ["TikTok (bio)", "/tt"], ["Facebook", "/fb"], ["WhatsApp", "/wa"]].map(([nome, caminho]) => (
+                <button key={caminho} type="button" onClick={() => copiar(caminho.slice(1) + "|curto")} className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 text-left hover:bg-slate-50">
+                  <span className="text-sm text-slate-700">{nome}</span>
+                  <span className="text-xs font-mono text-slate-500">{copiado === caminho.slice(1) + "|curto" ? "copiado" : `${DOMINIO_CURTO}${caminho}`}</span>
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 mt-3">Para um artigo em concreto: <span className="font-mono">/ig/azeite</span>, <span className="font-mono">/tt/leite</span>, <span className="font-mono">/ig/ovos</span>… abre a comparação desse artigo e fica registado como <span className="font-mono">ig-azeite</span>.</p>
+          </Painel>
           <Painel className="md:col-span-2" titulo="Nova nota">
             <form onSubmit={guardar} className="space-y-3">
               <div className="grid grid-cols-[auto_1fr] gap-2">
