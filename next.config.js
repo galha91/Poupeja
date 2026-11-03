@@ -56,6 +56,21 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  /*
+   * Links curtos para as redes. Já levam a etiqueta (?o=), por isso é
+   * impossível publicar um link sem origem — foi o que aconteceu: nas
+   * primeiras 36 h, 29 convidados chegaram como "direto" e nenhum com
+   * campanha. /ig, /tt, /fb, /wa para a bio; /ig/azeite, /tt/azeite…
+   * abrem a comparação desse artigo e ficam etiquetados ig-azeite, tt-azeite.
+   * (Redirecionamento temporário: o destino pode mudar.)
+   */
+  async redirects() {
+    const redes = ["ig", "tt", "fb", "wa"];
+    return [
+      ...redes.map((r) => ({ source: `/${r}`, destination: `/?o=${r}-bio`, permanent: false })),
+      ...redes.map((r) => ({ source: `/${r}/:tema([a-z0-9]{2,30})`, destination: `/?atalho=mercados&q=:tema&o=${r}-:tema`, permanent: false })),
+    ];
+  },
   async headers() {
     return [
       { source: "/(.*)", headers: securityHeaders },
