@@ -6,7 +6,7 @@ import {
   ShieldCheck, RefreshCw, ArrowLeft, CheckCircle2, Bell, Send, ChevronDown, Search,
   LayoutDashboard, BarChart3, Users, Megaphone, ArrowUpRight, ArrowDownRight, Minus,
   MousePointerClick, Gauge, Store, Bug, Repeat, Mail, Globe, Activity, SearchX, Route, AlertTriangle, Hourglass,
-  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao, Timer, MessageSquare, Wallet,
+  Download, Target, Trash2, Copy, Plus, Newspaper as Publicacao, Timer, MessageSquare, Wallet, PiggyBank,
 } from "lucide-react";
 
 // Painel privado do dono, do mais geral para o mais detalhado:
@@ -205,22 +205,55 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen text-[color:var(--pj-text)]" style={{ background: "var(--pj-surface)" }}>
       <Head>
         <title>PoupeJá · Administração</title>
         <meta name="robots" content="noindex" />
       </Head>
 
-      {/* Cabeçalho fixo: título, hora da última leitura, atualizar e separadores */}
-      <header className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex items-center gap-3 py-3">
-            <button onClick={() => router.push("/")} aria-label="Voltar à app" className="w-9 h-9 -ml-2 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100">
+      {/* Barra lateral (≥1024px): logótipo, separadores e voltar à app */}
+      <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-60 z-30 px-4 py-6 border-r border-[color:var(--pj-subtle)]" style={{ background: "var(--pj-card)" }}>
+        <div className="flex items-center gap-2 px-2 mb-8">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: "linear-gradient(135deg,var(--pj-brand),var(--pj-cat-verde))" }}>
+            <PiggyBank size={19} strokeWidth={2} aria-hidden="true" />
+          </div>
+          <span className="text-xl font-black tracking-tight text-[color:var(--pj-text)]">Poupe<span className="text-[color:var(--pj-brand-ink)]">Já</span></span>
+          <span className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-md leading-none" style={{ background: "var(--pj-brand)" }}>ADMIN</span>
+        </div>
+        {estado === "ok" && (
+          <nav aria-label="Secções" className="flex flex-col gap-1">
+            {ABAS.map(({ id, rotulo, Icone }) => (
+              <button
+                key={id}
+                onClick={() => setAba(id)}
+                aria-current={aba === id ? "page" : undefined}
+                className={`press flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-[13px] font-black transition-colors ${
+                  aba === id ? "bg-[color:var(--pj-brand-wash)] text-[color:var(--pj-brand-ink)]" : "text-[color:var(--pj-text-muted)] hover:bg-[color:var(--pj-surface)]"
+                }`}
+              >
+                <Icone size={18} strokeWidth={aba === id ? 2.5 : 1.8} aria-hidden="true" /> {rotulo}
+              </button>
+            ))}
+          </nav>
+        )}
+        <div className="mt-auto flex flex-col gap-1 border-t border-[color:var(--pj-subtle)] pt-4">
+          <button onClick={() => router.push("/")} className="press flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-[13px] font-black text-[color:var(--pj-text-muted)] hover:bg-[color:var(--pj-surface)]">
+            <ArrowLeft size={18} strokeWidth={1.8} aria-hidden="true" /> Voltar à app
+          </button>
+        </div>
+      </aside>
+
+      <div className="lg:pl-60">
+      {/* Cabeçalho fixo: título, hora da última leitura, atualizar e separadores (os separadores só abaixo de 1024px) */}
+      <header className="sticky top-0 z-20 backdrop-blur border-b border-[color:var(--pj-border)]" style={{ background: "var(--pj-header)" }}>
+        <div className="max-w-5xl mx-auto px-4 lg:px-8">
+          <div className="flex items-center gap-3 py-3 lg:py-5">
+            <button onClick={() => router.push("/")} aria-label="Voltar à app" className="lg:hidden w-9 h-9 -ml-2 rounded-lg flex items-center justify-center text-[color:var(--pj-text-muted)] hover:bg-[color:var(--pj-subtle)]">
               <ArrowLeft size={18} />
             </button>
             <div className="min-w-0 flex-1">
-              <h1 className="font-display text-lg font-semibold leading-tight">Administração</h1>
-              <p className="text-xs text-slate-500">
+              <h1 className="font-display text-lg lg:text-[26px] font-semibold leading-tight tracking-[-0.01em]">Administração</h1>
+              <p className="text-xs lg:text-[13px] text-[color:var(--pj-text-muted)]">
                 {stats ? `Atualizado às ${fmtHora(stats.atualizadoEm)}` : "Painel privado"}
               </p>
             </div>
@@ -231,7 +264,7 @@ export default function Admin() {
               <button
                 onClick={() => carregar()}
                 disabled={aAtualizar}
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-60"
+                className="press inline-flex items-center gap-1.5 h-9 px-3 rounded-[10px] border border-[color:var(--pj-border)] bg-[color:var(--pj-card)] text-sm font-semibold text-[color:var(--pj-text-muted)] hover:bg-[color:var(--pj-subtle)] hover:text-[color:var(--pj-text)] disabled:opacity-60"
               >
                 <RefreshCw size={14} className={aAtualizar ? "animate-spin" : ""} />
                 <span className="hidden sm:inline">Atualizar</span>
@@ -239,7 +272,7 @@ export default function Admin() {
             )}
           </div>
           {estado === "ok" && (
-            <nav role="tablist" aria-label="Secções" className="flex sm:gap-1 -mb-px overflow-x-auto">
+            <nav role="tablist" aria-label="Secções" className="lg:hidden flex sm:gap-1 -mb-px overflow-x-auto no-scrollbar">
               {ABAS.map(({ id, rotulo, Icone }) => (
                 <button
                   key={id}
@@ -247,7 +280,7 @@ export default function Admin() {
                   aria-selected={aba === id}
                   onClick={() => setAba(id)}
                   className={`inline-flex items-center gap-1.5 px-2 sm:px-3 py-2.5 text-[13px] sm:text-sm font-semibold whitespace-nowrap border-b-2 transition ${
-                    aba === id ? "border-emerald-500 text-emerald-700" : "border-transparent text-slate-500 hover:text-slate-700"
+                    aba === id ? "border-[color:var(--pj-brand)] text-[color:var(--pj-brand-ink)]" : "border-transparent text-[color:var(--pj-text-muted)] hover:text-[color:var(--pj-text)]"
                   }`}
                 >
                   <Icone size={15} className="hidden min-[400px]:block" /> {rotulo}
@@ -258,7 +291,7 @@ export default function Admin() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-5">
+      <main className="max-w-5xl mx-auto px-4 lg:px-8 py-5 lg:py-6">
         {estado === "a-carregar" && <Esqueleto />}
 
         {estado === "negado" && (
@@ -318,6 +351,7 @@ export default function Admin() {
           </PeriodoCtx.Provider>
         )}
       </main>
+      </div>
     </div>
   );
 }
@@ -1545,11 +1579,11 @@ function FichaContacto({ p }) {
 
 function Painel({ titulo, nota, acao, csv, nomeCsv, className = "", children }) {
   return (
-    <section className={`min-w-0 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 ${className}`}>
+    <section className={`min-w-0 bg-[color:var(--pj-card)] rounded-2xl border border-[color:var(--pj-border)] p-4 sm:p-5 ${className}`}>
       <header className="flex items-start gap-3 mb-4">
         <div className="min-w-0">
-          <h2 className="font-semibold text-slate-800 leading-snug">{titulo}</h2>
-          {nota && <p className="text-xs text-slate-400 mt-0.5">{nota}</p>}
+          <h2 className="font-display text-[19px] font-semibold tracking-[-0.01em] text-[color:var(--pj-text)] leading-snug">{titulo}</h2>
+          {nota && <p className="text-xs text-[color:var(--pj-text-faint)] mt-0.5">{nota}</p>}
         </div>
         {(acao || csv) && (
           <span className="ml-auto shrink-0 pt-0.5 flex items-center gap-3">
@@ -1569,13 +1603,13 @@ function Grupo({ Icone, titulo, nota, children }) {
     <div className="pt-3 first:pt-0">
       <div className="flex items-start gap-2.5">
         {Icone && (
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-            <Icone size={16} />
+          <div className="w-9 h-9 rounded-[10px] bg-[color:var(--pj-brand-wash)] text-[color:var(--pj-brand-ink)] flex items-center justify-center shrink-0">
+            <Icone size={18} />
           </div>
         )}
         <div className="min-w-0">
-          <h2 className="font-display text-base font-semibold text-slate-800 leading-tight">{titulo}</h2>
-          {nota && <p className="text-xs text-slate-500 mt-0.5">{nota}</p>}
+          <h2 className="font-display text-[19px] font-semibold tracking-[-0.01em] text-[color:var(--pj-text)] leading-tight">{titulo}</h2>
+          {nota && <p className="text-[12.5px] leading-snug text-[color:var(--pj-text-muted)] mt-0.5">{nota}</p>}
         </div>
       </div>
       {children && <div className="mt-3 space-y-4">{children}</div>}
@@ -1602,10 +1636,10 @@ function Grelha4({ children }) {
 function Kpi({ rotulo, ajuda, valor, antes, meta }) {
   const progresso = meta && typeof valor === "number" ? Math.min(100, Math.round((valor / meta) * 100)) : null;
   return (
-    <div className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4">
-      <p className="text-xs font-semibold text-slate-500">{rotulo}</p>
-      <p className="font-display text-3xl font-semibold text-slate-900 mt-1 tabular-nums">{num(valor)}</p>
-      <div className="mt-1 min-h-[1rem] flex flex-wrap items-center gap-x-2 text-xs text-slate-400">
+    <div className="min-w-0 bg-[color:var(--pj-card)] rounded-2xl border border-[color:var(--pj-border)] p-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)]">{rotulo}</p>
+      <p className="font-display text-[26px] sm:text-3xl font-semibold tracking-[-0.01em] text-[color:var(--pj-text)] mt-1 pj-num">{num(valor)}</p>
+      <div className="mt-1 min-h-[1rem] flex flex-wrap items-center gap-x-2 text-xs text-[color:var(--pj-text-faint)]">
         {antes !== undefined && typeof valor === "number" && <Variacao agora={valor} antes={antes} />}
         {ajuda && <span>{ajuda}</span>}
       </div>
@@ -1810,11 +1844,11 @@ function TabelaPeriodos({ linhas }) {
   return (
     <table className="w-full text-sm tabular-nums">
       <thead>
-        <tr className="text-xs text-slate-500">
+        <tr className="text-[11px] uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)]">
           <th className="text-left font-semibold pb-2" />
-          <th className="text-right font-semibold pb-2 w-14">Hoje</th>
-          <th className="text-right font-semibold pb-2 w-14">7 d</th>
-          <th className="text-right font-semibold pb-2 w-14">30 d</th>
+          <th className="text-right font-semibold pb-2 w-16">Hoje</th>
+          <th className="text-right font-semibold pb-2 w-16">7 d</th>
+          <th className="text-right font-semibold pb-2 w-16">30 d</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100">
@@ -1843,13 +1877,13 @@ function LinhaDado({ rotulo, valor, nota }) {
 
 function Segmentado({ valor, onChange, opcoes, rotulo }) {
   return (
-    <div className="inline-flex bg-slate-100 p-0.5 rounded-lg" role="group" aria-label={rotulo}>
+    <div className="inline-flex bg-[color:var(--pj-subtle)] p-0.5 rounded-[10px]" role="group" aria-label={rotulo}>
       {opcoes.map(([id, rotulo]) => (
         <button
           key={id}
           onClick={() => onChange(id)}
           aria-pressed={valor === id}
-          className={`px-3 h-8 text-xs font-semibold rounded-md transition ${valor === id ? "bg-white text-slate-800 shadow-sm" : "text-slate-500"}`}
+          className={`px-3 h-8 text-xs font-semibold rounded-lg transition ${valor === id ? "bg-[color:var(--pj-card)] text-[color:var(--pj-text)] shadow-sm" : "text-[color:var(--pj-text-muted)] hover:text-[color:var(--pj-text)]"}`}
         >
           {rotulo}
         </button>
@@ -1859,7 +1893,7 @@ function Segmentado({ valor, onChange, opcoes, rotulo }) {
 }
 
 function Etiqueta({ children, forte = false }) {
-  return <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${forte ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{children}</span>;
+  return <span className={`inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full ${forte ? "bg-[color:var(--pj-brand-wash)] text-[color:var(--pj-brand-ink)]" : "bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-strong)]"}`}>{children}</span>;
 }
 
 function LinkAba({ onClick, children }) {
