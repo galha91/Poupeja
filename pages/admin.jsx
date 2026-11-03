@@ -258,12 +258,13 @@ export default function Admin() {
               </p>
             </div>
             {estado === "ok" && (
-              <Segmentado valor={dias} onChange={mudarPeriodo} opcoes={PERIODOS} rotulo="Período" />
+              <Segmentado valor={dias} onChange={mudarPeriodo} opcoes={PERIODOS} rotulo="Período" className="hidden sm:inline-flex" />
             )}
             {estado === "ok" && (
               <button
                 onClick={() => carregar()}
                 disabled={aAtualizar}
+                aria-label="Atualizar"
                 className="press inline-flex items-center gap-1.5 h-9 px-3 rounded-[10px] border border-[color:var(--pj-border)] bg-[color:var(--pj-card)] text-sm font-semibold text-[color:var(--pj-text-muted)] hover:bg-[color:var(--pj-subtle)] hover:text-[color:var(--pj-text)] disabled:opacity-60"
               >
                 <RefreshCw size={14} className={aAtualizar ? "animate-spin" : ""} />
@@ -271,27 +272,46 @@ export default function Admin() {
               </button>
             )}
           </div>
+          {/* Telemóvel: período a toda a largura por baixo do título */}
           {estado === "ok" && (
-            <nav role="tablist" aria-label="Secções" className="lg:hidden flex sm:gap-1 -mb-px overflow-x-auto no-scrollbar">
-              {ABAS.map(({ id, rotulo, Icone }) => (
-                <button
-                  key={id}
-                  role="tab"
-                  aria-selected={aba === id}
-                  onClick={() => setAba(id)}
-                  className={`inline-flex items-center gap-1.5 px-2 sm:px-3 py-2.5 text-[13px] sm:text-sm font-semibold whitespace-nowrap border-b-2 transition ${
-                    aba === id ? "border-[color:var(--pj-brand)] text-[color:var(--pj-brand-ink)]" : "border-transparent text-[color:var(--pj-text-muted)] hover:text-[color:var(--pj-text)]"
-                  }`}
-                >
-                  <Icone size={15} className="hidden min-[400px]:block" /> {rotulo}
-                </button>
-              ))}
-            </nav>
+            <div className="sm:hidden pb-3">
+              <Segmentado valor={dias} onChange={mudarPeriodo} opcoes={PERIODOS} rotulo="Período" className="flex w-full" />
+            </div>
           )}
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 lg:px-8 py-5 lg:py-6">
+      {/* Telemóvel e tablet: separadores numa barra fixa em baixo, como na app */}
+      {estado === "ok" && (
+        <nav
+          role="tablist"
+          aria-label="Secções"
+          className="lg:hidden fixed bottom-0 inset-x-0 z-40 backdrop-blur-md border-t"
+          style={{ background: "var(--pj-nav)", borderColor: "var(--pj-border)", boxShadow: "0 -4px 24px rgba(20,35,28,.07)", paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
+          <div className="max-w-md mx-auto grid grid-cols-6 gap-0.5 px-1 py-1.5">
+            {ABAS.map(({ id, rotulo, Icone }) => {
+              const ativo = aba === id;
+              return (
+                <button
+                  key={id}
+                  role="tab"
+                  aria-selected={ativo}
+                  onClick={() => { setAba(id); window.scrollTo({ top: 0 }); }}
+                  className="min-w-0 flex flex-col items-center gap-0.5 px-0.5 py-1.5 rounded-xl transition-colors duration-150"
+                  style={{ background: ativo ? "var(--pj-brand-wash)" : "transparent" }}
+                >
+                  <Icone size={20} strokeWidth={ativo ? 2.4 : 1.8} aria-hidden="true" style={{ color: ativo ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }} />
+                  <span className="text-[10px] font-semibold truncate max-w-full" style={{ color: ativo ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>{rotulo}</span>
+                  <span className="w-1 h-1 rounded-full transition-all duration-200" style={{ background: "var(--pj-brand-ink)", opacity: ativo ? 1 : 0, transform: `scale(${ativo ? 1 : 0})` }} />
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
+
+      <main className="max-w-5xl mx-auto px-4 lg:px-8 pt-5 pb-28 lg:py-6">
         {estado === "a-carregar" && <Esqueleto />}
 
         {estado === "negado" && (
@@ -1005,7 +1025,7 @@ function Estado({ cresc, irPara }) {
     {tarefasMal.length > 0 && (
       <button onClick={() => irPara("qualidade")} className="w-full text-left rounded-2xl border border-[color:var(--pj-danger-border)] bg-[color:var(--pj-danger-wash)] px-4 py-3 flex items-start gap-3">
         <AlertTriangle size={16} className="mt-0.5 shrink-0 text-[color:var(--pj-danger)]" />
-        <span className="text-sm text-slate-800">
+        <span className="text-sm text-[color:var(--pj-text)]">
           <b>{tarefasMal.length === 1 ? "Uma tarefa automática" : `${tarefasMal.length} tarefas automáticas`} com problemas:</b>{" "}
           {tarefasMal.map(t => `${NOMES_TAREFA[t.nome] || t.nome} (${t.ok === false ? "falhou" : "atrasada"})`).join(", ")}
         </span>
@@ -1013,13 +1033,24 @@ function Estado({ cresc, irPara }) {
     )}
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {itens.map(({ Icone, rotulo, valor, nota, alerta, aba }) => (
-        <button key={rotulo} onClick={() => irPara(aba)} className={`min-w-0 text-left rounded-2xl border px-4 py-3 flex items-start gap-3 hover:bg-white ${alerta ? "border-[color:var(--pj-danger-border)] bg-[color:var(--pj-danger-wash)]" : "border-slate-200 bg-slate-50"}`}>
-          <Icone size={16} className={`mt-0.5 shrink-0 ${alerta ? "text-[color:var(--pj-danger)]" : "text-emerald-600"}`} />
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">{rotulo}{alerta && <AlertTriangle size={12} className="text-[color:var(--pj-danger)]" />}</p>
-            <p className="text-sm font-semibold text-slate-900">{valor ?? <span className="text-slate-400 font-medium">sem dados ainda</span>}</p>
-            <p className="text-xs text-slate-500 truncate">{nota}</p>
-          </div>
+        <button key={rotulo} onClick={() => irPara(aba)} className={`pj-tap min-w-0 text-left rounded-2xl border p-3.5 flex flex-col gap-2.5 ${alerta ? "border-[color:var(--pj-danger-border)] bg-[color:var(--pj-danger-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-card)] hover:bg-[color:var(--pj-surface)]"}`}>
+          <span className="flex items-center justify-between gap-2">
+            <span className={`w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 ${alerta ? "bg-[color:var(--pj-card)] text-[color:var(--pj-danger)]" : "bg-[color:var(--pj-brand-wash)] text-[color:var(--pj-brand-ink)]"}`}>
+              <Icone size={18} aria-hidden="true" />
+            </span>
+            <span className={`inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-[11px] font-semibold ${
+              valor == null ? "bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-strong)]"
+                : alerta ? "bg-[color:var(--pj-card)] text-[color:var(--pj-danger)]" : "bg-[color:var(--pj-brand-wash)] text-[color:var(--pj-brand-ink)]"
+            }`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current" aria-hidden="true" />
+              {valor == null ? "A recolher" : alerta ? "Atenção" : "OK"}
+            </span>
+          </span>
+          <span className="min-w-0 block">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)]">{rotulo}</span>
+            <span className="block text-[15px] font-semibold leading-tight text-[color:var(--pj-text)] mt-1 pj-num">{valor ?? <span className="text-[color:var(--pj-text-faint)] font-medium">sem dados ainda</span>}</span>
+            <span className="block text-xs text-[color:var(--pj-text-muted)] mt-0.5 truncate">{nota}</span>
+          </span>
         </button>
       ))}
     </div>
@@ -1875,15 +1906,15 @@ function LinhaDado({ rotulo, valor, nota }) {
   );
 }
 
-function Segmentado({ valor, onChange, opcoes, rotulo }) {
+function Segmentado({ valor, onChange, opcoes, rotulo, className = "inline-flex" }) {
   return (
-    <div className="inline-flex bg-[color:var(--pj-subtle)] p-0.5 rounded-[10px]" role="group" aria-label={rotulo}>
+    <div className={`${className} bg-[color:var(--pj-subtle)] p-0.5 rounded-[10px]`} role="group" aria-label={rotulo}>
       {opcoes.map(([id, rotulo]) => (
         <button
           key={id}
           onClick={() => onChange(id)}
           aria-pressed={valor === id}
-          className={`px-3 h-8 text-xs font-semibold rounded-lg transition ${valor === id ? "bg-[color:var(--pj-card)] text-[color:var(--pj-text)] shadow-sm" : "text-[color:var(--pj-text-muted)] hover:text-[color:var(--pj-text)]"}`}
+          className={`flex-1 whitespace-nowrap px-3 h-8 text-xs font-semibold rounded-lg transition ${valor === id ? "bg-[color:var(--pj-card)] text-[color:var(--pj-text)] shadow-sm" : "text-[color:var(--pj-text-muted)] hover:text-[color:var(--pj-text)]"}`}
         >
           {rotulo}
         </button>
