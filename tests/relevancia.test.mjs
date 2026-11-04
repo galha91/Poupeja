@@ -166,6 +166,8 @@ const LIVRES = [
   ["cebolinho", "Cebolinho Vaso Primeira Folha", "", "apolonia", 1],
   ["algodão", "Algodão Limpa Pratas Duraglit 75g", "", "apolonia", 1],
   ["figos", "Figo com farinha auchan 1 kg", "", "auchan", 1],
+  ["esponjas", "Esponjas banho neosanit com sabão uso único 25un", "casa/banho", "auchan", 1],
+  ["esponjas", "Esponja Cozinha Natsil", "Limpeza/Esponjas", "continente", 2],
 ];
 
 test("pesquisas livres: marcas, imitações e parecidos", () => {
