@@ -22,3 +22,16 @@ test("horário dos crons em texto", async () => {
   assert.deepEqual(descreverHorario("0 8 * * 4"), { texto: "à quinta, 08:00 UTC", intervaloH: 168 });
   assert.deepEqual(descreverHorario("45 18 * * *"), { texto: "todos os dias, 18:45 UTC", intervaloH: 24 });
 });
+
+test("registo acontece antes de a resposta sair", async () => {
+  const { comRegisto } = await import("../lib/cronRegisto.js");
+  const ordem = [];
+  const res = { statusCode: 200, status(c) { this.statusCode = c; return this; }, json(b) { ordem.push("resposta"); return b; } };
+  const handler = comRegisto("teste", async (req, r) => r.status(200).json({ ok: true }));
+  // Sem Supabase configurado o registo não faz nada, mas a ordem mantém-se.
+  const original = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+  await handler({ query: {}, headers: {} }, res);
+  if (original) process.env.NEXT_PUBLIC_SUPABASE_URL = original;
+  assert.deepEqual(ordem, ["resposta"]);
+});
