@@ -641,3 +641,38 @@ create table if not exists public.feedback_app (
 );
 create index if not exists feedback_app_dia on public.feedback_app (dia);
 alter table public.feedback_app enable row level security;
+
+-- ── Reserva dos crons ───────────────────────────────────────────────────────
+-- O plano Hobby da Vercel não repete um cron que falhou. Todos os dias às
+-- 10:17 UTC o pg_cron chama as tarefas diárias com ?reserva=1; a rota só corre
+-- se a tarefa não tiver corrido nas últimas 20 h (lib/cronRegisto.js).
+-- O segredo vive no Vault (nunca no repositório). Criar uma vez, à mão:
+--   select vault.create_secret(encode(extensions.gen_random_bytes(32), 'hex'), 'reserva_crons');
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+
+create or replace function public.segredo_reserva_crons()
+returns text language sql security definer set search_path = public as $$
+  select decrypted_secret from vault.decrypted_secrets where name = 'reserva_crons' limit 1;
+$$;
+revoke all on function public.segredo_reserva_crons() from public, anon, authenticated;
+grant execute on function public.segredo_reserva_crons() to service_role;
+
+create or replace function public.chamar_reserva_crons()
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  rota text;
+  segredo text := public.segredo_reserva_crons();
+begin
+  foreach rota in array array['cron-saude-precos', 'cron-lembrete-compras'] loop
+    perform net.http_get(
+      url := 'https://xn--poupej-uta.com/api/' || rota || '?reserva=1',
+      headers := jsonb_build_object('Authorization', 'Bearer ' || segredo),
+      timeout_milliseconds := 60000
+    );
+  end loop;
+end;
+$$;
+revoke all on function public.chamar_reserva_crons() from public, anon, authenticated;
+
+select cron.schedule('reserva-crons', '17 10 * * *', 'select public.chamar_reserva_crons()');
