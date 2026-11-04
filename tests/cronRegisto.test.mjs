@@ -9,6 +9,14 @@ test("resumo do cron: curto e sem listas grandes", () => {
   assert.ok(resumir({ t: "x".repeat(2000) }).length <= 600);
 });
 
+test("reserva: só atua se o cron não correu nas últimas 20h", async () => {
+  const { jaCorreuRecentemente } = await import("../lib/cronRegisto.js");
+  const agora = Date.parse("2026-11-04T10:00:00Z");
+  assert.equal(jaCorreuRecentemente(null, agora), false);
+  assert.equal(jaCorreuRecentemente("2026-11-04T06:42:00Z", agora), true);
+  assert.equal(jaCorreuRecentemente("2026-11-03T06:42:00Z", agora), false);
+});
+
 test("horário dos crons em texto", async () => {
   const { descreverHorario } = await import("../lib/horarioCron.js");
   assert.deepEqual(descreverHorario("0 8 * * 4"), { texto: "à quinta, 08:00 UTC", intervaloH: 168 });
