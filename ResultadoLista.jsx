@@ -5,6 +5,7 @@ import { useDeslocacao, BotaoCombustivel } from "./DeslocacaoLista";
 import { Preco } from "./Preco";
 import { NotaCobertura } from "./Cobertura";
 import { eur } from "./lib/formato";
+import { detalheQuantidade } from "./lib/quantidadeFresca";
 import { evento } from "./lib/analytics";
 import { registarMarcoConvidado } from "./lib/convidado";
 import { melhoresPorLoja, custoPorLoja, alternativas, exemplosGenerico, textoReferencia } from "./lib/comparacao";
@@ -54,7 +55,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
   const linhas = useMemo(() => linhasOrig.map((l) => {
     const esc = escolhas[String(l.item.id)] || null;
     if (!l.dados || (esc || null) === (l.item.escolha || null)) return l;
-    return { ...l, ...custoPorLoja(l.dados, l.item.qty || 1, esc), item: { ...l.item, escolha: esc || undefined } };
+    return { ...l, ...custoPorLoja(l.dados, l.item.qty || 1, esc, { kg: l.item.kg }), item: { ...l.item, escolha: esc || undefined } };
   }), [linhasOrig, escolhas]);
   function escolherProduto(l, p) {
     const esc = p ? { loja: p.loja, id: String(p.id), nome: p.nome } : null;
@@ -279,18 +280,18 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
         <div className="flex items-center gap-2">
           <span className="flex-1 min-w-0">
             <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
-              {l.item.nome}{l.item.qty > 1 ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> ×{l.item.qty}</span> : null}
+              {l.item.nome}{l.porPeso ? null : l.item.qty > 1 ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> ×{l.item.qty}</span> : null}
               {c?.escolhido && <span style={etiqueta}>a tua escolha</span>}
               {desceu && <span style={etiqueta}>{aviso.motivo === "desceu" ? "desceu" : "promoção"}</span>}
             </span>
             <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {c.produto.nome}{c.produto.quantidade && !c.produto.aoPeso ? ` · ${c.produto.quantidade}` : c.produto.aoPeso ? " · ao peso" : ""}
+              {c.produto.nome}{l.porPeso ? ` · ${detalheQuantidade(c.produto, l.referencia.qtd)}` : c.produto.quantidade && !c.produto.aoPeso ? ` · ${c.produto.quantidade}` : c.produto.aoPeso ? " · ao peso" : ""}
             </span>
           </span>
           <span style={{ textAlign: "right" }}>
             <span className="pj-num" style={{ display: "block", fontSize: 14, fontWeight: 700, color: "var(--pj-text)" }}>{eur(c.custo, 2)} €</span>
-            {l.referencia && textoReferencia(l.referencia, l.item.qty || 1) && (
-              <span style={{ display: "block", fontSize: 11, color: "var(--pj-text-faint)" }}>por {textoReferencia(l.referencia, l.item.qty || 1)}</span>
+            {l.referencia && textoReferencia(l.referencia, l.porPeso ? 1 : l.item.qty || 1) && (
+              <span style={{ display: "block", fontSize: 11, color: "var(--pj-text-faint)" }}>por {textoReferencia(l.referencia, l.porPeso ? 1 : l.item.qty || 1)}</span>
             )}
           </span>
           {l.dados && (

@@ -75,14 +75,14 @@ function guardarRecente(q) {
  * com o termo da pesquisa onde ele apareceu, para a comparação da lista o
  * voltar a encontrar.
  */
-function juntarALista(nome, produto = null, q = null) {
+function juntarALista(nome, produto = null, q = null, kg = null) {
   try {
     const itens = JSON.parse(localStorage.getItem(LS_LISTA) || "[]");
     const escolha = produto?.id ? { escolha: { loja: produto.loja, id: String(produto.id), nome: produto.nome }, ...(q ? { q } : {}) } : {};
     const existe = itens.find((i) => i.nome.toLowerCase() === nome.toLowerCase() && !i.feito);
     const novos = existe
-      ? itens.map((i) => (i === existe ? { ...i, ...(produto ? escolha : { qty: (i.qty || 1) + 1 }) } : i))
-      : [{ id: Date.now() + Math.random(), nome: itemPorNome(nome)?.nome || nome, emoji: "", categoria: NOME_CATEGORIA[itemPorNome(nome)?.cat] || "", qty: 1, feito: false, ...(itemPorNome(nome) ? { q: itemPorNome(nome).q } : {}), ...escolha }, ...itens];
+      ? itens.map((i) => (i === existe ? { ...i, ...(produto ? escolha : kg ? { kg } : { qty: (i.qty || 1) + 1 }) } : i))
+      : [{ id: Date.now() + Math.random(), nome: itemPorNome(nome)?.nome || nome, emoji: "", categoria: NOME_CATEGORIA[itemPorNome(nome)?.cat] || "", qty: 1, feito: false, ...(itemPorNome(nome) ? { q: itemPorNome(nome).q } : {}), ...(kg ? { kg } : {}), ...escolha }, ...itens];
     localStorage.setItem(LS_LISTA, JSON.stringify(novos));
     return true;
   } catch { return false; }
@@ -447,7 +447,7 @@ export default function SecaoComparar() {
   // "+" num resultado: este produto, mesmo que não seja o mais barato.
   function produtoParaLista(p) {
     const nome = pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1);
-    if (!juntarALista(nome, p, pesquisa)) return;
+    if (!juntarALista(nome, p, pesquisa, vista?.kg)) return;
     setProdutosNaLista((s) => new Set(s).add(`${p.loja}|${p.id}`));
     setNaLista(true);
     evento("comparar_produto_para_lista", { loja: p.loja });
@@ -750,7 +750,7 @@ export default function SecaoComparar() {
               q={pesquisa}
               historico={marca === "todas" ? dados.historico : null}
               naLista={naLista}
-              onLista={() => { if (juntarALista(pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1))) { setNaLista(true); evento("comparar_para_lista"); } }}
+              onLista={() => { if (juntarALista(pesquisa.charAt(0).toUpperCase() + pesquisa.slice(1), null, null, vista.kg)) { setNaLista(true); evento("comparar_para_lista"); } }}
             />
 
             <section>

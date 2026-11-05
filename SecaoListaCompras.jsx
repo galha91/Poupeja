@@ -6,7 +6,8 @@ import { N_COMPARADAS } from "./lib/cobertura";
 import { eGenerico, opcoesGenerico } from "./lib/comparacao";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
-import { agruparPorCategoria, adicionar, alterarQty, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, juntarPartilhada, ID_PARTILHA_RE, MAX_ARTIGOS } from "./lib/listaCompras";
+import { textoPeso } from "./lib/quantidadeFresca";
+import { agruparPorCategoria, adicionar, alterarQty, alterarKg, definirQty, limitarQty, retirar, repor, semAcentos, sugestoesIniciais, juntarPartilhada, ID_PARTILHA_RE, MAX_ARTIGOS } from "./lib/listaCompras";
 import { lerResumo, guardarResumo } from "./lib/resumoLista";
 import LembreteCompras from "./LembreteCompras";
 import FoiUtil from "./FoiUtil";
@@ -95,6 +96,8 @@ const rotulo = { fontSize: 12, fontWeight: 600, textTransform: "uppercase", lett
 function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onDefinirQty, onRemover }) {
   const feito = item.feito;
   const qty = item.qty || 1;
+  // Fruta e legumes ao kg: o peso que se quer levar, em vez de unidades.
+  const kg = item.kg || null;
   // Rascunho do campo: deixa apagar tudo e escrever "130" sem saltar para 1 a meio.
   const [rascunho, setRascunho] = useState(null);
   const confirmar = () => {
@@ -105,7 +108,7 @@ function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onDefinirQ
     <li className="flex items-center" style={{ listStyle: "none", minHeight: 52, borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
       <button onClick={editando ? onEditar : onMarcar} className="pj-tap flex items-center flex-1 min-w-0 text-left"
         style={{ gap: 14, minHeight: 52, padding: "0 4px 0 0", background: "transparent", border: 0 }}
-        aria-pressed={feito} aria-label={`${item.nome}${qty > 1 ? `, ${qty}` : ""}${feito ? ", comprado" : ""}`}>
+        aria-pressed={feito} aria-label={`${item.nome}${kg ? `, ${textoPeso(kg)}` : qty > 1 ? `, ${qty}` : ""}${feito ? ", comprado" : ""}`}>
         <span aria-hidden className="flex items-center justify-center flex-none"
           style={{ width: 22, height: 22, borderRadius: 7, border: feito ? 0 : "1.5px solid var(--pj-text-faint)", background: feito ? "var(--pj-brand)" : "transparent", transition: "background-color .15s ease" }}>
           {feito && <Check size={14} strokeWidth={3} color="#fff" />}
@@ -115,7 +118,26 @@ function Linha({ item, primeira, editando, onMarcar, onEditar, onQty, onDefinirQ
         </span>
       </button>
 
-      {!feito && (editando ? (
+      {!feito && kg && (editando ? (
+        <div className="flex items-center flex-none" style={{ gap: 2 }}>
+          <button onClick={() => onQty(-1)} disabled={kg <= 0.25} aria-label={`Menos ${item.nome}`} className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: kg <= 0.25 ? 0.4 : 1 }}>
+            <Minus size={16} />
+          </button>
+          <span className="pj-num text-center" aria-live="polite" style={{ minWidth: 62, fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{textoPeso(kg)}</span>
+          <button onClick={() => onQty(1)} disabled={kg >= 5} aria-label={`Mais ${item.nome}`} className="pj-tap flex items-center justify-center"
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: kg >= 5 ? 0.4 : 1 }}>
+            <Plus size={16} />
+          </button>
+        </div>
+      ) : (
+        <button onClick={onEditar} aria-label={`Peso de ${item.nome}: ${textoPeso(kg)}. Alterar`} className="pj-tap pj-num flex items-center justify-end flex-none"
+          style={{ minWidth: 40, height: 44, padding: "0 2px 0 8px", background: "transparent", border: 0, fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
+          {textoPeso(kg)}
+        </button>
+      ))}
+
+      {!feito && !kg && (editando ? (
         <div className="flex items-center flex-none" style={{ gap: 2 }}>
           <button onClick={() => onQty(-1)} disabled={qty <= 1} aria-label={`Menos ${item.nome}`} className="pj-tap flex items-center justify-center"
             style={{ width: 44, height: 44, borderRadius: 12, background: "var(--pj-subtle)", border: 0, color: "var(--pj-text)", opacity: qty <= 1 ? 0.4 : 1 }}>
@@ -302,6 +324,13 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
     }
     return pedidoCatalogo.current;
   }
+  // Fruta e legumes de listas antigas (ou partilhadas) sem peso: o catálogo
+  // diz quais se compram ao kg, e passam a 1 kg.
+  const faltaPeso = itens.some(i => !i.feito && i.kg == null && i.categoria === "Frutas e legumes");
+  useEffect(() => {
+    if (faltaPeso) carregarCatalogo().then(m => { if (m) setItens(prev => m.preencherCategorias(prev)); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faltaPeso]);
   // Lista vazia: o campo já vem focado.
   useEffect(() => { if (!itens.length) inputRef.current?.focus(); }, []);
 
@@ -449,7 +478,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   // O último resultado (desta lista, de hoje) — `resumo` só serve para redesenhar.
   const resumoAtual = useMemo(() => lerResumo(pendentes), [itens, resumo]);
   // Os artigos mudaram desde a última comparação: o resultado em memória já não vale.
-  const chaveAtual = JSON.stringify(pendentes.map(i => [i.nome, i.qty || 1]));
+  const chaveAtual = JSON.stringify(pendentes.map(i => [i.nome, i.qty || 1, i.kg || 0]));
   const linhasValidas = comparacao.linhas && comparacao.chave === chaveAtual;
 
   async function comparar(forcar = false) {
@@ -705,7 +734,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
               <Linha key={it.id} item={it} primeira={!i} editando={editando === it.id}
                 onMarcar={() => marcar(it.id)}
                 onEditar={() => setEditando(e => e === it.id ? null : it.id)}
-                onQty={d => setItens(prev => alterarQty(prev, it.id, d))}
+                onQty={d => setItens(prev => (it.kg ? alterarKg : alterarQty)(prev, it.id, d))}
                 onDefinirQty={n => setItens(prev => definirQty(prev, it.id, n))}
                 onRemover={() => tirar([it.id], `«${it.nome}» removido`)} />
             ))}

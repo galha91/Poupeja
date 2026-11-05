@@ -20,6 +20,8 @@ function limparItens(itens) {
     emoji: String(it?.emoji ?? "").slice(0, 8),
     qty: Number.isFinite(it?.qty) ? Math.max(1, Math.min(999, Math.floor(it.qty))) : 1,
     feito: !!it?.feito,
+    // Fruta e legumes: o peso que se quer levar (kg).
+    ...(Number.isFinite(it?.kg) && it.kg > 0 ? { kg: Math.min(50, Math.max(0.05, Math.round(it.kg * 1000) / 1000)) } : {}),
     ...(it?.categoria ? { categoria: String(it.categoria).slice(0, 40) } : {}),
     // Termo de pesquisa do preço (catálogo da lista), para a comparação.
     ...(it?.q ? { q: String(it.q).slice(0, 60) } : {}),
