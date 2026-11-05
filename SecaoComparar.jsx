@@ -10,6 +10,7 @@ import CompararLista from "./CompararLista";
 import { LinhaHistorico, CriarAlerta, ListaAlertas, BotaoAlerta, alertaDe, AvisarQuandoHouver } from "./AlertasPreco";
 import { partilharComparacao } from "./lib/partilhar";
 import { ITENS, CATEGORIAS as CATS_CATALOGO, itemPorNome } from "./data/catalogo-lista";
+import { QUANTIDADES, QUANTIDADE_PADRAO, custoParaQuantidade, comparaPorQuantidade, detalheQuantidade, textoPeso } from "./lib/quantidadeFresca";
 
 // Direto dos dados (sem a pesquisa tolerante da lista): é o que este ecrã precisa.
 const NOME_CATEGORIA = Object.fromEntries(CATS_CATALOGO.map((c) => [c.id, c.nome]));
@@ -29,6 +30,7 @@ const LeitorCodigoBarras = dynamic(() => import("./LeitorCodigoBarras"), { ssr: 
 
 const LS_RECENTES = "poupeja_pesquisas_precos";
 const LS_LISTA = "poupeja_lista_compras";
+const LS_QTD = "poupeja_qtd_fresca";
 const SUGESTOES = ["laranjas", "leite meio gordo", "ovos", "arroz agulha", "azeite", "bananas", "frango", "café moído"];
 // Os exemplos que abrem o Mercado a quem chega (um por dia, à vez): artigos
 // que toda a gente compra e que existem nas cadeias comparadas.
@@ -94,8 +96,12 @@ function juntarALista(nome, produto = null, q = null) {
  * A comparação usa sempre o mesmo número que aparece em grande.
  */
 
-function comoMostrar(p, modo) {
+function comoMostrar(p, modo, kg = null) {
   const porUnid = `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`;
+  // Fruta e legumes: o que se paga pela quantidade escolhida (embalagens inteiras).
+  if (kg && modo !== "embalagem" && p.unidade === "kg") {
+    return { valor: custoParaQuantidade(p, kg).custo, sufixo: "", detalhe: `${detalheQuantidade(p, kg)} · ${eur(p.precoUnidade, 2)} €/kg` };
+  }
   if (modo === "embalagem") {
     return { valor: p.preco, sufixo: "", detalhe: [p.quantidade, porUnid].filter(Boolean).join(" · ") };
   }
@@ -106,8 +112,8 @@ function comoMostrar(p, modo) {
   return { valor: p.precoUnidade, sufixo: `/${p.nomeUnidade || p.unidade}`, detalhe: [embalagem, p.quantidade].filter(Boolean).join(" · ") };
 }
 
-function textoPreco(p, modo) {
-  const m = comoMostrar(p, modo);
+function textoPreco(p, modo, kg = null) {
+  const m = comoMostrar(p, modo, kg);
   return `${eur(m.valor, 2)} €${m.sufixo}`;
 }
 
@@ -180,21 +186,24 @@ function AvisoEmbalagem({ p, grande = false }) {
   );
 }
 
-function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, historico, abrirAlerta = false }) {
+function Vencedor({ p, segundo, empatados = [], modo, kg = null, valorDe, onLista, naLista, q, historico, abrirAlerta = false }) {
   const [alertaAberto, setAlertaAberto] = useState(abrirAlerta);
   const [alerta, setAlerta] = useState(() => alertaDe(q));
   const [avisoAlerta, setAvisoAlerta] = useState("");
   const [avisoPartilha, setAvisoPartilha] = useState("");
   const v = valorComparacao(p, modo);
   const v2 = segundo ? valorComparacao(segundo, modo) : null;
-  const poupanca = segundo && (modo === "embalagem" || segundo.unidade === p.unidade) && v2 > v
-    ? Math.round((1 - v / v2) * 100)
+  // Com quantidade escolhida, compara-se o que se paga; senão, o €/kg.
+  const c = valorDe ? valorDe(p) : v;
+  const c2 = segundo ? (valorDe ? valorDe(segundo) : v2) : null;
+  const poupanca = segundo && (modo === "embalagem" || segundo.unidade === p.unidade) && c2 > c
+    ? Math.round((1 - c / c2) * 100)
     : null;
-  const m = comoMostrar(p, modo);
+  const m = comoMostrar(p, modo, kg);
   const desc = descontoPct(p);
   async function partilhar() {
     const lojas = empatados.length > 1 ? empatados.map((e) => e.lojaNome).join(" e no ") : p.lojaNome;
-    const r = await partilharComparacao({ q, loja: lojas, preco: m.valor, sufixo: m.sufixo });
+    const r = await partilharComparacao({ q, loja: lojas, preco: m.valor, sufixo: kg ? ` por ${textoPeso(kg)}` : m.sufixo });
     if (r === "copiado") { setAvisoPartilha("Link copiado. Cola-o numa conversa."); setTimeout(() => setAvisoPartilha(""), 4000); }
   }
   return (
@@ -225,6 +234,7 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
           <div>
             <Preco valor={m.valor} casas={2} tamanho={34} />
             {m.sufixo && <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", marginLeft: 4 }}>{m.sufixo}</span>}
+            {kg && <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", marginLeft: 4 }}>por {textoPeso(kg)}</span>}
             {m.detalhe && <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 4 }}>{m.detalhe}</p>}
           </div>
           {poupanca >= 3 && empatados.length <= 1 && (
@@ -285,13 +295,13 @@ function Vencedor({ p, segundo, empatados = [], modo, onLista, naLista, q, histo
 
 /* Uma linha por supermercado: o melhor que cada um tem. É a resposta
    directa a "em que loja compro isto?". */
-function PorLoja({ lojas, melhores, modo, min, empate = false }) {
+function PorLoja({ lojas, melhores, modo, min, empate = false, kg = null, valorDe }) {
   return (
     <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
       {lojas.map((l, i) => {
         const p = melhores[l.id];
-        const diff = p && min != null ? Math.round((valorComparacao(p, modo) - min) * 100) : 0;
-        const m = p ? comoMostrar(p, modo) : null;
+        const diff = p && min != null ? Math.round(((valorDe ? valorDe(p) : valorComparacao(p, modo)) - min) * 100) : 0;
+        const m = p ? comoMostrar(p, modo, kg) : null;
         return (
           <a key={l.id} href={p?.url || undefined} target="_blank" rel="noopener noreferrer"
             className="pj-tap no-underline flex items-center gap-3"
@@ -304,7 +314,7 @@ function PorLoja({ lojas, melhores, modo, min, empate = false }) {
                 {l.nome}{NOTA_LOJA[l.id] && <span style={{ fontSize: 11, fontWeight: 500, color: "var(--pj-text-faint)" }}> · {NOTA_LOJA[l.id]}</span>}
               </span>
               <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {!l.ok ? "Não respondeu agora" : p ? [p.nome, p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ") : "Não tem este artigo"}
+                {!l.ok ? "Não respondeu agora" : p ? [p.nome, kg ? detalheQuantidade(p, kg) : p.aoPeso ? "ao peso" : p.quantidade].filter(Boolean).join(" · ") : "Não tem este artigo"}
               </span>
             </span>
             {p ? (
@@ -328,7 +338,7 @@ function PorLoja({ lojas, melhores, modo, min, empate = false }) {
 const hojeIso = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" });
 const dataDiaMes = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 
-function LinhaProduto({ p, primeira, modo, onLista, naLista }) {
+function LinhaProduto({ p, primeira, modo, kg = null, onLista, naLista }) {
   const desc = descontoPct(p);
   return (
     <div className="flex items-center" style={{ borderTop: primeira ? "none" : "1px solid var(--pj-subtle)" }}>
@@ -352,9 +362,10 @@ function LinhaProduto({ p, primeira, modo, onLista, naLista }) {
         <AvisoEmbalagem p={p} />
       </span>
       <span className="text-right flex-none">
-        <span className="pj-num" style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--pj-text)" }}>{textoPreco(p, modo)}</span>
+        <span className="pj-num" style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--pj-text)" }}>{textoPreco(p, modo, kg)}</span>
         <span className="pj-num" style={{ display: "block", fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 2 }}>
-          {modo === "embalagem"
+          {kg && modo !== "embalagem" && p.unidade === "kg" ? `${eur(p.precoUnidade, 2)} €/kg`
+            : modo === "embalagem"
             ? `${eur(p.precoUnidade, 2)} €/${p.nomeUnidade || p.unidade}`
             : p.aoPeso ? (p.precoPeca ? `≈ ${eur(p.precoPeca, 2)} € cada` : "")
             : p.precoUnidade !== p.preco ? `${eur(p.preco, 2)} €` : ""}
@@ -368,6 +379,33 @@ function LinhaProduto({ p, primeira, modo, onLista, naLista }) {
         {naLista ? <Check size={15} /> : <Plus size={15} />}
       </button>
     )}
+    </div>
+  );
+}
+
+/* A pesquisa é fruta ou legume do catálogo vendido ao kg? («maçãs», «maçã», «clementinas») */
+const FRESCOS = new Set(ITENS.filter((i) => i.cat === "frutas-legumes" && i.un === "kg")
+  .flatMap((i) => [i.nome, i.q, ...i.sin]).map((t) => semAcentos(String(t))));
+const eFrutaLegume = (q) => FRESCOS.has(semAcentos(String(q || "").trim()));
+
+/* «Quanto queres levar?» — 250 g a 2 kg. */
+function EscolherQuantidade({ kg, onEscolher }) {
+  return (
+    <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 16, padding: "12px 14px" }}>
+      <p id="qtd-fresca" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-text)" }}>Quanto queres levar?</p>
+      <div className="flex gap-1.5 mt-2 flex-wrap" role="radiogroup" aria-labelledby="qtd-fresca">
+        {QUANTIDADES.map((v) => (
+          <button key={v} role="radio" aria-checked={kg === v} onClick={() => onEscolher(v)} className="pj-tap press"
+            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 13, fontWeight: 600,
+              border: `1px solid ${kg === v ? "var(--pj-brand)" : "var(--pj-border)"}`,
+              background: kg === v ? "var(--pj-brand)" : "var(--pj-surface)", color: kg === v ? "#fff" : "var(--pj-text)" }}>
+            {textoPeso(v)}
+          </button>
+        ))}
+      </div>
+      <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 8, lineHeight: 1.4 }}>
+        Contamos o que pagas mesmo: ao peso, o €/kg; em saco ou caixa, as embalagens inteiras que tens de levar.
+      </p>
     </div>
   );
 }
@@ -393,6 +431,16 @@ export default function SecaoComparar() {
   const [recentes, setRecentes] = useState([]);
   const [filtro, setFiltro] = useState(null); // id da loja ou null
   const [marca, setMarca] = useState("todas"); // todas | propria | outras
+  // Fruta e legumes: quanto se quer levar (kg). Fica guardado para a próxima.
+  const [kg, setKg] = useState(QUANTIDADE_PADRAO);
+  useEffect(() => {
+    try { const v = Number(localStorage.getItem(LS_QTD)); if (QUANTIDADES.includes(v)) setKg(v); } catch {}
+  }, []);
+  function escolherKg(v) {
+    setKg(v);
+    try { localStorage.setItem(LS_QTD, String(v)); } catch {}
+    evento("comparar_quantidade", { kg: v });
+  }
   const [verOutros, setVerOutros] = useState(false);
   const [naLista, setNaLista] = useState(false);
   const [produtosNaLista, setProdutosNaLista] = useState(() => new Set());
@@ -503,21 +551,29 @@ export default function SecaoComparar() {
     const produtos = marca === "todas" ? dados.produtos
       : dados.produtos.filter((p) => (marca === "propria" ? p.marcaPropria : !p.marcaPropria));
     // Estrito: um produto só «parecido» nunca é coroado vencedor.
-    const { modo, principais, melhores, ranking } = melhoresPorLoja({ ...dados, produtos }, undefined, { estrito: true });
+    let r = melhoresPorLoja({ ...dados, produtos }, undefined, { estrito: true });
+    // Fruta e legumes ao kg: ganha quem cobra menos pela quantidade que se
+    // quer levar (embalagens inteiras), não quem tem o €/kg mais baixo.
+    const porQtd = comparaPorQuantidade({ modo: r.modo, unidade: r.unidade, produtos: r.principais, frutaLegume: eFrutaLegume(pesquisa) });
+    const valorDe = porQtd ? (p) => custoParaQuantidade(p, kg).custo : (p) => valorComparacao(p, r.modo);
+    if (porQtd) r = melhoresPorLoja({ ...dados, produtos }, undefined, { estrito: true, valor: valorDe });
+    const { modo, principais, melhores, ranking } = r;
     const lista = filtro ? produtos.filter((p) => p.loja === filtro) : produtos;
-    const minimo = ranking[0] ? valorComparacao(ranking[0], modo) : null;
+    const minimo = ranking[0] ? valorDe(ranking[0]) : null;
     return {
       parecidos: ranking[0] ? [] : produtos.slice(0, 12),
       vencedor: ranking[0] || null,
-      empatados: ranking.filter((p) => Math.abs(valorComparacao(p, modo) - minimo) < 0.005),
+      empatados: ranking.filter((p) => Math.abs(valorDe(p) - minimo) < 0.005),
       segundo: ranking.find((p) => p.loja !== ranking[0]?.loja) || null,
       melhores,
       modo,
-      min: ranking[0] ? valorComparacao(ranking[0], modo) : null,
+      kg: porQtd ? kg : null,
+      valorDe,
+      min: minimo,
       principais: lista.filter((p) => (principais.length ? p.relevancia === 2 : true)),
       outros: principais.length ? lista.filter((p) => p.relevancia !== 2) : [],
     };
-  }, [dados, filtro, marca]);
+  }, [dados, filtro, marca, kg, pesquisa]);
 
   return (
     <div className="pb-6" style={{ background: "var(--pj-surface)" }}>
@@ -681,6 +737,7 @@ export default function SecaoComparar() {
       {estado === "pronto" && vista && !(eGenerico(pesquisa) && opcoesGenerico(pesquisa).length > 0 && !verMesmoAssim) && (
         vista.vencedor ? (
           <div className="px-4 mt-4 flex flex-col gap-4">
+            {vista.kg && <EscolherQuantidade kg={vista.kg} onEscolher={escolherKg} />}
             <Vencedor
               key={pesquisa}
               abrirAlerta={alertaDoLink === pesquisa}
@@ -688,6 +745,8 @@ export default function SecaoComparar() {
               segundo={vista.segundo}
               empatados={vista.empatados}
               modo={vista.modo}
+              kg={vista.kg}
+              valorDe={vista.valorDe}
               q={pesquisa}
               historico={marca === "todas" ? dados.historico : null}
               naLista={naLista}
@@ -698,7 +757,7 @@ export default function SecaoComparar() {
               <h3 style={{ fontSize: 13, fontWeight: 700, color: "var(--pj-text-muted)", margin: "0 2px 8px" }}>
                 O melhor preço em cada supermercado
               </h3>
-              <PorLoja lojas={dados.lojas} melhores={vista.melhores} modo={vista.modo} min={vista.min} empate={vista.empatados.length > 1} />
+              <PorLoja lojas={dados.lojas} melhores={vista.melhores} modo={vista.modo} min={vista.min} empate={vista.empatados.length > 1} kg={vista.kg} valorDe={vista.valorDe} />
             </section>
 
             <section>
@@ -715,7 +774,7 @@ export default function SecaoComparar() {
                 ))}
               </div>
               <div style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
-                {vista.principais.map((p, i) => <LinhaProduto key={`${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} onLista={produtoParaLista} naLista={produtosNaLista.has(`${p.loja}|${p.id}`)} />)}
+                {vista.principais.map((p, i) => <LinhaProduto key={`${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} kg={vista.kg} onLista={produtoParaLista} naLista={produtosNaLista.has(`${p.loja}|${p.id}`)} />)}
                 {!vista.principais.length && (
                   <p style={{ padding: 14, fontSize: 13, color: "var(--pj-text-faint)" }}>Sem resultados diretos nesta loja.</p>
                 )}
@@ -730,7 +789,7 @@ export default function SecaoComparar() {
                   </button>
                   {verOutros && (
                     <div className="mt-2" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 18, overflow: "hidden" }}>
-                      {vista.outros.map((p, i) => <LinhaProduto key={`o-${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} />)}
+                      {vista.outros.map((p, i) => <LinhaProduto key={`o-${p.loja}-${p.id}-${i}`} p={p} primeira={i === 0} modo={vista.modo} kg={vista.kg} />)}
                     </div>
                   )}
                 </>
