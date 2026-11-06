@@ -672,8 +672,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             ou o convite para planear a semana. */}
         {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />}
 
-        {/* Lista de compras — com o resultado da lista otimizada, quando há */}
-        {!explorar && <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />}
+        {/* Lista de compras — sempre, a toda a gente (nova ou não), com o
+            resultado da lista otimizada quando há. */}
+        {lido && <CartaoLista lista={lista} onAbrir={() => setTab("lista")} />}
 
         {/* Comparar preços — a pergunta que traz as pessoas de volta */}
         {!explorar && <button onClick={() => setTab("mercados", "comparar")} className="pj-tap w-full text-left flex items-center anim-up anim-up-2"
