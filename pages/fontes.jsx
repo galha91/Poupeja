@@ -18,7 +18,7 @@ const GRUPOS = [
   },
   {
     titulo: "Postos de carregamento",
-    texto: "Tarifas que os operadores dos postos publicam na rede MOBI.E (€/kWh, €/min e €/carregamento). O custo mostrado é uma estimativa: soma a essa tarifa a energia do comercializador e o IVA. A fatura final é a do teu comercializador ou da app do operador.",
+    texto: "Tarifas que os operadores dos postos publicam na rede MOBI.E (€/kWh, €/min e €/carregamento). Nos postos com preço final (ad hoc) mostramos esse preço, que já inclui energia e IVA. Nos postos com tarifa de operador somamos a energia do comercializador, o IEC, a tarifa da MOBI.E (ERSE, 2026) e o IVA, o que é uma estimativa. Confirma sempre no posto ou na app.",
     fontes: ["mobie"],
   },
   {

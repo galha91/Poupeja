@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa,
-  indexarTarifas, tarifasPerto, tarifaDoConector, IVA,
+  indexarTarifas, tarifasPerto, tarifaDoConector, ePrecoCompleto,
+  IVA, EGME_SESSAO, IEC_KWH,
 } from "../lib/custoCarregamento.js";
 
 test("minutos: 20→80% de 60 kWh a 50 kW leva 43 min", () => {
@@ -39,17 +40,41 @@ test("kWh fornecidos contam as perdas", () => {
   assert.equal(kwhFornecidos(50, 80, 20, "AC"), 0);
 });
 
-test("custo: soma taxa do posto, energia e IVA", () => {
+const r2 = v => Math.round(v * 100) / 100;
+
+test("tarifa de operador: soma taxa do posto, energia, IEC, EGME e IVA", () => {
   const c = custoCarregamento({
     kwh: 30, minutos: 40,
-    tarifa: { kwh: 0.25, min: 0.05, sessao: 0.3 },
-    energiaKwh: 0.2,
+    tarifa: { kwh: 0.14, min: 0.06, sessao: 0.2 },
+    energiaKwh: 0.15,
   });
-  const posto = 30 * 0.25 + 40 * 0.05 + 0.3; // 9.8
-  const energia = 30 * 0.2;                 // 6
-  assert.equal(c.posto, Math.round(posto * (1 + IVA) * 100) / 100);
-  assert.equal(c.energia, Math.round(energia * (1 + IVA) * 100) / 100);
-  assert.equal(c.total, Math.round((posto + energia) * (1 + IVA) * 100) / 100);
+  const posto = 30 * 0.14 + 40 * 0.06 + 0.2;                 // 6.8
+  const energia = 30 * (0.15 + IEC_KWH) + EGME_SESSAO;      // 4.6388
+  assert.equal(c.completo, false);
+  assert.equal(c.posto, r2(posto * (1 + IVA)));
+  assert.equal(c.energia, r2(energia * (1 + IVA)));
+  assert.equal(c.total, r2((posto + energia) * (1 + IVA)));
+});
+
+test("preço completo: o valor publicado é o final, sem somar nada", () => {
+  // Continente ultrarrápido: 0,45 €/kWh com IVA (preçário oficial)
+  const c = custoCarregamento({ kwh: 30, minutos: 30, tarifa: { kwh: 0.45, min: 0, sessao: 0 }, energiaKwh: 0.15 });
+  assert.equal(c.completo, true);
+  assert.equal(c.total, 13.5);
+  assert.equal(c.energia, 0);
+});
+
+test("preço completo com componente ao minuto (bp pulse) mantém o minuto", () => {
+  const c = custoCarregamento({ kwh: 30, minutos: 40, tarifa: { kwh: 0.3, min: 0.1, sessao: 0 } });
+  assert.equal(c.total, r2(30 * 0.3 + 40 * 0.1));
+});
+
+test("ePrecoCompleto: limiar 0,20 €/kWh", () => {
+  assert.equal(ePrecoCompleto({ kwh: 0.45 }), true);
+  assert.equal(ePrecoCompleto({ kwh: 0.2 }), true);
+  assert.equal(ePrecoCompleto({ kwh: 0.14, min: 0.06 }), false);
+  assert.equal(ePrecoCompleto({ kwh: 0, min: 0.03, sessao: 0.16 }), false);
+  assert.equal(ePrecoCompleto(null), false);
 });
 
 test("custo: tarifa ao minuto sem tempo não inventa valor", () => {
@@ -58,7 +83,7 @@ test("custo: tarifa ao minuto sem tempo não inventa valor", () => {
 
 test("custo: tarifa só ao kWh não precisa de tempo", () => {
   const c = custoCarregamento({ kwh: 10, minutos: null, tarifa: { kwh: 0.1 }, energiaKwh: 0 });
-  assert.equal(c.total, Math.round(1 * (1 + IVA) * 100) / 100);
+  assert.equal(c.total, r2((10 * 0.1 + 10 * IEC_KWH + EGME_SESSAO) * (1 + IVA)));
 });
 
 test("custo: sem tarifa dá null", () => {
@@ -67,8 +92,8 @@ test("custo: sem tarifa dá null", () => {
 
 test("posto mais barato a 100 m ganha ao caro", () => {
   const base = { kwh: 30, minutos: 40, energiaKwh: 0.2 };
-  const caro = custoCarregamento({ ...base, tarifa: { kwh: 0.35, min: 0.1 } });
-  const barato = custoCarregamento({ ...base, tarifa: { kwh: 0.05 } });
+  const caro = custoCarregamento({ ...base, tarifa: { kwh: 0.65, min: 0 } });   // Galp 150 kW
+  const barato = custoCarregamento({ ...base, tarifa: { kwh: 0.05 } });         // OPC + energia
   assert.ok(barato.total < caro.total);
 });
 
