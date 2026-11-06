@@ -9,6 +9,7 @@ import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontos
 import {
   minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa, ePrecoCompleto, ENERGIA_CEME_PADRAO,
 } from "./lib/custoCarregamento";
+import { CARTOES_EV, CARTAO_MEDIA, CARTAO_MANUAL, energiaEscolhida, energiaMedia } from "./lib/cartoesEV";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -981,19 +982,34 @@ function SubPostosEV() {
   // Custos (tarifas MOBI.E)
   const [ordemEV, setOrdemEV]       = useState("distancia"); // "distancia" | "preco"
   const [tarifasInfo, setTarifasInfo] = useState(null);
-  const [energiaKwh, setEnergiaKwh] = useState(ENERGIA_CEME_PADRAO);
+  // Cartão/app de carregamento: decide o preço da energia nos postos com
+  // tarifa de operador. "media" até a pessoa escolher.
+  const [cartaoEV, setCartaoEV]     = useState(CARTAO_MEDIA);
+  const [energiaManual, setEnergiaManual] = useState(null);
   useEffect(() => {
     try {
+      const c = localStorage.getItem("poupeja_ev_cartao");
+      if (c === CARTAO_MEDIA || c === CARTAO_MANUAL || CARTOES_EV.some(x => x.id === c)) setCartaoEV(c);
       const v = parseFloat(localStorage.getItem("poupeja_ev_energia"));
-      if (Number.isFinite(v) && v >= 0 && v < 2) setEnergiaKwh(v);
+      if (Number.isFinite(v) && v >= 0 && v < 2) {
+        setEnergiaManual(v);
+        // Quem já tinha escrito um valor seu continua com ele.
+        if (!c) setCartaoEV(CARTAO_MANUAL);
+      }
     } catch {}
   }, []);
+  function mudarCartao(id) {
+    setCartaoEV(id);
+    try { localStorage.setItem("poupeja_ev_cartao", id); } catch {}
+  }
   function mudarEnergia(texto) {
     const v = parseFloat(String(texto).replace(",", "."));
     if (!Number.isFinite(v) || v < 0 || v >= 2) return;
-    setEnergiaKwh(v);
+    setEnergiaManual(v);
     try { localStorage.setItem("poupeja_ev_energia", String(v)); } catch {}
   }
+  // Calculado na hora da consulta: Galp e os cartões sem TAR mudam com o vazio.
+  const energiaKwh = energiaEscolhida(cartaoEV, energiaManual) ?? ENERGIA_CEME_PADRAO;
   // Alertas
   const [alertas, setAlertas]       = useState([]);
   useEffect(() => {
@@ -1263,21 +1279,35 @@ function SubPostosEV() {
               </p>
             )}
 
-            {/* Energia do comercializador */}
-            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mt-4 mb-1.5">Energia do teu comercializador</p>
-            <div className="flex items-center gap-2">
-              <input
-                type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
-                defaultValue={energiaKwh}
-                key={energiaKwh === ENERGIA_CEME_PADRAO ? "padrao" : "proprio"}
-                onChange={e => mudarEnergia(e.target.value)}
-                aria-label="Preço da energia do comercializador, em euros por kWh, sem IVA"
-                className="w-24 text-xs font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
-              />
-              <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh, sem IVA</span>
-            </div>
+            {/* Cartão / app de carregamento */}
+            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mt-4 mb-1.5">O teu cartão ou app</p>
+            <select
+              value={cartaoEV}
+              onChange={e => mudarCartao(e.target.value)}
+              aria-label="Cartão ou app de carregamento"
+              className="w-full text-xs font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2.5"
+            >
+              <option value={CARTAO_MEDIA}>Não sei / média dos cartões</option>
+              {CARTOES_EV.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              <option value={CARTAO_MANUAL}>Outro — escrevo o preço</option>
+            </select>
+            {cartaoEV === CARTAO_MANUAL && (
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
+                  defaultValue={energiaManual ?? ""}
+                  placeholder={eur(energiaMedia() ?? ENERGIA_CEME_PADRAO, 3)}
+                  onChange={e => mudarEnergia(e.target.value)}
+                  aria-label="Preço da energia do teu cartão, em euros por kWh, sem IVA, com tarifas de acesso às redes"
+                  className="w-24 text-xs font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
+                />
+                <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh, sem IVA, com redes</span>
+              </div>
+            )}
             <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 leading-snug">
-              Só conta nos postos com tarifa de operador (EDP, Repsol…). Por omissão {eur(ENERGIA_CEME_PADRAO, 2)} € (energia + redes, média 2026); põe o do teu cartão ou app. Nos postos com preço final (Continente, Galp, Powerdot, Ionity…) o preço publicado já inclui tudo.
+              Energia agora: <span className="font-semibold text-[color:var(--pj-text-muted)] pj-num">{eur(energiaKwh, 3)} €/kWh</span> sem IVA, com redes.
+              {" "}{CARTOES_EV.find(c => c.id === cartaoEV)?.nota || ""}
+              {" "}Só conta nos postos com tarifa de operador (EDP, Repsol…); nos de preço final (Continente, Galp, Powerdot, Ionity…) o preço publicado já inclui tudo.
             </p>
             {carro && tarifasInfo && (
               <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-2 leading-snug flex gap-1">
