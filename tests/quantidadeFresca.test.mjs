@@ -51,3 +51,46 @@ test("textos", () => {
   assert.equal(detalheQuantidade(saco800, 0.8), "800 g");
   assert.equal(detalheQuantidade(aoPeso, 1), "ao peso");
 });
+
+import { passoKg, limitarKg, eFrescoAoKg } from "../lib/quantidadeFresca.js";
+import { adicionar, alterarKg } from "../lib/listaCompras.js";
+import { doCatalogo, preencherCategorias } from "../lib/catalogoLista.js";
+import { custoPorLoja } from "../lib/comparacao.js";
+
+test("passos de peso na lista", () => {
+  assert.equal(passoKg(1, 1), 1.5);
+  assert.equal(passoKg(1, -1), 0.75);
+  assert.equal(passoKg(0.25, -1), 0.25);
+  assert.equal(passoKg(5, 1), 5);
+  assert.equal(limitarKg("abc"), null);
+  assert.equal(limitarKg(0.5), 0.5);
+});
+
+test("lista: laranjas entram com 1 kg, alface não", () => {
+  let l = adicionar([], "laranjas", { id: 1, doCatalogo });
+  assert.equal(l[0].kg, 1);
+  l = adicionar(l, "laranjas", { doCatalogo });
+  assert.equal(l[0].kg, 1.5);
+  assert.equal(alterarKg(l, 1, -1)[0].kg, 1);
+  assert.equal(adicionar([], "alface", { id: 2, doCatalogo })[0].kg, undefined);
+  assert.equal(eFrescoAoKg(doCatalogo("Maçãs")), true);
+  assert.equal(eFrescoAoKg(doCatalogo("Leite meio-gordo")), false);
+});
+
+test("lista antiga: laranjas sem peso passam a 1 kg", () => {
+  const velhos = [{ id: 1, nome: "Laranjas", categoria: "Frutas e legumes", qty: 1, feito: false }];
+  assert.equal(preencherCategorias(velhos)[0].kg, 1);
+  const ja = [{ id: 1, nome: "Laranjas", categoria: "Frutas e legumes", qty: 1, feito: false, kg: 2 }];
+  assert.equal(preencherCategorias(ja), ja);
+});
+
+test("soma da lista: custo pelo peso escolhido", () => {
+  const dados = { modo: "unidade", produtos: [saco800, saco15, aoPeso] };
+  const r = custoPorLoja(dados, 1, null, { kg: 1 });
+  assert.equal(r.porPeso, true);
+  assert.equal(r.custos.auchan.custo, 1.98);
+  assert.equal(r.custos["pingo-doce"].custo, 1.89);
+  assert.equal(r.custos.continente.custo, 1.69);
+  assert.deepEqual(r.referencia, { qtd: 1, unidade: "kg" });
+  assert.equal(custoPorLoja(dados, 1, null, { kg: 0.5 }).custos.auchan.custo, 0.99);
+});

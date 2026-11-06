@@ -25,7 +25,7 @@ test("categoria: a do artigo, senão Outros; o catálogo preenche as que faltam"
   const p = preencherCategorias(l);
   assert.equal(p[1].categoria, "Laticínios e ovos");
   assert.equal(p[2].categoria, "");
-  assert.equal(p[0], l[0]);
+  assert.deepEqual(p[0], { ...l[0], kg: 1 }); // fruta ao kg de uma lista antiga: passa a 1 kg
   assert.equal(preencherCategorias(p), p); // nada a mudar: a mesma lista
 });
 

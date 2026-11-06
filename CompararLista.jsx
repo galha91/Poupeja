@@ -4,6 +4,7 @@ import { Scale } from "lucide-react";
 import { termoDePesquisa, custoPorLoja, eGenerico } from "./lib/comparacao";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { pesquisarComRecurso } from "./lib/precosLocais";
+import { eFrescoAoKg, QUANTIDADE_PADRAO } from "./lib/quantidadeFresca";
 import { evento } from "./lib/analytics";
 import { registarMarcoConvidado } from "./lib/convidado";
 
@@ -53,7 +54,10 @@ export async function compararArtigos(itens, aoAvancar = () => {}) {
       }
       try {
         const { dados, guardado } = await pesquisarComRecurso(q);
-        resultado[i] = { item: it, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1, it.escolha) };
+        // Fruta e legumes: o peso escolhido na lista (1 kg nas listas antigas).
+        const kg = it.kg || (eFrescoAoKg(doCat) ? QUANTIDADE_PADRAO : null);
+        const item = kg && !it.kg ? { ...it, kg } : it;
+        resultado[i] = { item, q, dados, guardado, ...custoPorLoja(dados, it.qty || 1, it.escolha, { kg }) };
       } catch {
         resultado[i] = { item: it, q, custos: {}, erro: true };
       }
