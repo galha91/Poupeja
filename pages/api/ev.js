@@ -1,4 +1,33 @@
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
+import { lerTarifasEV } from "../../lib/tarifasEV";
+import { tarifasPerto, tarifaDoConector } from "../../lib/custoCarregamento";
+
+/*
+ * Junta a cada posto a tarifa do operador publicada pelo MOBI.E (via
+ * lib/tarifasEV). A junção é pela proximidade: o posto MOBI.E mais perto,
+ * até ~80 m. Sem tarifas, os postos seguem como estavam.
+ */
+async function comTarifas(postos) {
+  const tarifas = await lerTarifasEV();
+  if (!tarifas) return { postos, tarifas: null };
+  let comPreco = 0;
+  const out = postos.map(p => {
+    const site = tarifasPerto(tarifas.indice, p.lat, p.lon);
+    if (!site) return p;
+    const conectores = (p.conectores || []).map(c => ({
+      ...c,
+      tarifa: tarifaDoConector(site, { kw: c.kw, corrente: c.corrente }),
+    }));
+    // Postos sem conectores conhecidos (fonte de recurso): tarifa pela potência máxima.
+    const tarifa = conectores.length ? null : tarifaDoConector(site, { kw: p.potenciaNum || parseFloat(p.potencia) || 0 });
+    if (conectores.some(c => c.tarifa) || tarifa) comPreco++;
+    return { ...p, conectores, tarifa, operadorMobie: site.operador || null };
+  });
+  return {
+    postos: out,
+    tarifas: { fonte: "MOBI.E / NAP Portugal", obtidoEm: tarifas.obtidoEm, publicadoEm: tarifas.publicadoEm, comPreco },
+  };
+}
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=180, stale-while-revalidate");
@@ -133,12 +162,14 @@ export default async function handler(req, res) {
         };
       });
 
+      const junto = await comTarifas(resultado);
       return res.status(200).json({
         success: true,
-        postos: resultado,
+        postos: junto.postos,
         total: resultado.length,
         atualizadoEm: new Date().toISOString(),
         fonte: "TomTom EV",
+        tarifas: junto.tarifas,
       });
 
     } catch (ttErr) {
@@ -184,10 +215,12 @@ export default async function handler(req, res) {
       };
     });
 
+    const junto = await comTarifas(resultado);
     return res.status(200).json({
-      success: true, postos: resultado, total: resultado.length,
+      success: true, postos: junto.postos, total: resultado.length,
       atualizadoEm: new Date().toISOString(),
       fonte: "Open Charge Map",
+      tarifas: junto.tarifas,
     });
 
   } catch {

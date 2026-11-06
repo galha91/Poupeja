@@ -676,3 +676,28 @@ $$;
 revoke all on function public.chamar_reserva_crons() from public, anon, authenticated;
 
 select cron.schedule('reserva-crons', '17 10 * * *', 'select public.chamar_reserva_crons()');
+
+-- ── Tarifas dos postos de carregamento (MOBI.E / NAP Portugal) ──────────────
+-- Correr no Supabase: Dashboard → SQL Editor → New query → colar → Run
+-- (Migração criar_tarifas_ev.)
+--
+-- Uma linha só, reescrita de 6 em 6 horas pelo GitHub Action
+-- .github/workflows/tarifas-ev.yml (scripts/tarifas_ev.py). Os feeds do
+-- MOBI.E são grandes demais para uma função do Vercel; o Action faz o
+-- trabalho pesado e deixa aqui só o necessário para estimar custos:
+--   postos = [[lat, lon, operador, [[kW, "AC"|"DC", €/kWh, €/min, €/sessão], ...]], ...]
+-- A tarifa é a do operador do posto (OPC), não o preço final.
+
+create table if not exists public.tarifas_ev (
+  id            text primary key default 'mobie',
+  postos        jsonb       not null,
+  n_postos      integer     not null default 0,
+  publicado_em  timestamptz,
+  obtido_em     timestamptz not null,
+  atualizado_em timestamptz not null default now(),
+  constraint tarifas_ev_linha_unica check (id = 'mobie')
+);
+
+alter table public.tarifas_ev enable row level security;
+
+-- Sem policies de propósito: só a service role (server-side) lê e escreve.

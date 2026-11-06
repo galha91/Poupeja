@@ -17,6 +17,11 @@ const GRUPOS = [
     fontes: ["dgeg"],
   },
   {
+    titulo: "Postos de carregamento",
+    texto: "Tarifas que os operadores dos postos publicam na rede MOBI.E (€/kWh, €/min e €/carregamento). O custo mostrado é uma estimativa: soma a essa tarifa a energia do comercializador e o IVA. A fatura final é a do teu comercializador ou da app do operador.",
+    fontes: ["mobie"],
+  },
+  {
     titulo: "Simulador de IRS",
     texto: "Escalões e taxas do IRS, dedução específica (calculada a partir do IAS), limites de deduções e regras de cálculo. É uma estimativa: o valor final é sempre o da Autoridade Tributária.",
     fontes: ["irs68", "cirs", "ias"],

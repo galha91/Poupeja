@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Amostra SINTÉTICA com a estrutura DATEX II 3 do estado MOBI.E (um <rates> por override). -->
+<d2:payload xmlns:d2="http://datex2.eu/schema/3/d2Payload" xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure"
+            xmlns:com="http://datex2.eu/schema/3/common" xmlns:fac="http://datex2.eu/schema/3/facilities">
+  <com:publicationTime>2026-11-06T10:00:00Z</com:publicationTime>
+  <egi:energyInfrastructureSiteStatus>
+    <fac:reference id="SITE-A"/>
+    <egi:refillPointStatus>
+      <fac:reference id="19"/><egi:status>available</egi:status>
+      <egi:electricEnergyMixOverride energyMixIndex="1"><egi:rates><egi:pricingPolicy>pricePerDeliveryUnit</egi:pricingPolicy><egi:minimumDeliveryFee>0.25</egi:minimumDeliveryFee><fac:applicableCurrency>EUR</fac:applicableCurrency></egi:rates></egi:electricEnergyMixOverride>
+      <egi:electricEnergyMixOverride energyMixIndex="2"><egi:rates><egi:pricingPolicy>pricePerChargingTime</egi:pricingPolicy><egi:minimumDeliveryFee>0.05</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+    </egi:refillPointStatus>
+    <egi:refillPointStatus>
+      <fac:reference id="20"/><egi:status>charging</egi:status>
+      <egi:electricEnergyMixOverride energyMixIndex="1"><egi:rates><egi:pricingPolicy>pricePerChargingTime</egi:pricingPolicy><egi:minimumDeliveryFee>0.02</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+      <egi:electricEnergyMixOverride energyMixIndex="2"><egi:rates><egi:pricingPolicy>flatRate</egi:pricingPolicy><egi:minimumDeliveryFee>0.30</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+    </egi:refillPointStatus>
+    <egi:refillPointStatus>
+      <fac:reference id="21"/><egi:status>available</egi:status>
+      <egi:electricEnergyMixOverride energyMixIndex="1"><egi:rates><egi:pricingPolicy>pricePerChargingTime</egi:pricingPolicy><egi:minimumDeliveryFee>0.02</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+      <egi:electricEnergyMixOverride energyMixIndex="2"><egi:rates><egi:pricingPolicy>flatRate</egi:pricingPolicy><egi:minimumDeliveryFee>0.30</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+    </egi:refillPointStatus>
+  </egi:energyInfrastructureSiteStatus>
+  <egi:energyInfrastructureSiteStatus>
+    <fac:reference id="SITE-B"/>
+    <egi:refillPointStatus>
+      <fac:reference id="19"/><egi:status>available</egi:status>
+      <egi:electricEnergyMixOverride energyMixIndex="1"><egi:rates><egi:pricingPolicy>pricePerChargingTime</egi:pricingPolicy><egi:minimumDeliveryFee>3.00</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+      <egi:electricEnergyMixOverride energyMixIndex="2"><egi:rates><egi:pricingPolicy>pricePerDeliveryUnit</egi:pricingPolicy><egi:minimumDeliveryFee>0.10</egi:minimumDeliveryFee><egi:overallEndTime>2026-01-01T00:00:00Z</egi:overallEndTime></egi:rates></egi:electricEnergyMixOverride>
+      <egi:electricEnergyMixOverride energyMixIndex="3"><egi:rates><egi:pricingPolicy>pricePerDeliveryUnit</egi:pricingPolicy><egi:minimumDeliveryFee>0.15</egi:minimumDeliveryFee><egi:overallStartTime>2026-01-01T00:00:00Z</egi:overallStartTime></egi:rates></egi:electricEnergyMixOverride>
+    </egi:refillPointStatus>
+  </egi:energyInfrastructureSiteStatus>
+  <egi:energyInfrastructureSiteStatus>
+    <fac:reference id="SITE-C"/>
+    <egi:refillPointStatus>
+      <fac:reference id="1"/><egi:status>removed</egi:status>
+      <egi:electricEnergyMixOverride energyMixIndex="1"><egi:rates><egi:pricingPolicy>pricePerDeliveryUnit</egi:pricingPolicy><egi:minimumDeliveryFee>0.20</egi:minimumDeliveryFee></egi:rates></egi:electricEnergyMixOverride>
+    </egi:refillPointStatus>
+  </egi:energyInfrastructureSiteStatus>
+</d2:payload>
