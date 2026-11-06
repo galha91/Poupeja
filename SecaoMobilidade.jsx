@@ -7,7 +7,7 @@ import { FONTES } from "./lib/fontes";
 import DescontosCombustivel from "./DescontosCombustivel";
 import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontosCombustivel";
 import {
-  minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa, ENERGIA_CEME_PADRAO,
+  minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa, ePrecoCompleto, ENERGIA_CEME_PADRAO,
 } from "./lib/custoCarregamento";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
@@ -111,6 +111,18 @@ const CONECTOR_ICONS = {
 
 /* ─── cálculo de tempo de carregamento ─── */
 // A conta (tempo e custo) vive em lib/custoCarregamento.js, testada.
+
+/* Tarifa de um ponto: preço final (já com tudo) ou só a taxa do operador. */
+function LinhaTarifa({ tarifa, className = "" }) {
+  if (!tarifa) return null;
+  const completo = ePrecoCompleto(tarifa);
+  return (
+    <p className={`text-[10px] text-[color:var(--pj-text-muted)] ${className}`}>
+      {completo ? "Preço final: " : "Taxa do posto: "}{descreverTarifa(tarifa)}
+      <span className="text-[color:var(--pj-text-faint)]">{completo ? " (c/ IVA)" : " + energia"}</span>
+    </p>
+  );
+}
 
 /* ─── inline SVG logos para marcas sem logo no Clearbit ─── */
 const BRAND_LOGOS = {
@@ -1265,12 +1277,12 @@ function SubPostosEV() {
               <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh, sem IVA</span>
             </div>
             <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 leading-snug">
-              Por omissão {eur(ENERGIA_CEME_PADRAO, 2)} € (média). Põe o valor do teu cartão ou app de carregamento para uma estimativa mais certa.
+              Só conta nos postos com tarifa de operador (EDP, Repsol…). Por omissão {eur(ENERGIA_CEME_PADRAO, 2)} € (energia + redes, média 2026); põe o do teu cartão ou app. Nos postos com preço final (Continente, Galp, Powerdot, Ionity…) o preço publicado já inclui tudo.
             </p>
             {carro && tarifasInfo && (
               <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-2 leading-snug flex gap-1">
                 <Info size={11} className="flex-shrink-0 mt-px" />
-                <span>Custo estimado = taxa do posto (publicada no MOBI.E) + energia + IVA 23%. Serve para comparar postos; confirma o preço final na app do operador.</span>
+                <span>Preço final: o que o posto publica no MOBI.E, já com IVA. Tarifa de operador: taxa do posto + energia + IEC + tarifa MOBI.E (0,11 €) + IVA 23%. Confirma sempre no ecrã do posto ou na app.</span>
               </p>
             )}
           </div>
@@ -1481,7 +1493,7 @@ function SubPostosEV() {
                             ≈ {eur(custos.get(posto.id).total, 2)} €
                           </span>
                           <span className="text-[10px] text-[color:var(--pj-text-faint)]">
-                            {batDe}→{batAte}% · {custos.get(posto.id).tipo}{custos.get(posto.id).mins != null ? `, ${formatarTempo(custos.get(posto.id).mins)}` : ""}
+                            {custos.get(posto.id).completo ? "preço do posto" : "estimado"} · {batDe}→{batAte}% · {custos.get(posto.id).tipo}{custos.get(posto.id).mins != null ? `, ${formatarTempo(custos.get(posto.id).mins)}` : ""}
                           </span>
                           {maisBarato?.id === posto.id && (
                             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[color:var(--pj-brand)] text-white">Mais barato livre</span>
@@ -1523,7 +1535,7 @@ function SubPostosEV() {
                               <p className="text-[12px] font-black text-[color:var(--pj-text)]">{c.tipo}</p>
                               <p className="text-[10px] text-[color:var(--pj-text-faint)]">{c.corrente}{c.kw > 0 ? ` · ${c.kw} kW` : ""}</p>
                               {c.tarifa ? (
-                                <p className="text-[10px] text-[color:var(--pj-text-muted)]">Posto: {descreverTarifa(c.tarifa)}</p>
+                                <LinhaTarifa tarifa={c.tarifa} />
                               ) : tarifasInfo ? (
                                 <p className="text-[10px] text-[color:var(--pj-text-faint)]">Tarifa não publicada</p>
                               ) : null}
@@ -1564,7 +1576,7 @@ function SubPostosEV() {
                         {posto.tipo}
                       </span>
                       {posto.tarifa && (
-                        <p className="text-[10px] text-[color:var(--pj-text-muted)] mt-1">Posto: {descreverTarifa(posto.tarifa)}</p>
+                        <LinhaTarifa tarifa={posto.tarifa} className="mt-1" />
                       )}
                     </div>
                   ) : null}
