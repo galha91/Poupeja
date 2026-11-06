@@ -6,6 +6,9 @@ import { eur } from "./lib/formato";
 import { FONTES } from "./lib/fontes";
 import DescontosCombustivel from "./DescontosCombustivel";
 import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontosCombustivel";
+import {
+  minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa, ENERGIA_CEME_PADRAO,
+} from "./lib/custoCarregamento";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -107,20 +110,7 @@ const CONECTOR_ICONS = {
 };
 
 /* ─── cálculo de tempo de carregamento ─── */
-function calcTempo(bateriaKwh, de, ate, chargerKw, carMaxKw) {
-  if (!chargerKw || !carMaxKw || ate <= de) return null;
-  const kw = Math.min(chargerKw, carMaxKw);
-  if (!kw) return null;
-  // Curva realista: 100% potência até 80%, depois cai para ~35%
-  const low  = Math.max(0, Math.min(ate, 80) - Math.max(de, 0));
-  const high = Math.max(0, ate - Math.max(de, 80));
-  const timeH = (low / 100 * bateriaKwh + high / 100 * bateriaKwh / 0.35) / kw;
-  const mins = Math.round(timeH * 60);
-  if (mins < 1) return "< 1 min";
-  if (mins < 60) return `${mins} min`;
-  const h = Math.floor(mins / 60), m = mins % 60;
-  return m ? `${h}h ${m}min` : `${h}h`;
-}
+// A conta (tempo e custo) vive em lib/custoCarregamento.js, testada.
 
 /* ─── inline SVG logos para marcas sem logo no Clearbit ─── */
 const BRAND_LOGOS = {
@@ -976,6 +966,22 @@ function SubPostosEV() {
   const [simOpen, setSimOpen]       = useState(false);
   const [vista, setVista]           = useState("lista");   // "lista" | "mapa"
   const carro = CARROS_EV.find(c => c.id === carroId) || null;
+  // Custos (tarifas MOBI.E)
+  const [ordemEV, setOrdemEV]       = useState("distancia"); // "distancia" | "preco"
+  const [tarifasInfo, setTarifasInfo] = useState(null);
+  const [energiaKwh, setEnergiaKwh] = useState(ENERGIA_CEME_PADRAO);
+  useEffect(() => {
+    try {
+      const v = parseFloat(localStorage.getItem("poupeja_ev_energia"));
+      if (Number.isFinite(v) && v >= 0 && v < 2) setEnergiaKwh(v);
+    } catch {}
+  }, []);
+  function mudarEnergia(texto) {
+    const v = parseFloat(String(texto).replace(",", "."));
+    if (!Number.isFinite(v) || v < 0 || v >= 2) return;
+    setEnergiaKwh(v);
+    try { localStorage.setItem("poupeja_ev_energia", String(v)); } catch {}
+  }
   // Alertas
   const [alertas, setAlertas]       = useState([]);
   useEffect(() => {
@@ -1017,6 +1023,7 @@ function SubPostosEV() {
       .then(json => {
         if (!json.success) { setErro(true); setLoading(false); return; }
         setPostos(json.postos || []);
+        setTarifasInfo(json.tarifas || null);
         setFonte(json.fonte || "");
         setAtualizado(json.atualizadoEm);
         setLoading(false);
@@ -1027,9 +1034,58 @@ function SubPostosEV() {
   useEffect(() => { obterLocalizacao(); }, []);
   useEffect(() => { if (loc) carregar(loc); }, [loc?.lat, loc?.lon, raio]);
 
+  /*
+   * Tempo e custo estimado de um conector com o carro do simulador.
+   * Custo = taxa do posto (MOBI.E) + energia do comercializador + IVA.
+   */
+  function estimarConector(c) {
+    if (!carro) return null;
+    const carMaxKw = c.corrente === "DC"
+      ? (carro.conectorDC === c.tipo ? carro.maxDC : null)
+      : carro.maxAC;
+    if (!carMaxKw) return { incompativel: true };
+    const mins = minutosCarregamento(carro.bateria, batDe, batAte, c.kw || 22, carMaxKw);
+    const custo = custoCarregamento({
+      kwh: kwhFornecidos(carro.bateria, batDe, batAte, c.corrente),
+      minutos: mins,
+      tarifa: c.tarifa,
+      energiaKwh,
+    });
+    return { mins, custo };
+  }
+  // O conector compatível mais barato decide o custo do posto.
+  function custoDoPosto(p) {
+    let melhor = null;
+    for (const c of p.conectores || []) {
+      const e = estimarConector(c);
+      if (e?.custo && (!melhor || e.custo.total < melhor.total)) melhor = { ...e.custo, tipo: c.tipo, mins: e.mins };
+    }
+    return melhor;
+  }
+  const custos = new Map(carro ? postos.map(p => [p.id, custoDoPosto(p)]) : []);
+  const temCustos = [...custos.values()].some(Boolean);
+  const porPreco = ordemEV === "preco" && temCustos;
+  const dist = p => parseFloat(p.distancia || 99);
+
   const filtrados = postos
     .filter(p => filtroEstado === "todos" || p.estado === filtroEstado)
-    .sort((a, b) => parseFloat(a.distancia || 99) - parseFloat(b.distancia || 99));
+    .sort((a, b) => {
+      if (porPreco) {
+        const ca = custos.get(a.id)?.total ?? Infinity;
+        const cb = custos.get(b.id)?.total ?? Infinity;
+        if (ca !== cb) return ca - cb;
+      }
+      return dist(a) - dist(b);
+    });
+
+  // O posto livre mais barato — e quanto poupa face ao mais caro com preço.
+  const comCusto = postos.filter(p => custos.get(p.id));
+  const livresComCusto = comCusto.filter(p => p.estado === "disponível");
+  const maisBarato = livresComCusto.reduce(
+    (m, p) => (!m || custos.get(p.id).total < custos.get(m.id).total ? p : m), null);
+  const custoMaisCaro = comCusto.reduce((m, p) => Math.max(m, custos.get(p.id).total), 0);
+  const poupancaMax = maisBarato && comCusto.length > 1
+    ? custoMaisCaro - custos.get(maisBarato.id).total : 0;
 
   const counts = {
     disponível: postos.filter(p => p.estado === "disponível").length,
@@ -1194,6 +1250,29 @@ function SubPostosEV() {
                 {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh a carregar
               </p>
             )}
+
+            {/* Energia do comercializador */}
+            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mt-4 mb-1.5">Energia do teu comercializador</p>
+            <div className="flex items-center gap-2">
+              <input
+                type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
+                defaultValue={energiaKwh}
+                key={energiaKwh === ENERGIA_CEME_PADRAO ? "padrao" : "proprio"}
+                onChange={e => mudarEnergia(e.target.value)}
+                aria-label="Preço da energia do comercializador, em euros por kWh, sem IVA"
+                className="w-24 text-xs font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
+              />
+              <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh, sem IVA</span>
+            </div>
+            <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 leading-snug">
+              Por omissão {eur(ENERGIA_CEME_PADRAO, 2)} € (média). Põe o valor do teu cartão ou app de carregamento para uma estimativa mais certa.
+            </p>
+            {carro && tarifasInfo && (
+              <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-2 leading-snug flex gap-1">
+                <Info size={11} className="flex-shrink-0 mt-px" />
+                <span>Custo estimado = taxa do posto (publicada no MOBI.E) + energia + IVA 23%. Serve para comparar postos; confirma o preço final na app do operador.</span>
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -1235,6 +1314,44 @@ function SubPostosEV() {
           </button>
         ))}
       </div>
+
+      {/* Ordenar por distância / custo (só com carro e tarifas) */}
+      {temCustos && (
+        <div className="px-4 mb-3">
+          <div className="flex gap-1 p-1 bg-[color:var(--pj-subtle)] rounded-xl">
+            {[
+              { id: "distancia", label: "Mais perto" },
+              { id: "preco",     label: "Mais barato" },
+            ].map(o => (
+              <button
+                key={o.id}
+                onClick={() => setOrdemEV(o.id)}
+                className={`press flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${ordemEV === o.id ? "bg-[color:var(--pj-brand)] text-white" : "text-[color:var(--pj-text-muted)]"}`}
+              >{o.label}</button>
+            ))}
+          </div>
+          {maisBarato && (
+            <button
+              onClick={() => setOrdemEV("preco")}
+              className="press mt-2 w-full text-left card px-3.5 py-2.5 flex items-center gap-2.5"
+            >
+              <div className="w-8 h-8 rounded-lg bg-[color:var(--pj-brand-wash)] flex items-center justify-center flex-shrink-0">
+                <TrendingDown size={15} className="text-[color:var(--pj-brand-ink)]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-[color:var(--pj-text)] truncate">
+                  Mais barato livre: {maisBarato.nome}
+                </p>
+                <p className="text-[11px] text-[color:var(--pj-text-muted)]">
+                  ≈ <span className="pj-num font-semibold text-[color:var(--pj-brand-ink)]">{eur(custos.get(maisBarato.id).total, 2)} €</span>
+                  {maisBarato.distancia ? <> · {km(maisBarato.distancia)}</> : null}
+                  {poupancaMax >= 0.5 ? <> · até {eur(poupancaMax, 2)} € menos que o mais caro</> : null}
+                </p>
+              </div>
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="px-4 mb-3 flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-[color:var(--pj-brand)] animate-pulse" />
@@ -1358,6 +1475,19 @@ function SubPostosEV() {
                         </p>
                       )}
                       <p className="text-[10px] text-[color:var(--pj-text-faint)]">{posto.operador}</p>
+                      {custos.get(posto.id) && (
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          <span className="text-[13px] font-black text-[color:var(--pj-brand-ink)] pj-num">
+                            ≈ {eur(custos.get(posto.id).total, 2)} €
+                          </span>
+                          <span className="text-[10px] text-[color:var(--pj-text-faint)]">
+                            {batDe}→{batAte}% · {custos.get(posto.id).tipo}{custos.get(posto.id).mins != null ? `, ${formatarTempo(custos.get(posto.id).mins)}` : ""}
+                          </span>
+                          {maisBarato?.id === posto.id && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[color:var(--pj-brand)] text-white">Mais barato livre</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className={`px-2 py-1 rounded-lg border text-center ${kwCls}`}>
@@ -1376,15 +1506,10 @@ function SubPostosEV() {
                           ? "border-[color:var(--pj-border)] bg-[color:var(--pj-brand-wash)]"
                           : "border-[color:var(--pj-border)] bg-[color:var(--pj-subtle)]";
                         const icon = CONECTOR_ICONS[c.tipo];
-                        // Tempo estimado com o carro selecionado
-                        const carMaxKw = carro
-                          ? (c.corrente === "DC"
-                              ? (carro.conectorDC === c.tipo ? carro.maxDC : null)
-                              : carro.maxAC)
-                          : null;
-                        const tempo = carro && carMaxKw
-                          ? calcTempo(carro.bateria, batDe, batAte, c.kw || 22, carMaxKw)
-                          : null;
+                        // Tempo e custo estimados com o carro selecionado
+                        const est = estimarConector(c);
+                        const tempo = est?.mins != null ? formatarTempo(est.mins) : null;
+                        const custoC = est?.custo || null;
                         return (
                           <div key={ci} className={`flex items-center gap-3 px-3 py-2 rounded-2xl border ${statusCls}`}>
                             {icon ? (
@@ -1397,10 +1522,18 @@ function SubPostosEV() {
                             <div className="flex-1 min-w-0">
                               <p className="text-[12px] font-black text-[color:var(--pj-text)]">{c.tipo}</p>
                               <p className="text-[10px] text-[color:var(--pj-text-faint)]">{c.corrente}{c.kw > 0 ? ` · ${c.kw} kW` : ""}</p>
+                              {c.tarifa ? (
+                                <p className="text-[10px] text-[color:var(--pj-text-muted)]">Posto: {descreverTarifa(c.tarifa)}</p>
+                              ) : tarifasInfo ? (
+                                <p className="text-[10px] text-[color:var(--pj-text-faint)]">Tarifa não publicada</p>
+                              ) : null}
                               {tempo && (
                                 <div className="flex items-center gap-1 mt-0.5">
                                   <Clock size={9} className="text-[color:var(--pj-brand-ink)]" />
                                   <span className="text-[10px] font-black text-[color:var(--pj-brand-ink)]">{tempo}</span>
+                                  {custoC && (
+                                    <span className="text-[10px] font-black text-[color:var(--pj-brand-ink)] pj-num">· ≈ {eur(custoC.total, 2)} €</span>
+                                  )}
                                 </div>
                               )}
                               {carro && c.corrente === "DC" && carro.conectorDC !== c.tipo && (
@@ -1430,6 +1563,9 @@ function SubPostosEV() {
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[color:var(--pj-subtle)] text-[color:var(--pj-text-muted)]">
                         {posto.tipo}
                       </span>
+                      {posto.tarifa && (
+                        <p className="text-[10px] text-[color:var(--pj-text-muted)] mt-1">Posto: {descreverTarifa(posto.tarifa)}</p>
+                      )}
                     </div>
                   ) : null}
 
@@ -1488,6 +1624,9 @@ function SubPostosEV() {
         </div>
       )}
       <FonteBadge fonte={fonte} atualizadoEm={atualizado} />
+      {tarifasInfo && (
+        <FonteBadge fonte={`Tarifas: ${FONTES.mobie.curto}`} atualizadoEm={tarifasInfo.obtidoEm} href={FONTES.mobie.href} />
+      )}
     </div>
   );
 }
