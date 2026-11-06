@@ -482,7 +482,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   const [estadoDesafio, setEstadoDesafio] = useState(null);
   const [folhetos, setFolhetos]   = useState([]);
   const [streak, setStreak]       = useState(0);
-  const [lista, setLista]         = useState({ n: 0, resumo: null });
+  const [lista, setLista]         = useState({ n: 0, usou: false, resumo: null });
   const [irsUsado, setIrsUsado]   = useState(false);
   const [resumo, setResumo]       = useState({ nTaloesMes: 0, nTaloesTotal: 0, totalMesAnterior: 0, houveMesAnterior: false, nomeMesAnterior: "" });
   // Até ler o localStorage não se sabe quem é quem: escolher o herói antes
@@ -521,8 +521,13 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
       });
     } catch {}
     try {
-      const pendentes = JSON.parse(localStorage.getItem("poupeja_lista_compras") || "[]").filter(i => !i.feito);
-      setLista({ n: pendentes.length, resumo: lerResumo(pendentes) });
+      const todos = JSON.parse(localStorage.getItem("poupeja_lista_compras") || "[]");
+      const pendentes = todos.filter(i => !i.feito);
+      // Já usou a lista (mesmo que tudo esteja comprado, partilhada ou guardada):
+      // o cartão da lista não pode desaparecer do Início.
+      const usou = todos.length > 0 || !!localStorage.getItem("poupeja_lista_partilhada_id")
+        || JSON.parse(localStorage.getItem("poupeja_listas_guardadas") || "[]").length > 0;
+      setLista({ n: pendentes.length, usou, resumo: lerResumo(pendentes) });
       setIrsUsado(!!localStorage.getItem("poupeja_irs"));
     } catch {}
     setEstadoDesafio(calcularEstado());
@@ -539,7 +544,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
   // Quem ainda não fez nada (nem talão, nem lista) está a explorar: o
   // desafio do mês espera por uma primeira ação.
-  const explorar = lido && totalSempre <= 0 && lista.n === 0 && !retratoDisponivel;
+  const explorar = lido && totalSempre <= 0 && lista.n === 0 && !lista.usou && !retratoDisponivel;
 
   /*
    * O que NÃO está na barra de baixo.
