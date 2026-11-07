@@ -8,7 +8,7 @@ Disallow: /admin
 # Fora: bots que copiam o site para treinar modelos de IA e bots de
 # ferramentas de SEO. Não trazem visitas e gastavam a maior parte do CPU
 # da Vercel (plano Hobby: 4 h por mês). Os que ignoram este ficheiro são
-# bloqueados também na firewall da Vercel (regra "Bots de treino e SEO").
+# travados também no next.config.js (lista em data/bots-bloqueados.json).
 # Google-Extended e Applebot-Extended só controlam o treino do Gemini e da
 # Apple Intelligence: não mexem na pesquisa do Google nem do Safari.
 User-agent: GPTBot
