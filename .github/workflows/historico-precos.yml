@@ -1,0 +1,90 @@
+name: Histórico de preços
+
+# O histórico diário de preços dos supermercados (pages/api/cron-historico-
+# precos*) corre aqui e não na Vercel. No plano Hobby a Vercel só dá 4 h de
+# CPU ativo por mês e este scraping, 3 vezes por dia, gastava a maior parte
+# (a conta chegou aos 100% em novembro de 2026). Num repositório público os
+# minutos dos Actions são grátis.
+#
+# Três partes por dia, às mesmas horas de antes (UTC), cada uma com uma
+# reserva 2 h 30 depois: o GitHub atrasa ou salta agendamentos quando está
+# carregado. A reserva só corre se a parte não tiver corrido com sucesso
+# nas últimas 4 h (scripts/cron/correr.mjs --reserva). Minutos fora do :00
+# e do :15, as horas mais carregadas do GitHub.
+#
+# Cada execução fica no /admin (Qualidade → Tarefas automáticas), como
+# antes. Se falhar, o GitHub manda email.
+#
+# Correr à mão: Actions → "Histórico de preços" → Run workflow.
+on:
+  schedule:
+    - cron: '17 7 * * *'   # parte 1
+    - cron: '17 13 * * *'  # parte 2
+    - cron: '17 19 * * *'  # parte 3
+    - cron: '47 9 * * *'   # reserva da parte 1
+    - cron: '47 15 * * *'  # reserva da parte 2
+    - cron: '47 21 * * *'  # reserva da parte 3
+  workflow_dispatch:
+    inputs:
+      rota:
+        description: Parte a correr
+        type: choice
+        options: [cron-historico-precos, cron-historico-precos-2, cron-historico-precos-3, ensaio-lojas]
+        default: ensaio-lojas
+  # Mudanças no scraping ou nestes scripts: só o ensaio (não escreve nada).
+  push:
+    paths:
+      - '.github/workflows/historico-precos.yml'
+      - 'scripts/cron/**'
+      - 'lib/supermercados/**'
+
+permissions:
+  contents: read
+
+jobs:
+  correr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # Uma parte de cada vez: a reserva espera pela principal se esta atrasar.
+    concurrency:
+      group: historico-precos
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Escolher a tarefa
+        id: tarefa
+        env:
+          AGENDA: ${{ github.event.schedule }}
+          EVENTO: ${{ github.event_name }}
+          ROTA_MANUAL: ${{ inputs.rota }}
+        run: |
+          case "$EVENTO:$AGENDA" in
+            "schedule:17 7 * * *")  echo "args=cron-historico-precos" >> "$GITHUB_OUTPUT" ;;
+            "schedule:17 13 * * *") echo "args=cron-historico-precos-2" >> "$GITHUB_OUTPUT" ;;
+            "schedule:17 19 * * *") echo "args=cron-historico-precos-3" >> "$GITHUB_OUTPUT" ;;
+            "schedule:47 9 * * *")  echo "args=cron-historico-precos --reserva 4" >> "$GITHUB_OUTPUT" ;;
+            "schedule:47 15 * * *") echo "args=cron-historico-precos-2 --reserva 4" >> "$GITHUB_OUTPUT" ;;
+            "schedule:47 21 * * *") echo "args=cron-historico-precos-3 --reserva 4" >> "$GITHUB_OUTPUT" ;;
+            workflow_dispatch:*)    echo "args=$ROTA_MANUAL" >> "$GITHUB_OUTPUT" ;;
+            *)                      echo "args=ensaio-lojas" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Ensaio das lojas
+        if: steps.tarefa.outputs.args == 'ensaio-lojas'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cron/carregador.mjs scripts/cron/ensaio-lojas.mjs
+
+      - name: Correr ${{ steps.tarefa.outputs.args }}
+        if: steps.tarefa.outputs.args != 'ensaio-lojas'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cron/carregador.mjs scripts/cron/correr.mjs ${{ steps.tarefa.outputs.args }}

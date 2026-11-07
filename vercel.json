@@ -87,18 +87,6 @@
       "schedule": "30 6 * * *"
     },
     {
-      "path": "/api/cron-historico-precos",
-      "schedule": "15 7 * * *"
-    },
-    {
-      "path": "/api/cron-historico-precos-2",
-      "schedule": "15 13 * * *"
-    },
-    {
-      "path": "/api/cron-historico-precos-3",
-      "schedule": "15 19 * * *"
-    },
-    {
       "path": "/api/cron-indexnow",
       "schedule": "40 7 * * *"
     },
