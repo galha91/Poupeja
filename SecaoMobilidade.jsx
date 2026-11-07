@@ -21,7 +21,7 @@ function km(v) {
 import {
   Fuel, Battery, Zap, MapPin, Navigation, RefreshCw,
   Bell, Plus, Trash2,
-  Check, Info, ChevronDown, X, TrendingDown, TrendingUp, Calendar, Car, Clock, Star,
+  Check, Info, ChevronDown, X, TrendingDown, TrendingUp, Calendar, Car, Clock, Star, CreditCard,
   Map as MapIcon, List as ListIcon,
 } from "lucide-react";
 
@@ -112,6 +112,37 @@ const CONECTOR_ICONS = {
 
 /* ─── cálculo de tempo de carregamento ─── */
 // A conta (tempo e custo) vive em lib/custoCarregamento.js, testada.
+
+/*
+ * A bateria do carro desenhada: cinzento o que já tem, verde o que vai
+ * carregar. Lê-se de relance o "de quanto a quanto" antes de ler números.
+ */
+function BateriaVisual({ de, ate, kwh }) {
+  const carga = Math.max(0, ate - de);
+  return (
+    <div>
+      <div className="flex items-center gap-1" role="img" aria-label={`Bateria de ${de}% até ${ate}%, ${kwh} kWh a carregar`}>
+        <div className="relative flex-1 h-10 rounded-[10px] border-2 border-[color:var(--pj-text-faint)] p-[3px] overflow-hidden">
+          <div className="relative w-full h-full rounded-[6px] bg-[color:var(--pj-subtle)] overflow-hidden">
+            <div className="absolute inset-y-0 left-0 bg-[color:var(--pj-border)] motion-safe:transition-[width] duration-300" style={{ width: `${de}%` }} />
+            <div
+              className="absolute inset-y-0 bg-[color:var(--pj-brand)] flex items-center justify-center motion-safe:transition-all duration-300"
+              style={{ left: `${de}%`, width: `${carga}%` }}
+            >
+              {carga >= 12 && <Zap size={15} className="text-white" fill="currentColor" aria-hidden="true" />}
+            </div>
+          </div>
+        </div>
+        <div className="w-1.5 h-4 rounded-r-sm bg-[color:var(--pj-text-faint)]" aria-hidden="true" />
+      </div>
+      <div className="flex justify-between mt-1.5 text-[11px] pj-num">
+        <span className="text-[color:var(--pj-text-muted)]">Tenho <b className="text-[color:var(--pj-text)]">{de}%</b></span>
+        <span className="text-[color:var(--pj-brand-ink)] font-semibold">+{kwh} kWh</span>
+        <span className="text-[color:var(--pj-text-muted)]">Quero <b className="text-[color:var(--pj-text)]">{ate}%</b></span>
+      </div>
+    </div>
+  );
+}
 
 /* Tarifa de um ponto: preço final (já com tudo) ou só a taxa do operador. */
 function LinhaTarifa({ tarifa, className = "" }) {
@@ -988,18 +1019,22 @@ function SubPostosEV() {
   const [cartaoEV, setCartaoEV]     = useState(null);
   const [energiaManual, setEnergiaManual] = useState(null);
   const cartaoValido = c => c === CARTAO_MANUAL || c === CARTAO_SEM || CARTOES_EV.some(x => x.id === c);
-  // Quem já simulou volta direto aos resultados.
+  // O que está a ser alterado na ficha já preenchida: "carro" | "pagamento".
+  const [editar, setEditar]         = useState(null);
+  // O carro fica guardado no aparelho: escolhe-se uma vez. A bateria e o
+  // pagamento também, para quem volta ver logo os preços.
   useEffect(() => {
     try {
       const sim = JSON.parse(localStorage.getItem("poupeja_ev_sim") || "null");
+      const guardado = localStorage.getItem("poupeja_ev_carro") || sim?.carro;
       const c = localStorage.getItem("poupeja_ev_cartao");
       const v = parseFloat(localStorage.getItem("poupeja_ev_energia"));
       if (Number.isFinite(v) && v >= 0 && v < 2) setEnergiaManual(v);
-      if (sim && CARROS_EV.some(x => x.id === sim.carro)) {
-        setCarroId(sim.carro);
-        if (Number.isFinite(sim.de) && Number.isFinite(sim.ate) && sim.ate > sim.de) { setBatDe(sim.de); setBatAte(sim.ate); }
+      if (sim && Number.isFinite(sim.de) && Number.isFinite(sim.ate) && sim.ate > sim.de) { setBatDe(sim.de); setBatAte(sim.ate); }
+      if (guardado && CARROS_EV.some(x => x.id === guardado)) {
+        setCarroId(guardado);
         if (cartaoValido(c)) { setCartaoEV(c); setPassoSim("pronto"); setOrdemEV("preco"); }
-        else setPassoSim(3);
+        else setPassoSim(2);
       }
     } catch {}
   }, []);
@@ -1009,12 +1044,19 @@ function SubPostosEV() {
   }, [carroId, batDe, batAte]);
   function escolherCarro(id) {
     setCarroId(id);
-    if (id) setPassoSim(2);
+    try { if (id) localStorage.setItem("poupeja_ev_carro", id); } catch {}
+    if (!id) return;
+    if (editar) setEditar(null);
+    else setPassoSim(2);
+  }
+  function concluirPagamento() {
+    if (editar) setEditar(null);
+    else { setPassoSim("pronto"); setOrdemEV("preco"); }
   }
   function escolherCartao(id) {
     setCartaoEV(id);
     try { localStorage.setItem("poupeja_ev_cartao", id); } catch {}
-    if (id !== CARTAO_MANUAL) { setPassoSim("pronto"); setOrdemEV("preco"); }
+    if (id !== CARTAO_MANUAL) concluirPagamento();
   }
   function mudarEnergia(texto) {
     const v = parseFloat(String(texto).replace(",", "."));
@@ -1178,25 +1220,151 @@ function SubPostosEV() {
         </div>
       </div>
 
-      {/* Simulador: carro → bateria → como paga → resultados */}
-      <div className="mx-4 mb-4 card overflow-hidden">
-        {simPronto ? (
-          <div className="px-4 py-3 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[color:var(--pj-brand-wash)] flex items-center justify-center flex-shrink-0">
-              <Car size={16} className="text-[color:var(--pj-brand-ink)]" />
+      {/* Simulador: a ficha do carro (uma vez) + a bateria (sempre) + como paga */}
+      {(() => {
+        const kwhCarga = carro ? ((batAte - batDe) / 100 * carro.bateria).toFixed(1) : "0";
+        const cartaoAtual = CARTOES_EV.find(x => x.id === cartaoEV);
+        const nomePagamento = cartaoEV === CARTAO_SEM ? "Pago no posto ou na app"
+          : cartaoEV === CARTAO_MANUAL ? "Outro cartão" : (cartaoAtual?.nome || "—");
+        const detalhePagamento = cartaoEV === CARTAO_SEM ? "Só os postos com preço final têm valor"
+          : cartaoEV === CARTAO_MANUAL ? (energiaManual >= 0 ? `${eur(energiaManual, 3)} €/kWh sem IVA` : "Falta o preço")
+          : cartaoAtual ? `${eur(energiaDoCartao(cartaoAtual), 3)} €/kWh agora, sem IVA` : "";
+
+        const seletorCarro = (
+          <select
+            value={carroId}
+            onChange={e => escolherCarro(e.target.value)}
+            aria-label="Modelo do carro"
+            className="w-full text-sm font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-3"
+          >
+            <option value="">Escolhe o modelo</option>
+            {Object.keys(MARCAS_EV).sort().map(marca => (
+              <optgroup key={marca} label={marca}>
+                {MARCAS_EV[marca].map(c => (
+                  <option key={c.id} value={c.id}>{c.modelo}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        );
+
+        const controlosBateria = carro && (
+          <>
+            <BateriaVisual de={batDe} ate={batAte} kwh={kwhCarga.replace(".", ",")} />
+            <div className="flex items-center gap-4 mt-3">
+              <label className="flex-1">
+                <span className="sr-only">Bateria que tens agora</span>
+                <input
+                  type="range" min={0} max={95} step={5} value={batDe}
+                  onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
+                  className="w-full" style={{ accentColor: "var(--pj-text-muted)" }}
+                />
+              </label>
+              <label className="flex-1">
+                <span className="sr-only">Bateria até onde queres carregar</span>
+                <input
+                  type="range" min={5} max={100} step={5} value={batAte}
+                  onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
+                  className="w-full" style={{ accentColor: "var(--pj-brand)" }}
+                />
+              </label>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-[color:var(--pj-text)] truncate">{carro.marca} {carro.modelo}</p>
-              <p className="text-[11px] text-[color:var(--pj-text-muted)] truncate">
-                {batDe}% → {batAte}% · {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh · {(cartaoEV === CARTAO_SEM ? "Pago no posto / app" : cartaoEV === CARTAO_MANUAL ? "Outro cartão" : (CARTOES_EV.find(x => x.id === cartaoEV)?.nome || ""))}
-              </p>
-            </div>
-            <button onClick={() => setPassoSim(1)} className="press text-[12px] font-semibold text-[color:var(--pj-brand-ink)] px-2 py-1.5">
-              Alterar
+            {batAte > 80 && (
+              <p className="text-[11px] text-[color:var(--pj-text-faint)] mt-1">Acima de 80% o carregamento abranda.</p>
+            )}
+          </>
+        );
+
+        const opcao = (ativa) => `press w-full text-left px-3.5 py-2.5 rounded-xl border ${ativa ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`;
+        const opcoesPagamento = (
+          <div className="flex flex-col gap-2">
+            {CARTOES_EV.map(c => (
+              <button key={c.id} onClick={() => escolherCartao(c.id)} className={`${opcao(cartaoEV === c.id)} flex items-center justify-between gap-2`}>
+                <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">{c.nome}</span>
+                <span className="text-[11px] text-[color:var(--pj-text-muted)] pj-num">{eur(energiaDoCartao(c), 3)} €/kWh agora</span>
+              </button>
+            ))}
+            <button onClick={() => escolherCartao(CARTAO_MANUAL)} className={opcao(cartaoEV === CARTAO_MANUAL)}>
+              <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Outro cartão</span>
+              <span className="block text-[11px] text-[color:var(--pj-text-muted)]">Escreves o preço do teu tarifário</span>
+            </button>
+            {cartaoEV === CARTAO_MANUAL && (
+              <div className="px-1">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
+                    defaultValue={energiaManual ?? ""}
+                    placeholder={eur(energiaMedia() ?? ENERGIA_CEME_PADRAO, 3)}
+                    onChange={e => mudarEnergia(e.target.value)}
+                    aria-label="Preço da energia do teu cartão, em euros por kWh, sem IVA, com tarifas de acesso às redes"
+                    className="w-28 text-sm font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
+                  />
+                  <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh sem IVA</span>
+                </div>
+                <button
+                  onClick={concluirPagamento}
+                  disabled={!(energiaManual >= 0)}
+                  className="press w-full mt-2 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold disabled:opacity-40"
+                >Guardar preço</button>
+              </div>
+            )}
+            <button onClick={() => escolherCartao(CARTAO_SEM)} className={opcao(cartaoEV === CARTAO_SEM)}>
+              <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Não tenho cartão</span>
+              <span className="block text-[11px] text-[color:var(--pj-text-muted)]">Pago no posto ou na app do operador</span>
             </button>
           </div>
-        ) : (
-          <div className="px-4 pt-4 pb-4">
+        );
+
+        /* Linha da ficha: rótulo pequeno, valor, detalhe, e "Mudar". */
+        const linhaFicha = ({ icone: Icone, rotulo, valor, detalhe, chave }) => (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[color:var(--pj-subtle)] flex items-center justify-center flex-shrink-0">
+              <Icone size={16} className="text-[color:var(--pj-brand-ink)]" aria-hidden="true" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)]">{rotulo}</p>
+              <p className="text-[14px] font-semibold text-[color:var(--pj-text)] truncate">{valor}</p>
+              {detalhe && <p className="text-[11px] text-[color:var(--pj-text-muted)] truncate pj-num">{detalhe}</p>}
+            </div>
+            <button
+              onClick={() => setEditar(editar === chave ? null : chave)}
+              aria-expanded={editar === chave}
+              className="press flex-shrink-0 text-[12px] font-semibold text-[color:var(--pj-brand-ink)] px-3 py-2 rounded-lg bg-[color:var(--pj-brand-wash)]"
+            >
+              {editar === chave ? "Fechar" : "Mudar"}
+            </button>
+          </div>
+        );
+
+        if (simPronto) {
+          return (
+            <div className="mx-4 mb-4 card p-4">
+              {linhaFicha({
+                icone: Car, rotulo: "O meu carro", chave: "carro",
+                valor: `${carro.marca} ${carro.modelo}`,
+                detalhe: `${carro.conectorDC} até ${carro.maxDC} kW · AC até ${carro.maxAC} kW`,
+              })}
+              {editar === "carro" && (
+                <div className="mt-3">
+                  {seletorCarro}
+                  <p className="text-[11px] text-[color:var(--pj-text-faint)] mt-1.5">Fica guardado neste aparelho.</p>
+                </div>
+              )}
+
+              <div className="my-4 border-t border-[color:var(--pj-subtle)]" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-[color:var(--pj-text-faint)] mb-2">Esta carga</p>
+              {controlosBateria}
+
+              <div className="my-4 border-t border-[color:var(--pj-subtle)]" />
+              {linhaFicha({ icone: CreditCard, rotulo: "Pagas com", chave: "pagamento", valor: nomePagamento, detalhe: detalhePagamento })}
+              {editar === "pagamento" && <div className="mt-3">{opcoesPagamento}</div>}
+            </div>
+          );
+        }
+
+        // Primeira vez: três passos, um de cada vez.
+        return (
+          <div className="mx-4 mb-4 card px-4 pt-4 pb-4">
             <div className="flex items-center justify-between mb-1">
               <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)]">Quanto vou pagar?</p>
               <span className="text-[11px] font-semibold text-[color:var(--pj-text-faint)]">Passo {passoSim} de 3</span>
@@ -1209,66 +1377,22 @@ function SubPostosEV() {
 
             {passoSim === 1 && (
               <>
-                <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-2">Que carro tens?</p>
-                <select
-                  value={carroId}
-                  onChange={e => escolherCarro(e.target.value)}
-                  aria-label="Modelo do carro"
-                  className="w-full text-sm font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-3"
-                >
-                  <option value="">Escolhe o modelo</option>
-                  {Object.keys(MARCAS_EV).sort().map(marca => (
-                    <optgroup key={marca} label={marca}>
-                      {MARCAS_EV[marca].map(c => (
-                        <option key={c.id} value={c.id}>{c.modelo}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-                {carro && (
-                  <button onClick={() => setPassoSim(2)} className="press w-full mt-3 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold">
-                    Continuar
-                  </button>
-                )}
-                <p className="text-[11px] text-[color:var(--pj-text-faint)] mt-2">Serve para saber a bateria e a potência máxima que o carro aceita.</p>
+                <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-2">Qual é o teu carro?</p>
+                {seletorCarro}
+                <p className="text-[11px] text-[color:var(--pj-text-faint)] mt-2">Fica guardado neste aparelho — da próxima vez já não perguntamos.</p>
               </>
             )}
 
             {passoSim === 2 && carro && (
               <>
-                <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-3">Quanta bateria tens e até onde queres carregar?</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">Tenho</p>
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="range" min={0} max={95} step={5} value={batDe} aria-label="Bateria atual"
-                        onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
-                        className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
-                      />
-                      <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-9 text-right">{batDe}%</span>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">Quero chegar a</p>
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="range" min={5} max={100} step={5} value={batAte} aria-label="Bateria pretendida"
-                        onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
-                        className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
-                      />
-                      <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-9 text-right">{batAte}%</span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[13px] font-semibold text-[color:var(--pj-text)]">Quanto queres carregar?</p>
+                  <button onClick={() => setPassoSim(1)} className="press text-[11px] font-semibold text-[color:var(--pj-brand-ink)]">
+                    {carro.marca} {carro.modelo.split(" (")[0]} · mudar
+                  </button>
                 </div>
-                <p className="text-[12px] text-[color:var(--pj-text-muted)] mt-2 text-center">
-                  <span className="font-semibold pj-num">{((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh</span> a carregar
-                  {batAte > 80 ? " · acima de 80% o carregamento abranda" : ""}
-                </p>
-                <div className="flex gap-2 mt-3">
-                  <button onClick={() => setPassoSim(1)} className="press px-4 py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-sm font-semibold">Voltar</button>
-                  <button onClick={() => setPassoSim(3)} className="press flex-1 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold">Continuar</button>
-                </div>
+                {controlosBateria}
+                <button onClick={() => setPassoSim(3)} className="press w-full mt-4 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold">Continuar</button>
               </>
             )}
 
@@ -1276,58 +1400,13 @@ function SubPostosEV() {
               <>
                 <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-1">Como vais pagar?</p>
                 <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-3">Nos postos EDP, Repsol e semelhantes, a energia é paga ao teu cartão — muda o preço final.</p>
-                <div className="flex flex-col gap-2">
-                  {CARTOES_EV.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => escolherCartao(c.id)}
-                      className={`press w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-2 ${cartaoEV === c.id ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
-                    >
-                      <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">{c.nome}</span>
-                      <span className="text-[11px] text-[color:var(--pj-text-muted)] pj-num">{eur(energiaDoCartao(c), 3)} €/kWh agora</span>
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => escolherCartao(CARTAO_MANUAL)}
-                    className={`press w-full text-left px-3.5 py-2.5 rounded-xl border ${cartaoEV === CARTAO_MANUAL ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
-                  >
-                    <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Outro cartão</span>
-                    <span className="block text-[11px] text-[color:var(--pj-text-muted)]">EDP Charge, Prio… escreves o preço do teu tarifário</span>
-                  </button>
-                  {cartaoEV === CARTAO_MANUAL && (
-                    <div className="px-1">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
-                          defaultValue={energiaManual ?? ""}
-                          placeholder={eur(energiaMedia() ?? ENERGIA_CEME_PADRAO, 3)}
-                          onChange={e => mudarEnergia(e.target.value)}
-                          aria-label="Preço da energia do teu cartão, em euros por kWh, sem IVA, com tarifas de acesso às redes"
-                          className="w-28 text-sm font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
-                        />
-                        <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh sem IVA</span>
-                      </div>
-                      <button
-                        onClick={() => { setPassoSim("pronto"); setOrdemEV("preco"); }}
-                        disabled={!(energiaManual >= 0)}
-                        className="press w-full mt-2 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold disabled:opacity-40"
-                      >Ver preços</button>
-                    </div>
-                  )}
-                  <button
-                    onClick={() => escolherCartao(CARTAO_SEM)}
-                    className={`press w-full text-left px-3.5 py-2.5 rounded-xl border ${cartaoEV === CARTAO_SEM ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
-                  >
-                    <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Não tenho cartão</span>
-                    <span className="block text-[11px] text-[color:var(--pj-text-muted)]">Pago no posto ou na app do operador</span>
-                  </button>
-                </div>
+                {opcoesPagamento}
                 <button onClick={() => setPassoSim(2)} className="press mt-3 px-4 py-2 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-sm font-semibold">Voltar</button>
               </>
             )}
           </div>
-        )}
-      </div>
+        );
+      })()}
 
       {/* Localização negada */}
       {locDenied && (
