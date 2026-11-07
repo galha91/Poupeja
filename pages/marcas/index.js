@@ -60,6 +60,6 @@ export async function getStaticProps() {
       total: marcas.reduce((s, m) => s + m.n, 0),
       atualizado: marcas.reduce((x, m) => (m.atualizado > x ? m.atualizado : x), "") || null,
     },
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

@@ -86,6 +86,6 @@ export async function getStaticProps({ params }) {
       indexavel: produtos.filter(({ d }) => d.indexavel).length >= 2,
       outras: marcas.filter((x) => x.slug !== m.slug).slice(0, 12).map((x) => ({ slug: x.slug, nome: x.nome })),
     })),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

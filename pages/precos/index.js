@@ -98,6 +98,6 @@ export async function getStaticProps() {
       })),
       atualizado,
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

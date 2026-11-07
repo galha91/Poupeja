@@ -95,6 +95,6 @@ export async function getStaticProps({ params }) {
       atualizado: comLoja.reduce((m, a) => (a.atualizado > m ? a.atualizado : m), "") || null,
       pares: PARES.filter((p) => p.a.id === loja.id || p.b.id === loja.id).map((p) => ({ slug: p.slug, texto: `${p.a.nome} vs ${p.b.nome}` })),
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

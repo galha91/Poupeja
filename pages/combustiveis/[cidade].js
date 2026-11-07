@@ -10,6 +10,7 @@ import { slugify } from "../../lib/slug";
 import SubscreverCombustivel from "../../SubscreverCombustivel";
 import GraficoPreco from "../../GraficoPreco";
 import { lerSerie } from "../../lib/precosSnapshot";
+import { cabecalhoCacheCombustivel } from "../../lib/cacheCombustivel";
 
 /*
  * Página pública SEO — combustíveis mais baratos num concelho.
@@ -280,8 +281,10 @@ export async function getServerSideProps({ res, params }) {
    * momento em que a página é gerada. Com SWR a CDN pode servir a mesma
    * página até 90 minutos depois; se esse intervalo atravessar a
    * meia-noite, a página continua a dizer "hoje" sobre preços de ontem.
-   * Com 30 minutos secos, o erro possível é de 30 minutos.
+   * Com cache seco, o erro possível é o tempo de cache: até 2 h, mas
+   * nunca para lá da meia-noite nem da chegada dos preços do dia
+   * (lib/cacheCombustivel).
    */
-  res.setHeader("Cache-Control", "public, s-maxage=1800");
+  res.setHeader("Cache-Control", cabecalhoCacheCombustivel());
   return { props: { dados, serieGasoleo } };
 }

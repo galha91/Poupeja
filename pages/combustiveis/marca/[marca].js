@@ -8,6 +8,7 @@ import { dadosMarcaCombustivel } from "../../../lib/municipios";
 import { URL_SITE } from "../../../lib/site";
 import { FONTES } from "../../../lib/fontes";
 import { slugify } from "../../../lib/slug";
+import { cabecalhoCacheCombustivel } from "../../../lib/cacheCombustivel";
 
 /*
  * Página pública SEO — uma marca de combustível no país inteiro.
@@ -137,7 +138,7 @@ export default function MarcaCombustivel({ dados }) {
 export async function getServerSideProps({ res, params }) {
   const dados = await dadosMarcaCombustivel(params.marca).catch(() => null);
   if (!dados) return { notFound: true };
-  // 30 minutos secos, sem stale-while-revalidate — ver pages/combustiveis/[cidade].js.
-  res.setHeader("Cache-Control", "public, s-maxage=1800");
+  // Sem stale-while-revalidate (lib/cacheCombustivel) — ver pages/combustiveis/[cidade].js.
+  res.setHeader("Cache-Control", cabecalhoCacheCombustivel());
   return { props: JSON.parse(JSON.stringify({ dados })) };
 }
