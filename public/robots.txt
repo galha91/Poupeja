@@ -1,6 +1,39 @@
+# Motores de pesquisa (Google, Bing, Apple, DuckDuckGo…) e pesquisa das IAs
+# (OAI-SearchBot, ChatGPT-User, PerplexityBot, Claude-SearchBot…): entram.
 User-agent: *
 Allow: /
 # /api/og serve as imagens das receitas (rich results): não bloquear /api/.
 Disallow: /admin
+
+# Fora: bots que copiam o site para treinar modelos de IA e bots de
+# ferramentas de SEO. Não trazem visitas e gastavam a maior parte do CPU
+# da Vercel (plano Hobby: 4 h por mês). Os que ignoram este ficheiro são
+# bloqueados também na firewall da Vercel (regra "Bots de treino e SEO").
+# Google-Extended e Applebot-Extended só controlam o treino do Gemini e da
+# Apple Intelligence: não mexem na pesquisa do Google nem do Safari.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: meta-externalagent
+User-agent: FacebookBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: cohere-ai
+User-agent: cohere-training-data-crawler
+User-agent: Diffbot
+User-agent: Omgilibot
+User-agent: omgili
+User-agent: ImagesiftBot
+User-agent: Timpibot
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: DataForSeoBot
+User-agent: BLEXBot
+User-agent: serpstatbot
+Disallow: /
 
 Sitemap: https://xn--poupej-uta.com/sitemap.xml
