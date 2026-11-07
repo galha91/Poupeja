@@ -9,7 +9,7 @@ export async function getServerSideProps({ res, params }) {
   const n = Number(params.n);
   if (!Number.isInteger(n) || n < 1 || n > partes(paginas)) return { notFound: true };
   res.setHeader('Content-Type', 'text/xml');
-  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+  res.setHeader('Cache-Control', 'public, s-maxage=43200, stale-while-revalidate=86400');
   res.write(xmlUrls(URL_SITE, parte(paginas, n)));
   res.end();
   return { props: {} };

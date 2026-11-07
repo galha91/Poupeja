@@ -66,12 +66,12 @@ export async function getStaticProps({ params }) {
   const hoje = hojeLisboa();
   const marcas = porMarca(await gruposMarca(hoje));
   const m = marcas.find((x) => x.slug === params.marca);
-  if (!m) return { notFound: true, revalidate: 3600 };
+  if (!m) return { notFound: true, revalidate: 86400 };
   const produtos = m.grupos
     .map((g) => ({ g, d: ofertasProduto(g, hoje) }))
     .filter(({ d }) => d.ofertas.length)
     .sort((a, b) => b.d.ofertas.length - a.d.ofertas.length || a.g.nome.localeCompare(b.g.nome, "pt"));
-  if (!produtos.length) return { notFound: true, revalidate: 3600 };
+  if (!produtos.length) return { notFound: true, revalidate: 86400 };
   const lojas = [...new Set(produtos.flatMap(({ d }) => d.ofertas.map((o) => o.lojaNome)))];
   return {
     props: JSON.parse(JSON.stringify({
@@ -86,6 +86,6 @@ export async function getStaticProps({ params }) {
       indexavel: produtos.filter(({ d }) => d.indexavel).length >= 2,
       outras: marcas.filter((x) => x.slug !== m.slug).slice(0, 12).map((x) => ({ slug: x.slug, nome: x.nome })),
     })),
-    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
+    revalidate: 86400, // 24 h: os preços mudam uma vez por dia; cada regeneração agrupa o catálogo inteiro
   };
 }

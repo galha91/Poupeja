@@ -96,7 +96,7 @@ export async function getStaticProps({ params }) {
   const hoje = hojeLisboa();
   const grupos = await gruposMarca(hoje);
   const g = grupos.find((x) => x.slug === params.slug);
-  if (!g) return { notFound: true, revalidate: 3600 };
+  if (!g) return { notFound: true, revalidate: 86400 };
   const [dias, resumos] = await Promise.all([diasDoGrupo(g, hoje), resumosRecentes(hoje)]);
   const dados = ofertasProduto(g, hoje);
   const grupo = { slug: g.slug, nome: g.nome, marca: g.marca, marcaSlug: g.marcaSlug, q: g.q, unidade: g.unidade };
@@ -125,6 +125,6 @@ export async function getStaticProps({ params }) {
     props: JSON.parse(JSON.stringify({
       grupo, dados, serie: serieProduto(g, dias), frases: frasesProduto(g, dados, hoje), meta: metaProduto(g, dados), generico, outros,
     })),
-    revalidate: 10800,
+    revalidate: 86400, // 24 h: os preços mudam uma vez por dia; cada regeneração agrupa o catálogo inteiro
   };
 }
