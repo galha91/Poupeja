@@ -163,6 +163,6 @@ export async function getStaticProps({ params }) {
       receitasLigadas: receitasComArtigo(artigo, receitas()),
       pares,
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

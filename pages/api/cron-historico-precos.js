@@ -3,7 +3,7 @@ import { pesquisarTudo } from "../../lib/supermercados";
 import { registar, registarEmbalagens, registarMarcas } from "../../lib/supermercados/historico";
 import { ARTIGOS_SEO, CATEGORIAS_SEO, LOJAS_SEO, normalizarQ } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
-import { filaDoDia, PARTES } from "../../lib/filaHistorico";
+import { filaDoDia, PARTES, quantosFora } from "../../lib/filaHistorico";
 import { comRegisto } from "../../lib/cronRegisto";
 
 /*
@@ -50,6 +50,17 @@ const ORCAMENTO_ULTIMA_MS = 12_000;
 const VOLTAS_MAX = 4;
 
 /*
+ * Fora da Vercel (GitHub Actions, scripts/cron/correr.mjs). Não há limite
+ * de 30/60 s, por isso a parte inteira corre numa só execução: sem cadeia
+ * de voltas e sem refazer os hubs (cada revalidação era CPU gasto na
+ * Vercel; o ISR das páginas refá-las sozinho, revalidate de 3 h).
+ * Cada parte faz os artigos que lhe cabem (os populares e
+ * RESTO_POR_PARTE): as partes não se sobrepõem e o catálogo roda na mesma.
+ * O orçamento é só uma rede de segurança se as lojas ficarem lentas.
+ */
+const ORCAMENTO_FORA_MS = 25 * 60_000;
+
+/*
  * Depois dos populares, o resto do catálogo: são os artigos com página
  * pública em /precos, e cada página só entra no Google com preços dos
  * últimos 3 dias. Não cabem numa execução, por isso cada volta, ao acabar
@@ -94,11 +105,15 @@ export async function executar(req, res, parteFixa) {
     return res.status(401).json({ erro: "Não autorizado." });
   }
   const parte = parteFixa || Math.min(PARTES, Math.max(1, parseInt(req.query.parte, 10) || 1));
+  // req.fora só existe quando o pedido vem do scripts/cron/correr.mjs: um
+  // pedido HTTP não consegue pôr propriedades no objeto req.
+  const fora = req.fora === true;
   const volta = Math.max(1, parseInt(req.query.volta, 10) || 1);
-  const ultimaVolta = volta >= VOLTAS_MAX;
-  const fila = filaCompleta(new Date(), parte);
+  const ultimaVolta = !fora && volta >= VOLTAS_MAX;
+  const filaToda = filaCompleta(new Date(), parte);
+  const fila = fora ? filaToda.slice(0, quantosFora(parte, POPULARES.length)) : filaToda;
   const desde = Math.max(0, Math.min(parseInt(req.query.desde, 10) || 0, fila.length));
-  const limite = Date.now() + (ultimaVolta ? ORCAMENTO_ULTIMA_MS : ORCAMENTO_MS);
+  const limite = Date.now() + (fora ? ORCAMENTO_FORA_MS : ultimaVolta ? ORCAMENTO_ULTIMA_MS : ORCAMENTO_MS);
   let proximo = desde, feitos = 0, falhas = 0;
   await Promise.all(Array.from({ length: EM_PARALELO }, async () => {
     while (proximo < fila.length && Date.now() < limite) {
@@ -117,7 +132,7 @@ export async function executar(req, res, parteFixa) {
   // própria. Em produção, pelo domínio público: o endereço do deploy (o
   // Host que o cron da Vercel usa) está atrás da Proteção de Deployments e
   // devolvia 401 em silêncio, e a cadeia parava na primeira volta.
-  if (ficaramPorFazer > 0 && feitos > 0 && !ultimaVolta) {
+  if (!fora && ficaramPorFazer > 0 && feitos > 0 && !ultimaVolta) {
     const base = process.env.VERCEL_ENV === "production" ? URL_SITE : `https://${req.headers.host}`;
     const r = await fetch(`${base}/api/cron-historico-precos?desde=${proximo}&volta=${volta + 1}&parte=${parte}`, {
       headers: { authorization: req.headers.authorization },
@@ -128,7 +143,7 @@ export async function executar(req, res, parteFixa) {
   // Os hubs refazem-se quando a cadeia acaba: no fim da fila ou na última
   // volta. Em grupos, para as 22 páginas caberem no tempo que sobra.
   let hubs = 0;
-  if (ficaramPorFazer === 0 || ultimaVolta) {
+  if (!fora && (ficaramPorFazer === 0 || ultimaVolta)) {
     for (let i = 0; i < HUBS.length; i += 4) {
       await Promise.all(HUBS.slice(i, i + 4).map(async (caminho) => {
         try { await res.revalidate(caminho); hubs++; } catch (e) { console.warn(`cron-historico-precos: revalidar ${caminho}:`, e.message); }

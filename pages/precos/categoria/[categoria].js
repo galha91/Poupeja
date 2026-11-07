@@ -89,6 +89,6 @@ export async function getStaticProps({ params }) {
       atualizado: comparados.reduce((m, a) => (a.atualizado > m ? a.atualizado : m), "") || null,
       outras: CATEGORIAS_SEO.filter((c) => c.slug !== categoria.slug),
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

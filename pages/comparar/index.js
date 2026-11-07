@@ -73,6 +73,6 @@ export async function getStaticProps() {
       vitorias: vitoriasPorLoja(artigos),
       atualizado: artigos.reduce((m, a) => (a.atualizado > m ? a.atualizado : m), "") || null,
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

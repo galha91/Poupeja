@@ -8,6 +8,7 @@ import { URL_SITE } from "../../../lib/site";
 import { FONTES } from "../../../lib/fontes";
 import GraficoPreco from "../../../GraficoPreco";
 import { lerSerie } from "../../../lib/precosSnapshot";
+import { cabecalhoCacheCombustivel } from "../../../lib/cacheCombustivel";
 
 /*
  * Página pública SEO — combustíveis mais baratos num distrito.
@@ -166,7 +167,7 @@ export async function getServerSideProps({ res, params }) {
     lerSerie({ escopo: "distrito", chave: params.distrito, tipo: "Gasóleo" }).catch(() => []),
   ]);
   if (!dados) return { notFound: true };
-  // 30 minutos secos, sem stale-while-revalidate — ver [cidade].js.
-  res.setHeader("Cache-Control", "public, s-maxage=1800");
+  // Sem stale-while-revalidate (lib/cacheCombustivel) — ver [cidade].js.
+  res.setHeader("Cache-Control", cabecalhoCacheCombustivel());
   return { props: { dados, serieGasoleo } };
 }

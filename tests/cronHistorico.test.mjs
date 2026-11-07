@@ -61,3 +61,12 @@ test("com só uma execução por dia a cobertura seria de mais de 3 dias (por is
   for (let d = 0; d < 3; d++) filaDoDia({ populares, resto }, dia(d), 1).slice(populares.length, populares.length + RESTO_POR_PARTE[0]).forEach((a) => vistos.add(a));
   assert.ok(vistos.size < resto.length);
 });
+
+test("fora da Vercel: as três partes não se sobrepõem e cobrem o resto do dia", async () => {
+  const { quantosFora } = await import("../lib/filaHistorico.js");
+  const agora = dia(3);
+  const feitos = [1, 2, 3].flatMap((p) => filaDoDia({ populares, resto }, agora, p).slice(0, quantosFora(p, populares.length)));
+  assert.equal(new Set(feitos).size, feitos.length, "nenhum artigo repetido");
+  assert.equal(feitos.filter((x) => x.startsWith("a")).length, populares.length, "todos os populares");
+  assert.equal(feitos.filter((x) => x.startsWith("r")).length, RESTO_POR_PARTE.reduce((a, b) => a + b, 0));
+});

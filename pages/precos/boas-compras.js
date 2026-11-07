@@ -106,6 +106,6 @@ export async function getStaticProps() {
       porCategoria: CATEGORIAS_SEO.filter((c) => contagem.has(c.slug)).map((c) => ({ ...c, n: contagem.get(c.slug) })),
       atualizado: lista.reduce((m, a) => (a.atualizado > m ? a.atualizado : m), "") || null,
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

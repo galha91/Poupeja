@@ -10,6 +10,7 @@ const MARCAS_VISIVEIS = 12;
 import { URL_SITE as SITE_URL } from "../../lib/site";
 import { FONTES } from "../../lib/fontes";
 import { slugify } from "../../lib/slug";
+import { cabecalhoCacheCombustivel } from "../../lib/cacheCombustivel";
 
 /*
  * Página pública SEO — preços dos combustíveis hoje em Portugal.
@@ -255,7 +256,7 @@ export default function Combustiveis({ dados, concelhos, frescura, erro, marcas 
 export async function getServerSideProps({ res }) {
   // Sem stale-while-revalidate: ver a explicação em [cidade].js — o juízo
   // "isto é de hoje" fica preso no HTML gerado.
-  res.setHeader("Cache-Control", "public, s-maxage=1800");
+  res.setHeader("Cache-Control", cabecalhoCacheCombustivel());
 
   // A lista de concelhos falha em separado dos preços por marca: se uma
   // parte da página não tiver dados, a outra continua a servir.

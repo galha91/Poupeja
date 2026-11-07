@@ -7,6 +7,7 @@ import { URL_SITE } from "../../lib/site";
 import { FONTES } from "../../lib/fontes";
 import { lerResumosDiarios } from "../../lib/precosSnapshot";
 import { variacaoSemanal } from "../../lib/combustivelSemana";
+import { cabecalhoCacheCombustivel } from "../../lib/cacheCombustivel";
 
 /*
  * "Combustíveis esta semana" — o que cada marca subiu ou desceu nos
@@ -138,6 +139,6 @@ export default function CombustiveisSemana({ v }) {
 
 export async function getServerSideProps({ res }) {
   const v = variacaoSemanal(await lerResumosDiarios(10).catch(() => []));
-  res.setHeader("Cache-Control", "public, s-maxage=1800");
+  res.setHeader("Cache-Control", cabecalhoCacheCombustivel());
   return { props: { v: v || null } };
 }

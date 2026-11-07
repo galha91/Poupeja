@@ -120,6 +120,6 @@ export async function getStaticProps({ params }) {
       outros: PARES.filter((p) => p.slug !== par.slug && (p.a.id === par.a.id || p.b.id === par.b.id || p.a.id === par.b.id || p.b.id === par.a.id))
         .map((p) => ({ slug: p.slug, texto: `${p.a.nome} vs ${p.b.nome}` })),
     }),
-    revalidate: 10800,
+    revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }
