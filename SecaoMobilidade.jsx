@@ -9,7 +9,7 @@ import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontos
 import {
   minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa, ePrecoCompleto, ENERGIA_CEME_PADRAO,
 } from "./lib/custoCarregamento";
-import { CARTOES_EV, CARTAO_MEDIA, CARTAO_MANUAL, energiaEscolhida, energiaMedia } from "./lib/cartoesEV";
+import { CARTOES_EV, CARTAO_MANUAL, CARTAO_SEM, energiaEscolhida, energiaDoCartao, energiaMedia } from "./lib/cartoesEV";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -976,31 +976,45 @@ function SubPostosEV() {
   const [carroId, setCarroId]       = useState("");
   const [batDe, setBatDe]           = useState(20);
   const [batAte, setBatAte]         = useState(80);
-  const [simOpen, setSimOpen]       = useState(false);
+  // Passos do simulador: 1 carro · 2 bateria · 3 como paga · "pronto"
+  const [passoSim, setPassoSim]     = useState(1);
   const [vista, setVista]           = useState("lista");   // "lista" | "mapa"
   const carro = CARROS_EV.find(c => c.id === carroId) || null;
   // Custos (tarifas MOBI.E)
   const [ordemEV, setOrdemEV]       = useState("distancia"); // "distancia" | "preco"
   const [tarifasInfo, setTarifasInfo] = useState(null);
-  // Cartão/app de carregamento: decide o preço da energia nos postos com
-  // tarifa de operador. "media" até a pessoa escolher.
-  const [cartaoEV, setCartaoEV]     = useState(CARTAO_MEDIA);
+  // Como paga: um cartão, "manual" (escreve o preço) ou "sem" (paga no
+  // posto/app). Sem valor por omissão — a pessoa escolhe no passo 3.
+  const [cartaoEV, setCartaoEV]     = useState(null);
   const [energiaManual, setEnergiaManual] = useState(null);
+  const cartaoValido = c => c === CARTAO_MANUAL || c === CARTAO_SEM || CARTOES_EV.some(x => x.id === c);
+  // Quem já simulou volta direto aos resultados.
   useEffect(() => {
     try {
+      const sim = JSON.parse(localStorage.getItem("poupeja_ev_sim") || "null");
       const c = localStorage.getItem("poupeja_ev_cartao");
-      if (c === CARTAO_MEDIA || c === CARTAO_MANUAL || CARTOES_EV.some(x => x.id === c)) setCartaoEV(c);
       const v = parseFloat(localStorage.getItem("poupeja_ev_energia"));
-      if (Number.isFinite(v) && v >= 0 && v < 2) {
-        setEnergiaManual(v);
-        // Quem já tinha escrito um valor seu continua com ele.
-        if (!c) setCartaoEV(CARTAO_MANUAL);
+      if (Number.isFinite(v) && v >= 0 && v < 2) setEnergiaManual(v);
+      if (sim && CARROS_EV.some(x => x.id === sim.carro)) {
+        setCarroId(sim.carro);
+        if (Number.isFinite(sim.de) && Number.isFinite(sim.ate) && sim.ate > sim.de) { setBatDe(sim.de); setBatAte(sim.ate); }
+        if (cartaoValido(c)) { setCartaoEV(c); setPassoSim("pronto"); setOrdemEV("preco"); }
+        else setPassoSim(3);
       }
     } catch {}
   }, []);
-  function mudarCartao(id) {
+  useEffect(() => {
+    if (!carroId) return;
+    try { localStorage.setItem("poupeja_ev_sim", JSON.stringify({ carro: carroId, de: batDe, ate: batAte })); } catch {}
+  }, [carroId, batDe, batAte]);
+  function escolherCarro(id) {
+    setCarroId(id);
+    if (id) setPassoSim(2);
+  }
+  function escolherCartao(id) {
     setCartaoEV(id);
     try { localStorage.setItem("poupeja_ev_cartao", id); } catch {}
+    if (id !== CARTAO_MANUAL) { setPassoSim("pronto"); setOrdemEV("preco"); }
   }
   function mudarEnergia(texto) {
     const v = parseFloat(String(texto).replace(",", "."));
@@ -1009,7 +1023,8 @@ function SubPostosEV() {
     try { localStorage.setItem("poupeja_ev_energia", String(v)); } catch {}
   }
   // Calculado na hora da consulta: Galp e os cartões sem TAR mudam com o vazio.
-  const energiaKwh = energiaEscolhida(cartaoEV, energiaManual) ?? ENERGIA_CEME_PADRAO;
+  const simPronto = passoSim === "pronto" && !!carro;
+  const energiaKwh = cartaoEV === CARTAO_SEM ? null : (energiaEscolhida(cartaoEV, energiaManual) ?? ENERGIA_CEME_PADRAO);
   // Alertas
   const [alertas, setAlertas]       = useState([]);
   useEffect(() => {
@@ -1067,7 +1082,7 @@ function SubPostosEV() {
    * Custo = taxa do posto (MOBI.E) + energia do comercializador + IVA.
    */
   function estimarConector(c) {
-    if (!carro) return null;
+    if (!simPronto) return null;
     const carMaxKw = c.corrente === "DC"
       ? (carro.conectorDC === c.tipo ? carro.maxDC : null)
       : carro.maxAC;
@@ -1086,11 +1101,11 @@ function SubPostosEV() {
     let melhor = null;
     for (const c of p.conectores || []) {
       const e = estimarConector(c);
-      if (e?.custo && (!melhor || e.custo.total < melhor.total)) melhor = { ...e.custo, tipo: c.tipo, mins: e.mins };
+      if (e?.custo && (!melhor || e.custo.total < melhor.total)) melhor = { ...e.custo, tipo: c.tipo, corrente: c.corrente, mins: e.mins };
     }
     return melhor;
   }
-  const custos = new Map(carro ? postos.map(p => [p.id, custoDoPosto(p)]) : []);
+  const custos = new Map(simPronto ? postos.map(p => [p.id, custoDoPosto(p)]) : []);
   const temCustos = [...custos.values()].some(Boolean);
   const porPreco = ordemEV === "preco" && temCustos;
   const dist = p => parseFloat(p.distancia || 99);
@@ -1163,6 +1178,157 @@ function SubPostosEV() {
         </div>
       </div>
 
+      {/* Simulador: carro → bateria → como paga → resultados */}
+      <div className="mx-4 mb-4 card overflow-hidden">
+        {simPronto ? (
+          <div className="px-4 py-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[color:var(--pj-brand-wash)] flex items-center justify-center flex-shrink-0">
+              <Car size={16} className="text-[color:var(--pj-brand-ink)]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-[color:var(--pj-text)] truncate">{carro.marca} {carro.modelo}</p>
+              <p className="text-[11px] text-[color:var(--pj-text-muted)] truncate">
+                {batDe}% → {batAte}% · {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh · {(cartaoEV === CARTAO_SEM ? "Pago no posto / app" : cartaoEV === CARTAO_MANUAL ? "Outro cartão" : (CARTOES_EV.find(x => x.id === cartaoEV)?.nome || ""))}
+              </p>
+            </div>
+            <button onClick={() => setPassoSim(1)} className="press text-[12px] font-semibold text-[color:var(--pj-brand-ink)] px-2 py-1.5">
+              Alterar
+            </button>
+          </div>
+        ) : (
+          <div className="px-4 pt-4 pb-4">
+            <div className="flex items-center justify-between mb-1">
+              <p className="font-display text-[17px] font-semibold text-[color:var(--pj-text)]">Quanto vou pagar?</p>
+              <span className="text-[11px] font-semibold text-[color:var(--pj-text-faint)]">Passo {passoSim} de 3</span>
+            </div>
+            <div className="flex gap-1 mb-4" aria-hidden="true">
+              {[1, 2, 3].map(n => (
+                <div key={n} className={`flex-1 h-1 rounded-full ${n <= passoSim ? "bg-[color:var(--pj-brand)]" : "bg-[color:var(--pj-subtle)]"}`} />
+              ))}
+            </div>
+
+            {passoSim === 1 && (
+              <>
+                <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-2">Que carro tens?</p>
+                <select
+                  value={carroId}
+                  onChange={e => escolherCarro(e.target.value)}
+                  aria-label="Modelo do carro"
+                  className="w-full text-sm font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-3"
+                >
+                  <option value="">Escolhe o modelo</option>
+                  {Object.keys(MARCAS_EV).sort().map(marca => (
+                    <optgroup key={marca} label={marca}>
+                      {MARCAS_EV[marca].map(c => (
+                        <option key={c.id} value={c.id}>{c.modelo}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+                {carro && (
+                  <button onClick={() => setPassoSim(2)} className="press w-full mt-3 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold">
+                    Continuar
+                  </button>
+                )}
+                <p className="text-[11px] text-[color:var(--pj-text-faint)] mt-2">Serve para saber a bateria e a potência máxima que o carro aceita.</p>
+              </>
+            )}
+
+            {passoSim === 2 && carro && (
+              <>
+                <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-3">Quanta bateria tens e até onde queres carregar?</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">Tenho</p>
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="range" min={0} max={95} step={5} value={batDe} aria-label="Bateria atual"
+                        onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
+                        className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
+                      />
+                      <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-9 text-right">{batDe}%</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">Quero chegar a</p>
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="range" min={5} max={100} step={5} value={batAte} aria-label="Bateria pretendida"
+                        onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
+                        className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
+                      />
+                      <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-9 text-right">{batAte}%</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[12px] text-[color:var(--pj-text-muted)] mt-2 text-center">
+                  <span className="font-semibold pj-num">{((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh</span> a carregar
+                  {batAte > 80 ? " · acima de 80% o carregamento abranda" : ""}
+                </p>
+                <div className="flex gap-2 mt-3">
+                  <button onClick={() => setPassoSim(1)} className="press px-4 py-2.5 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-sm font-semibold">Voltar</button>
+                  <button onClick={() => setPassoSim(3)} className="press flex-1 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold">Continuar</button>
+                </div>
+              </>
+            )}
+
+            {passoSim === 3 && carro && (
+              <>
+                <p className="text-[13px] font-semibold text-[color:var(--pj-text)] mb-1">Como vais pagar?</p>
+                <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-3">Nos postos EDP, Repsol e semelhantes, a energia é paga ao teu cartão — muda o preço final.</p>
+                <div className="flex flex-col gap-2">
+                  {CARTOES_EV.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => escolherCartao(c.id)}
+                      className={`press w-full text-left px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-2 ${cartaoEV === c.id ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
+                    >
+                      <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">{c.nome}</span>
+                      <span className="text-[11px] text-[color:var(--pj-text-muted)] pj-num">{eur(energiaDoCartao(c), 3)} €/kWh agora</span>
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => escolherCartao(CARTAO_MANUAL)}
+                    className={`press w-full text-left px-3.5 py-2.5 rounded-xl border ${cartaoEV === CARTAO_MANUAL ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
+                  >
+                    <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Outro cartão</span>
+                    <span className="block text-[11px] text-[color:var(--pj-text-muted)]">EDP Charge, Prio… escreves o preço do teu tarifário</span>
+                  </button>
+                  {cartaoEV === CARTAO_MANUAL && (
+                    <div className="px-1">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
+                          defaultValue={energiaManual ?? ""}
+                          placeholder={eur(energiaMedia() ?? ENERGIA_CEME_PADRAO, 3)}
+                          onChange={e => mudarEnergia(e.target.value)}
+                          aria-label="Preço da energia do teu cartão, em euros por kWh, sem IVA, com tarifas de acesso às redes"
+                          className="w-28 text-sm font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
+                        />
+                        <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh sem IVA</span>
+                      </div>
+                      <button
+                        onClick={() => { setPassoSim("pronto"); setOrdemEV("preco"); }}
+                        disabled={!(energiaManual >= 0)}
+                        className="press w-full mt-2 py-2.5 rounded-xl bg-[color:var(--pj-brand)] text-white text-sm font-semibold disabled:opacity-40"
+                      >Ver preços</button>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => escolherCartao(CARTAO_SEM)}
+                    className={`press w-full text-left px-3.5 py-2.5 rounded-xl border ${cartaoEV === CARTAO_SEM ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
+                  >
+                    <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Não tenho cartão</span>
+                    <span className="block text-[11px] text-[color:var(--pj-text-muted)]">Pago no posto ou na app do operador</span>
+                  </button>
+                </div>
+                <button onClick={() => setPassoSim(2)} className="press mt-3 px-4 py-2 rounded-xl bg-[color:var(--pj-subtle)] text-[color:var(--pj-text)] text-sm font-semibold">Voltar</button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Localização negada */}
       {locDenied && (
         <div className="mx-4 mb-4 card p-5 text-center">
@@ -1205,119 +1371,6 @@ function SubPostosEV() {
           <MapPin size={13} className="text-[color:var(--pj-brand-ink)]" /> Usar a minha localização atual
         </button>
       </div>}
-
-      {/* Simulador de carregamento */}
-      <div className="mx-4 mb-3 card overflow-hidden">
-        <button
-          onClick={() => setSimOpen(v => !v)}
-          className="press w-full px-4 py-3 flex items-center justify-between"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[color:var(--pj-subtle)] flex items-center justify-center">
-              <Car size={14} className="text-[color:var(--pj-brand-ink)]" />
-            </div>
-            <div className="text-left">
-              <p className="text-[13px] font-semibold text-[color:var(--pj-text)]">
-                {carro ? carro.marca + " " + carro.modelo : "Simular carregamento"}
-              </p>
-              {carro && (
-                <p className="text-[10px] text-[color:var(--pj-text-faint)]">{batDe}% → {batAte}% · {carro.bateria} kWh</p>
-              )}
-            </div>
-          </div>
-          <ChevronDown size={18} aria-hidden="true" className="text-[color:var(--pj-text-faint)] transition-transform" style={{ transform: simOpen ? "rotate(180deg)" : "none" }} />
-        </button>
-
-        {simOpen && (
-          <div className="px-4 pb-4 border-t border-[color:var(--pj-subtle)]">
-            {/* Seletor de carro */}
-            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mt-3 mb-1.5">O meu carro</p>
-            <select
-              value={carroId}
-              onChange={e => setCarroId(e.target.value)}
-              className="w-full text-xs font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2.5 mb-3"
-            >
-              <option value="">— Selecionar modelo —</option>
-              {Object.keys(MARCAS_EV).sort().map(marca => (
-                <optgroup key={marca} label={marca}>
-                  {MARCAS_EV[marca].map(c => (
-                    <option key={c.id} value={c.id}>{c.modelo} ({c.bateria} kWh)</option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-
-            {/* Percentagem de bateria */}
-            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mb-2">Bateria</p>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">De</p>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="range" min={0} max={99} step={5} value={batDe}
-                    onChange={e => { const v = parseInt(e.target.value); setBatDe(v); if (v >= batAte) setBatAte(Math.min(v + 5, 100)); }}
-                    className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
-                  />
-                  <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-8 text-right">{batDe}%</span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] text-[color:var(--pj-text-faint)] mb-1">Até</p>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="range" min={0} max={100} step={5} value={batAte}
-                    onChange={e => { const v = parseInt(e.target.value); setBatAte(v); if (v <= batDe) setBatDe(Math.max(v - 5, 0)); }}
-                    className="flex-1" style={{ accentColor: "var(--pj-brand)" }}
-                  />
-                  <span className="text-xs font-semibold text-[color:var(--pj-brand-ink)] w-8 text-right">{batAte}%</span>
-                </div>
-              </div>
-            </div>
-            {carro && (
-              <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-2 text-center">
-                {((batAte - batDe) / 100 * carro.bateria).toFixed(1)} kWh a carregar
-              </p>
-            )}
-
-            {/* Cartão / app de carregamento */}
-            <p className="text-[11px] font-semibold text-[color:var(--pj-text-faint)] uppercase tracking-[0.09em] mt-4 mb-1.5">O teu cartão ou app</p>
-            <select
-              value={cartaoEV}
-              onChange={e => mudarCartao(e.target.value)}
-              aria-label="Cartão ou app de carregamento"
-              className="w-full text-xs font-medium text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2.5"
-            >
-              <option value={CARTAO_MEDIA}>Não sei / média dos cartões</option>
-              {CARTOES_EV.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-              <option value={CARTAO_MANUAL}>Outro — escrevo o preço</option>
-            </select>
-            {cartaoEV === CARTAO_MANUAL && (
-              <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="number" inputMode="decimal" min={0} max={1.5} step={0.01}
-                  defaultValue={energiaManual ?? ""}
-                  placeholder={eur(energiaMedia() ?? ENERGIA_CEME_PADRAO, 3)}
-                  onChange={e => mudarEnergia(e.target.value)}
-                  aria-label="Preço da energia do teu cartão, em euros por kWh, sem IVA, com tarifas de acesso às redes"
-                  className="w-24 text-xs font-semibold text-[color:var(--pj-text)] bg-[color:var(--pj-surface)] border border-[color:var(--pj-border)] rounded-xl px-3 py-2"
-                />
-                <span className="text-xs text-[color:var(--pj-text-muted)]">€/kWh, sem IVA, com redes</span>
-              </div>
-            )}
-            <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-1.5 leading-snug">
-              Energia agora: <span className="font-semibold text-[color:var(--pj-text-muted)] pj-num">{eur(energiaKwh, 3)} €/kWh</span> sem IVA, com redes.
-              {" "}{CARTOES_EV.find(c => c.id === cartaoEV)?.nota || ""}
-              {" "}Só conta nos postos com tarifa de operador (EDP, Repsol…); nos de preço final (Continente, Galp, Powerdot, Ionity…) o preço publicado já inclui tudo.
-            </p>
-            {carro && tarifasInfo && (
-              <p className="text-[10px] text-[color:var(--pj-text-faint)] mt-2 leading-snug flex gap-1">
-                <Info size={11} className="flex-shrink-0 mt-px" />
-                <span>Preço final: o que o posto publica no MOBI.E, já com IVA. Tarifa de operador: taxa do posto + energia + IEC + tarifa MOBI.E (0,11 €) + IVA 23%. Confirma sempre no ecrã do posto ou na app.</span>
-              </p>
-            )}
-          </div>
-        )}
-      </div>
 
       {/* Alertas disparados */}
       {alertasDisparados.map(a => (
@@ -1523,7 +1576,7 @@ function SubPostosEV() {
                             ≈ {eur(custos.get(posto.id).total, 2)} €
                           </span>
                           <span className="text-[10px] text-[color:var(--pj-text-faint)]">
-                            {custos.get(posto.id).completo ? "preço do posto" : "estimado"} · {batDe}→{batAte}% · {custos.get(posto.id).tipo}{custos.get(posto.id).mins != null ? `, ${formatarTempo(custos.get(posto.id).mins)}` : ""}
+                            {custos.get(posto.id).completo ? "preço do posto" : "estimado"} · {custos.get(posto.id).tipo}{custos.get(posto.id).mins != null ? `, ${formatarTempo(custos.get(posto.id).mins)}` : ""}
                           </span>
                           {maisBarato?.id === posto.id && (
                             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[color:var(--pj-brand)] text-white">Mais barato livre</span>
@@ -1578,7 +1631,15 @@ function SubPostosEV() {
                                   )}
                                 </div>
                               )}
-                              {carro && c.corrente === "DC" && carro.conectorDC !== c.tipo && (
+                              {custoC && custoC.tempo >= 1 && (
+                                <p className="text-[10px] text-[color:var(--pj-text-muted)] pj-num">
+                                  {eur(custoC.tempo, 2)} € é tempo ligado ({eur(c.tarifa.min, 2)} €/min)
+                                </p>
+                              )}
+                              {simPronto && !custoC && c.tarifa && cartaoEV === CARTAO_SEM && !ePrecoCompleto(c.tarifa) && est?.mins != null && (
+                                <p className="text-[10px] text-[color:var(--pj-text-faint)]">Preço só com cartão</p>
+                              )}
+                              {simPronto && c.corrente === "DC" && carro.conectorDC !== c.tipo && (
                                 <p className="text-[11px] text-[color:var(--pj-danger)] font-bold mt-0.5">Incompatível</p>
                               )}
                             </div>

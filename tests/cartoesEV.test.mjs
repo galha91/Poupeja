@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   CARTOES_EV, TAR_BT, eVazio, energiaDoCartao, energiaMedia, energiaEscolhida,
-  CARTAO_MEDIA, CARTAO_MANUAL,
+  CARTAO_MEDIA, CARTAO_MANUAL, CARTAO_SEM,
 } from "../lib/cartoesEV.js";
 
 // 15h e 23h em Lisboa (novembro: UTC+0)
@@ -53,4 +53,8 @@ test("todos os cartões têm fonte e data de verificação", () => {
     assert.match(c.fonte, /^https:\/\//);
     assert.match(c.verificado, /^\d{4}-\d{2}-\d{2}$/);
   }
+});
+
+test("sem cartão: sem preço de energia", () => {
+  assert.equal(energiaEscolhida(CARTAO_SEM, null, DIA), null);
 });
