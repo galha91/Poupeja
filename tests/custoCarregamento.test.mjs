@@ -144,3 +144,18 @@ test("tarifaDoConector: corrente sem ponto igual dá null", () => {
   assert.equal(tarifaDoConector(s, { kw: 50, corrente: "DC" }), null);
   assert.equal(tarifaDoConector(null, { kw: 50 }), null);
 });
+
+test("tempo ligado: separa a parte ao minuto (porque o lento sai caro)", () => {
+  // EDP real: 0,13 €/kWh + 0,10 €/min + 0,40 €, igual em AC 22 kW e DC 120 kW
+  const t = { kwh: 0.13, min: 0.1, sessao: 0.4 };
+  const lento = custoCarregamento({ kwh: 38, minutos: 209, tarifa: t, energiaKwh: 0.215 });
+  const rapido = custoCarregamento({ kwh: 36.5, minutos: 23, tarifa: t, energiaKwh: 0.215 });
+  assert.equal(lento.tempo, r2(209 * 0.1 * (1 + IVA)));
+  assert.ok(rapido.total < lento.total);
+  assert.ok(lento.tempo > lento.total / 2);
+});
+
+test("sem cartão: tarifa de operador não tem conta, preço final tem", () => {
+  assert.equal(custoCarregamento({ kwh: 30, minutos: 30, tarifa: { kwh: 0.13, min: 0.1 }, energiaKwh: null }), null);
+  assert.equal(custoCarregamento({ kwh: 30, minutos: 30, tarifa: { kwh: 0.45 }, energiaKwh: null }).total, 13.5);
+});
