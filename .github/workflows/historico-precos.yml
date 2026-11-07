@@ -57,8 +57,16 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Três tentativas: uma falha passageira do registo do npm não pode
+      # fazer perder o dia.
       - name: Instalar dependências
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: |
+          for i in 1 2 3; do
+            npm ci --ignore-scripts --no-audit --no-fund && exit 0
+            echo "npm ci falhou (tentativa $i); nova tentativa em $((i * 20)) s"
+            sleep $((i * 20))
+          done
+          exit 1
 
       - name: Escolher a tarefa
         id: tarefa
