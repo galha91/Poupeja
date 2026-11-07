@@ -9,7 +9,7 @@ import { lerDescontos, guardarDescontos, aplicarDesconto } from "./lib/descontos
 import {
   minutosCarregamento, formatarTempo, kwhFornecidos, custoCarregamento, descreverTarifa, ePrecoCompleto, ENERGIA_CEME_PADRAO,
 } from "./lib/custoCarregamento";
-import { CARTOES_EV, CARTAO_MANUAL, CARTAO_SEM, energiaEscolhida, energiaDoCartao, energiaMedia } from "./lib/cartoesEV";
+import { CARTOES_EV, CARTAO_MANUAL, CARTAO_SEM, energiaEscolhida, energiaDoCartao, energiaMedia, ativacaoDoCartao } from "./lib/cartoesEV";
 
 /* Distâncias em português: 9,9 km e não 9.9 km — o mesmo ponto decimal
    que já tínhamos corrigido nos preços andava aqui à solta. */
@@ -1135,6 +1135,7 @@ function SubPostosEV() {
       minutos: mins,
       tarifa: c.tarifa,
       energiaKwh,
+      taxaCartao: ativacaoDoCartao(cartaoEV),
     });
     return { mins, custo };
   }
@@ -1278,12 +1279,17 @@ function SubPostosEV() {
         const opcao = (ativa) => `press w-full text-left px-3.5 py-2.5 rounded-xl border ${ativa ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`;
         const opcoesPagamento = (
           <div className="flex flex-col gap-2">
-            {CARTOES_EV.map(c => (
-              <button key={c.id} onClick={() => escolherCartao(c.id)} className={`${opcao(cartaoEV === c.id)} flex items-center justify-between gap-2`}>
-                <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">{c.nome}</span>
-                <span className="text-[11px] text-[color:var(--pj-text-muted)] pj-num">{eur(energiaDoCartao(c), 3)} €/kWh agora</span>
-              </button>
-            ))}
+            <select
+              value={CARTOES_EV.some(c => c.id === cartaoEV) ? cartaoEV : ""}
+              onChange={e => e.target.value && escolherCartao(e.target.value)}
+              aria-label="O teu cartão ou app de carregamento"
+              className={`w-full text-sm font-medium text-[color:var(--pj-text)] rounded-xl px-3 py-3 border ${CARTOES_EV.some(c => c.id === cartaoEV) ? "border-[color:var(--pj-brand)] bg-[color:var(--pj-brand-wash)]" : "border-[color:var(--pj-border)] bg-[color:var(--pj-surface)]"}`}
+            >
+              <option value="">Escolhe o teu cartão ou app ({CARTOES_EV.length})</option>
+              {CARTOES_EV.map(c => (
+                <option key={c.id} value={c.id}>{c.nome} — {eur(energiaDoCartao(c), 3)} €/kWh agora</option>
+              ))}
+            </select>
             <button onClick={() => escolherCartao(CARTAO_MANUAL)} className={opcao(cartaoEV === CARTAO_MANUAL)}>
               <span className="text-[13px] font-semibold text-[color:var(--pj-text)]">Outro cartão</span>
               <span className="block text-[11px] text-[color:var(--pj-text-muted)]">Escreves o preço do teu tarifário</span>
