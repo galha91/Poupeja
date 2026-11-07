@@ -233,6 +233,6 @@ export async function getStaticProps({ params }) {
       custo: JSON.parse(JSON.stringify(custo)),
     },
     // Os preços dos ingredientes mudam: a página regenera-se de 3 em 3 horas.
-    revalidate: 10800,
+    revalidate: 43200,
   };
 }
