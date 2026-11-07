@@ -52,6 +52,15 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 ];
 
+/*
+ * Bots de treino de IA e de SEO (data/bots-bloqueados.json) recebem o
+ * public/bloqueado.txt, servido pela CDN: a página pedida nunca chega a
+ * ser gerada, por isso não gastam CPU (plano Hobby: 4 h por mês). O
+ * robots.txt fica de fora, para eles lerem que não são bem-vindos.
+ */
+const { bots: BOTS_BLOQUEADOS } = require("./data/bots-bloqueados.json");
+const UA_BLOQUEADO = `.*(${BOTS_BLOQUEADOS.join("|")}).*`;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -70,6 +79,17 @@ const nextConfig = {
       ...redes.map((r) => ({ source: `/${r}`, destination: `/?o=${r}-bio`, permanent: false })),
       ...redes.map((r) => ({ source: `/${r}/:tema([a-z0-9]{2,30})`, destination: `/?atalho=mercados&q=:tema&o=${r}-:tema`, permanent: false })),
     ];
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/:caminho((?!robots\\.txt$|bloqueado\\.txt$).*)",
+          has: [{ type: "header", key: "user-agent", value: UA_BLOQUEADO }],
+          destination: "/bloqueado.txt",
+        },
+      ],
+    };
   },
   async headers() {
     return [

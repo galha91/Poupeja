@@ -1,0 +1,8 @@
+{
+  "_nota": "Bots de treino de IA e de ferramentas de SEO. Não trazem visitas e gastavam o CPU da Vercel. Usado no next.config.js (respondem com public/bloqueado.txt, sem correr funções) e confirmado contra o public/robots.txt pelos testes. NUNCA pôr aqui motores de pesquisa (Googlebot, Bingbot, Applebot…) nem bots de pesquisa das IAs (OAI-SearchBot, ChatGPT-User, PerplexityBot, Claude-SearchBot, Claude-User).",
+  "bots": [
+    "GPTBot", "ClaudeBot", "anthropic-ai", "CCBot", "Bytespider", "meta-externalagent",
+    "cohere-ai", "cohere-training-data-crawler", "Diffbot", "omgili", "ImagesiftBot", "Timpibot",
+    "AhrefsBot", "SemrushBot", "MJ12bot", "DotBot", "DataForSeoBot", "BLEXBot", "serpstatbot"
+  ]
+}
