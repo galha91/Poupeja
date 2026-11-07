@@ -159,3 +159,10 @@ test("sem cartão: tarifa de operador não tem conta, preço final tem", () => {
   assert.equal(custoCarregamento({ kwh: 30, minutos: 30, tarifa: { kwh: 0.13, min: 0.1 }, energiaKwh: null }), null);
   assert.equal(custoCarregamento({ kwh: 30, minutos: 30, tarifa: { kwh: 0.45 }, energiaKwh: null }).total, 13.5);
 });
+
+test("taxa do cartão entra na parte da energia, com IVA", () => {
+  const t = { kwh: 0.1, min: 0, sessao: 0 };
+  const sem = custoCarregamento({ kwh: 20, minutos: 10, tarifa: t, energiaKwh: 0.2 });
+  const com = custoCarregamento({ kwh: 20, minutos: 10, tarifa: t, energiaKwh: 0.2, taxaCartao: 0.99 });
+  assert.equal(r2(com.total - sem.total), r2(0.99 * (1 + IVA)));
+});

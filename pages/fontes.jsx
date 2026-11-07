@@ -18,7 +18,7 @@ const GRUPOS = [
   },
   {
     titulo: "Postos de carregamento",
-    texto: "Tarifas que os operadores dos postos publicam na rede MOBI.E (€/kWh, €/min e €/carregamento). Nos postos com preço final (ad hoc) mostramos esse preço, que já inclui energia e IVA. Nos postos com tarifa de operador somamos a energia do cartão escolhido (preçários oficiais da Galp Electric, Iberdrola, miio e Via Verde, ou a média deles), as tarifas de acesso às redes, o IEC, a tarifa da MOBI.E (ERSE, 2026) e o IVA, o que é uma estimativa. Confirma sempre no posto ou na app.",
+    texto: "Tarifas que os operadores dos postos publicam na rede MOBI.E (€/kWh, €/min e €/carregamento). Nos postos com preço final (ad hoc) mostramos esse preço, que já inclui energia e IVA. Nos postos com tarifa de operador somamos a energia do cartão escolhido (preçários oficiais de 18 cartões e apps, como EDP Charge, Galp Electric, Prio, Iberdrola, miio, Via Verde e Repsol, ou o preço que a pessoa escreve), as tarifas de acesso às redes, o IEC, a tarifa da MOBI.E (ERSE, 2026) e o IVA, o que é uma estimativa. Confirma sempre no posto ou na app.",
     fontes: ["mobie"],
   },
   {
