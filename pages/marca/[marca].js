@@ -1,7 +1,8 @@
 import Head from "next/head";
 import LayoutPublico from "../../LayoutPublico";
 import { Atualizado, BotaoAbrirPoupeja, NotaCadeias, Pilulas, ListaArtigos, Migalhas, estiloH1, estiloH2, estiloTexto } from "../../PaginasPrecos";
-import { ofertasProduto, porMarca } from "../../lib/seoMarcas";
+import { porMarca } from "../../lib/seoMarcas";
+import { lerPaginaMarca, propsMarca } from "../../lib/paginasMarca";
 import { gruposMarca } from "../../lib/seoMarcasDados";
 import { breadcrumbLd, hojeLisboa } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
@@ -63,29 +64,17 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
+  // Normalmente: a página pré-calculada pelo cron-paginas-marca (GitHub).
+  const c = await lerPaginaMarca("marca", params.marca);
+  if (c.estado === "ok") return { props: c.props, revalidate: 86400 };
+  if (c.estado === "nao-existe") return { notFound: true, revalidate: 86400 };
+
+  // Sem cache (tabela por criar ou cron parado há dias): cálculo em direto.
   const hoje = hojeLisboa();
   const marcas = porMarca(await gruposMarca(hoje));
   const m = marcas.find((x) => x.slug === params.marca);
   if (!m) return { notFound: true, revalidate: 86400 };
-  const produtos = m.grupos
-    .map((g) => ({ g, d: ofertasProduto(g, hoje) }))
-    .filter(({ d }) => d.ofertas.length)
-    .sort((a, b) => b.d.ofertas.length - a.d.ofertas.length || a.g.nome.localeCompare(b.g.nome, "pt"));
-  if (!produtos.length) return { notFound: true, revalidate: 86400 };
-  const lojas = [...new Set(produtos.flatMap(({ d }) => d.ofertas.map((o) => o.lojaNome)))];
-  return {
-    props: JSON.parse(JSON.stringify({
-      marca: { slug: m.slug, nome: m.nome },
-      produtos: produtos.map(({ g, d }) => ({
-        slug: g.slug, nome: g.nome, href: `/produto/${g.slug}`, unidade: "embalagem", n: d.ofertas.length,
-        contexto: `${d.ofertas.length} cadeia${d.ofertas.length > 1 ? "s" : ""} · mais barato no ${d.ofertas[0].lojaNome}`,
-        vencedor: { lojaNome: d.ofertas[0].lojaNome, valor: d.ofertas[0].preco },
-      })),
-      lojas,
-      atualizado: produtos.reduce((x, { d }) => (d.atualizado > x ? d.atualizado : x), "") || null,
-      indexavel: produtos.filter(({ d }) => d.indexavel).length >= 2,
-      outras: marcas.filter((x) => x.slug !== m.slug).slice(0, 12).map((x) => ({ slug: x.slug, nome: x.nome })),
-    })),
-    revalidate: 86400, // 24 h: os preços mudam uma vez por dia; cada regeneração agrupa o catálogo inteiro
-  };
+  const props = propsMarca(m, marcas, hoje);
+  if (!props) return { notFound: true, revalidate: 86400 };
+  return { props, revalidate: 86400 }; // 24 h: os preços mudam uma vez por dia
 }

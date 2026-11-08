@@ -46,7 +46,7 @@ const NOMES_EVENTO = {
 };
 const NOMES_TAREFA = {
   "cron-precos": "Preços dos combustíveis (DGEG)", "cron-saude-precos": "Verificação dos preços das lojas", "cron-historico-precos": "Histórico de preços (1/3)",
-  "cron-historico-precos-2": "Histórico de preços (2/3)", "cron-historico-precos-3": "Histórico de preços (3/3)", "cron-avisos": "Notificações personalizadas",
+  "cron-historico-precos-2": "Histórico de preços (2/3)", "cron-historico-precos-3": "Histórico de preços (3/3)", "cron-paginas-marca": "Páginas de produtos e marcas", "cron-avisos": "Notificações personalizadas",
   "cron-alertas-email": "Alertas de preço por email", "cron-lembrete-compras": "Lembrete do dia das compras", "cron-email-semanal": "Resumo semanal dos folhetos",
   "cron-email-combustiveis": "Email semanal de combustível", "cron-previsao-combustiveis": "Previsão dos combustíveis", "cron-validar-urls": "Validação de links",
   "cron-indexnow": "Aviso de páginas novas aos motores (IndexNow)", "cron-resumo-admin": "Resumo do admin por email", "push-enviar": "Notificação geral de quinta",

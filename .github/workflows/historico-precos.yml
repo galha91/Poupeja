@@ -12,6 +12,10 @@ name: Histórico de preços
 # nas últimas 4 h (scripts/cron/correr.mjs --reserva). Minutos fora do :00
 # e do :15, as horas mais carregadas do GitHub.
 #
+# Também gera, uma vez por dia (00:40 UTC, reserva às 03:40), as páginas
+# /produto e /marca para a tabela paginas_marca (lib/paginasMarca): eram o
+# maior gasto de CPU da Vercel, e assim a página só lê uma linha pronta.
+#
 # Cada execução fica no /admin (Qualidade → Tarefas automáticas), como
 # antes. Se falhar, o GitHub manda email.
 #
@@ -24,12 +28,14 @@ on:
     - cron: '47 9 * * *'   # reserva da parte 1
     - cron: '47 15 * * *'  # reserva da parte 2
     - cron: '47 21 * * *'  # reserva da parte 3
+    - cron: '40 0 * * *'   # páginas /produto e /marca (lib/paginasMarca)
+    - cron: '40 3 * * *'   # reserva das páginas
   workflow_dispatch:
     inputs:
       rota:
         description: Parte a correr
         type: choice
-        options: [cron-historico-precos, cron-historico-precos-2, cron-historico-precos-3, ensaio-lojas]
+        options: [cron-historico-precos, cron-historico-precos-2, cron-historico-precos-3, cron-paginas-marca, ensaio-lojas]
         default: ensaio-lojas
   # Mudanças no scraping ou nestes scripts: só o ensaio (não escreve nada).
   push:
@@ -82,6 +88,8 @@ jobs:
             "schedule:47 9 * * *")  echo "args=cron-historico-precos --reserva 4" >> "$GITHUB_OUTPUT" ;;
             "schedule:47 15 * * *") echo "args=cron-historico-precos-2 --reserva 4" >> "$GITHUB_OUTPUT" ;;
             "schedule:47 21 * * *") echo "args=cron-historico-precos-3 --reserva 4" >> "$GITHUB_OUTPUT" ;;
+            "schedule:40 0 * * *")  echo "args=cron-paginas-marca" >> "$GITHUB_OUTPUT" ;;
+            "schedule:40 3 * * *")  echo "args=cron-paginas-marca --reserva 20" >> "$GITHUB_OUTPUT" ;;
             workflow_dispatch:*)    echo "args=$ROTA_MANUAL" >> "$GITHUB_OUTPUT" ;;
             *)                      echo "args=ensaio-lojas" >> "$GITHUB_OUTPUT" ;;
           esac
