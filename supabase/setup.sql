@@ -701,3 +701,22 @@ create table if not exists public.tarifas_ev (
 alter table public.tarifas_ev enable row level security;
 
 -- Sem policies de propósito: só a service role (server-side) lê e escreve.
+
+-- ── Páginas /produto e /marca pré-calculadas (2026-11-08) ───────────────────
+-- Geradas uma vez por dia nos GitHub Actions (pages/api/cron-paginas-marca,
+-- lib/paginasMarcaGerar). A página na Vercel lê só a sua linha, em vez de
+-- descarregar e agrupar o catálogo inteiro (era o maior gasto de CPU).
+-- A linha tipo='meta', slug='estado' diz quando foi gerada: com mais de 3
+-- dias, as páginas voltam ao cálculo em direto. Só a service role.
+create table if not exists public.paginas_marca (
+  tipo        text not null check (tipo in ('produto', 'marca', 'meta')),
+  slug        text not null,
+  props       jsonb not null,
+  indexavel   boolean not null default false,
+  atualizado  date,
+  hash        text not null,
+  gerado_em   timestamptz not null default now(),
+  primary key (tipo, slug)
+);
+create index if not exists paginas_marca_indexavel on public.paginas_marca (tipo, indexavel);
+alter table public.paginas_marca enable row level security;

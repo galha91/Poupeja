@@ -4,9 +4,10 @@ import {
   Atualizado, BotaoAbrirPoupeja, GraficoHistorico, TabelaPrecos, NotaCadeias, Pilulas, ListaArtigos, Migalhas,
   estiloH1, estiloH2, estiloTexto,
 } from "../../PaginasPrecos";
-import { ofertasProduto, serieProduto, frasesProduto, metaProduto, produtoMarcaLd } from "../../lib/seoMarcas";
+import { produtoMarcaLd } from "../../lib/seoMarcas";
+import { lerPaginaMarca, propsProduto } from "../../lib/paginasMarca";
 import { gruposMarca, diasDoGrupo } from "../../lib/seoMarcasDados";
-import { ARTIGOS_SEO, breadcrumbLd, linkApp, hojeLisboa, normalizarQ } from "../../lib/seoPrecos";
+import { breadcrumbLd, linkApp, hojeLisboa } from "../../lib/seoPrecos";
 import { resumosRecentes } from "../../lib/seoPrecosDados";
 import { URL_SITE } from "../../lib/site";
 
@@ -93,38 +94,19 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
+  // Normalmente: a página pré-calculada pelo cron-paginas-marca (GitHub).
+  const c = await lerPaginaMarca("produto", params.slug);
+  if (c.estado === "ok") return { props: c.props, revalidate: 86400 };
+  if (c.estado === "nao-existe") return { notFound: true, revalidate: 86400 };
+
+  // Sem cache (tabela por criar ou cron parado há dias): cálculo em direto.
   const hoje = hojeLisboa();
   const grupos = await gruposMarca(hoje);
   const g = grupos.find((x) => x.slug === params.slug);
   if (!g) return { notFound: true, revalidate: 86400 };
   const [dias, resumos] = await Promise.all([diasDoGrupo(g, hoje), resumosRecentes(hoje)]);
-  const dados = ofertasProduto(g, hoje);
-  const grupo = { slug: g.slug, nome: g.nome, marca: g.marca, marcaSlug: g.marcaSlug, q: g.q, unidade: g.unidade };
-
-  // O artigo genérico desta pesquisa, se for do catálogo (leite meio gordo, azeite…).
-  const art = ARTIGOS_SEO.find((a) => a.q === normalizarQ(g.q));
-  const r = art ? resumos.get(art.slug) : null;
-  const generico = art ? {
-    slug: art.slug, nome: art.nomeCurto,
-    vencedor: r?.indexavel ? { lojaNome: r.ofertas[0].lojaNome, valorTxt: `${r.ofertas[0].valor.toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €${r.unidade && r.unidade !== "embalagem" ? `/${r.unidade}` : ""}` } : null,
-  } : null;
-
-  const outros = grupos
-    .filter((x) => x.marcaSlug === g.marcaSlug && x.slug !== g.slug)
-    .map((x) => ({ x, d: ofertasProduto(x, hoje) }))
-    .filter(({ d }) => d.ofertas.length)
-    .sort((a, b) => b.d.ofertas.length - a.d.ofertas.length)
-    .slice(0, 8)
-    .map(({ x, d }) => ({
-      slug: x.slug, nome: x.nome, unidade: "embalagem", href: `/produto/${x.slug}`,
-      contexto: `${d.ofertas.length} cadeia${d.ofertas.length > 1 ? "s" : ""} · mais barato no ${d.ofertas[0].lojaNome}`,
-      vencedor: { lojaNome: d.ofertas[0].lojaNome, valor: d.ofertas[0].preco },
-    }));
-
   return {
-    props: JSON.parse(JSON.stringify({
-      grupo, dados, serie: serieProduto(g, dias), frases: frasesProduto(g, dados, hoje), meta: metaProduto(g, dados), generico, outros,
-    })),
-    revalidate: 86400, // 24 h: os preços mudam uma vez por dia; cada regeneração agrupa o catálogo inteiro
+    props: propsProduto(g, grupos, dias, resumos, hoje),
+    revalidate: 86400, // 24 h: os preços mudam uma vez por dia
   };
 }
