@@ -17,5 +17,7 @@ Vídeo vertical de 10 artigos comparados em 4 supermercados, às segundas, quart
 
 - O preço de cada artigo é o **mais baixo por kg, litro ou unidade** que cada loja tem, multiplicado pela quantidade do cabaz.
 - Um artigo cujo preço mais alto seja mais de 3 vezes o mais baixo sai do cabaz (a pesquisa apanhou produtos diferentes).
+- Entre 2 e 3 vezes o artigo é "suspeito": só entra se não houver artigos de preço consistente que cheguem a 10.
+- Se o vencedor muda ao tirar qualquer artigo, ou ganha por menos de 3%, o vídeo e a legenda não declaram vencedor: dizem que as lojas do topo quase empatam e quanto a mais custa a mais cara (`empate`, `extraMaisCaraPct`).
 - Um artigo que falte numa das lojas também sai.
 - A legenda e o vídeo mostram a data dos preços.

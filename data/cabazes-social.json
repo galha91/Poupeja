@@ -2,6 +2,7 @@
   "nota": "Cabazes dos vídeos (Instagram/TikTok), segunda, quarta e sexta. q = termo em precos_supermercado_historico; qtd = quantas unidades do preço de referência (kg, L, ovo, rolo...) entram no cabaz; rotulo = o que aparece no vídeo. Cada cabaz usa 10 artigos do tema, dando prioridade aos que há mais tempo não saíram.",
   "lojas": ["continente", "pingo-doce", "auchan", "apolonia"],
   "nomesLojas": { "continente": "Continente", "pingo-doce": "Pingo Doce", "auchan": "Auchan", "apolonia": "Apolónia" },
+  "generoLojas": { "continente": "o", "pingo-doce": "o", "auchan": "o", "apolonia": "a" },
   "temas": {
     "pequeno-almoco": { "titulo": "Pequeno-almoço", "artigos": [
       { "q": "leite meio gordo", "nome": "Leite meio-gordo", "qtd": 2, "rotulo": "2 L" },
@@ -44,7 +45,12 @@
       { "q": "douradinhos", "nome": "Douradinhos", "qtd": 0.4, "rotulo": "400 g" },
       { "q": "salmão", "nome": "Salmão", "qtd": 0.4, "rotulo": "400 g" },
       { "q": "pizza", "nome": "Pizza", "qtd": 0.4, "rotulo": "400 g" },
-      { "q": "peito de frango", "nome": "Peito de frango", "qtd": 0.6, "rotulo": "600 g" }
+      { "q": "peito de frango", "nome": "Peito de frango", "qtd": 0.6, "rotulo": "600 g" },
+      { "q": "ovos", "nome": "Ovos", "qtd": 6, "rotulo": "6 unidades" },
+      { "q": "atum", "nome": "Atum em lata", "qtd": 0.28, "rotulo": "2 latas" },
+      { "q": "grão cozido", "nome": "Grão cozido", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "feijão cozido", "nome": "Feijão cozido", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "azeite", "nome": "Azeite", "qtd": 0.25, "rotulo": "250 ml" }
     ] },
     "casa-e-banho": { "titulo": "Casa e casa de banho", "artigos": [
       { "q": "papel higiénico", "nome": "Papel higiénico", "qtd": 12, "rotulo": "12 rolos" },

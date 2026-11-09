@@ -71,11 +71,11 @@ function desenhar(t){
     r.querySelector(".barra").style.width=Math.max(46,acum[l]/maxTot*940)+"px";
     r.querySelector(".total").textContent=eur(acum[l]);
     const b=r.querySelector(".barra");
-    b.style.background=fim?(l===venc?"#0b6b4f":l===C.maisCara?"#b4472e":"#c8a26a"):"#c8a26a";
-    r.style.opacity=fim&&l!==venc&&l!==C.maisCara?0.55:1;});
+    b.style.background=fim?(l===C.maisCara?"#b4472e":(!C.empate&&l===venc)?"#0b6b4f":"#c8a26a"):"#c8a26a";
+    r.style.opacity=fim&&!C.empate&&l!==venc&&l!==C.maisCara?0.55:1;});
   const pr=ease((t-tR-0.3)/0.5);
   el("revela").style.opacity=pr; el("revela").style.transform="translateY("+(1-pr)*30+"px)";
-  el("revela").innerHTML="Mesmo cabaz: <span style='color:#b4472e'>"+eur(C.poupanca)+"</span> de diferença";
+  el("revela").innerHTML=C.empate?"As 3 grandes quase empatam. "+C.nomesLojas[C.maisCara]+": <span style='color:#b4472e'>+"+C.extraMaisCaraPct+"%</span>":"Mesmo cabaz: <span style='color:#b4472e'>"+eur(C.poupanca)+"</span> de diferença";
   const tF=tR+${T_REVELA};
   el("fim").style.opacity=ease((t-tF)/0.4);
 }

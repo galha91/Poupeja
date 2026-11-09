@@ -58,3 +58,36 @@ test("falha se não há artigos comparáveis suficientes", () => {
   const l = linhas("despensa").filter((x) => x.q !== "arroz" && x.q !== "farinha" && x.q !== "azeite");
   assert.throws(() => calcularCabaz({ tema: "despensa", config, linhas: l }), /comparáveis/);
 });
+
+test("artigos de preço consistente entram antes dos suspeitos (2x a 3x)", () => {
+  const artigos = config.temas["jantar-de-semana"].artigos;
+  const ajustes = {};
+  // Os 3 primeiros ficam suspeitos: 2,5x entre lojas.
+  for (const a of artigos.slice(0, 3)) ajustes[`${a.q}|auchan`] = 2.5;
+  const { escolhidos, suspeitos } = escolherArtigos(artigos, linhas("jantar-de-semana", ajustes), config.lojas, {});
+  assert.equal(escolhidos.length, 10);
+  assert.deepEqual(suspeitos, [], "há artigos seguros que chegam");
+  for (const a of artigos.slice(0, 3)) assert.ok(!escolhidos.some((e) => e.q === a.q));
+});
+
+test("vencedor que muda ao tirar um artigo conta como empate", () => {
+  const artigos = config.temas.despensa.artigos;
+  const ajustes = {};
+  // Pingo Doce ganha só por causa de um artigo muito mais barato.
+  for (const a of artigos) { ajustes[`${a.q}|pingo-doce`] = 1.03; ajustes[`${a.q}|continente`] = 1.2; ajustes[`${a.q}|apolonia`] = 1.2; }
+  ajustes[`${artigos[0].q}|pingo-doce`] = 0.6;
+  const c = calcularCabaz({ tema: "despensa", config, linhas: linhas("despensa", ajustes) });
+  assert.equal(c.maisBarata, "pingo-doce");
+  assert.equal(c.robusto, false);
+  assert.equal(c.empate, true);
+  assert.match(legenda(c), /quase empatam/);
+});
+
+test("vencedor claro não é empate; Apolónia leva o artigo feminino", () => {
+  const ajustes = {};
+  for (const a of config.temas.despensa.artigos) { ajustes[`${a.q}|apolonia`] = 1.8; ajustes[`${a.q}|auchan`] = 1.3; ajustes[`${a.q}|pingo-doce`] = 1.2; }
+  const c = calcularCabaz({ tema: "despensa", config, linhas: linhas("despensa", ajustes) });
+  assert.equal(c.maisBarata, "continente");
+  assert.equal(c.empate, false);
+  assert.match(legenda(c), /na Apolónia/);
+});
