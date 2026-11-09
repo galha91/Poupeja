@@ -720,3 +720,32 @@ create table if not exists public.paginas_marca (
 );
 create index if not exists paginas_marca_indexavel on public.paginas_marca (tipo, indexavel);
 alter table public.paginas_marca enable row level security;
+
+-- Snapshot dos combustíveis comprimido (2026-11-09): os postos também em
+-- gzip+base64 (lib/precosSnapshot), 4-5x mais pequeno para o tráfego de saída.
+alter table public.precos_dgeg add column if not exists postos_gz text;
+
+-- Contador do tráfego de saída do Supabase (2026-11-09, lib/consumoSupabase).
+create table if not exists public.consumo_supabase (
+  dia      date   not null,
+  tabela   text   not null,
+  bytes    bigint not null default 0,
+  pedidos  integer not null default 0,
+  primary key (dia, tabela)
+);
+alter table public.consumo_supabase enable row level security;
+create or replace function public.registar_consumo(p_itens jsonb)
+returns void language sql security definer set search_path = public as $$
+  insert into public.consumo_supabase (dia, tabela, bytes, pedidos)
+  select (i->>'dia')::date, left(i->>'tabela', 80), greatest((i->>'bytes')::bigint, 0), greatest((i->>'pedidos')::int, 0)
+  from jsonb_array_elements(p_itens) i
+  where i->>'dia' is not null and i->>'tabela' is not null
+  on conflict (dia, tabela) do update set
+    bytes   = consumo_supabase.bytes + excluded.bytes,
+    pedidos = consumo_supabase.pedidos + excluded.pedidos;
+$$;
+revoke all on function public.registar_consumo(jsonb) from public, anon, authenticated;
+grant execute on function public.registar_consumo(jsonb) to service_role;
+-- paginas_marca: tipos 'artigo' (produtos de marca de /precos/[artigo]) e 'indice' (/marcas).
+alter table public.paginas_marca drop constraint if exists paginas_marca_tipo_check;
+alter table public.paginas_marca add constraint paginas_marca_tipo_check check (tipo in ('produto', 'marca', 'artigo', 'indice', 'meta'));
