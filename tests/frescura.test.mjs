@@ -29,3 +29,11 @@ test("falha da DGEG com consulta de hoje avisa que são os da consulta anterior"
   assert.equal(r.deHoje, false);
   assert.match(r.aviso, /não respondeu/);
 });
+
+test("snapshot dos combustíveis: a versão comprimida devolve os mesmos postos", async () => {
+  const { comprimirPostos, descomprimirPostos } = await import("../lib/precosSnapshot.js");
+  const linhas = Array.from({ length: 2000 }, (_, i) => ({ i: `p${i}`, n: "Posto Galp Lisboa", ma: "GALP", mu: "Lisboa", di: "Lisboa", t: "Gasóleo", p: 1.9 + i / 10000, la: 38.7, lo: -9.1, dp: 1794200000000 }));
+  const gz = await comprimirPostos(linhas);
+  assert.deepEqual(await descomprimirPostos(gz), linhas);
+  assert.ok(gz.length < JSON.stringify(linhas).length / 4, "pelo menos 4 vezes mais pequeno");
+});
