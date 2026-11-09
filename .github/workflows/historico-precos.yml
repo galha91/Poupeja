@@ -9,8 +9,11 @@ name: Histórico de preços
 #     /precos/[artigo] e o índice /marcas, para a tabela paginas_marca
 #     (lib/paginasMarca), às 00:40 UTC.
 #
-# Os agendamentos do GitHub atrasam horas ou falham de todo (a 9 nov a
-# parte 1 nunca correu). Por isso o workflow acorda de hora a hora e o
+# Os agendamentos do GitHub atrasam horas ou falham de todo (a 9 nov o
+# agendador deste repositório parou mais de 15 h). Por isso quem acorda o
+# workflow de hora a hora é o pg_cron do Supabase (função
+# chamar_planeador_github, ao minuto 37, com "planear"), e o agendamento
+# do GitHub fica só de reserva. Em cada execução, o
 # scripts/cron/planear.mjs escolhe a primeira tarefa que já devia ter
 # corrido hoje e ainda não correu com sucesso (lib/cronsGithub). Quando não
 # há nada a fazer, termina em segundos.
@@ -27,8 +30,8 @@ on:
       rota:
         description: Tarefa a correr
         type: choice
-        options: [cron-historico-precos, cron-historico-precos-2, cron-historico-precos-3, cron-paginas-marca, ensaio-lojas]
-        default: ensaio-lojas
+        options: [planear, cron-historico-precos, cron-historico-precos-2, cron-historico-precos-3, cron-paginas-marca, ensaio-lojas]
+        default: planear
   # Mudanças no scraping ou nestes scripts: só o ensaio (não escreve nada).
   push:
     paths:
@@ -63,10 +66,10 @@ jobs:
           EVENTO: ${{ github.event_name }}
           ROTA_MANUAL: ${{ inputs.rota }}
         run: |
-          case "$EVENTO" in
-            schedule)          node scripts/cron/planear.mjs ;;
-            workflow_dispatch) echo "args=$ROTA_MANUAL" >> "$GITHUB_OUTPUT" ;;
-            *)                 echo "args=ensaio-lojas" >> "$GITHUB_OUTPUT" ;;
+          case "$EVENTO:$ROTA_MANUAL" in
+            schedule:*|workflow_dispatch:planear) node scripts/cron/planear.mjs ;;
+            workflow_dispatch:*)                  echo "args=$ROTA_MANUAL" >> "$GITHUB_OUTPUT" ;;
+            *)                                    echo "args=ensaio-lojas" >> "$GITHUB_OUTPUT" ;;
           esac
 
       # Três tentativas: uma falha passageira do registo do npm não pode

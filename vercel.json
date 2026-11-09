@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude).github' ':(exclude)*.md' ':(exclude)docs' ':(exclude)tests' ':(exclude)scripts/cron' ':(exclude)supabase'",
   "functions": {
     "pages/api/cron-email-semanal.js": {
       "maxDuration": 60
