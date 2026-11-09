@@ -6,6 +6,7 @@ import { EMAILS_EXCLUIDOS } from "../../lib/adminAuth";
 import { garantirWebhook } from "../../lib/resendWebhook";
 import { trafegoProprio, metricas, retencao, emails, saude, lerMetas, DIA } from "../../lib/adminDados";
 import { comRegisto } from "../../lib/cronRegisto";
+import { avaliarConsumo } from "../../lib/consumoSupabase";
 
 /*
  * Resumo do /admin por email (Vercel Cron, todos os dias de manhã).
@@ -104,6 +105,13 @@ async function handler(req, res) {
   const seguro = (p) => p.catch(() => null);
   const [trafego, metr] = await Promise.all([seguro(trafegoProprio(admin, 7)), seguro(metricas(admin, 7))]);
   const alertas = detetarAlertas({ trafego, metr });
+  // Tráfego do Supabase (lib/consumoSupabase): aviso antes de passar o plano grátis.
+  try {
+    const ontem = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+    const desde = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+    const { data } = await admin.from("consumo_supabase").select("dia, tabela, bytes").gte("dia", desde);
+    alertas.push(...avaliarConsumo(data, ontem));
+  } catch (_) {}
   await garantirWebhook(admin).catch(() => null); // estatísticas dos emails (uma vez)
 
   if (!segunda && !alertas.length) return res.status(200).json({ enviado: false, alertas });
