@@ -749,3 +749,34 @@ grant execute on function public.registar_consumo(jsonb) to service_role;
 -- paginas_marca: tipos 'artigo' (produtos de marca de /precos/[artigo]) e 'indice' (/marcas).
 alter table public.paginas_marca drop constraint if exists paginas_marca_tipo_check;
 alter table public.paginas_marca add constraint paginas_marca_tipo_check check (tipo in ('produto', 'marca', 'artigo', 'indice', 'meta'));
+
+-- ── Planeador das tarefas do GitHub (2026-11-09) ───────────────────────────
+-- O agendador do GitHub falhou horas seguidas. O pg_cron pede ao GitHub, de
+-- hora a hora, para correr o workflow historico-precos com "planear" (ver
+-- lib/cronsGithub). O token fica no Vault, nunca no repositório. Criar uma
+-- vez, à mão, no SQL Editor (fine-grained token, só no repositório
+-- galha91/Poupeja, permissão Actions: Read and write):
+--   select vault.create_secret('<token>', 'github_dispatch');
+create or replace function public.chamar_planeador_github()
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  token text;
+begin
+  select decrypted_secret into token from vault.decrypted_secrets where name = 'github_dispatch' limit 1;
+  if token is null or token = '' then return; end if;
+  perform net.http_post(
+    url := 'https://api.github.com/repos/galha91/Poupeja/actions/workflows/historico-precos.yml/dispatches',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || token,
+      'Accept', 'application/vnd.github+json',
+      'X-GitHub-Api-Version', '2022-11-28',
+      'User-Agent', 'poupeja-pg-cron',
+      'Content-Type', 'application/json'
+    ),
+    body := jsonb_build_object('ref', 'main', 'inputs', jsonb_build_object('rota', 'planear')),
+    timeout_milliseconds := 15000
+  );
+end;
+$$;
+revoke all on function public.chamar_planeador_github() from public, anon, authenticated;
+select cron.schedule('planeador-github', '37 * * * *', 'select public.chamar_planeador_github()');

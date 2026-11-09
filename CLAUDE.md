@@ -35,6 +35,9 @@ afiliados. Se começar a dar rendimento a sério, o Pro é o plano certo.
    registada em `lib/cronsGithub.js` (o workflow
    `.github/workflows/historico-precos.yml` acorda de hora a hora e faz a
    tarefa em falta). Num repositório público os minutos são grátis.
+   O agendador do GitHub não é fiável (chegou a parar 15 h): quem acorda o
+   workflow de hora a hora é o pg_cron do Supabase
+   (`chamar_planeador_github`, token no Vault como `github_dispatch`).
 3. **ISR longo.** Páginas com dados que mudam uma vez por dia: `revalidate`
    de 6 h a 24 h. Páginas no servidor (`getServerSideProps`): cache na CDN
    (`s-maxage`), ver `lib/cacheCombustivel.js`.
@@ -43,6 +46,8 @@ afiliados. Se começar a dar rendimento a sério, o Pro é o plano certo.
    minutos.
 5. **Poucos deploys.** Cada deploy de produção apaga a cache ISR e todas as
    páginas regeneram na visita seguinte (pico de CPU). Junta as alterações.
+   O `ignoreCommand` do `vercel.json` salta o build quando só mudam
+   `.github`, `*.md`, `docs`, `tests`, `scripts/cron` ou `supabase`.
 6. **Bots.** Os de treino de IA e de SEO estão bloqueados em
    `data/bots-bloqueados.json` (usado no `next.config.js` e no
    `public/robots.txt`). **Nunca** bloquear motores de pesquisa (Google,
