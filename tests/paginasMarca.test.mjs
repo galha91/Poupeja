@@ -49,3 +49,15 @@ test("páginas de marca pré-calculadas: cache velha ou sem selo não serve", as
   // Slug inválido nem chega à base de dados.
   assert.deepEqual(await lerPaginaMarca("produto", "../x"), { estado: "nao-existe" });
 });
+
+test("páginas de marca pré-calculadas: produtos de marca de um artigo e índice /marcas", async () => {
+  const { marcasDoArtigo, propsIndiceMarcas } = await import("../lib/paginasMarca.js");
+  const m = marcasDoArtigo(grupos, "leite meio gordo", hoje);
+  assert.ok(m.length >= 1 && m.length <= 8);
+  assert.ok(m.every((x) => x.href.startsWith("/produto/") && x.vencedor.valor > 0));
+  assert.deepEqual(marcasDoArtigo(grupos, "outra coisa", hoje), []);
+  const ind = propsIndiceMarcas(grupos, hoje);
+  assert.equal(ind.marcas[0].slug, "mimosa");
+  assert.equal(ind.total, grupos.length);
+  assert.equal(ind.atualizado, hoje);
+});
