@@ -1,142 +1,93 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { otimizarCabaz, melhorDivisao, poupancaDaEscolha } from "../lib/cabaz.js";
+import fs from "node:fs";
+import { calcularCabaz, escolherArtigos, legenda } from "../scripts/cabaz/calcular.mjs";
 
-const LOJAS = ["continente", "pingo-doce", "auchan", "aldi", "lidl"];
-const L = (id, custos) => ({ id, nome: id, custos });
+const config = JSON.parse(fs.readFileSync(new URL("../data/cabazes-social.json", import.meta.url)));
 
-test("loja única mais barata e poupança face à mais cara, sobre os mesmos artigos", () => {
-  const r = otimizarCabaz([
-    L("leite", { continente: 1.0, "pingo-doce": 0.9, auchan: 1.1, aldi: 0.8 }),
-    L("arroz", { continente: 2.0, "pingo-doce": 2.2, auchan: 1.9, aldi: 2.1 }),
-    L("ovos", { continente: 3.0, "pingo-doce": 3.1, auchan: 3.4, aldi: 2.9 }),
-  ], LOJAS);
-  assert.equal(r.unica.loja, "aldi");
-  assert.equal(r.unica.total, 5.8);
-  assert.equal(r.maisCara.loja, "auchan");
-  assert.equal(r.maisCara.total, 6.4);
-  assert.equal(r.poupancaUnica, 0.6);
-  assert.deepEqual(r.semPreco, []);
-  assert.equal(r.comparaveis.length, 3);
+// Preço de 1 por unidade em todas as lojas, exceto onde se diz.
+function linhas(tema, ajustes = {}) {
+  const out = [];
+  for (const a of config.temas[tema].artigos) for (const l of config.lojas) out.push({ q: a.q, loja: l, valor: ajustes[`${a.q}|${l}`] ?? 1, dia: "2026-11-04" });
+  return out;
+}
+
+test("os temas só têm artigos com q único e qtd positiva", () => {
+  for (const [id, t] of Object.entries(config.temas)) {
+    const qs = t.artigos.map((a) => a.q);
+    assert.equal(new Set(qs).size, qs.length, `q repetido em ${id}`);
+    assert.ok(qs.length >= 12, `${id} precisa de pelo menos 12 artigos para variar`);
+    assert.ok(t.artigos.every((a) => a.qtd > 0 && a.nome && a.rotulo), id);
+  }
 });
 
-test("contas em cêntimos: sem erros de vírgula flutuante", () => {
-  const r = otimizarCabaz([
-    L("a", { continente: 0.1, auchan: 0.2 }),
-    L("b", { continente: 0.2, auchan: 0.1 }),
-    L("c", { continente: 0.1, auchan: 0.1 }),
-  ], ["continente", "auchan"]);
-  assert.equal(r.unica.total, 0.4);
-  assert.equal(r.maisCara.total, 0.4);
-  assert.equal(r.poupancaUnica, 0);
+test("cabaz: 10 artigos, totais e poupança certos", () => {
+  const ajustes = {};
+  for (const a of config.temas.despensa.artigos) { ajustes[`${a.q}|auchan`] = 2; }
+  const c = calcularCabaz({ tema: "despensa", config, linhas: linhas("despensa", ajustes) });
+  assert.equal(c.itens.length, 10);
+  assert.equal(c.maisCara, "auchan");
+  assert.notEqual(c.maisBarata, "auchan");
+  const soma = c.itens.reduce((s, i) => s + i.custos.continente, 0);
+  assert.ok(Math.abs(c.totais.continente - soma) < 0.02);
+  assert.ok(c.poupanca > 0 && c.poupancaPct > 0);
+  assert.match(legenda(c), /Cabaz "Despensa"/);
 });
 
-test("artigos sem preço ficam sinalizados e fora das contas", () => {
-  const r = otimizarCabaz([
-    L("leite", { continente: 1, auchan: 1.2 }),
-    L("pão", { continente: 2, auchan: 1.5 }),
-    L("queijo da serra", {}),
-  ], LOJAS);
-  assert.deepEqual(r.semPreco.map((l) => l.id), ["queijo da serra"]);
-  assert.equal(r.comparaveis.length, 2);
+test("artigos que saíram há mais tempo têm prioridade", () => {
+  const usados = {};
+  const artigos = config.temas.despensa.artigos;
+  ["2026-11-02", "2026-11-03", "2026-11-04"].forEach((d, k) => (usados[artigos[k].q] = d));
+  const { escolhidos } = escolherArtigos(artigos, linhas("despensa"), config.lojas, usados);
+  assert.equal(escolhidos.length, 10);
+  // 12 artigos, 10 lugares: ficam de fora os 2 usados mais recentemente.
+  for (const a of artigos.slice(1, 3)) assert.ok(!escolhidos.some((e) => e.q === a.q), "recentes ficam de fora");
+  assert.ok(escolhidos.some((e) => e.q === artigos[0].q));
 });
 
-test("uma loja não ganha por lhe faltarem artigos (Lidl só com promoções)", () => {
-  const r = otimizarCabaz([
-    L("leite", { continente: 1.0, auchan: 1.1, lidl: 0.5 }),
-    L("arroz", { continente: 2.0, auchan: 2.1 }),
-    L("ovos", { continente: 3.0, auchan: 2.8 }),
-    L("massa", { continente: 1.0, auchan: 1.0 }),
-    L("azeite", { continente: 7.0, auchan: 7.5 }),
-  ], LOJAS);
-  assert.ok(!r.grupo.includes("lidl"), "o Lidl não entra no grupo da loja única");
-  assert.equal(r.unica.loja, "continente");
-  assert.equal(r.unica.total, 14);
-  // Artigos que só algumas lojas têm: dizer quais.
-  const leite = r.parciais.find((p) => p.id === "leite");
-  assert.deepEqual(leite.lojas, ["continente", "auchan", "lidl"]);
+test("artigo sem preço numa loja ou com preços incomparáveis sai do cabaz", () => {
+  const artigos = config.temas.despensa.artigos;
+  const l = linhas("despensa", { [`${artigos[0].q}|auchan`]: 10 }).filter((x) => !(x.q === artigos[1].q && x.loja === "lidl"));
+  const semUm = l.filter((x) => !(x.q === artigos[2].q && x.loja === "continente"));
+  const { escolhidos } = escolherArtigos(artigos, semUm, config.lojas, {});
+  assert.ok(!escolhidos.some((e) => e.q === artigos[0].q), "razão >3x");
+  assert.ok(!escolhidos.some((e) => e.q === artigos[2].q), "falta uma loja");
 });
 
-test("totais só sobre o que todas as lojas do grupo têm", () => {
-  const r = otimizarCabaz([
-    L("a", { continente: 1, auchan: 1, aldi: 1 }),
-    L("b", { continente: 1, auchan: 1, aldi: 1 }),
-    L("c", { continente: 1, auchan: 1, aldi: 1 }),
-    L("d", { continente: 1, auchan: 1, aldi: 1 }),
-    L("e", { continente: 5, auchan: 9 }), // o Aldi não tem
-  ], LOJAS);
-  assert.deepEqual(r.grupo.sort(), ["aldi", "auchan", "continente"]);
-  assert.equal(r.comparaveis.length, 4);
-  assert.equal(r.unica.total, 4);
-  assert.deepEqual(r.porLoja.find((p) => p.loja === "aldi").emFalta, ["e"]);
+test("falha se não há artigos comparáveis suficientes", () => {
+  const l = linhas("despensa").filter((x) => x.q !== "arroz" && x.q !== "farinha" && x.q !== "azeite");
+  assert.throws(() => calcularCabaz({ tema: "despensa", config, linhas: l }), /comparáveis/);
 });
 
-test("divisão por 2 lojas: cada artigo na mais barata das duas, e quanto poupa a mais", () => {
-  const linhas = [
-    L("leite", { continente: 1.0, "pingo-doce": 0.7, auchan: 1.1 }),
-    L("arroz", { continente: 1.5, "pingo-doce": 2.2, auchan: 1.9 }),
-    L("ovos", { continente: 3.0, "pingo-doce": 2.5, auchan: 3.4 }),
-    L("massa", { continente: 0.8, "pingo-doce": 1.2, auchan: 0.9 }),
-  ];
-  const r = otimizarCabaz(linhas, LOJAS);
-  assert.equal(r.unica.loja, "continente"); // 6,30 vs PD 6,60 vs Auchan 7,30
-  assert.equal(r.unica.total, 6.3);
-  assert.deepEqual(r.divisao.lojas, ["continente", "pingo-doce"]);
-  assert.equal(r.divisao.total, 5.5);
-  assert.equal(r.divisao.poupancaExtra, 0.8);
-  assert.deepEqual(r.divisao.atribuicao, { continente: ["arroz", "massa"], "pingo-doce": ["leite", "ovos"] });
+test("artigos de preço consistente entram antes dos suspeitos (2x a 3x)", () => {
+  const artigos = config.temas["jantar-de-semana"].artigos;
+  const ajustes = {};
+  // Os 3 primeiros ficam suspeitos: 2,5x entre lojas.
+  for (const a of artigos.slice(0, 3)) ajustes[`${a.q}|auchan`] = 2.5;
+  const { escolhidos, suspeitos } = escolherArtigos(artigos, linhas("jantar-de-semana", ajustes), config.lojas, {});
+  assert.equal(escolhidos.length, 10);
+  assert.deepEqual(suspeitos, [], "há artigos seguros que chegam");
+  for (const a of artigos.slice(0, 3)) assert.ok(!escolhidos.some((e) => e.q === a.q));
 });
 
-test("a divisão pode juntar uma loja com promoções (Lidl) a uma loja completa", () => {
-  const r = otimizarCabaz([
-    L("leite", { continente: 1.0, auchan: 1.1, lidl: 0.6 }),
-    L("arroz", { continente: 2.0, auchan: 2.1 }),
-    L("ovos", { continente: 3.0, auchan: 3.2 }),
-    L("massa", { continente: 1.0, auchan: 1.1 }),
-    L("pão", { continente: 1.0, auchan: 1.0 }),
-  ], LOJAS);
-  assert.deepEqual(r.divisao.lojas, ["continente", "lidl"]);
-  assert.equal(r.divisao.poupancaExtra, 0.4);
+test("vencedor que muda ao tirar um artigo conta como empate", () => {
+  const artigos = config.temas.despensa.artigos;
+  const ajustes = {};
+  // Pingo Doce ganha só por causa de um artigo muito mais barato.
+  for (const a of artigos) { ajustes[`${a.q}|pingo-doce`] = 1.03; ajustes[`${a.q}|continente`] = 1.2; ajustes[`${a.q}|apolonia`] = 1.2; }
+  ajustes[`${artigos[0].q}|pingo-doce`] = 0.6;
+  const c = calcularCabaz({ tema: "despensa", config, linhas: linhas("despensa", ajustes) });
+  assert.equal(c.maisBarata, "pingo-doce");
+  assert.equal(c.robusto, false);
+  assert.equal(c.empate, true);
+  assert.match(legenda(c), /quase empatam/);
 });
 
-test("sem divisão quando dividir não poupa nada", () => {
-  const r = otimizarCabaz([
-    L("leite", { continente: 1, auchan: 2 }),
-    L("arroz", { continente: 1, auchan: 2 }),
-  ], ["continente", "auchan"]);
-  assert.equal(r.divisao, null);
-});
-
-test("melhorDivisao: par que não cobre a lista não conta", () => {
-  const d = melhorDivisao([
-    L("a", { continente: 1, aldi: 0.9, lidl: 0.5 }),
-    L("b", { continente: 1, aldi: 0.9 }),
-  ], ["continente", "aldi", "lidl"], { loja: "continente", total: 2 });
-  // aldi+lidl (1,40) cobre tudo e ganha a continente+lidl (1,50);
-  // um par sem "b" nunca seria considerado.
-  assert.deepEqual(d.lojas, ["aldi", "lidl"]);
-  assert.equal(d.total, 1.4);
-  assert.equal(d.poupancaExtra, 0.6);
-  const sóLidl = melhorDivisao([L("a", { lidl: 1 }), L("b", { continente: 1 })], ["lidl", "aldi"], { loja: "lidl", total: 2 });
-  assert.equal(sóLidl, null);
-});
-
-test("lista vazia ou sem preços nenhuns", () => {
-  const r = otimizarCabaz([L("x", {})], LOJAS);
-  assert.equal(r.unica, null);
-  assert.equal(r.divisao, null);
-  assert.equal(r.semPreco.length, 1);
-  assert.equal(poupancaDaEscolha(r, "unica"), 0);
-});
-
-test("poupança estimada de cada escolha", () => {
-  const r = otimizarCabaz([
-    L("leite", { continente: 1.0, "pingo-doce": 0.7, auchan: 1.1 }),
-    L("arroz", { continente: 1.5, "pingo-doce": 2.2, auchan: 1.9 }),
-    L("ovos", { continente: 3.0, "pingo-doce": 2.5, auchan: 3.4 }),
-    L("massa", { continente: 0.8, "pingo-doce": 1.2, auchan: 0.9 }),
-  ], LOJAS);
-  assert.equal(r.maisCara.total, 7.3);
-  assert.equal(poupancaDaEscolha(r, "unica"), 1);
-  assert.equal(poupancaDaEscolha(r, "divisao"), 1.8);
+test("vencedor claro não é empate; Apolónia leva o artigo feminino", () => {
+  const ajustes = {};
+  for (const a of config.temas.despensa.artigos) { ajustes[`${a.q}|apolonia`] = 1.8; ajustes[`${a.q}|auchan`] = 1.3; ajustes[`${a.q}|pingo-doce`] = 1.2; }
+  const c = calcularCabaz({ tema: "despensa", config, linhas: linhas("despensa", ajustes) });
+  assert.equal(c.maisBarata, "continente");
+  assert.equal(c.empate, false);
+  assert.match(legenda(c), /na Apolónia/);
 });
