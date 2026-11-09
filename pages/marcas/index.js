@@ -1,7 +1,7 @@
 import Head from "next/head";
 import LayoutPublico from "../../LayoutPublico";
 import { Atualizado, BotaoAbrirPoupeja, NotaCadeias, Migalhas, estiloH1, estiloTexto, estiloCartao } from "../../PaginasPrecos";
-import { ofertasProduto, porMarca } from "../../lib/seoMarcas";
+import { lerPaginaMarca, propsIndiceMarcas } from "../../lib/paginasMarca";
 import { gruposMarca } from "../../lib/seoMarcasDados";
 import { LOJAS_SEO, breadcrumbLd, hojeLisboa } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
@@ -47,19 +47,11 @@ export default function Marcas({ marcas, total, atualizado }) {
 }
 
 export async function getStaticProps() {
-  const hoje = hojeLisboa();
-  const marcas = porMarca(await gruposMarca(hoje))
-    .map((m) => {
-      const ds = m.grupos.map((g) => ofertasProduto(g, hoje)).filter((d) => d.ofertas.length);
-      return { slug: m.slug, nome: m.nome, n: ds.length, atualizado: ds.reduce((x, d) => (d.atualizado > x ? d.atualizado : x), "") };
-    })
-    .filter((m) => m.n > 0);
+  // Normalmente pré-calculado no GitHub (lib/paginasMarca); sem cache, calculado aqui.
+  const c = await lerPaginaMarca("indice", "marcas");
+  const props = c.estado === "ok" ? c.props : propsIndiceMarcas(await gruposMarca(hojeLisboa()), hojeLisboa());
   return {
-    props: {
-      marcas: marcas.map(({ slug, nome, n }) => ({ slug, nome, n })),
-      total: marcas.reduce((s, m) => s + m.n, 0),
-      atualizado: marcas.reduce((x, m) => (m.atualizado > x ? m.atualizado : x), "") || null,
-    },
+    props,
     revalidate: 21600, // 6 h: os preços de cada artigo mudam uma vez por dia (histórico no GitHub)
   };
 }

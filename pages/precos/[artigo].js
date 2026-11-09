@@ -10,7 +10,7 @@ import {
 } from "../../lib/seoPrecos";
 import { historicoArtigo, resumosRecentes, paraProps } from "../../lib/seoPrecosDados";
 import { gruposMarca } from "../../lib/seoMarcasDados";
-import { ofertasProduto } from "../../lib/seoMarcas";
+import { lerPaginaMarca, marcasDoArtigo } from "../../lib/paginasMarca";
 import { receitas } from "../../lib/receitas/motor";
 import { URL_SITE } from "../../lib/site";
 
@@ -139,18 +139,12 @@ export async function getStaticProps({ params }) {
   const pares = PARES.filter((p) => presentes.has(p.a.id) && presentes.has(p.b.id)).slice(0, 4)
     .map((p) => ({ slug: p.slug, a: p.a.nome, b: p.b.nome }));
 
-  // Produtos de marca desta pesquisa, os comparáveis primeiro.
-  const marcas = (await gruposMarca(hoje))
-    .filter((g) => g.q === artigo.q)
-    .map((g) => ({ g, d: ofertasProduto(g, hoje) }))
-    .filter(({ d }) => d.ofertas.length)
-    .sort((a, b) => b.d.ofertas.length - a.d.ofertas.length || a.d.ofertas[0].preco - b.d.ofertas[0].preco)
-    .slice(0, 8)
-    .map(({ g, d }) => ({
-      slug: g.slug, nome: g.nome, href: `/produto/${g.slug}`, unidade: "embalagem",
-      contexto: `${d.ofertas.length} cadeia${d.ofertas.length > 1 ? "s" : ""} · mais barato no ${d.ofertas[0].lojaNome}`,
-      vencedor: { lojaNome: d.ofertas[0].lojaNome, valor: d.ofertas[0].preco },
-    }));
+  // Produtos de marca desta pesquisa: normalmente pré-calculados no GitHub
+  // (lib/paginasMarca); sem cache, calculados aqui como antes.
+  const c = await lerPaginaMarca("artigo", artigo.slug);
+  const marcas = c.estado === "ok" ? c.props.marcas
+    : c.estado === "nao-existe" ? []
+    : marcasDoArtigo(await gruposMarca(hoje), artigo.q, hoje);
 
   return {
     props: paraProps({
