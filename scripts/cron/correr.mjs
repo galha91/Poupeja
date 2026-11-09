@@ -93,5 +93,10 @@ try {
   console.error(`${rota}: falhou`, e);
   codigo = 1;
 }
+// O que ficou por registar no contador de tráfego do Supabase (lib/consumoSupabase).
+try {
+  const { terminarConsumo } = await import(path.join(raiz, "lib/consumoSupabase.js"));
+  await terminarConsumo();
+} catch {}
 // O cliente do Supabase deixa ligações abertas; sair sem esperar por elas.
 process.exit(codigo);
