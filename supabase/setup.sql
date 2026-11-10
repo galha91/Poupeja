@@ -709,7 +709,7 @@ alter table public.tarifas_ev enable row level security;
 -- A linha tipo='meta', slug='estado' diz quando foi gerada: com mais de 3
 -- dias, as páginas voltam ao cálculo em direto. Só a service role.
 create table if not exists public.paginas_marca (
-  tipo        text not null check (tipo in ('produto', 'marca', 'meta')),
+  tipo        text not null check (tipo in ('produto', 'marca', 'artigo', 'indice', 'inicio', 'meta')),
   slug        text not null,
   props       jsonb not null,
   indexavel   boolean not null default false,
@@ -720,6 +720,10 @@ create table if not exists public.paginas_marca (
 );
 create index if not exists paginas_marca_indexavel on public.paginas_marca (tipo, indexavel);
 alter table public.paginas_marca enable row level security;
+-- Cabaz básico do Início (2026-11-10, lib/cabazInicio): mais um tipo de linha.
+alter table public.paginas_marca drop constraint if exists paginas_marca_tipo_check;
+alter table public.paginas_marca add constraint paginas_marca_tipo_check
+  check (tipo in ('produto', 'marca', 'artigo', 'indice', 'inicio', 'meta'));
 
 -- Snapshot dos combustíveis comprimido (2026-11-09): os postos também em
 -- gzip+base64 (lib/precosSnapshot), 4-5x mais pequeno para o tráfego de saída.

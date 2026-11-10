@@ -3,10 +3,18 @@ import { UserPlus, X } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import { evento } from "./lib/analytics";
 import { IconGoogle } from "./EcraAuth";
+import { lerRegistos, somarPeriodos } from "./lib/poupancaListas";
+import { eur } from "./lib/formato";
 
-/* ─── Converter convidado em conta — updateUser mantém o user_id, zero migração ─── */
+/* ─── Converter convidado em conta — updateUser mantém o user_id, zero migração ───
+ * O Google é o caminho principal: em 30 dias fez 6 contas contra 2 por
+ * email. O email fica a um toque ("ou por email"), só com email e
+ * password: o nome sai do email e muda-se depois nas Definições. Quem já
+ * registou uma poupança vê o valor no botão: é isso que a conta guarda. */
 export default function ModalCriarConta({ local = false, onFechar, onConvertido, onEntrar }) {
-  const [nome, setNome]       = useState("");
+  const [porEmail, setPorEmail] = useState(false);
+  const [poupado] = useState(() => { try { return somarPeriodos(lerRegistos()).total; } catch { return 0; } });
+  const guardar = poupado >= 0.01 ? `Guardar os meus ${eur(poupado, 2)} € de poupança` : null;
   const [email, setEmail]     = useState("");
   const [pass, setPass]       = useState("");
   const [erro, setErro]       = useState("");
@@ -44,7 +52,8 @@ export default function ModalCriarConta({ local = false, onFechar, onConvertido,
     setErro("");
     setLoading(true);
     try {
-      const dadosMeta = { nome: nome.trim() || "Utilizador", ref: (() => { try { return localStorage.getItem("poupeja_ref") || undefined; } catch { return undefined; } })() };
+      const nome = email.split("@")[0].trim().slice(0, 40) || "Utilizador";
+      const dadosMeta = { nome, ref: (() => { try { return localStorage.getItem("poupeja_ref") || undefined; } catch { return undefined; } })() };
       if (local) {
         // Convidado local (sem sessão Supabase): conta nova por signUp.
         // Os dados locais sobem sozinhos no primeiro login (pull do lib/sync).
@@ -67,7 +76,7 @@ export default function ModalCriarConta({ local = false, onFechar, onConvertido,
       try { localStorage.setItem("poupeja_conversao_pendente", "1"); } catch {}
       evento("sign_up", { method: "convidado_upgrade" });
       setFeito(true);
-      onConvertido?.(nome.trim() || "Utilizador", email.toLowerCase().trim());
+      onConvertido?.(nome, email.toLowerCase().trim());
     } catch (err) {
       const m = String(err?.message || "").toLowerCase();
       setErro(m.includes("already") || m.includes("registered")
@@ -125,31 +134,45 @@ export default function ModalCriarConta({ local = false, onFechar, onConvertido,
               ))}
             </div>
             <button type="button" onClick={continuarComGoogle} disabled={googleLoading}
-              className="pj-tap w-full py-3.5 rounded-2xl font-semibold text-[14px] flex items-center justify-center gap-2.5"
+              className="pj-tap w-full py-4 rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2.5"
               /* Fundo branco fixo (marca Google) → tinta e borda fixas também. */
               style={{ background: "#fff", color: "#14231c", border: "1.5px solid #dadce0", opacity: googleLoading ? 0.7 : 1 }}>
-              <IconGoogle size={17} /> {googleLoading ? "A abrir o Google…" : "Continuar com Google"}
+              <IconGoogle size={18} /> {googleLoading ? "A abrir o Google…" : "Continuar com Google"}
             </button>
-            <div className="flex items-center gap-3 -my-0.5">
-              <div style={{ flex: 1, height: 1, background: "var(--pj-border)" }} />
-              <span className="text-[11px] font-semibold" style={{ color: "var(--pj-text-faint)" }}>ou por email</span>
-              <div style={{ flex: 1, height: 1, background: "var(--pj-border)" }} />
-            </div>
-            <input type="text" placeholder="O teu nome" value={nome} onChange={e => setNome(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
-              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
-            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
-              className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
-              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
-            <input type="password" placeholder="Password (mín. 6 caracteres)" value={pass} onChange={e => setPass(e.target.value)} required
-              className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
-              style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
+            {guardar && !porEmail && (
+              <p className="text-[12px] text-center -mt-1" style={{ color: "var(--pj-text-muted)" }}>
+                Um toque e ficam guardados os teus <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(poupado, 2)} €</strong> de poupança.
+              </p>
+            )}
+            {!porEmail ? (
+              <button type="button" onClick={() => { setErro(""); setPorEmail(true); evento("pedir_conta", { acao: "email_abrir" }); }}
+                className="pj-tap w-full py-3 rounded-2xl font-semibold text-[14px]"
+                style={{ background: "var(--pj-subtle)", color: "var(--pj-text)" }}>
+                ou por email
+              </button>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 -my-0.5">
+                  <div style={{ flex: 1, height: 1, background: "var(--pj-border)" }} />
+                  <span className="text-[11px] font-semibold" style={{ color: "var(--pj-text-faint)" }}>ou por email</span>
+                  <div style={{ flex: 1, height: 1, background: "var(--pj-border)" }} />
+                </div>
+                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required autoFocus autoComplete="email"
+                  className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
+                  style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
+                <input type="password" placeholder="Password (mín. 6 caracteres)" value={pass} onChange={e => setPass(e.target.value)} required autoComplete="new-password"
+                  className="w-full px-4 py-3 rounded-xl text-[14px] focus:outline-none"
+                  style={{ background: "var(--pj-surface)", border: "1px solid var(--pj-border)", color: "var(--pj-text)" }} />
+              </>
+            )}
             {erro && <p className="text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{erro}</p>}
-            <button type="submit" disabled={loading}
-              className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px]"
-              style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}>
-              {loading ? "A criar a conta…" : "Criar conta e guardar o meu progresso"}
-            </button>
+            {porEmail && (
+              <button type="submit" disabled={loading}
+                className="pj-tap w-full py-4 rounded-2xl text-white font-semibold text-[15px]"
+                style={{ background: "var(--pj-brand)", opacity: loading ? 0.7 : 1 }}>
+                {loading ? "A criar a conta…" : guardar || "Criar conta e guardar o meu progresso"}
+              </button>
+            )}
             {onEntrar && (
               <button type="button" onClick={onEntrar} className="pj-tap w-full py-2 font-semibold text-[13px]" style={{ color: "var(--pj-brand-ink)" }}>
                 Já tenho conta — entrar
