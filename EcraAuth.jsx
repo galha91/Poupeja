@@ -8,7 +8,6 @@ import { supabase } from "./lib/supabase";
 import { evento } from "./lib/analytics";
 import { emAppNativa } from "./lib/plataforma";
 import BannerInstalar from "./BannerInstalar";
-import Onboarding from "./Onboarding";
 
 const FEATURES = [
   { icon: Receipt,     text: "Guarda talões e garantias digitalmente" },
@@ -597,21 +596,11 @@ export default function EcraAuth({ onAuth, ecraInicial, onCancelar }) {
     }
   }
 
-  // Onboarding só na 1ª visita (EcraAuth renderiza apenas no cliente)
-  const [ecra, setEcra] = useState(() => {
-    if (ecraInicial) return ecraInicial;
-    try {
-      if (typeof window !== "undefined" && !localStorage.getItem("poupeja_onboarding_v1")) return "onboarding";
-    } catch {}
-    return "landing";
-  });
+  /* Os 3 slides de apresentação que havia aqui saíram: a app abre direta
+     no Início (com os preços à vista) e este ecrã só aparece a quem toca
+     em "Já tenho conta". */
+  const [ecra, setEcra] = useState(ecraInicial || "landing");
 
-  function concluirOnboarding() {
-    try { localStorage.setItem("poupeja_onboarding_v1", "1"); } catch {}
-    setEcra("landing");
-  }
-
-  if (ecra === "onboarding") return <Onboarding onConcluido={concluirOnboarding} />;
   if (ecra === "registo")   return <Registo      onVoltar={() => setEcra("landing")} />;
   if (ecra === "login")     return <Login        onVoltar={() => (onCancelar ? onCancelar() : setEcra("landing"))} onAuth={onAuth} onEsqueceu={() => setEcra("recuperar")} />;
   if (ecra === "recuperar") return <RecuperarPass onVoltar={() => setEcra("login")} />;

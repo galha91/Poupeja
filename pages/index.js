@@ -28,7 +28,7 @@ import EcraInicio from "../EcraInicio";
 import ModalCriarConta from "../ModalCriarConta";
 import PedirNotificacoes from "../PedirNotificacoes";
 import { ativarPush, guardarSubscricao } from "../lib/push";
-import { podeMostrar, adiar, lerEstado, guardarEstado } from "../lib/pushSoft";
+import { podeMostrar, adiar, lerEstado, guardarEstado, jaTemMotivo, lerMotivo } from "../lib/pushSoft";
 import { ModalInstalar, useInstallDetect, BarraInstalacao } from "../InstalarApp";
 import PainelAvisos from "../PainelAvisos";
 import RetratoMes from "../RetratoMes";
@@ -151,11 +151,24 @@ function SecaoMercados({ setTab, inicioAba = "comparar" }) {
 }
 
 /* ─── Root App ─── */
-export default function Pagina() {
-  return <><HeadInicio /><PoupeJa /></>;
+export default function Pagina({ cabaz = null }) {
+  return <><HeadInicio /><PoupeJa cabaz={cabaz} /></>;
 }
 
-function PoupeJa() {
+/*
+ * O cabaz básico do Início vem já calculado (lib/cabazInicio: uma linha
+ * da tabela paginas_marca, gerada uma vez por dia no GitHub). Chega com o
+ * HTML, por isso quem abre a app pela primeira vez vê o preço sem esperar
+ * por nenhum pedido. ISR de 6 h: 4 escritas por dia. Sem a linha (ou com
+ * mais de 2 dias), o Início mostra a porta "comparar" de sempre.
+ */
+export async function getStaticProps() {
+  const { lerCabazInicio } = await import("../lib/cabazInicio");
+  const cabaz = await lerCabazInicio();
+  return { props: { cabaz }, revalidate: cabaz ? 6 * 3600 : 3600 };
+}
+
+function PoupeJa({ cabaz }) {
   const [user, setUser]           = useState(null);
   const [hydrated, setHydrated]   = useState(false);
   const [recovery, setRecovery]   = useState(false);
@@ -356,6 +369,8 @@ function PoupeJa() {
     const timer = setTimeout(async () => {
       try {
         if (!podeMostrar(lerEstado())) return;
+        // Na primeira visita não se pede nada: só a quem volta ou já usou a lista.
+        if (!jaTemMotivo(lerMotivo(!user?.convidado))) return;
         const reg = await navigator.serviceWorker.ready;
         if (await reg.pushManager.getSubscription().catch(() => null)) return;
         if (!cancelado) { setPedirPush(true); evento("push_soft", { passo: "mostrado" }); }
@@ -719,7 +734,7 @@ function PoupeJa() {
             {/* Conteúdo */}
             <main className="pj-main">
               <div key={`${tab}-${syncTick}`} data-dir={dir}>
-                {tab === "inicio"     && <EcraInicio user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} onEntrar={() => setEcraEntrar(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} garantiasCount={garantiasAviso.filter(a => a.tipo === "garantia").length} />}
+                {tab === "inicio"     && <EcraInicio cabaz={cabaz} user={user} setTab={go} goGarantias={goGarantias} abrirEmentas={goEmentas} onAbrirAvisos={() => { calcGarantiasAviso(); setVerAvisos(true); }} onAbrirDefinicoes={() => { setDir("up"); setVerDefs(true); setTabRaw("inicio"); }} onCriarConta={() => setModalConta(true)} onEntrar={() => setEcraEntrar(true)} retratoDisponivel={bannerRetrato} onAbrirRetrato={() => setRetratoAberto(true)} avisosCount={garantiasAviso.length} garantiasCount={garantiasAviso.filter(a => a.tipo === "garantia").length} />}
                 {/* "Voltar" só onde a barra de baixo não chega (Apoios, Lojas, IRS,
                     Talões). Nos 5 da barra era um botão a mais por cima de cada
                     ecrã; a lista tem o seu, ao lado do "Partilhar". */}

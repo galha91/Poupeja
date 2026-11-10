@@ -23,13 +23,20 @@ import SubscreverCombustivel from "./SubscreverCombustivel";
 // O leitor de folhetos só faz falta ao abrir um: descarrega-se nessa altura.
 const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), { ssr: false });
 
-/* ─── Primeira visita: as três coisas que a app faz, ao mesmo nível ───
- * Quem ainda não fez nada vê o cabaz, o gasóleo e o jantar da semana com o
- * mesmo peso: cada pessoa chega por uma coisa diferente. (Dos primeiros 442
- * convidados só 2,5% chegaram a comparar um preço.) */
-function TresPortas({ onComparar, onCombustivel, onEmentas }) {
-  const porta = (acao, fn) => () => { evento("inicio_porta", { acao }); fn(); };
-  const Cartao = ({ Icone, titulo, sub, direita, aoTocar }) => (
+/* ─── Primeira visita: a resposta antes da pergunta ───
+ * Havia aqui três portas ("Por onde queres começar?"): quem chegava tinha
+ * de escolher antes de ver um único preço, e dos primeiros 705 convidados
+ * 91% saíram sem ver nenhum. Quem chegou a comparar voltou sete vezes mais
+ * (21% contra 3%).
+ *
+ * Agora o visitante novo vê logo dois números, sem tocar em nada: o
+ * gasóleo mais barato perto da cidade dele (o mesmo herói de quem já usa
+ * a app) e onde ficam mais baratos 6 básicos (lib/cabazInicio, calculado
+ * uma vez por dia). O toque seguinte torna a resposta pessoal: os artigos
+ * dele, o posto ao pé dele. Se um dos números faltar, fica a porta antiga
+ * no seu lugar. */
+function Porta({ Icone, titulo, sub, aoTocar }) {
+  return (
     <button onClick={aoTocar} className="pj-tap press w-full text-left flex items-center"
       style={{ gap: 14, padding: "16px 14px", borderRadius: 16, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
       <span className="flex items-center justify-center flex-none" style={{ width: 44, height: 44, borderRadius: 14, background: "var(--pj-brand-wash)" }}>
@@ -39,23 +46,79 @@ function TresPortas({ onComparar, onCombustivel, onEmentas }) {
         <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.25 }}>{titulo}</span>
         <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2, lineHeight: 1.4 }}>{sub}</span>
       </span>
-      {direita || <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />}
+      <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
     </button>
   );
+}
+
+const naLoja = (c) => `${c.loja === "apolonia" ? "na" : "no"} ${c.nome}`;
+
+function CartaoCabaz({ cabaz, onTrocar }) {
+  // Visto: a primeira vitória passou a ser automática; conta-se uma vez por sessão.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("poupeja_cabaz_visto")) return;
+      sessionStorage.setItem("poupeja_cabaz_visto", "1");
+    } catch {}
+    evento("inicio_cabaz", { acao: "visto" });
+  }, []);
+  const deHoje = cabaz.dia === new Date().toLocaleDateString("sv-SE");
+  const n = cabaz.artigos.length;
   return (
-    <div style={{ marginTop: 40 }} className="anim-up anim-up-1">
-      <Rotulo>Por onde queres começar?</Rotulo>
-      <div className="flex flex-col" style={{ gap: 10, marginTop: 14 }}>
-        <Cartao Icone={Search} titulo="Onde fica mais barata a tua compra?"
-          sub={`Compara 6 básicos nos ${N_COMPARADAS} supermercados, num toque. Sem conta.`}
-          aoTocar={porta("comparar", onComparar)} />
-        <Cartao Icone={Fuel} titulo="Onde está o combustível mais barato perto de ti?"
-          sub="Gasolina e gasóleo, nos postos à tua volta."
-          aoTocar={porta("combustivel", onCombustivel)} />
-        <Cartao Icone={ChefHat} titulo="O jantar da semana, planeado" sub="Diz o orçamento e o que não comes. Sai a lista e onde é mais barata."
+    <div style={{ marginTop: 32, padding: "18px 16px", borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }} className="anim-up anim-up-2">
+      <Rotulo>{n} básicos do supermercado{deHoje ? " · hoje" : ""}</Rotulo>
+      {cabaz.empate ? (
+        <>
+          <p className="font-display pj-num" style={{ fontSize: 26, fontWeight: 600, lineHeight: 1.2, color: "var(--pj-text)", marginTop: 10, letterSpacing: "-0.015em" }}>
+            De {eur(cabaz.total, 2)} € a {eur(cabaz.cara.total, 2)} €
+          </p>
+          <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.45 }}>
+            O mesmo cabaz custa mais <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(cabaz.poupanca, 2)} €</strong> {naLoja(cabaz.cara)} do que {naLoja(cabaz)}. As lojas mais baratas quase empatam.
+          </p>
+        </>
+      ) : (
+        <>
+          <p className="font-display pj-num" style={{ fontSize: 26, fontWeight: 600, lineHeight: 1.2, color: "var(--pj-text)", marginTop: 10, letterSpacing: "-0.015em" }}>
+            Mais barato {naLoja(cabaz)}: {eur(cabaz.total, 2)} €
+          </p>
+          <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.45 }}>
+            {cabaz.cara.loja === "apolonia" ? "Na" : "No"} {cabaz.cara.nome}, os mesmos artigos custam <strong className="pj-num" style={{ color: "var(--pj-text)" }}>{eur(cabaz.cara.total, 2)} €</strong>: mais {eur(cabaz.poupanca, 2)} €.
+          </p>
+        </>
+      )}
+      <p style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 8, lineHeight: 1.45 }}>
+        {cabaz.artigos.join(", ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}. Comparado em {cabaz.lojas} supermercados.
+      </p>
+      <button onClick={onTrocar} className="pj-tap press inline-flex items-center"
+        style={{ gap: 7, marginTop: 14, padding: "10px 16px", borderRadius: 12, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 600 }}>
+        <Search size={15} strokeWidth={1.9} /> Trocar pelos meus artigos
+      </button>
+    </div>
+  );
+}
+
+function PrimeiraVisita({ gasoleo, cabaz, onComparar, onCombustivel, onEmentas }) {
+  const porta = (acao, fn) => () => { evento("inicio_porta", { acao }); fn(); };
+  return (
+    <>
+      {/* Sem a streak nem o convite ao talão: quem acabou de chegar ainda não tem nada disso. */}
+      {!gasoleo.falhou && <HeroCombustivel gasoleo={gasoleo} streak={0} onVerPostos={porta("combustivel", onCombustivel)} onGuardarTalao={null} />}
+      {cabaz && <CartaoCabaz cabaz={cabaz} onTrocar={() => { evento("inicio_cabaz", { acao: "trocar" }); onComparar(); }} />}
+      <div className="flex flex-col anim-up anim-up-2" style={{ gap: 10, marginTop: cabaz && !gasoleo.falhou ? 14 : 32 }}>
+        {!cabaz && (
+          <Porta Icone={Search} titulo="Onde fica mais barata a tua compra?"
+            sub={`Compara 6 básicos nos ${N_COMPARADAS} supermercados, num toque. Sem conta.`}
+            aoTocar={porta("comparar", onComparar)} />
+        )}
+        {gasoleo.falhou && (
+          <Porta Icone={Fuel} titulo="Onde está o combustível mais barato perto de ti?"
+            sub="Gasolina e gasóleo, nos postos à tua volta."
+            aoTocar={porta("combustivel", onCombustivel)} />
+        )}
+        <Porta Icone={ChefHat} titulo="O jantar da semana, planeado" sub="Diz o orçamento e o que não comes. Sai a lista e onde é mais barata."
           aoTocar={porta("ementas", onEmentas)} />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -469,7 +532,7 @@ function HeroPoupanca({ mesNome, totalMes, totalSempre, animMes, decMes, streak,
 }
 
 /* ─── Ecrã Início ─── */
-export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, onEntrar, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0, garantiasCount = 0 }) {
+export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, onAbrirAvisos, onAbrirDefinicoes, onCriarConta, onEntrar, retratoDisponivel = null, onAbrirRetrato, avisosCount = 0, garantiasCount = 0, cabaz = null }) {
   const [convPendente] = useState(() => {
     try { return !!localStorage.getItem("poupeja_conversao_pendente"); } catch { return false; }
   });
@@ -626,7 +689,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             fica só a poupança, como antes. Antes de ler o localStorage,
             só o espaço — sem saltos. */}
         {explorar ? (
-          <TresPortas
+          <PrimeiraVisita
+            gasoleo={gasoleo}
+            cabaz={cabaz}
             onComparar={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
             onCombustivel={() => setTab("mobilidade")}
             onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))}

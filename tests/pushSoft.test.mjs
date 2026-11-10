@@ -32,3 +32,16 @@ test("depois de 3 \"agora não\" deixa de insistir", () => {
   for (let i = 0; i < ADIAMENTOS_DIAS.length; i++) e = adiar(e, t0);
   assert.equal(podeMostrar(e, t0 + 365 * DIA), false);
 });
+
+test("convite aos avisos: na primeira visita não aparece", async () => {
+  const { jaTemMotivo } = await import("../lib/pushSoft.js");
+  assert.equal(jaTemMotivo({ primeiraVisita: "2026-11-10", hoje: "2026-11-10" }), false);
+  assert.equal(jaTemMotivo({}), false);
+});
+
+test("convite aos avisos: aparece a quem volta, usou a lista ou tem conta", async () => {
+  const { jaTemMotivo } = await import("../lib/pushSoft.js");
+  assert.equal(jaTemMotivo({ primeiraVisita: "2026-11-09", hoje: "2026-11-10" }), true);
+  assert.equal(jaTemMotivo({ primeiraVisita: "2026-11-10", hoje: "2026-11-10", usouLista: true }), true);
+  assert.equal(jaTemMotivo({ primeiraVisita: "2026-11-10", hoje: "2026-11-10", comConta: true }), true);
+});
