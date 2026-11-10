@@ -7,6 +7,7 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { dataExtenso } from "../lib/datas";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — devolver compras online (livre resolução), com
  * calculadora. Alvo: "devolver compra online 14 dias", "direito de
@@ -32,8 +33,8 @@ export default function Devolucoes() {
         <meta property="og:title" content="Devolver compras online: 14 dias e como fazer" key="og:title" />
         <meta property="og:description" content={DESCRICAO} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(perguntasDevolucoesLd()) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(perguntasDevolucoesLd()) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

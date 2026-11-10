@@ -6,6 +6,7 @@ import { LOJAS_SEO, breadcrumbLd } from "../lib/seoPrecos";
 import { hojeLisboa, dataCurta, cortar } from "../lib/seoFormato";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — reduflação: o que é, como a detetar e os casos que
  * o PoupeJá confirmou (o mesmo produto, na mesma loja, a trazer menos e a
@@ -53,8 +54,8 @@ export default function Reduflacao({ casos, atualizado }) {
         <meta property="og:title" content="Reduflação: produtos que encolheram" key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(faqLd) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

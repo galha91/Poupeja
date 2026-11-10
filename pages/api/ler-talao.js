@@ -1,12 +1,17 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { registarCusto } from "../../lib/custos";
+import { registarCusto, custoUsd } from "../../lib/custos";
+import { orcamentoIADisponivel, somarGasto } from "../../lib/limiteIA";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { linhasTalao } from "../../lib/precosTalao";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export const config = { api: { bodyParser: { sizeLimit: "10mb" } } };
+// O browser comprime a foto antes de enviar (lib/imagem.js): bem abaixo disto.
+export const config = { api: { bodyParser: { sizeLimit: "6mb" } } };
+
+// Base64 de uma imagem com mais do que isto já não é uma foto de talão comprimida.
+const MAX_BASE64 = 6 * 1024 * 1024;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
@@ -14,7 +19,8 @@ export default async function handler(req, res) {
   if (!origemValida(req)) {
     return res.status(403).json({ erro: "Origem não autorizada." });
   }
-  if (excedeuLimite(req, "ler-talao", 10)) {
+  // Por IP: rajadas (por minuto) e uso continuado (por hora).
+  if (excedeuLimite(req, "ler-talao", 5) || excedeuLimite(req, "ler-talao-hora", 30, 60 * 60_000)) {
     return res.status(429).json({ erro: "Demasiados pedidos. Aguarda um minuto e tenta de novo." });
   }
 
@@ -34,6 +40,12 @@ export default async function handler(req, res) {
   }
 
   const [, tipoBruto, base64] = match;
+  if (base64.length > MAX_BASE64) return res.status(413).json({ erro: "Imagem demasiado grande." });
+
+  // Teto global de gastos por dia (lib/limiteIA.js): ninguém esgota os créditos.
+  if (!(await orcamentoIADisponivel("ler-talao"))) {
+    return res.status(429).json({ erro: "A leitura automática de talões está em pausa por hoje. Podes escrever o valor à mão." });
+  }
   // A Anthropic espera image/jpeg — "image/jpg" é comum mas não é válido.
   const mediaType = tipoBruto === "image/jpg" ? "image/jpeg" : tipoBruto;
 
@@ -69,6 +81,7 @@ Responde APENAS com JSON válido.`,
       }],
     });
     await registarCusto("ler-talao", msg.model, msg.usage);
+    somarGasto("ler-talao", custoUsd(msg.model, msg.usage));
 
     const texto = msg.content[0]?.text?.trim() ?? "";
 

@@ -8,6 +8,7 @@ import { breadcrumbLd } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
 import { cortar } from "../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — um apoio do Estado. Alvo: "tarifa social de
  * eletricidade como pedir", "passe sub23 quem tem direito". Até agora todos
@@ -46,8 +47,8 @@ export default function Apoio({ apoio, categoria, atualizado, prazos, relacionad
         <meta property="og:title" content={titulo.replace(/ \| PoupeJá$/, "")} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(servicoLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(servicoLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

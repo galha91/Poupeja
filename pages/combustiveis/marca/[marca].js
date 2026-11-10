@@ -10,6 +10,7 @@ import { FONTES } from "../../../lib/fontes";
 import { slugify } from "../../../lib/slug";
 import { cabecalhoCacheCombustivel } from "../../../lib/cacheCombustivel";
 
+import { jsonLdSeguro } from "../../../lib/escapar";
 /*
  * Página pública SEO — uma marca de combustível no país inteiro.
  * Alvo: "preço gasóleo galp hoje", "prio é mais barato?". A média da marca
@@ -51,7 +52,7 @@ export default function MarcaCombustivel({ dados }) {
         <meta property="og:title" content={`Preços ${marca.nome}${hoje}`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

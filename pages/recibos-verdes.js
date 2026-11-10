@@ -7,6 +7,7 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { dataExtenso } from "../lib/datas";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — recibos verdes 2026: quanto sobra depois da
  * Segurança Social e do IRS. Alvo: "simulador recibos verdes",
@@ -60,8 +61,8 @@ export default function RecibosVerdes({ exemplos }) {
         <meta property="og:title" content="Simulador de recibos verdes 2026: quanto sobra" key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(faqLd) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

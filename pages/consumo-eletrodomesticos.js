@@ -11,6 +11,7 @@ import { euros } from "../lib/seoFormato";
 import { dataExtenso } from "../lib/datas";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — quanto gasta cada eletrodoméstico, com calculadora.
  * Alvo: "quanto gasta um desumidificador", "consumo aquecedor a óleo",
@@ -39,8 +40,8 @@ export default function ConsumoEletrodomesticos() {
         <meta property="og:title" content="Quanto gasta um eletrodoméstico?" key="og:title" />
         <meta property="og:description" content={DESCRICAO} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(perguntasConsumoLd()) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(perguntasConsumoLd()) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

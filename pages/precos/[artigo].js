@@ -14,6 +14,7 @@ import { lerPaginaMarca, marcasDoArtigo } from "../../lib/paginasMarca";
 import { receitas } from "../../lib/receitas/motor";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — o preço de um artigo hoje, cadeia a cadeia.
  * Alvo: "preço do azeite hoje", "azeite mais barato continente vs pingo
@@ -43,8 +44,8 @@ export default function PrecoArtigo({ artigo, dados, frases, meta, relacionados,
         <meta property="og:title" content={meta.titulo.replace(/ \| PoupeJá$/, "")} key="og:title" />
         <meta property="og:description" content={meta.descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        {produto && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(produto) }} />}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        {produto && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(produto) }} />}
       </Head>
 
       <div style={{ paddingTop: 24 }}>

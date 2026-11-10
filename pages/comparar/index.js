@@ -6,6 +6,7 @@ import { resumosRecentes, paraProps } from "../../lib/seoPrecosDados";
 import { URL_SITE } from "../../lib/site";
 import { cortar } from "../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Hub das comparações entre cadeias. Cada par mostra o resultado de hoje,
  * para o link já responder à pergunta antes do clique.
@@ -28,7 +29,7 @@ export default function Comparar({ pares, vitorias, atualizado }) {
         <meta property="og:title" content="Comparar supermercados: qual é mais barato?" key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/comparar`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

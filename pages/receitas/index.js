@@ -4,6 +4,7 @@ import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { DestaqueEmentasPublico } from "../../DestaqueEmentas";
 import { receitas, formatarTempo } from "../../lib/receitas/motor";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 const EMENTAS = receitas();
 const GRUPOS = [
   { tipo: "prato", titulo: "Jantares", ancora: "jantares" },
@@ -41,7 +42,7 @@ export default function Receitas() {
         <meta property="og:title" content="Receitas baratas" key="og:title" />
         <meta property="og:description" content={`${EMENTAS.length} refeições económicas portuguesas com passo a passo — e os ingredientes entram na lista de compras num toque.`} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/receitas`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

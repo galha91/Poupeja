@@ -8,6 +8,7 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { URL_SITE } from "../lib/site";
 import { cortar } from "../lib/seoFormato";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — simulador de crédito à habitação, com a Euribor do
  * mês já preenchida. Alvo: "simulador crédito habitação", "calcular
@@ -39,8 +40,8 @@ export default function CreditoHabitacao({ euribores, periodo }) {
         <meta property="og:title" content="Simulador de crédito habitação" key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/credito-habitacao`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(appLd) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { validarLembrete, limparItens, diaValido } from "../../lib/lembreteCompras";
+import { padraoEmail } from "../../lib/subscritores";
 import { tokenLembrete, tokenLembreteValido } from "../../lib/subscritoresToken";
 
 /*
@@ -64,7 +65,7 @@ export default async function handler(req, res) {
   if (!admin) return res.status(503).json({ erro: "Serviço indisponível. Tenta mais tarde." });
 
   // Um lembrete ativo por email: o novo substitui o anterior.
-  const { data: existente } = await admin.from("lembretes_compras").select("id").ilike("email", lembrete.email).is("cancelado_em", null).maybeSingle();
+  const { data: existente } = await admin.from("lembretes_compras").select("id").ilike("email", padraoEmail(lembrete.email)).is("cancelado_em", null).maybeSingle();
   let linha;
   if (existente) {
     const { email, convidado_id, ...mudar } = lembrete;

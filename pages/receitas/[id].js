@@ -7,6 +7,7 @@ import { euros, porUnidade } from "../../lib/seoFormato";
 import { custoReceita, hojeLisboa } from "../../lib/seoPrecos";
 import { resumosRecentes } from "../../lib/seoPrecosDados";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
 
 const EMENTAS = receitas();
@@ -77,7 +78,7 @@ export default function Receita({ receita, outras, custo = null }) {
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/receitas/${receita.id}`} key="og:url" />
         <meta property="og:image" content={ogImage} key="og:image" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

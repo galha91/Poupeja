@@ -9,6 +9,7 @@ import { URL_SITE } from "./lib/site";
 import { FONTES } from "./lib/fontes";
 import { slugify } from "./lib/slug";
 
+import { jsonLdSeguro } from "./lib/escapar";
 /*
  * Página pública SEO — um combustível no país inteiro (/combustiveis/gasoleo,
  * /gasolina-95, /gpl). Alvo: "preço gasóleo hoje", "gasolina 95 mais
@@ -51,7 +52,7 @@ export default function PaginaTipoCombustivel({ dados, serie = [] }) {
         <meta property="og:title" content={`Preço ${tipo.nome}${hoje} em Portugal`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

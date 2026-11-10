@@ -11,6 +11,7 @@ import { breadcrumbLd, linkApp, hojeLisboa } from "../../lib/seoPrecos";
 import { resumosRecentes } from "../../lib/seoPrecosDados";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — um produto de marca, cadeia a cadeia.
  * Alvo: "preço leite mimosa", "azeite gallo continente vs pingo doce".
@@ -40,8 +41,8 @@ export default function Produto({ grupo, dados, serie, frases, meta, generico, o
         <meta property="og:title" content={meta.titulo.replace(/ \| PoupeJá$/, "")} key="og:title" />
         <meta property="og:description" content={meta.descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        {ld && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        {ld && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(ld) }} />}
       </Head>
 
       <div style={{ paddingTop: 24 }}>

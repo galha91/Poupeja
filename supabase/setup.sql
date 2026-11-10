@@ -805,3 +805,11 @@ create unique index if not exists interesse_negocios_email_uq
   on public.interesse_negocios (lower(email));
 
 alter table public.interesse_negocios enable row level security;
+
+-- ── Auditoria de segurança (2026-11-10) ──────────────────────────────────
+-- A view produtos_embalagem_mudancas corria com os poderes do dono
+-- (postgres), por cima do RLS. Agora respeita as permissões de quem a lê;
+-- só a service role (que ignora o RLS) a usa. (Migração
+-- view_produtos_embalagem_mudancas_invoker.)
+alter view if exists public.produtos_embalagem_mudancas set (security_invoker = on);
+revoke all on table public.produtos_embalagem_mudancas from anon, authenticated;

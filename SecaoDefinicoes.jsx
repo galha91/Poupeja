@@ -4,6 +4,7 @@ import { apagarConta } from "./lib/apagarConta";
 import { partilharApp } from "./lib/partilhar";
 import { emAppNativa } from "./lib/plataforma";
 import { guardarSubscricao } from "./lib/push";
+import { supabase } from "./lib/supabase";
 
 // Sem Minipreço: as lojas passaram para a Auchan (ver lib/cobertura).
 const SUPERMERCADOS = ["Continente","Pingo Doce","Lidl","Aldi","Intermarché","Auchan"];
@@ -245,10 +246,12 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
     if (!user?.email) return;
     setEnviando(true);
     try {
+      // O servidor envia para o email da sessão, não para um email do pedido.
+      const { data: { session } } = await supabase.auth.getSession();
       await fetch("/api/email-semanal", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email, nome: user.nome }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token || ""}` },
+        body: "{}",
       });
       setEnviado(true);
       setTimeout(() => setEnviado(false), 4000);

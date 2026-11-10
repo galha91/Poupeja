@@ -1,6 +1,6 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
-import { emailValido, normalizarEmail, slugConcelhoValido } from "../../lib/subscritores";
+import { emailValido, normalizarEmail, padraoEmail, slugConcelhoValido } from "../../lib/subscritores";
 import { encontrarMunicipio } from "../../lib/municipios";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   const { data: existente } = await admin
     .from("subscritores_combustivel")
     .select("id, cancelado_em")
-    .ilike("email", limpo)
+    .ilike("email", padraoEmail(limpo))
     .eq("concelho", concelho)
     .maybeSingle();
 

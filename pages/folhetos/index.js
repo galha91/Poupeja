@@ -4,6 +4,7 @@ import dadosFolhetos from "../../public/folhetos.json";
 import { slugify, LOGO } from "../../lib/seo-slugs";
 import { semanaAtual } from "../../lib/semana-atual";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 const SITE_URL = "https://xn--poupej-uta.com";
 
 /*
@@ -43,7 +44,7 @@ export default function Folhetos({ folhetos, semana, atualizadoEm }) {
         <meta property="og:title" content="Folhetos dos supermercados desta semana" key="og:title" />
         <meta property="og:description" content={`${lojas} — links diretos para os folhetos oficiais.`} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/folhetos`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

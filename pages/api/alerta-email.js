@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { validarPedido, MAX_ALERTAS_POR_EMAIL } from "../../lib/alertasEmail";
+import { padraoEmail } from "../../lib/subscritores";
 import { tokenAlerta, tokenAlertaValido } from "../../lib/subscritoresToken";
 
 /*
@@ -56,7 +57,7 @@ export default async function handler(req, res) {
   if (!admin) return res.status(503).json({ erro: "Serviço indisponível. Tenta mais tarde." });
 
   // Um alerta ativo por email e pesquisa: atualiza o que existir.
-  const { data: ativos } = await admin.from("alertas_email").select("id, q").ilike("email", alerta.email).is("cancelado_em", null);
+  const { data: ativos } = await admin.from("alertas_email").select("id, q").ilike("email", padraoEmail(alerta.email)).is("cancelado_em", null);
   const existente = (ativos || []).find(a => a.q === alerta.q);
   if (!existente && (ativos || []).length >= MAX_ALERTAS_POR_EMAIL) {
     return res.status(400).json({ erro: `Já tens ${MAX_ALERTAS_POR_EMAIL} alertas neste email. Apaga algum primeiro.` });

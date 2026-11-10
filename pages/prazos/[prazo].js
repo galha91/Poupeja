@@ -8,6 +8,7 @@ import { breadcrumbLd } from "../../lib/seoPrecos";
 import { hojeLisboa, cortar } from "../../lib/seoFormato";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — um prazo do Estado. Alvo: "prazo IRS 2027", "até
  * quando atualizar o agregado familiar". A data é a da próxima vez que o
@@ -34,7 +35,7 @@ export default function Prazo({ prazo, estado, apoios, outros }) {
         <meta property="og:title" content={titulo.replace(/ \| PoupeJá$/, "")} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

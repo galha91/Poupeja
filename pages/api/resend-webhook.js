@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { NOME_EVENTO, segredoWebhook } from "../../lib/resendWebhook";
+import { padraoEmail } from "../../lib/subscritores";
 
 /*
  * Eventos dos emails, enviados pelo Resend (ver lib/resendWebhook.js).
@@ -48,7 +49,7 @@ export default async function handler(req, res) {
     const agora = new Date().toISOString();
     for (const email of evento.data?.to || []) {
       for (const t of TABELAS_EMAIL) {
-        await admin.from(t).update({ cancelado_em: agora }).ilike("email", String(email).toLowerCase()).is("cancelado_em", null).then(() => {}, () => {});
+        await admin.from(t).update({ cancelado_em: agora }).ilike("email", padraoEmail(email)).is("cancelado_em", null).then(() => {}, () => {});
       }
     }
   }

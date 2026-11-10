@@ -1,6 +1,6 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
-import { emailValido, normalizarEmail } from "../../lib/subscritores";
+import { emailValido, normalizarEmail, padraoEmail } from "../../lib/subscritores";
 import { tipoNegocioValido, disposicaoValida } from "../../lib/cabazNegocios";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     cancelado_em: null,
   };
 
-  const { data: existente } = await admin.from("interesse_negocios").select("id").ilike("email", limpo).maybeSingle();
+  const { data: existente } = await admin.from("interesse_negocios").select("id").ilike("email", padraoEmail(limpo)).maybeSingle();
   const { error } = existente
     ? await admin.from("interesse_negocios").update(linha).eq("id", existente.id)
     : await admin.from("interesse_negocios").insert({ email: limpo, ...linha });

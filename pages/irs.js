@@ -7,6 +7,7 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { dataExtenso } from "../lib/datas";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — escalões de IRS do ano, com "em que escalão fico?".
  * Alvo: "escalões irs 2026", "tabela irs 2026", "simulador irs". O valor
@@ -50,8 +51,8 @@ export default function Irs() {
         <meta property="og:title" content={`Escalões de IRS ${ANO_IRS}: tabela e em qual ficas`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(appLd) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />
