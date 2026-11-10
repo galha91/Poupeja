@@ -1,0 +1,26 @@
+{
+  "nota": "Cabaz de exemplo da página /negocios: o que um café ou restaurante pequeno gasta numa semana. q = termo em precos_supermercado_historico; qtd = quantas unidades do preço de referência (kg, L, ovo) entram no cabaz; rotulo = o que aparece na página. Só entram os artigos que todas as lojas têm e com preços consistentes (ver lib/cabazNegocios).",
+  "lojas": ["continente", "pingo-doce", "auchan"],
+  "artigos": [
+    { "q": "peito de frango", "nome": "Peito de frango", "qtd": 10, "rotulo": "10 kg" },
+    { "q": "frango", "nome": "Frango inteiro", "qtd": 10, "rotulo": "10 kg" },
+    { "q": "ovos", "nome": "Ovos", "qtd": 180, "rotulo": "15 dúzias" },
+    { "q": "batatas", "nome": "Batatas", "qtd": 25, "rotulo": "25 kg" },
+    { "q": "cebolas", "nome": "Cebolas", "qtd": 10, "rotulo": "10 kg" },
+    { "q": "tomate", "nome": "Tomate", "qtd": 8, "rotulo": "8 kg" },
+    { "q": "alface", "nome": "Alface", "qtd": 5, "rotulo": "5 kg" },
+    { "q": "arroz", "nome": "Arroz", "qtd": 10, "rotulo": "10 kg" },
+    { "q": "esparguete", "nome": "Esparguete", "qtd": 5, "rotulo": "5 kg" },
+    { "q": "óleo alimentar", "nome": "Óleo alimentar", "qtd": 10, "rotulo": "10 L" },
+    { "q": "azeite", "nome": "Azeite", "qtd": 5, "rotulo": "5 L" },
+    { "q": "leite meio gordo", "nome": "Leite meio-gordo", "qtd": 30, "rotulo": "30 L" },
+    { "q": "natas", "nome": "Natas", "qtd": 5, "rotulo": "5 L" },
+    { "q": "manteiga", "nome": "Manteiga", "qtd": 2, "rotulo": "2 kg" },
+    { "q": "queijo flamengo", "nome": "Queijo flamengo", "qtd": 3, "rotulo": "3 kg" },
+    { "q": "fiambre", "nome": "Fiambre", "qtd": 3, "rotulo": "3 kg" },
+    { "q": "café em grão", "nome": "Café em grão", "qtd": 3, "rotulo": "3 kg" },
+    { "q": "açúcar", "nome": "Açúcar", "qtd": 5, "rotulo": "5 kg" },
+    { "q": "farinha", "nome": "Farinha", "qtd": 5, "rotulo": "5 kg" },
+    { "q": "polpa de tomate", "nome": "Polpa de tomate", "qtd": 5, "rotulo": "5 kg" }
+  ]
+}

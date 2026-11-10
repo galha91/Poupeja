@@ -784,3 +784,24 @@ end;
 $$;
 revoke all on function public.chamar_planeador_github() from public, anon, authenticated;
 select cron.schedule('planeador-github', '37 * * * *', 'select public.chamar_planeador_github()');
+
+-- ── Lista de espera do PoupeJá Negócios (2026-11-10) ───────────────────────
+-- Quem pede acesso antecipado na página /negocios: o email, o tipo de
+-- negócio e quanto disse que pagaria por mês (a pergunta que decide se o
+-- serviço avança). Consentimento explícito no formulário. Só a API (service
+-- role) lê/escreve — sem policies.
+create table if not exists public.interesse_negocios (
+  id           uuid primary key default gen_random_uuid(),
+  email        text not null,
+  tipo         text not null,
+  pagaria      text not null,
+  origem       text,
+  convidado_id uuid,
+  criado_em    timestamptz not null default now(),
+  cancelado_em timestamptz
+);
+
+create unique index if not exists interesse_negocios_email_uq
+  on public.interesse_negocios (lower(email));
+
+alter table public.interesse_negocios enable row level security;
