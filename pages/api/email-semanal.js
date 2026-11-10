@@ -1,11 +1,23 @@
 import { Resend } from "resend";
 import { enviarEmail, etiqueta } from "../../lib/enviarEmail";
-import { origemValida, excedeuLimite } from "../../lib/protecao-api";
+import { origemValida, excedeuLimite, excedeuLimiteDe } from "../../lib/protecao-api";
 import { lerFolhetos, construirEmailFolhetos } from "../../lib/emailFolhetos";
+import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+/*
+ * "Enviar-me o resumo agora" (Definições). Só para quem tem sessão, e só
+ * para o email DESSA conta.
+ *
+ * Antes, o email e o nome vinham no corpo do pedido e não havia login:
+ * qualquer pessoa podia mandar emails do nosso domínio para qualquer
+ * endereço, com um "nome" à escolha dentro do HTML. Isso é um relé de spam
+ * e phishing com a nossa marca, e queima a reputação do domínio no Resend.
+ * Agora o destinatário sai do token da sessão, nunca do pedido.
+ */
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).end();
 
   if (!origemValida(req)) {
@@ -16,8 +28,23 @@ export default async function handler(req, res) {
     return res.status(429).json({ erro: "Já pediste o resumo há pouco. Aguarda uns minutos." });
   }
 
-  const { email, nome } = req.body;
-  if (!email || !nome) return res.status(400).json({ erro: "Dados incompletos." });
+  const admin = getSupabaseAdmin();
+  if (!admin) return res.status(503).json({ erro: "Serviço indisponível." });
+
+  const auth = req.headers.authorization || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return res.status(401).json({ erro: "Inicia sessão para receber o resumo." });
+  const { data, error } = await admin.auth.getUser(token);
+  const user = data?.user;
+  if (error || !user?.email) return res.status(401).json({ erro: "Sessão inválida." });
+
+  // Também por conta, não só por IP: trocar de rede não dá mais envios.
+  if (excedeuLimiteDe(`email-semanal-conta:${user.id}`, 3, 60 * 60_000)) {
+    return res.status(429).json({ erro: "Já pediste o resumo há pouco. Aguarda uns minutos." });
+  }
+
+  const email = user.email;
+  const nome = String(user.user_metadata?.nome || email.split("@")[0]).slice(0, 60);
 
   const folhetos = lerFolhetos();
   if (!folhetos.length) return res.status(500).json({ erro: "Erro ao ler folhetos." });

@@ -7,6 +7,7 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { dataExtenso } from "../lib/datas";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública SEO — salário líquido 2026 (bruto → líquido), com as
  * tabelas de retenção do Despacho n.º 233-A/2026 (lib/salario). Alvo:
@@ -44,8 +45,8 @@ export default function SalarioLiquido({ exemplos }) {
         <meta property="og:title" content="Salário líquido 2026: do bruto ao líquido" key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(appLd) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

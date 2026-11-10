@@ -12,6 +12,7 @@ import GraficoPreco from "../../GraficoPreco";
 import { lerSerie } from "../../lib/precosSnapshot";
 import { cabecalhoCacheCombustivel } from "../../lib/cacheCombustivel";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — combustíveis mais baratos num concelho.
  *
@@ -87,7 +88,7 @@ export default function CombustiveisConcelho({ dados, serieGasoleo = [] }) {
         <meta property="og:title" content={`Preço dos combustíveis em ${municipio.nome} hoje`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

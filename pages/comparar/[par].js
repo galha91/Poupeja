@@ -8,6 +8,7 @@ import { resumosRecentes, paraProps } from "../../lib/seoPrecosDados";
 import { URL_SITE } from "../../lib/site";
 import { cortar } from "../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — duas cadeias frente a frente, nos artigos que as
  * duas têm. Alvo: "continente ou pingo doce mais barato", "lidl vs aldi".
@@ -33,7 +34,7 @@ export default function CompararPar({ par, r, frase, atualizado, outros }) {
         <meta property="og:title" content={`${a.nome} vs ${b.nome}: qual é mais barato?`} key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/comparar/${slug}`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

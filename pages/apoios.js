@@ -3,6 +3,7 @@ import LayoutPublico, { CtaApp } from "../LayoutPublico";
 import dadosApoios from "../public/apoios.json";
 import { slugApoio } from "../lib/seoEstado";
 
+import { jsonLdSeguro } from "../lib/escapar";
 const SITE_URL = "https://xn--poupej-uta.com";
 
 /*
@@ -34,7 +35,7 @@ export default function Apoios({ apoios, categorias, atualizado }) {
         <meta property="og:title" content={`Apoios do Estado — ${apoios.length} benefícios a que podes ter direito`} key="og:title" />
         <meta property="og:description" content="Quem pode pedir e como requerer, com links diretos para os serviços oficiais." key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/apoios`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

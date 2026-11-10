@@ -4,6 +4,7 @@ import { BotaoAbrirPoupeja, Migalhas, estiloH1, estiloH2, estiloTexto, estiloCar
 import { breadcrumbLd } from "../lib/seoPrecos";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * Página pública — todas as calculadoras e guias num sítio. Serve para
  * partilhar um só link e para o Google chegar a todas as ferramentas.
@@ -74,8 +75,8 @@ export default function Ferramentas() {
         <meta property="og:title" content="Calculadoras e guias para poupar" key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listaLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(listaLd) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

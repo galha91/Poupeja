@@ -8,6 +8,7 @@ import { breadcrumbLd, hojeLisboa } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
 import { cortar } from "../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Hub de uma marca (/marca/mimosa): os produtos dela que comparamos, com a
  * cadeia mais barata de cada um. Alvo: "mimosa preços", "gallo continente".
@@ -30,7 +31,7 @@ export default function Marca({ marca, produtos, lojas, atualizado, indexavel, o
         <meta property="og:title" content={`${marca.nome}: preços hoje`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/marca/${marca.slug}`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

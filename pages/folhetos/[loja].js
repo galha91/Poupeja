@@ -7,6 +7,7 @@ import { ListaArtigos } from "../../PaginasPrecos";
 import { LOJAS_SEO, comComparacao, paraLista, hojeLisboa } from "../../lib/seoPrecos";
 import { resumosRecentes } from "../../lib/seoPrecosDados";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 const SITE_URL = "https://xn--poupej-uta.com";
 
 /*
@@ -27,7 +28,7 @@ export default function FolhetoLoja({ folheto, outras, semana, atualizadoEm, pre
         <meta property="og:title" content={`Folheto ${folheto.loja} desta semana`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/folhetos/${slug}`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [

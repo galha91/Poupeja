@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { URL_SITE } from "./lib/site";
 
+import { jsonLdSeguro } from "./lib/escapar";
 /*
  * O que a home (/) mostra antes de a app hidratar — e portanto o que o
  * Google vê. Antes disto o servidor devolvia uma página vazia e o texto
@@ -28,7 +29,7 @@ export function HeadInicio() {
       <link rel="canonical" href={URL_SITE} />
       <meta property="og:title" content={TITULO} key="og:title" />
       <meta property="og:description" content={DESCRICAO} key="og:description" />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
     </Head>
   );
 }

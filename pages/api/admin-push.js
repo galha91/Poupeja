@@ -1,23 +1,31 @@
 import webpush from "web-push";
-import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
+import { exigirAdmin } from "../../lib/adminAuth";
 
-const ADMIN_EMAIL = "poupeja.portugal@gmail.com";
+// Notificação manual do /admin para todas as subscrições.
+// Só o admin (sessão verificada no servidor, ver lib/adminAuth.js). Mesmo
+// assim o conteúdo é validado: o link só pode abrir páginas do próprio site.
+function linkInterno(url) {
+  const u = typeof url === "string" ? url.trim() : "";
+  if (!u) return "/";
+  // Link completo do próprio site → fica só o caminho.
+  const proprio = u.match(/^https:\/\/(?:www\.)?(?:xn--poupej-uta\.com|poupejá\.com)(\/[^\s]*)?$/i);
+  if (proprio) return (proprio[1] || "/").slice(0, 300);
+  // Caminho relativo ("/folhetos"), nunca "//outro-site" nem "javascript:".
+  return /^\/(?!\/)[^\s]*$/.test(u) ? u.slice(0, 300) : null;
+}
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ erro: "Método não suportado." });
 
-  const admin = getSupabaseAdmin();
-  if (!admin) return res.status(503).json({ erro: "Supabase indisponível." });
+  const sessao = await exigirAdmin(req, res);
+  if (!sessao) return;
+  const { admin } = sessao;
 
-  // Validar sessão de administrador
-  const token = (req.headers.authorization || "").replace("Bearer ", "");
-  if (!token) return res.status(401).json({ erro: "Sem autorização." });
-
-  const { data: { user }, error: userErr } = await admin.auth.getUser(token);
-  if (userErr || !user || user.email !== ADMIN_EMAIL) {
-    return res.status(403).json({ erro: "Acesso negado." });
-  }
+  const titulo = typeof req.body?.title === "string" ? req.body.title.trim().slice(0, 80) : "";
+  const corpo = typeof req.body?.body === "string" ? req.body.body.trim().slice(0, 300) : "";
+  const url = linkInterno(req.body?.url);
+  if (url === null) return res.status(400).json({ erro: "O link tem de ser uma página do PoupeJá (ex.: /folhetos)." });
 
   const VAPID_PUBLIC_KEY  = process.env.VAPID_PUBLIC_KEY || process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
@@ -28,11 +36,7 @@ export default async function handler(req, res) {
 
   webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-  const payload = JSON.stringify({
-    title: req.body?.title || "PoupeJá",
-    body:  req.body?.body  || "",
-    url:   req.body?.url   || "/",
-  });
+  const payload = JSON.stringify({ title: titulo || "PoupeJá", body: corpo, url });
 
   const { data: subs, error } = await admin
     .from("push_subscriptions")

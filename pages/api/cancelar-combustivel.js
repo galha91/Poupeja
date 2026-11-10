@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { tokenCombValido } from "../../lib/subscritoresToken";
+import { padraoEmail } from "../../lib/subscritores";
 
 /*
  * Cancelamento do email de combustível. POST = one-click (RFC 8058); GET = link do email.
@@ -26,7 +27,7 @@ async function cancelarAlerta(id) {
   const { error } = await admin
     .from("subscritores_combustivel")
     .update({ alerta_subidas: false })
-    .ilike("email", sub.email);
+    .ilike("email", padraoEmail(sub.email));
   return !error;
 }
 

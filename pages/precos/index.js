@@ -9,6 +9,7 @@ import { resumosRecentes, paraProps } from "../../lib/seoPrecosDados";
 import { URL_SITE } from "../../lib/site";
 import { cortar } from "../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Hub dos preços: por onde o Google (e quem chega) encontra todos os
  * artigos. O conteúdo próprio é o do dia: quantas vezes cada cadeia é a
@@ -30,7 +31,7 @@ export default function Precos({ artigos, vitorias, maioresDiferencas, porCatego
         <meta property="og:title" content="Preços de supermercado hoje" key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/precos`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

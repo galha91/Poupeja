@@ -7,6 +7,7 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { euros } from "../lib/seoFormato";
 import { URL_SITE } from "../lib/site";
 
+import { jsonLdSeguro } from "../lib/escapar";
 /*
  * PoupeJá Negócios — página de validação. Para cafés, restaurantes e
  * pastelarias que se abastecem no supermercado: mostra um cabaz de exemplo
@@ -110,7 +111,7 @@ export default function Negocios({ cabaz }) {
         <meta property="og:title" content={TITULO} key="og:title" />
         <meta property="og:description" content={DESCRICAO} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

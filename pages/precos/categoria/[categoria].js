@@ -8,6 +8,7 @@ import { resumosRecentes, paraProps } from "../../../lib/seoPrecosDados";
 import { URL_SITE } from "../../../lib/site";
 import { cortar } from "../../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../../lib/escapar";
 /*
  * Hub de uma categoria (Laticínios, Talho…): os artigos com o vencedor de
  * hoje e a cadeia que mais vezes ganha nesta secção.
@@ -36,7 +37,7 @@ export default function PrecosCategoria({ categoria, comPreco, semPreco, vitoria
         <meta property="og:title" content={`${nome}: preços hoje`} key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/precos/categoria/${categoria.slug}`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

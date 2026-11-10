@@ -1,6 +1,6 @@
 import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
-import { emailValido, normalizarEmail } from "../../lib/subscritores";
+import { emailValido, normalizarEmail, padraoEmail } from "../../lib/subscritores";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   const { data: existente } = await admin
     .from("subscritores_folhetos")
     .select("id, cancelado_em")
-    .ilike("email", limpo)
+    .ilike("email", padraoEmail(limpo))
     .maybeSingle();
 
   if (existente) {

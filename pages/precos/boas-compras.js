@@ -9,6 +9,7 @@ import { resumos30Dias, paraProps } from "../../lib/seoPrecosDados";
 import { URL_SITE } from "../../lib/site";
 import { cortar } from "../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Boas compras de hoje: os artigos cujo melhor preço está no mínimo dos
  * últimos 30 dias, ou perto dele, e bem abaixo da média. É o que só o
@@ -35,7 +36,7 @@ export default function BoasCompras({ minimos, perto, porCategoria, atualizado }
         <meta property="og:title" content="Boas compras hoje no supermercado" key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/precos/boas-compras`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

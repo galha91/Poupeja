@@ -6,6 +6,7 @@ import { seriesEuribor } from "../../lib/euriborDados";
 import { breadcrumbLd } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 const MESES_CURTOS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 const mesCurto = (periodo) => { const [a, m] = periodo.split("-").map(Number); return `${MESES_CURTOS[m - 1]} ${String(a).slice(2)}`; };
 
@@ -32,7 +33,7 @@ export default function EuriborPrazo({ prazo, resumo, serie, outros }) {
         <meta property="og:title" content={titulo.replace(/ \| PoupeJá$/, "")} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

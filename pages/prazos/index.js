@@ -8,6 +8,7 @@ import { breadcrumbLd } from "../../lib/seoPrecos";
 import { hojeLisboa } from "../../lib/seoFormato";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /* Hub dos prazos do Estado: o que acaba primeiro, à frente. */
 export default function Prazos({ prazos, ano }) {
   const titulo = `Prazos do Estado ${ano}: IRS, IMI, abono e mais | PoupeJá`;
@@ -22,7 +23,7 @@ export default function Prazos({ prazos, ano }) {
         <meta property="og:title" content={`Prazos do Estado ${ano}`} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/prazos`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

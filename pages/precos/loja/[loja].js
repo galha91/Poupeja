@@ -8,6 +8,7 @@ import { resumosRecentes, paraProps } from "../../../lib/seoPrecosDados";
 import { URL_SITE } from "../../../lib/site";
 import { cortar } from "../../../lib/seoFormato";
 
+import { jsonLdSeguro } from "../../../lib/escapar";
 /*
  * Hub de uma cadeia: em que artigos é hoje a mais barata e, nos outros,
  * quanto fica acima de quem ganha. Alvo: "lidl preços", "continente mais
@@ -31,7 +32,7 @@ export default function PrecosLoja({ loja, ganha, perde, total, posicao, atualiz
         <meta property="og:title" content={`Preços ${loja.nome} hoje`} key="og:title" />
         <meta property="og:description" content={cortar(descricao)} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/precos/loja/${loja.slug}`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

@@ -6,6 +6,7 @@ import { gruposMarca } from "../../lib/seoMarcasDados";
 import { LOJAS_SEO, breadcrumbLd, hojeLisboa } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /* Hub das marcas: por onde o Google chega a /marca/<marca> e /produto/<slug>. */
 export default function Marcas({ marcas, total, atualizado }) {
   const titulo = "Preços por marca nos supermercados | PoupeJá";
@@ -23,7 +24,7 @@ export default function Marcas({ marcas, total, atualizado }) {
         <meta property="og:title" content="Preços por marca nos supermercados" key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/marcas`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />

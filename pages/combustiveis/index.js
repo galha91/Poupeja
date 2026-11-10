@@ -12,6 +12,7 @@ import { FONTES } from "../../lib/fontes";
 import { slugify } from "../../lib/slug";
 import { cabecalhoCacheCombustivel } from "../../lib/cacheCombustivel";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — preços dos combustíveis hoje em Portugal.
  * Server-rendered com dados reais da DGEG (via /api/combustiveis),
@@ -99,7 +100,7 @@ export default function Combustiveis({ dados, concelhos, frescura, erro, marcas 
         <meta property="og:title" content="Preços dos combustíveis hoje em Portugal" key="og:title" />
         <meta property="og:description" content="Gasóleo e gasolina mais baratos por marca, com dados oficiais da DGEG. Atualizado diariamente." key="og:description" />
         <meta property="og:url" content={`${SITE_URL}/combustiveis`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(jsonLd) }} />
       </Head>
 
       <div style={{ paddingTop: 24 }}>

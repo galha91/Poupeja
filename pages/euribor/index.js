@@ -6,6 +6,7 @@ import { seriesEuribor } from "../../lib/euriborDados";
 import { breadcrumbLd } from "../../lib/seoPrecos";
 import { URL_SITE } from "../../lib/site";
 
+import { jsonLdSeguro } from "../../lib/escapar";
 /*
  * Página pública SEO — a Euribor deste mês, nos três prazos. Alvo:
  * "euribor hoje", "euribor 6 meses", "taxa euribor". Dados do BCE (média
@@ -29,7 +30,7 @@ export default function Euribor({ prazos, periodo }) {
         <meta property="og:title" content={t.replace(/ \| PoupeJá$/, "")} key="og:title" />
         <meta property="og:description" content={descricao} key="og:description" />
         <meta property="og:url" content={`${URL_SITE}/euribor`} key="og:url" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />
