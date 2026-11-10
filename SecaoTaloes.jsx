@@ -117,6 +117,10 @@ function ModalGuardar({ onFechar, onGuardar, modo }) {
                 </p>
               </div>
             )}
+            <p className="mb-4 text-[11px] leading-relaxed" style={{ color: "var(--pj-text-faint)" }}>
+              A foto é lida por uma IA (Anthropic) só para ler o total e os artigos. Não fica guardada nos nossos servidores nem ligada à tua conta: fica apenas neste aparelho.{" "}
+              <a href="/privacidade#resumo" target="_blank" rel="noopener" className="underline">Saber mais</a>
+            </p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => cameraRef.current?.click()}

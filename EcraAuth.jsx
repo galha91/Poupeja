@@ -139,7 +139,7 @@ function Landing({ onRegister, onLogin, onConvidado, convidadoLoading, convidado
               {convidadoLoading ? "A preparar a tua conta…" : "Espreitar como convidado — sem registo"}
             </button>
             <p className="text-center text-[11px] font-medium -mt-1" style={{ color: "var(--pj-text-faint)" }}>
-              Conhece a app primeiro · regista-te quando quiseres
+              A conta é opcional · conhece a app primeiro, regista-te quando quiseres
             </p>
             {convidadoErro && (
               <p className="text-center text-[12px] font-semibold" style={{ color: "var(--pj-danger)" }}>{convidadoErro}</p>
@@ -278,7 +278,10 @@ function Registo({ onVoltar }) {
         <div className="rounded-xl p-3 flex gap-2" style={{ background: "var(--pj-subtle)", border: "1px solid var(--pj-border)" }}>
           <ShieldCheck size={14} className="flex-shrink-0 mt-0.5" style={{ color: "var(--pj-brand-ink)" }} />
           <p className="text-[11px] leading-relaxed" style={{ color: "var(--pj-text-muted)" }}>
-            A tua conta fica guardada em segurança e funciona em qualquer dispositivo.
+            Guardamos o teu nome e email e o que registas, para os teres em qualquer aparelho. Nunca vendemos dados nem os usamos para publicidade.{" "}
+            <Link href="/privacidade#resumo" target="_blank" className="pj-tap font-semibold underline underline-offset-2" style={{ color: "var(--pj-brand-ink)" }}>
+              Ver o resumo
+            </Link>
           </p>
         </div>
 
