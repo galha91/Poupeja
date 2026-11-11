@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { resumirCabaz, cabazServe, VALIDADE_MS, TIPO } from "../lib/cabazInicio.js";
+import { resumirCabaz, cabazServe, lojasDoInicio, VALIDADE_MS, TIPO } from "../lib/cabazInicio.js";
 
 const LOJAS = ["continente", "pingo-doce", "auchan", "lidl", "aldi", "apolonia"];
 const nomes = { continente: "Continente", "pingo-doce": "Pingo Doce", auchan: "Auchan" };
@@ -70,4 +70,16 @@ test("cabaz do Início: com mais de 2 dias deixa de servir", () => {
 test("cabaz do Início: a tabela aceita o tipo de linha", () => {
   const sql = readFileSync(new URL("../supabase/setup.sql", import.meta.url), "utf8");
   assert.match(sql, new RegExp(`add constraint paginas_marca_tipo_check[^;]*'${TIPO}'`));
+});
+
+test("cabaz do Início: cadeias regionais não entram na conta", () => {
+  const nacionais = lojasDoInicio(LOJAS);
+  assert.equal(nacionais.includes("apolonia"), false);
+  assert.equal(nacionais.length, LOJAS.length - 1);
+  // Com a Apolónia cara nos custos, a mais cara continua a ser uma cadeia nacional.
+  const comApolonia = cabaz.map((l) => ({ nome: l.nome, custos: { ...l.custos, apolonia: l.custos.auchan * 1.5 } }));
+  const r = resumirCabaz(comApolonia, nacionais, nome);
+  assert.equal(r.cara.loja, "auchan");
+  assert.equal(r.poupanca, 1.76);
+  assert.equal(r.lojas, 3);
 });
