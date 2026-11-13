@@ -1,587 +1,109 @@
 {
   "nota": "Cabazes dos vídeos (Instagram/TikTok), segunda, quarta e sexta. q = termo em precos_supermercado_historico; qtd = quantas unidades do preço de referência (kg, L, ovo, rolo...) entram no cabaz; rotulo = o que aparece no vídeo. Cada cabaz usa 10 artigos do tema, dando prioridade aos que há mais tempo não saíram.",
-  "lojas": [
-    "continente",
-    "pingo-doce",
-    "auchan",
-    "apolonia"
-  ],
-  "nomesLojas": {
-    "continente": "Continente",
-    "pingo-doce": "Pingo Doce",
-    "auchan": "Auchan",
-    "apolonia": "Apolónia"
-  },
-  "generoLojas": {
-    "continente": "o",
-    "pingo-doce": "o",
-    "auchan": "o",
-    "apolonia": "a"
-  },
+  "lojas": ["continente", "pingo-doce", "auchan", "apolonia"],
+  "nomesLojas": {"continente": "Continente", "pingo-doce": "Pingo Doce", "auchan": "Auchan", "apolonia": "Apolónia"},
+  "generoLojas": {"continente": "o", "pingo-doce": "o", "auchan": "o", "apolonia": "a"},
   "temas": {
-    "pequeno-almoco": {
-      "titulo": "Pequeno-almoço",
-      "artigos": [
-        {
-          "q": "leite meio gordo",
-          "nome": "Leite meio-gordo",
-          "qtd": 2,
-          "rotulo": "2 L"
-        },
-        {
-          "q": "ovos",
-          "nome": "Ovos",
-          "qtd": 6,
-          "rotulo": "6 unidades"
-        },
-        {
-          "q": "manteiga",
-          "nome": "Manteiga",
-          "qtd": 0.25,
-          "rotulo": "250 g"
-        },
-        {
-          "q": "café moído",
-          "nome": "Café moído",
-          "qtd": 0.25,
-          "rotulo": "250 g"
-        },
-        {
-          "q": "pão de forma",
-          "nome": "Pão de forma",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "carcaça",
-          "nome": "Pão (carcaça)",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "fiambre",
-          "nome": "Fiambre",
-          "qtd": 0.2,
-          "rotulo": "200 g"
-        },
-        {
-          "q": "queijo flamengo",
-          "nome": "Queijo flamengo",
-          "qtd": 0.2,
-          "rotulo": "200 g"
-        },
-        {
-          "q": "sumo de laranja",
-          "nome": "Sumo de laranja",
-          "qtd": 1,
-          "rotulo": "1 L"
-        },
-        {
-          "q": "iogurte natural",
-          "nome": "Iogurte natural",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "bananas",
-          "nome": "Bananas",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "açúcar",
-          "nome": "Açúcar",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "maçãs",
-          "nome": "Maçãs",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "leite magro",
-          "nome": "Leite magro",
-          "qtd": 1,
-          "rotulo": "1 L"
-        },
-        {
-          "q": "mel",
-          "nome": "Mel",
-          "qtd": 0.25,
-          "rotulo": "250 g"
-        },
-        {
-          "q": "marmelada",
-          "nome": "Marmelada",
-          "qtd": 0.25,
-          "rotulo": "250 g"
-        },
-        {
-          "q": "queijo fresco",
-          "nome": "Queijo fresco",
-          "qtd": 0.25,
-          "rotulo": "250 g"
-        },
-        {
-          "q": "iogurte líquido",
-          "nome": "Iogurte líquido",
-          "qtd": 0.5,
-          "rotulo": "500 ml"
-        },
-        {
-          "q": "néctar",
-          "nome": "Néctar",
-          "qtd": 1,
-          "rotulo": "1 L"
-        },
-        {
-          "q": "café em grão",
-          "nome": "Café em grão",
-          "qtd": 0.25,
-          "rotulo": "250 g"
-        }
-      ]
-    },
-    "despensa": {
-      "titulo": "Despensa",
-      "artigos": [
-        {
-          "q": "arroz",
-          "nome": "Arroz",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "massa esparguete",
-          "nome": "Esparguete",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "azeite",
-          "nome": "Azeite",
-          "qtd": 0.75,
-          "rotulo": "750 ml"
-        },
-        {
-          "q": "óleo alimentar",
-          "nome": "Óleo alimentar",
-          "qtd": 1,
-          "rotulo": "1 L"
-        },
-        {
-          "q": "açúcar",
-          "nome": "Açúcar",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "farinha",
-          "nome": "Farinha",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "atum",
-          "nome": "Atum em lata",
-          "qtd": 0.28,
-          "rotulo": "2 latas"
-        },
-        {
-          "q": "feijão cozido",
-          "nome": "Feijão cozido",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "grão cozido",
-          "nome": "Grão cozido",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "milho doce",
-          "nome": "Milho doce",
-          "qtd": 0.3,
-          "rotulo": "300 g"
-        },
-        {
-          "q": "café em grão",
-          "nome": "Café em grão",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "azeitonas",
-          "nome": "Azeitonas",
-          "qtd": 0.3,
-          "rotulo": "300 g"
-        }
-      ]
-    },
-    "jantar-de-semana": {
-      "titulo": "Jantares de semana",
-      "artigos": [
-        {
-          "q": "frango",
-          "nome": "Frango",
-          "qtd": 1.5,
-          "rotulo": "1,5 kg"
-        },
-        {
-          "q": "carne picada",
-          "nome": "Carne picada",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "cebolas",
-          "nome": "Cebolas",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "cenouras",
-          "nome": "Cenouras",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "tomate",
-          "nome": "Tomate",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "alface",
-          "nome": "Alface",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "esparguete",
-          "nome": "Esparguete",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "arroz carolino",
-          "nome": "Arroz carolino",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "douradinhos",
-          "nome": "Douradinhos",
-          "qtd": 0.4,
-          "rotulo": "400 g"
-        },
-        {
-          "q": "salmão",
-          "nome": "Salmão",
-          "qtd": 0.4,
-          "rotulo": "400 g"
-        },
-        {
-          "q": "pizza",
-          "nome": "Pizza",
-          "qtd": 0.4,
-          "rotulo": "400 g"
-        },
-        {
-          "q": "peito de frango",
-          "nome": "Peito de frango",
-          "qtd": 0.6,
-          "rotulo": "600 g"
-        },
-        {
-          "q": "ovos",
-          "nome": "Ovos",
-          "qtd": 6,
-          "rotulo": "6 unidades"
-        },
-        {
-          "q": "atum",
-          "nome": "Atum em lata",
-          "qtd": 0.28,
-          "rotulo": "2 latas"
-        },
-        {
-          "q": "grão cozido",
-          "nome": "Grão cozido",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "feijão cozido",
-          "nome": "Feijão cozido",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "azeite",
-          "nome": "Azeite",
-          "qtd": 0.25,
-          "rotulo": "250 ml"
-        }
-      ]
-    },
-    "casa-e-banho": {
-      "titulo": "Casa e casa de banho",
-      "artigos": [
-        {
-          "q": "papel higiénico",
-          "nome": "Papel higiénico",
-          "qtd": 12,
-          "rotulo": "12 rolos"
-        },
-        {
-          "q": "detergente loiça",
-          "nome": "Detergente da loiça",
-          "qtd": 0.75,
-          "rotulo": "750 ml"
-        },
-        {
-          "q": "lixívia",
-          "nome": "Lixívia",
-          "qtd": 2,
-          "rotulo": "2 L"
-        },
-        {
-          "q": "sacos do lixo",
-          "nome": "Sacos do lixo",
-          "qtd": 20,
-          "rotulo": "20 sacos"
-        },
-        {
-          "q": "rolo de cozinha",
-          "nome": "Rolos de cozinha",
-          "qtd": 2,
-          "rotulo": "2 rolos"
-        },
-        {
-          "q": "película aderente",
-          "nome": "Película aderente",
-          "qtd": 1,
-          "rotulo": "1 rolo"
-        },
-        {
-          "q": "champô",
-          "nome": "Champô",
-          "qtd": 0.4,
-          "rotulo": "400 ml"
-        },
-        {
-          "q": "gel de banho",
-          "nome": "Gel de banho",
-          "qtd": 0.5,
-          "rotulo": "500 ml"
-        },
-        {
-          "q": "escova de dentes",
-          "nome": "Escovas de dentes",
-          "qtd": 2,
-          "rotulo": "2 unidades"
-        },
-        {
-          "q": "desodorizante",
-          "nome": "Desodorizante",
-          "qtd": 0.15,
-          "rotulo": "150 ml"
-        },
-        {
-          "q": "guardanapos",
-          "nome": "Guardanapos",
-          "qtd": 100,
-          "rotulo": "100 unidades"
-        },
-        {
-          "q": "toalhitas",
-          "nome": "Toalhitas",
-          "qtd": 60,
-          "rotulo": "60 unidades"
-        }
-      ]
-    },
-    "petiscos-de-fim-de-semana": {
-      "titulo": "Petiscos de fim de semana",
-      "artigos": [
-        {
-          "q": "salsichas frankfurt",
-          "nome": "Salsichas",
-          "qtd": 0.4,
-          "rotulo": "400 g"
-        },
-        {
-          "q": "fiambre",
-          "nome": "Fiambre",
-          "qtd": 0.2,
-          "rotulo": "200 g"
-        },
-        {
-          "q": "queijo flamengo",
-          "nome": "Queijo flamengo",
-          "qtd": 0.3,
-          "rotulo": "300 g"
-        },
-        {
-          "q": "azeitonas",
-          "nome": "Azeitonas",
-          "qtd": 0.3,
-          "rotulo": "300 g"
-        },
-        {
-          "q": "amendoins",
-          "nome": "Amendoins",
-          "qtd": 0.2,
-          "rotulo": "200 g"
-        },
-        {
-          "q": "gelado",
-          "nome": "Gelado",
-          "qtd": 1,
-          "rotulo": "1 L"
-        },
-        {
-          "q": "pizza",
-          "nome": "Pizza",
-          "qtd": 0.8,
-          "rotulo": "2 pizzas"
-        },
-        {
-          "q": "água",
-          "nome": "Água",
-          "qtd": 6,
-          "rotulo": "6 L"
-        },
-        {
-          "q": "sumo de laranja",
-          "nome": "Sumo de laranja",
-          "qtd": 1,
-          "rotulo": "1 L"
-        },
-        {
-          "q": "pão de forma",
-          "nome": "Pão de forma",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "carne picada",
-          "nome": "Carne picada",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "guardanapos",
-          "nome": "Guardanapos",
-          "qtd": 100,
-          "rotulo": "100 unidades"
-        }
-      ]
-    },
-    "frutas-e-legumes": {
-      "titulo": "Frutas e legumes",
-      "artigos": [
-        {
-          "q": "bananas",
-          "nome": "Bananas",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "cenouras",
-          "nome": "Cenouras",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "tomate",
-          "nome": "Tomate",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "alface",
-          "nome": "Alface",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "cebolas",
-          "nome": "Cebolas",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "batata-doce",
-          "nome": "Batata-doce",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "pepino",
-          "nome": "Pepino",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "pimentos",
-          "nome": "Pimentos",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "couve-flor",
-          "nome": "Couve-flor",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "curgete",
-          "nome": "Curgete",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "beringela",
-          "nome": "Beringela",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "clementinas",
-          "nome": "Clementinas",
-          "qtd": 1,
-          "rotulo": "1 kg"
-        },
-        {
-          "q": "kiwis",
-          "nome": "Kiwis",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "abacate",
-          "nome": "Abacate",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "alho francês",
-          "nome": "Alho-francês",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        },
-        {
-          "q": "couve portuguesa",
-          "nome": "Couve portuguesa",
-          "qtd": 0.5,
-          "rotulo": "500 g"
-        }
-      ]
-    }
+    "pequeno-almoco": { "titulo": "Pequeno-almoço", "artigos": [
+      { "q": "leite meio gordo", "nome": "Leite meio-gordo", "qtd": 2, "rotulo": "2 L" },
+      { "q": "ovos", "nome": "Ovos", "qtd": 6, "rotulo": "6 unidades" },
+      { "q": "manteiga", "nome": "Manteiga", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "café moído", "nome": "Café moído", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "pão de forma", "nome": "Pão de forma", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "carcaça", "nome": "Pão (carcaça)", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "fiambre", "nome": "Fiambre", "qtd": 0.2, "rotulo": "200 g" },
+      { "q": "queijo flamengo", "nome": "Queijo flamengo", "qtd": 0.2, "rotulo": "200 g" },
+      { "q": "sumo de laranja", "nome": "Sumo de laranja", "qtd": 1, "rotulo": "1 L" },
+      { "q": "iogurte natural", "nome": "Iogurte natural", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "bananas", "nome": "Bananas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "açúcar", "nome": "Açúcar", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "maçãs", "nome": "Maçãs", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "leite magro", "nome": "Leite magro", "qtd": 1, "rotulo": "1 L" },
+      { "q": "mel", "nome": "Mel", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "marmelada", "nome": "Marmelada", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "queijo fresco", "nome": "Queijo fresco", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "iogurte líquido", "nome": "Iogurte líquido", "qtd": 0.5, "rotulo": "500 ml" },
+      { "q": "néctar", "nome": "Néctar", "qtd": 1, "rotulo": "1 L" },
+      { "q": "café em grão", "nome": "Café em grão", "qtd": 0.25, "rotulo": "250 g" }
+    ] },
+    "despensa": { "titulo": "Despensa", "artigos": [
+      { "q": "arroz", "nome": "Arroz", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "massa esparguete", "nome": "Esparguete", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "azeite", "nome": "Azeite", "qtd": 0.75, "rotulo": "750 ml" },
+      { "q": "óleo alimentar", "nome": "Óleo alimentar", "qtd": 1, "rotulo": "1 L" },
+      { "q": "açúcar", "nome": "Açúcar", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "farinha", "nome": "Farinha", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "atum", "nome": "Atum em lata", "qtd": 0.28, "rotulo": "2 latas" },
+      { "q": "feijão cozido", "nome": "Feijão cozido", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "grão cozido", "nome": "Grão cozido", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "milho doce", "nome": "Milho doce", "qtd": 0.3, "rotulo": "300 g" },
+      { "q": "café em grão", "nome": "Café em grão", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "azeitonas", "nome": "Azeitonas", "qtd": 0.3, "rotulo": "300 g" }
+    ] },
+    "jantar-de-semana": { "titulo": "Jantares de semana", "artigos": [
+      { "q": "frango", "nome": "Frango", "qtd": 1.5, "rotulo": "1,5 kg" },
+      { "q": "carne picada", "nome": "Carne picada", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "cebolas", "nome": "Cebolas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "cenouras", "nome": "Cenouras", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "tomate", "nome": "Tomate", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "alface", "nome": "Alface", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "esparguete", "nome": "Esparguete", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "arroz carolino", "nome": "Arroz carolino", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "douradinhos", "nome": "Douradinhos", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "salmão", "nome": "Salmão", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "pizza", "nome": "Pizza", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "peito de frango", "nome": "Peito de frango", "qtd": 0.6, "rotulo": "600 g" },
+      { "q": "ovos", "nome": "Ovos", "qtd": 6, "rotulo": "6 unidades" },
+      { "q": "atum", "nome": "Atum em lata", "qtd": 0.28, "rotulo": "2 latas" },
+      { "q": "grão cozido", "nome": "Grão cozido", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "feijão cozido", "nome": "Feijão cozido", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "azeite", "nome": "Azeite", "qtd": 0.25, "rotulo": "250 ml" }
+    ] },
+    "casa-e-banho": { "titulo": "Casa e casa de banho", "artigos": [
+      { "q": "papel higiénico", "nome": "Papel higiénico", "qtd": 12, "rotulo": "12 rolos" },
+      { "q": "detergente loiça", "nome": "Detergente da loiça", "qtd": 0.75, "rotulo": "750 ml" },
+      { "q": "lixívia", "nome": "Lixívia", "qtd": 2, "rotulo": "2 L" },
+      { "q": "sacos do lixo", "nome": "Sacos do lixo", "qtd": 20, "rotulo": "20 sacos" },
+      { "q": "rolo de cozinha", "nome": "Rolos de cozinha", "qtd": 2, "rotulo": "2 rolos" },
+      { "q": "película aderente", "nome": "Película aderente", "qtd": 1, "rotulo": "1 rolo" },
+      { "q": "champô", "nome": "Champô", "qtd": 0.4, "rotulo": "400 ml" },
+      { "q": "gel de banho", "nome": "Gel de banho", "qtd": 0.5, "rotulo": "500 ml" },
+      { "q": "escova de dentes", "nome": "Escovas de dentes", "qtd": 2, "rotulo": "2 unidades" },
+      { "q": "desodorizante", "nome": "Desodorizante", "qtd": 0.15, "rotulo": "150 ml" },
+      { "q": "guardanapos", "nome": "Guardanapos", "qtd": 100, "rotulo": "100 unidades" },
+      { "q": "toalhitas", "nome": "Toalhitas", "qtd": 60, "rotulo": "60 unidades" }
+    ] },
+    "petiscos-de-fim-de-semana": { "titulo": "Petiscos de fim de semana", "artigos": [
+      { "q": "salsichas frankfurt", "nome": "Salsichas", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "fiambre", "nome": "Fiambre", "qtd": 0.2, "rotulo": "200 g" },
+      { "q": "queijo flamengo", "nome": "Queijo flamengo", "qtd": 0.3, "rotulo": "300 g" },
+      { "q": "azeitonas", "nome": "Azeitonas", "qtd": 0.3, "rotulo": "300 g" },
+      { "q": "amendoins", "nome": "Amendoins", "qtd": 0.2, "rotulo": "200 g" },
+      { "q": "gelado", "nome": "Gelado", "qtd": 1, "rotulo": "1 L" },
+      { "q": "pizza", "nome": "Pizza", "qtd": 0.8, "rotulo": "2 pizzas" },
+      { "q": "água", "nome": "Água", "qtd": 6, "rotulo": "6 L" },
+      { "q": "sumo de laranja", "nome": "Sumo de laranja", "qtd": 1, "rotulo": "1 L" },
+      { "q": "pão de forma", "nome": "Pão de forma", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "carne picada", "nome": "Carne picada", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "guardanapos", "nome": "Guardanapos", "qtd": 100, "rotulo": "100 unidades" }
+    ] },
+    "frutas-e-legumes": { "titulo": "Frutas e legumes", "artigos": [
+      { "q": "bananas", "nome": "Bananas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "cenouras", "nome": "Cenouras", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "tomate", "nome": "Tomate", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "alface", "nome": "Alface", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "cebolas", "nome": "Cebolas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "batata-doce", "nome": "Batata-doce", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "pepino", "nome": "Pepino", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "pimentos", "nome": "Pimentos", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "couve-flor", "nome": "Couve-flor", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "curgete", "nome": "Curgete", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "beringela", "nome": "Beringela", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "clementinas", "nome": "Clementinas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "kiwis", "nome": "Kiwis", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "abacate", "nome": "Abacate", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "alho francês", "nome": "Alho-francês", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "couve portuguesa", "nome": "Couve portuguesa", "qtd": 0.5, "rotulo": "500 g" }
+    ] }
   }
 }
