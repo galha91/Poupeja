@@ -1,8 +1,8 @@
 {
   "nota": "Cabazes dos vídeos (Instagram/TikTok), segunda, quarta e sexta. q = termo em precos_supermercado_historico; qtd = quantas unidades do preço de referência (kg, L, ovo, rolo...) entram no cabaz; rotulo = o que aparece no vídeo. Cada cabaz usa 10 artigos do tema, dando prioridade aos que há mais tempo não saíram.",
   "lojas": ["continente", "pingo-doce", "auchan", "apolonia"],
-  "nomesLojas": { "continente": "Continente", "pingo-doce": "Pingo Doce", "auchan": "Auchan", "apolonia": "Apolónia" },
-  "generoLojas": { "continente": "o", "pingo-doce": "o", "auchan": "o", "apolonia": "a" },
+  "nomesLojas": {"continente": "Continente", "pingo-doce": "Pingo Doce", "auchan": "Auchan", "apolonia": "Apolónia"},
+  "generoLojas": {"continente": "o", "pingo-doce": "o", "auchan": "o", "apolonia": "a"},
   "temas": {
     "pequeno-almoco": { "titulo": "Pequeno-almoço", "artigos": [
       { "q": "leite meio gordo", "nome": "Leite meio-gordo", "qtd": 2, "rotulo": "2 L" },
@@ -17,7 +17,14 @@
       { "q": "iogurte natural", "nome": "Iogurte natural", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "bananas", "nome": "Bananas", "qtd": 1, "rotulo": "1 kg" },
       { "q": "açúcar", "nome": "Açúcar", "qtd": 1, "rotulo": "1 kg" },
-      { "q": "maçãs", "nome": "Maçãs", "qtd": 1, "rotulo": "1 kg" }
+      { "q": "maçãs", "nome": "Maçãs", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "leite magro", "nome": "Leite magro", "qtd": 1, "rotulo": "1 L" },
+      { "q": "mel", "nome": "Mel", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "marmelada", "nome": "Marmelada", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "queijo fresco", "nome": "Queijo fresco", "qtd": 0.25, "rotulo": "250 g" },
+      { "q": "iogurte líquido", "nome": "Iogurte líquido", "qtd": 0.5, "rotulo": "500 ml" },
+      { "q": "néctar", "nome": "Néctar", "qtd": 1, "rotulo": "1 L" },
+      { "q": "café em grão", "nome": "Café em grão", "qtd": 0.25, "rotulo": "250 g" }
     ] },
     "despensa": { "titulo": "Despensa", "artigos": [
       { "q": "arroz", "nome": "Arroz", "qtd": 1, "rotulo": "1 kg" },
@@ -79,6 +86,24 @@
       { "q": "pão de forma", "nome": "Pão de forma", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "carne picada", "nome": "Carne picada", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "guardanapos", "nome": "Guardanapos", "qtd": 100, "rotulo": "100 unidades" }
+    ] },
+    "frutas-e-legumes": { "titulo": "Frutas e legumes", "artigos": [
+      { "q": "bananas", "nome": "Bananas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "cenouras", "nome": "Cenouras", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "tomate", "nome": "Tomate", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "alface", "nome": "Alface", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "cebolas", "nome": "Cebolas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "batata-doce", "nome": "Batata-doce", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "pepino", "nome": "Pepino", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "pimentos", "nome": "Pimentos", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "couve-flor", "nome": "Couve-flor", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "curgete", "nome": "Curgete", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "beringela", "nome": "Beringela", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "clementinas", "nome": "Clementinas", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "kiwis", "nome": "Kiwis", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "abacate", "nome": "Abacate", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "alho francês", "nome": "Alho-francês", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "couve portuguesa", "nome": "Couve portuguesa", "qtd": 0.5, "rotulo": "500 g" }
     ] }
   }
 }

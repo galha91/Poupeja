@@ -1,5 +1,5 @@
 {
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude).github' ':(exclude)*.md' ':(exclude)docs' ':(exclude)tests' ':(exclude)scripts/cron' ':(exclude)supabase'",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude).github' ':(exclude)*.md' ':(exclude)docs' ':(exclude)tests' ':(exclude)scripts/cron' ':(exclude)scripts/cabaz' ':(exclude)data/cabazes-social.json' ':(exclude)supabase'",
   "functions": {
     "pages/api/cron-email-semanal.js": {
       "maxDuration": 60
