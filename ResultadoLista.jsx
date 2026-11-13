@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { RefreshCw, Bell, BellRing, Check } from "lucide-react";
+import { RefreshCw, Bell, BellRing, Check, Share2 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import { useDeslocacao, BotaoCombustivel } from "./DeslocacaoLista";
 import { Preco } from "./Preco";
@@ -15,6 +15,7 @@ import { resumoAtual, avaliarVigia } from "./lib/alertas";
 import { registarEscolha, chaveLista, lerRegistos, somarPeriodos } from "./lib/poupancaListas";
 import { lerAlertas, vigiar, deixarDeVigiar, criarAlertaEmail, juntarEmailAoAlerta, lerEmail } from "./AlertasPreco";
 import { estadoPush, ativarPush, temConta } from "./lib/push";
+import { partilharResultadoLista } from "./lib/partilhar";
 
 /*
  * Resultado da lista otimizada — carregado só quando se compara.
@@ -43,7 +44,7 @@ function atualDe(dados) {
   return { ...resumoAtual(p, modo), modo, unidade: modo === "embalagem" ? "embalagem" : p.nomeUnidade || p.unidade };
 }
 
-export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtualizar, onResumo, onEscolher, onCriarConta = null, moldura = true }) {
+export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtualizar, onResumo, onEscolher, onCriarConta = null, moldura = true, depoisDaAcao = null }) {
   // Produto escolhido à mão por artigo (id do artigo → { loja, id, nome }).
   // Começa no que vem guardado na lista e muda aqui sem voltar a pesquisar.
   const [escolhas, setEscolhas] = useState(() => Object.fromEntries(
@@ -65,6 +66,7 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
     evento("lista_escolher_produto", { loja: p?.loja || "mais-barato" });
   }
   const [escolha, setEscolha] = useState(null);
+  const [partilhado, setPartilhado] = useState("");
   const [alertas, setAlertas] = useState([]);
   const [avisoVigiar, setAvisoVigiar] = useState("");
   const [pedirContaVigia, setPedirContaVigia] = useState(false);
@@ -120,6 +122,15 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
     registarMarcoConvidado("escolheu");
     evento("lista_escolha", { plano, lojas: lojasEscolha.join("+"), poupanca: valor });
     setEscolha({ plano, valor, semana: somarPeriodos(lerRegistos()).semana });
+  }
+
+  // Partilhar o resultado (WhatsApp, Mensagens…): a loja mais barata e a diferença.
+  async function partilharResultado() {
+    const r2 = await partilharResultadoLista({
+      artigos: comparaveis.length, loja: nomeCadeia(unica.loja), total: unica.total,
+      poupanca: grupo.length > 1 ? r.poupancaUnica : 0, lojaCara: maisCara ? nomeCadeia(maisCara.loja) : "",
+    });
+    if (r2 === "copiado") { setPartilhado("Copiado ✓"); setTimeout(() => setPartilhado(""), 2500); }
   }
 
   async function alternarVigia(l) {
@@ -477,6 +488,12 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
                 </span>
               </p>
             )}
+            {/* Mostrar a alguém: é assim que a app chega a mais gente. */}
+            <button onClick={partilharResultado} className="pj-tap press w-full flex items-center justify-center gap-2"
+              style={{ marginTop: 8, background: "var(--pj-subtle)", color: "var(--pj-text)", border: 0, borderRadius: 12, padding: "11px 0", fontSize: 13.5, fontWeight: 600 }}>
+              <Share2 size={15} aria-hidden /> {partilhado || "Partilhar este resultado"}
+            </button>
+            {depoisDaAcao}
             {escolha && onCriarConta && (
               // O momento certo: acabou de poupar. Guardar isto é o que a conta dá.
               <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
