@@ -1,0 +1,145 @@
+# Crescimento do PoupeJá: mapa, regras e registo
+
+Este ficheiro é a memória do motor de crescimento. Uma tarefa agendada
+("PoupeJá: motor de crescimento") abre-o todas as semanas, mede, escolhe
+uma experiência, executa-a e escreve aqui o que fez e o que aprendeu. Quem
+trabalhar no crescimento (pessoa ou agente) começa por ler isto.
+
+## Objetivo
+
+Mais pessoas a usar o PoupeJá **e a voltar**. O número que manda é o de
+**visitantes recorrentes por semana** (tabela `visitas_perfil`, dimensão
+`recorrencia`). Visitas novas sem regresso não contam como progresso.
+
+Números de apoio, por esta ordem:
+
+1. Canais de regresso ativos: lembretes de compras, alertas por email,
+   subscritores de folhetos e de combustível, subscrições push.
+2. Ativação: `comparar_lista`, `comparar_pesquisa`, `lista_escolha`.
+3. Aquisição: visitantes únicos por dia e origem (`visitas_dia`).
+4. Partilhas: `share`, `lista_partilhada_aberta`.
+
+## Ponto de partida (13 nov 2026, 14 dias)
+
+| Medida | Valor |
+|---|---|
+| Visitantes únicos por dia | 60 a 100 |
+| Visitas de primeira vez | 92% |
+| Convidados que voltam noutro dia | 3 a 6% |
+| Entradas por origem | direto 1460, Google 724, Facebook 14, Instagram 10 |
+| Listas comparadas | 144 |
+| Lembretes de compras | 0 |
+| Alertas por email | 0 |
+| Subscritores (folhetos / combustível) | 1 / 1 |
+| Subscrições push | 30 |
+| Partilhas | 2 |
+
+Leitura: o Google é o único canal que traz gente a sério. O Instagram
+publica todos os dias (reel, 2 stories, carrosséis) e trouxe 10 visitas em
+14 dias. O produto ativa (144 listas comparadas) mas não retém.
+
+## Mapa de canais
+
+| Canal | Estado | Quem opera |
+|---|---|---|
+| Google (páginas `/precos`, `/marca`, `/produto`, `/comparar`, `/combustiveis`, calculadoras) | A funcionar, principal | Motor (código) |
+| Bing, DuckDuckGo, pesquisa das IAs (IndexNow, `cron-indexnow`) | Ligado, pouco tráfego | Motor (código) |
+| Instagram @poupeja.oficial | Automático, quase sem visitas | Tarefas "PoupeJá IG" |
+| Email (folhetos à quinta, combustível à segunda, lembrete de compras, alertas) | Montado, quase sem subscritores | Motor (captação no site) |
+| Notificações push | 30 subscrições | Motor (convite na app) |
+| Partilha entre pessoas (listas, resultado, cartão de poupança) | Quase nula | Motor (código) |
+| App Android (TWA) | Guia em `TWA_PLAY_STORE.md`, por publicar | Ricardo |
+| TikTok, grupos de Facebook, imprensa local | Por abrir | Ricardo (o motor prepara o material) |
+
+## Ciclo semanal do motor
+
+1. **Medir.** Os números acima, última semana completa contra a anterior.
+   Ler também as pesquisas sem resultado (`metricas_dia`, tipo
+   `pesquisa_vazia`) e as páginas mais vistas por origem Google.
+2. **Avaliar a experiência anterior.** Resultado no registo abaixo:
+   funcionou, não funcionou ou ainda sem dados.
+3. **Escolher uma experiência.** A primeira da fila que ataque o passo
+   mais fraco do funil. Uma por semana, pequena, com medida definida antes.
+4. **Executar.** Código, testes, PR, merge, confirmar o deploy.
+5. **Registar.** Uma entrada no registo, com a medida e a data de revisão.
+6. **Resumir ao Ricardo.** Três linhas: o que mudou nos números, o que foi
+   feito, o que só ele pode fazer.
+
+## Limites (o motor decide sozinho dentro disto)
+
+Pode, sem perguntar:
+
+- Alterar código do site e da app, abrir PR, juntar à `main` e deixar a
+  Vercel publicar, com os testes todos a passar.
+- Criar páginas públicas novas com dados que já existem.
+- Mexer em textos, posição e desenho dos convites (email, push, instalar,
+  partilhar).
+- Criar tabelas ou colunas pequenas no Supabase quando a experiência
+  precisa (migração no repositório).
+
+Não pode, nunca:
+
+- Gastar dinheiro, criar contas, mudar de plano ou depender do Pro.
+- Quebrar as regras do `CLAUDE.md`: nada pesado por pedido, trabalho
+  pesado no GitHub, ISR longo, **no máximo um deploy de produção por
+  semana** vindo do motor.
+- Tirar ou esconder o consentimento explícito dos emails, enviar email a
+  quem não pediu, ou mexer na página de privacidade sem o Ricardo.
+- Publicar um preço que não venha dos dados do dia, ou comparar artigos
+  que não sejam equivalentes.
+- Bloquear motores de pesquisa ou bots de pesquisa das IAs.
+- Apagar dados, tocar em segredos, ou escrever a terceiros (imprensa,
+  parceiros, outras contas) em nome do Ricardo.
+- Alterar as tarefas do Instagram: só propõe ajustes no resumo.
+
+Se uma experiência precisar de algo desta lista, o motor prepara tudo o
+que puder e deixa o pedido no resumo.
+
+## Fila de experiências
+
+Por ordem. O motor pode reordenar com base nos dados, e acrescenta ideias
+novas no fim.
+
+1. Alerta de preço por email também em `/produto/<slug>` e `/marca/<slug>`
+   (o mesmo componente de `/precos/<artigo>`).
+2. Páginas de preços sazonais antes da procura: Natal (bacalhau, bolo-rei,
+   peru, polvo, frutos secos). `/precos/castanhas` foi a página mais vista
+   em novembro.
+3. Artigos novos em `ARTIGOS_SEO` a partir das pesquisas mais feitas e das
+   pesquisas sem resultado.
+4. Início para quem volta: "desde a tua última visita" (preços da lista
+   que mudaram, folhetos novos).
+5. Lembrete de compras com o total da lista por loja, pré-calculado no
+   GitHub (hoje só leva os nomes dos artigos).
+6. Página `/lista/<id>` partilhada com imagem de pré-visualização própria
+   (total e loja mais barata).
+7. Convite às notificações: só 8 em 104 ativam. Testar o momento (depois
+   de "Vou comprar no…") e o texto.
+8. Captação de email nas páginas de combustível por cidade e nos folhetos,
+   mais perto do topo.
+9. `llms.txt` e dados estruturados revistos, para as pesquisas das IAs.
+10. Página de entrada própria para o Instagram (`/ig`) com o cabaz do dia
+    e um só botão.
+
+## O que só o Ricardo pode fazer
+
+- Publicar a app Android na Play Store (`TWA_PLAY_STORE.md`).
+- Google Search Console e Bing Webmaster Tools: confirmar o domínio e
+  enviar o sitemap, se ainda não estiver feito.
+- Marcar os eventos-chave no GA4 (`docs/GA4-FUNIL.md`).
+- Grupos de Facebook de poupança e de cada concelho: partilhar a página de
+  combustíveis da cidade ou o cabaz da semana.
+- TikTok: publicar o vídeo do cabaz que já é gerado três vezes por semana.
+
+## Registo
+
+### 13 nov 2026: captação nos momentos de valor (PR #219)
+
+- **O quê:** alerta de preço por email em `/precos/<artigo>`; botão
+  "Partilhar este resultado" na lista comparada; lembrete do dia das
+  compras logo abaixo de "Vou comprar no…".
+- **Porquê:** 144 listas comparadas, 0 lembretes, 0 alertas, 2 partilhas.
+- **Medida:** `alerta_email_criado` (origem `seo`), `share`
+  (`resultado_lista`), `lembrete_compras_abrir`, `lembrete_compras_criado`.
+- **Rever em:** 27 nov 2026.
+- **Resultado:** por medir.
