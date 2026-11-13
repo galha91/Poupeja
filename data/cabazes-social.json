@@ -99,6 +99,48 @@
           "nome": "Maçãs",
           "qtd": 1,
           "rotulo": "1 kg"
+        },
+        {
+          "q": "leite magro",
+          "nome": "Leite magro",
+          "qtd": 1,
+          "rotulo": "1 L"
+        },
+        {
+          "q": "mel",
+          "nome": "Mel",
+          "qtd": 0.25,
+          "rotulo": "250 g"
+        },
+        {
+          "q": "marmelada",
+          "nome": "Marmelada",
+          "qtd": 0.25,
+          "rotulo": "250 g"
+        },
+        {
+          "q": "queijo fresco",
+          "nome": "Queijo fresco",
+          "qtd": 0.25,
+          "rotulo": "250 g"
+        },
+        {
+          "q": "iogurte líquido",
+          "nome": "Iogurte líquido",
+          "qtd": 0.5,
+          "rotulo": "500 ml"
+        },
+        {
+          "q": "néctar",
+          "nome": "Néctar",
+          "qtd": 1,
+          "rotulo": "1 L"
+        },
+        {
+          "q": "café em grão",
+          "nome": "Café em grão",
+          "qtd": 0.25,
+          "rotulo": "250 g"
         }
       ]
     },
