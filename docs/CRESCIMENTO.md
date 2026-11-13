@@ -56,6 +56,11 @@ publica todos os dias (reel, 2 stories, carrosséis) e trouxe 10 visitas em
 1. **Medir.** Os números acima, última semana completa contra a anterior.
    Ler também as pesquisas sem resultado (`metricas_dia`, tipo
    `pesquisa_vazia`) e as páginas mais vistas por origem Google.
+   Ler ainda o Google Search Console (Windsor, conector `searchconsole`,
+   conta `https://xn--poupej-uta.com/`, `mcp__Windsor_ai__get_data` com os
+   campos `query`, `clicks`, `impressions`, `position`, últimos 28 dias):
+   pesquisas com muitas impressões e poucos cliques são páginas a melhorar
+   ou a criar.
 2. **Avaliar a experiência anterior.** Resultado no registo abaixo:
    funcionou, não funcionou ou ainda sem dados.
 3. **Escolher uma experiência.** A primeira da fila que ataque o passo
@@ -100,6 +105,15 @@ que puder e deixa o pedido no resumo.
 Por ordem. O motor pode reordenar com base nos dados, e acrescenta ideias
 novas no fim.
 
+0. **Preço de um artigo numa loja.** O Google mostra o PoupeJá em
+   pesquisas como "preço do bacalhau no continente" (250 impressões, 2
+   cliques, posição 9,8), "castanhas preço kg pingo doce" (131, 3, 9,6),
+   "preço banana continente", "ovos aldi preço", "óleo fula pingo doce
+   preço": sempre artigo mais loja, sempre no fundo da primeira página. As
+   páginas `/precos/<artigo>` respondem ao artigo, não à loja. Testar
+   primeiro o mais barato: título, descrição e um subtítulo por loja nas
+   páginas que já existem ("Bacalhau no Continente: x,xx €/kg"). Só depois,
+   se resultar, páginas próprias artigo e loja, pré-calculadas no GitHub.
 1. Alerta de preço por email também em `/produto/<slug>` e `/marca/<slug>`
    (o mesmo componente de `/precos/<artigo>`).
 2. Páginas de preços sazonais antes da procura: Natal (bacalhau, bolo-rei,
@@ -121,15 +135,40 @@ novas no fim.
 10. Página de entrada própria para o Instagram (`/ig`) com o cabaz do dia
     e um só botão.
 
+## Google Search Console (28 dias até 13 nov 2026)
+
+33 078 impressões, 566 cliques (1,7%).
+
+| Secção | Cliques | Impressões | Posição média |
+|---|---|---|---|
+| `/precos` | 313 | 13 193 | 7,1 |
+| `/produto` | 114 | 10 882 | 9,0 |
+| `/marca` | 68 | 3 636 | 10,0 |
+| `/comparar` | 20 | 1 226 | 6,0 |
+| `/receitas` | 12 | 1 762 | 6,5 |
+| `/abono-de-familia` | 0 | 811 | 11,2 |
+| `/combustiveis` | 0 | 244 | 18,1 |
+
+O site aparece muito e é pouco clicado: está quase sempre entre a 7.ª e a
+10.ª posição. Subir duas ou três posições nas páginas de preços vale mais
+do que qualquer canal novo.
+
+## TikTok
+
+Conta ligada a 13 nov 2026 (Higgsfield). Cada publicação tem de ser
+confirmada pelo Ricardo num formulário (privacidade, comentários,
+declaração de conteúdo promocional): não dá para publicar sem ele. O
+vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
+`media_url` do reel no Instagram, lido pelo Windsor).
+
 ## O que só o Ricardo pode fazer
 
 - Publicar a app Android na Play Store (`TWA_PLAY_STORE.md`).
-- Google Search Console e Bing Webmaster Tools: confirmar o domínio e
-  enviar o sitemap, se ainda não estiver feito.
+- Bing Webmaster Tools: confirmar o domínio e enviar o sitemap.
 - Marcar os eventos-chave no GA4 (`docs/GA4-FUNIL.md`).
 - Grupos de Facebook de poupança e de cada concelho: partilhar a página de
   combustíveis da cidade ou o cabaz da semana.
-- TikTok: publicar o vídeo do cabaz que já é gerado três vezes por semana.
+- TikTok: confirmar no formulário cada vídeo que o motor preparar.
 
 ## Registo
 
