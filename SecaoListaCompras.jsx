@@ -834,9 +834,9 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
         <Folha titulo="Onde fica mais barata" onFechar={() => { setVerResultado(false); requestAnimationFrame(() => acaoRef.current?.focus()); }}>
           <ResultadoLista linhas={comparacao.linhas} moldura={false} onResumo={aoResumo} onCriarConta={onCriarConta ? () => { setVerResultado(false); onCriarConta(); } : null}
             onEscolher={(id, escolha) => setItens(prev => prev.map(x => x.id === id ? (escolha ? { ...x, escolha } : (({ escolha: _, ...resto }) => resto)(x)) : x))}
-            onAtualizar={() => comparar(true)} />
+            onAtualizar={() => comparar(true)}
+            depoisDaAcao={<LembreteCompras itens={pendentes} compacto />} />
           <FoiUtil contexto="lista" />
-          <LembreteCompras itens={pendentes} />
         </Folha>,
         document.body,
       )}

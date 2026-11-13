@@ -1,5 +1,6 @@
 import Head from "next/head";
 import LayoutPublico from "../../LayoutPublico";
+import AlertaPrecoPublico from "../../AlertaPrecoPublico";
 import {
   Atualizado, BotaoAbrirPoupeja, BotaoAlertaPreco, GraficoHistorico, TabelaPrecos, NotaCadeias, Pilulas, ListaArtigos, Migalhas,
   estiloH1, estiloH2, estiloTexto,
@@ -72,10 +73,15 @@ export default function PrecoArtigo({ artigo, dados, frases, meta, relacionados,
         {/* Histórico: o melhor preço de cada dia (só com 7+ dias de dados). */}
         <GraficoHistorico serie={dados.serie} unidade={dados.unidade} />
 
-        <BotaoAlertaPreco
-          href={linkAlerta(artigo.q)}
-          detalhe={`Escolhe o preço e recebe uma notificação quando ${artigo.nomeCurto.toLowerCase()} baixar em qualquer cadeia.`}
-        />
+        {/* Com preço de hoje, o aviso pede-se aqui mesmo, por email; sem preço, na app. */}
+        {dados.ofertas[0]?.valor > 0 && dados.unidade ? (
+          <AlertaPrecoPublico q={artigo.q} nome={artigo.nomeCurto} valor={dados.ofertas[0].valor} unidade={dados.unidade} hrefApp={linkAlerta(artigo.q)} />
+        ) : (
+          <BotaoAlertaPreco
+            href={linkAlerta(artigo.q)}
+            detalhe={`Escolhe o preço e recebe uma notificação quando ${artigo.nomeCurto.toLowerCase()} baixar em qualquer cadeia.`}
+          />
+        )}
 
         <BotaoAbrirPoupeja href={linkApp(artigo.q)} tipo="preco" texto={`Comparar ${artigo.nomeCurto.toLowerCase()} na app e juntar à lista`} />
 

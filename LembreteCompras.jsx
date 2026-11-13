@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CalendarClock, Check } from "lucide-react";
+import { CalendarClock, Check, ChevronRight } from "lucide-react";
 import { evento } from "./lib/analytics";
 import { idConvidadoAtual } from "./lib/convidado";
 
@@ -18,7 +18,11 @@ const LONGOS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "do
 const ler = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const nomes = (itens) => itens.map((i) => i.nome);
 
-export default function LembreteCompras({ itens = [] }) {
+// `compacto`: logo abaixo do botão "Vou comprar no…", começa numa linha só
+// e abre o formulário ao toque. No fundo da folha, depois de todos os
+// artigos, ninguém o via: 144 listas comparadas em 14 dias, 0 lembretes.
+export default function LembreteCompras({ itens = [], compacto = false }) {
+  const [aberto, setAberto] = useState(!compacto);
   const [lembrete, setLembrete] = useState(null);   // { id, t, dia, email }
   const [lido, setLido] = useState(false);
   const [dia, setDia] = useState(6);
@@ -76,7 +80,7 @@ export default function LembreteCompras({ itens = [] }) {
 
   if (!lido) return null;
 
-  const caixa = { margin: "4px 16px 20px", padding: 14, borderRadius: 16, background: "var(--pj-brand-wash)" };
+  const caixa = { margin: compacto ? "10px 0 0" : "4px 16px 20px", padding: 14, borderRadius: 16, background: "var(--pj-brand-wash)" };
 
   if (lembrete) {
     return (
@@ -87,6 +91,20 @@ export default function LembreteCompras({ itens = [] }) {
           <button onClick={cancelar} className="pj-tap" style={{ background: "transparent", border: 0, padding: 0, fontSize: 13, fontWeight: 600, color: "var(--pj-text-muted)", textDecoration: "underline" }}>Cancelar</button>
         </p>
       </div>
+    );
+  }
+
+  if (!aberto) {
+    return (
+      <button type="button" onClick={() => { setAberto(true); evento("lembrete_compras_abrir", {}); }} aria-expanded={false} className="pj-tap press w-full flex items-center gap-2.5"
+        style={{ ...caixa, border: 0, textAlign: "left" }}>
+        <CalendarClock size={18} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} aria-hidden />
+        <span className="flex-1 min-w-0">
+          <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>Lembra-me no dia das compras</span>
+          <span style={{ display: "block", fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 1 }}>Um email por semana com esta lista. Sem conta.</span>
+        </span>
+        <ChevronRight size={18} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} aria-hidden />
+      </button>
     );
   }
 
