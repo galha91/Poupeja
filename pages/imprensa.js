@@ -5,6 +5,8 @@ import { breadcrumbLd } from "../lib/seoPrecos";
 import { jsonLdSeguro } from "../lib/escapar";
 import { URL_SITE, DOMINIO_VISIVEL } from "../lib/site";
 import { COMPARADAS, NAO_INCLUIDAS } from "../lib/cobertura";
+import { receitas } from "../lib/receitas/motor";
+import { COLECOES } from "../lib/receitas/colecoes";
 
 /*
  * Página de imprensa: o que é o PoupeJá em poucas linhas, os dados que
@@ -22,6 +24,20 @@ const DADOS = [
   { href: "/combustiveis", nome: "Combustíveis por concelho", texto: "Os postos mais baratos de cada concelho, com dados oficiais da DGEG." },
   { href: "/combustiveis/esta-semana", nome: "Combustíveis esta semana", texto: "O que cada marca subiu ou desceu nos últimos 7 dias." },
   { href: "/reduflacao", nome: "Reduflação", texto: "Produtos que ficaram mais pequenos sem o preço descer." },
+];
+/*
+ * Ecrãs para descarregar: capturas reais do site em produção (telemóvel,
+ * 780 × 1688), com os preços reais do dia em que foram tiradas (obtidos da
+ * API de produção). Refazem-se depois de mudanças visíveis.
+ */
+const DIA_ECRAS = "14 de novembro de 2026";
+const ECRAS = [
+  { f: "app-plano-semana", nome: "Plano da semana", texto: "Os jantares da semana, com sopa, para a casa toda." },
+  { f: "app-ajustar-jantar", nome: "Ajustar um jantar", texto: "Trocar por outra proteína, jantar fora, convidados, cozinhar a dobrar." },
+  { f: "app-lista-comparada", nome: "A lista, comparada", texto: "A mesma lista em cada supermercado, com a loja mais barata à frente." },
+  { f: "app-orcamento", nome: "Cabe no orçamento?", texto: "O total real da lista ao lado do orçamento da semana." },
+  { f: "app-o-que-posso-cozinhar", nome: "O que posso cozinhar?", texto: "Receitas com o que já há em casa; o que falta vai para a lista." },
+  { f: "site-receitas-frango", nome: "Receitas por ingrediente", texto: "Páginas públicas de receitas baratas, sem registo." },
 ];
 const FICHEIROS = [
   { href: "/icon.svg", nome: "Logótipo (SVG)" },
@@ -57,6 +73,8 @@ export default function Imprensa() {
           {[
             `Compara os preços online de ${COMPARADAS.length} cadeias: ${COMPARADAS.map((c) => c.nome).join(", ")}.`,
             "Os preços dos combustíveis são os que os postos comunicam à DGEG.",
+            `Planeia as refeições da semana com ${receitas().length} receitas portuguesas baratas, ajusta-as à casa e faz a lista de compras.`,
+            "A comparação em todos os supermercados é grátis, assim como dividir as compras por duas lojas.",
             "Não pede email nem instalação. Não vende dados.",
             "Alguns links levam a lojas parceiras e podem dar comissão. Isso não altera os resultados.",
           ].map((t, i) => (
@@ -79,6 +97,41 @@ export default function Imprensa() {
         <p style={estiloTexto}>
           Os números podem ser usados livremente com a indicação «Fonte: PoupeJá, {DOMINIO_VISIVEL}» e a data dos preços, que está em cada página.
         </p>
+
+        <h2 className="font-display" style={estiloH2}>Ficha técnica</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {[
+            ["O que é", "Site e app web (instala-se no telemóvel a partir do browser) para poupar nas compras"],
+            ["Preço", "Grátis e sem registo"],
+            ["Supermercados comparados", `${COMPARADAS.length}: ${COMPARADAS.map((c) => c.nome).join(", ")}`],
+            ["Receitas", `${receitas().length}, em ${COLECOES.length} coleções públicas (por ingrediente, dieta e ocasião)`],
+            ["Combustíveis", "Os postos de todo o país, com os preços que comunicam à DGEG"],
+            ["Feito em", "Portugal"],
+          ].map(([k, v], i) => (
+            <div key={k} className="px-4 py-3" style={linha(i)}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text-faint)" }}>{k}</p>
+              <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5, marginTop: 2 }}>{v}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="font-display" style={estiloH2}>Ecrãs</h2>
+        <p style={{ ...estiloTexto, marginTop: 0 }}>
+          Capturas reais, tiradas no telemóvel a {DIA_ECRAS}, com os preços desse dia (PNG, 780 × 1688). De uso livre em peças sobre o PoupeJá.
+        </p>
+        <div className="grid grid-cols-2 gap-3" style={{ marginTop: 14 }}>
+          {ECRAS.map((e) => (
+            <a key={e.f} href={`/imprensa/${e.f}.png`} download className="pj-tap no-underline block rounded-2xl overflow-hidden" style={estiloCartao}>
+              <img src={`/imprensa/${e.f}.png`} alt={`${e.nome}: ${e.texto}`} loading="lazy" width={780} height={1688}
+                style={{ display: "block", width: "100%", height: "auto", aspectRatio: "780 / 1688", background: "var(--pj-subtle)" }} />
+              <span className="block px-3 py-2.5">
+                <span className="block" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--pj-text)" }}>{e.nome}</span>
+                <span className="block" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2, lineHeight: 1.4 }}>{e.texto}</span>
+                <span className="block" style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 6 }}>Descarregar</span>
+              </span>
+            </a>
+          ))}
+        </div>
 
         <h2 className="font-display" style={estiloH2}>Logótipo e imagens</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
