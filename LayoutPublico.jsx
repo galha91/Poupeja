@@ -76,7 +76,9 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
           <a href="/ferramentas" style={{ color: "var(--pj-brand-ink)" }}>Todas as calculadoras</a>
           <a href="/garantias" style={{ color: "var(--pj-text-muted)" }}>Garantias</a>
           <a href="/devolucoes" style={{ color: "var(--pj-text-muted)" }}>Devoluções</a>
+          <a href="/barometro" style={{ color: "var(--pj-text-muted)" }}>Barómetro do cabaz</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>
+          <a href="/imprensa" style={{ color: "var(--pj-text-muted)" }}>Imprensa</a>
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>
         </nav>
         {/* A app inteira, por secção — sem conta. Quem chega por uma página

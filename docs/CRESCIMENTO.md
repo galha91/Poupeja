@@ -278,6 +278,21 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
 
 ## Registo
 
+### 14 nov 2026: arranque da campanha de 16 nov a 13 dez
+
+- **O quê:** página `/barometro` (custo do cabaz básico por cadeia, semana
+  a semana, guardado pelo `cron-paginas-marca`) e `/imprensa`; entradas do
+  Reddit, Telegram, YouTube e LinkedIn passam a ser contadas (`?o=rd-…`);
+  kit com os textos e as etiquetas em `docs/CAMPANHA.md`.
+- **Porquê:** dos cinco primeiros passos do plano, a partilha no WhatsApp
+  e as páginas de combustível por concelho já existiam. Faltava o número
+  que outros podem citar e o material para os canais que só o Ricardo
+  opera.
+- **Medida:** entradas por etiqueta (`metricas_dia`, tipo `campanha`),
+  recorrentes acima de 8,9% (7 a 13 nov), visitas a `/barometro`.
+- **Rever em:** todos os domingos até 13 dez 2026.
+- **Resultado:** por medir.
+
 ### 13 nov 2026: captação nos momentos de valor (PR #219)
 
 - **O quê:** alerta de preço por email em `/precos/<artigo>`; botão
