@@ -114,6 +114,20 @@ novas no fim.
    primeiro o mais barato: título, descrição e um subtítulo por loja nas
    páginas que já existem ("Bacalhau no Continente: x,xx €/kg"). Só depois,
    se resultar, páginas próprias artigo e loja, pré-calculadas no GitHub.
+0b. **Carrossel de receitas do Google.** As receitas aparecem no carrossel
+   de receitas (`RECIPE_FEATURE`) em 1.º lugar: 888 impressões em 28 dias e
+   2 cliques. Ex.: "bifanas" (165 impressões, posição 1,06, 1 clique),
+   "receitas com bifanas de porco" (58, posição 1, 0 cliques). No cartão
+   aparecem imagem, título, tempo e estrelas. A nossa imagem é um cartão de
+   texto gerado (`/api/og`) e não há avaliações. Testar: título do cartão
+   mais apelativo (o `name` do JSON-LD Recipe) e uma imagem do prato.
+   Nunca inventar avaliações (`aggregateRating`) sem avaliações reais de
+   utilizadores. Imagem gerada por IA só com o acordo do Ricardo.
+0c. **Descrição com todas as lojas.** Nas páginas de preços a descrição
+   só nomeia a loja mais barata; a pesquisa é quase sempre "artigo + loja"
+   (Continente, Pingo Doce, Aldi). Pôr o preço de cada cadeia na descrição
+   ("Continente 2,49 € · Pingo Doce 2,29 € · Aldi 1,99 €") para o resultado
+   responder à loja que a pessoa escreveu.
 1. Alerta de preço por email também em `/produto/<slug>` e `/marca/<slug>`
    (o mesmo componente de `/precos/<artigo>`).
 2. Páginas de preços sazonais antes da procura: Natal (bacalhau, bolo-rei,
@@ -148,6 +162,12 @@ novas no fim.
 | `/receitas` | 12 | 1 762 | 6,5 |
 | `/abono-de-familia` | 0 | 811 | 11,2 |
 | `/combustiveis` | 0 | 244 | 18,1 |
+
+Por tipo de resultado: fichas de produto (`PRODUCT_SNIPPETS`) 17 650
+impressões, 350 cliques, posição 8,7; carrossel de receitas
+(`RECIPE_FEATURE`) 888 impressões, 2 cliques, posição 1,4; receitas em
+resultado normal (`RECIPE_RICH_SNIPPET`) 837 impressões, 9 cliques,
+posição 12,1.
 
 O site aparece muito e é pouco clicado: está quase sempre entre a 7.ª e a
 10.ª posição. Subir duas ou três posições nas páginas de preços vale mais
