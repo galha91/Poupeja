@@ -12,6 +12,8 @@ import { marcarEmentasVistas, Azulejos } from "./DestaqueEmentas";
 import CompararLista from "./CompararLista";
 import { MAX_ARTIGOS } from "./lib/listaCompras";
 import { evento } from "./lib/analytics";
+import { avaliarOrcamento } from "./lib/orcamentoLista";
+import { eur } from "./lib/formato";
 
 /*
  * Ementas — o plano da semana feito à medida e todas as receitas.
@@ -331,6 +333,11 @@ export default function SecaoEmentas({ setTab }) {
   const aComprar = compras.filter((c) => !c.despensa && !c.emCasa);
   const jaEmCasa = compras.filter((c) => !c.despensa && c.emCasa).length;
   const rejeitadas = prefs?.rejeitadas || [];
+  // O total real (a loja mais barata) só vale para a lista que foi comparada.
+  const chaveCompras = aComprar.map((c) => c.key).join();
+  const [resumo, setResumo] = useState(null); // { chave, loja, nome, total, artigos }
+  const real = resumo?.chave === chaveCompras ? resumo : null;
+  const conta = real && plano ? avaliarOrcamento(real.total, plano.prefs.orcamento) : null;
   const media = plano ? mediaDoPlano(plano) : null;
   const antigo = plano && segunda(plano.criadoEm) < segunda(Date.now());
 
@@ -579,7 +586,30 @@ export default function SecaoEmentas({ setTab }) {
             O teu orçamento: <strong style={{ color: "var(--pj-text)" }}>{plano.prefs.orcamento} €</strong>. Comparamos estes artigos nos supermercados, com os preços de hoje.
           </p>
           {/* key: um plano novo começa uma comparação nova */}
-          <CompararLista key={aComprar.map((c) => c.key).join()} itens={aComprar.map((c, i) => ({ id: `plano-${i}`, nome: c.compra || c.nome, qty: 1 }))} />
+          <CompararLista key={chaveCompras} itens={aComprar.map((c, i) => ({ id: `plano-${i}`, nome: c.compra || c.nome, qty: 1 }))}
+            onResumo={(r) => setResumo(r ? { ...r, chave: chaveCompras } : null)} />
+          {conta && (
+            <div className="mt-3 rounded-2xl p-4" role="status" style={{ background: conta.dentro ? "var(--pj-brand-wash)" : "var(--pj-accent-wash)" }}>
+              <p className="font-display" style={{ fontSize: 16.5, fontWeight: 600, lineHeight: 1.3, color: conta.dentro ? "var(--pj-brand-ink)" : "var(--pj-accent)" }}>
+                {conta.dentro
+                  ? (conta.diferenca >= 0.01 ? `Cabe no orçamento: sobram ${eur(conta.diferenca, 2)} €` : "Cabe à justa no orçamento")
+                  : `Passa o orçamento em ${eur(conta.diferenca, 2)} €`}
+              </p>
+              <div className="relative mt-3" aria-hidden="true" style={{ height: 10 }}>
+                <div style={{ position: "absolute", inset: 0, borderRadius: 999, background: "var(--pj-card)" }} />
+                <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: `${conta.larguraTotal}%`, borderRadius: 999, background: conta.dentro ? "var(--pj-brand)" : "var(--pj-accent)" }} />
+                <div style={{ position: "absolute", top: -4, bottom: -4, left: `calc(${conta.posicaoOrcamento}% - 2px)`, width: 3, borderRadius: 2, background: "var(--pj-text)" }} />
+              </div>
+              <p className="mt-2.5 tabular-nums" style={{ fontSize: 12.5, color: "var(--pj-text-strong)", lineHeight: 1.5 }}>
+                {eur(real.total, 2)} € no {real.nome}, a loja mais barata ({real.artigos} de {Math.min(aComprar.length, MAX_ARTIGOS)} artigos com preço) · orçamento de {plano.prefs.orcamento} €
+              </p>
+              {!conta.dentro && (
+                <p className="mt-1.5" style={{ fontSize: 12.5, color: "var(--pj-text-muted)", lineHeight: 1.5 }}>
+                  Para voltar ao orçamento: em <strong>Ajustar</strong>, troca um jantar por «Mais barato»; marca nas quantidades o que já tens em casa; ou vê a opção «Dividir» por duas lojas.
+                </p>
+              )}
+            </div>
+          )}
           <p className="mt-2" style={{ fontSize: 11, color: "var(--pj-text-faint)", lineHeight: 1.55 }}>
             {aComprar.length > MAX_ARTIGOS && `A comparação vê os primeiros ${MAX_ARTIGOS} artigos (o limite das lojas por minuto). `}
             São embalagens inteiras: parte do arroz, da massa ou das especiarias fica para as semanas seguintes.

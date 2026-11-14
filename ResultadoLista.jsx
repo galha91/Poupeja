@@ -8,7 +8,7 @@ import { eur } from "./lib/formato";
 import { detalheQuantidade } from "./lib/quantidadeFresca";
 import { evento } from "./lib/analytics";
 import { registarMarcoConvidado } from "./lib/convidado";
-import { melhoresPorLoja, custoPorLoja, alternativas, exemplosGenerico, textoReferencia } from "./lib/comparacao";
+import { melhoresPorLoja, custoPorLoja, alternativas, exemplosGenerico, textoReferencia, emPromocao } from "./lib/comparacao";
 import { otimizarCabaz, poupancaDaEscolha } from "./lib/cabaz";
 import { COMPARADAS, nomeCadeia, juntarNomes, TEXTO_COBERTURA } from "./lib/cobertura";
 import { resumoAtual, avaliarVigia } from "./lib/alertas";
@@ -263,6 +263,11 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
   // A lista de compras do plano: em cada loja, o produto e o preço a pegar.
   const daDivisao = (l) => dv?.atrib[String(l.item.id)];
   const naoHa = eDivisao ? linhas.filter((l) => !daDivisao(l)) : linhas.filter((l) => !l.custos[atual]);
+  // Promoções na lista: os artigos que, no plano à vista, se levam em promoção.
+  const emPromo = linhas.filter((l) => {
+    const s = eDivisao ? daDivisao(l) : atual;
+    return s && l.custos[s] && emPromocao(l.custos[s].produto);
+  }).length;
   const porLojaDivisao = eDivisao ? dv.lojas.map((s) => {
     const its = linhas.filter((l) => daDivisao(l) === s);
     return { loja: s, n: its.length, total: its.reduce((a, l) => a + l.custos[s].custo, 0) };
@@ -293,7 +298,8 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
             <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
               {l.item.nome}{l.porPeso ? null : l.item.qty > 1 ? <span style={{ color: "var(--pj-text-faint)", fontWeight: 500 }}> ×{l.item.qty}</span> : null}
               {c?.escolhido && <span style={etiqueta}>a tua escolha</span>}
-              {desceu && <span style={etiqueta}>{aviso.motivo === "desceu" ? "desceu" : "promoção"}</span>}
+              {desceu ? <span style={etiqueta}>{aviso.motivo === "desceu" ? "desceu" : "promoção"}</span>
+                : emPromocao(c.produto) && <span style={etiqueta}>promoção</span>}
             </span>
             <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {c.produto.nome}{l.porPeso ? ` · ${detalheQuantidade(c.produto, l.referencia.qtd)}` : c.produto.quantidade && !c.produto.aoPeso ? ` · ${c.produto.quantidade}` : c.produto.aoPeso ? " · ao peso" : ""}
@@ -436,6 +442,12 @@ export default function ResultadoLista({ linhas: linhasOrig, nota = true, onAtua
             {desceram.length > 0 && (
               <p style={{ marginTop: 8, fontSize: 12.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>
                 {desceram.length === 1 ? `«${desceram[0].item.nome}» desceu de preço ou está em promoção.` : `${desceram.length} artigos que vigias desceram ou estão em promoção.`}
+              </p>
+            )}
+
+            {emPromo > 0 && (
+              <p style={{ marginTop: 8, fontSize: 12.5, color: "var(--pj-text-muted)" }}>
+                <strong style={{ color: "var(--pj-brand-ink)" }}>{emPromo === 1 ? "1 artigo" : `${emPromo} artigos`} em promoção</strong> {eDivisao ? "nesta divisão" : `no ${nomeCadeia(atual)}`}, já {emPromo === 1 ? "contado" : "contados"} no total.
               </p>
             )}
 
