@@ -154,7 +154,7 @@ Assunto: "Cabaz básico: [x,xx] € de diferença entre cadeias esta semana"
 > A tabela, o método e as limitações estão em https://xn--poupej-uta.com/barometro?o=email-imprensa-s2 e os números podem ser usados com indicação da fonte. Se lhe for útil, preparo os dados de outro cabaz (Natal: bacalhau, azeite, batata, couve) ou de um concelho.
 > Sou enfermeiro e fiz o PoupeJá sozinho, fora do horário de trabalho. É gratuito e não pede registo. Mais informação em https://xn--poupej-uta.com/imprensa
 > Com os melhores cumprimentos,
-> Ricardo Galha
+> Ricardo
 
 Um email por jornalista, com o nome, nunca em cópia para vários. Enviar a
 quem já escreveu sobre preços de supermercado nos últimos meses.
