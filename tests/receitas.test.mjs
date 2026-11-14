@@ -5,6 +5,7 @@ import { RECEITAS } from "../lib/receitas/dados.js";
 import {
   receitas, receitaPorId, compativel, gerarPlano, trocarDia, alternarFixa, regenerar, comprasDoPlano,
   formatarQtd, ingredientesPara, minutosDoPasso, faixaMaxima, PREFS_PADRAO, DIETAS, VONTADES, EQUIPAMENTOS,
+  MODOS_TROCA, MAX_CONVIDADOS, rejeitar, ajustarDia, dosesDoDia, oQuePossoCozinhar, ingredientesParaTer,
 } from "../lib/receitas/motor.js";
 import { itemPorNome } from "../data/catalogo-lista.js";
 import { MAX_ARTIGOS } from "../lib/listaCompras.js";
@@ -246,4 +247,99 @@ test("temporizador do passo", () => {
   assert.equal(minutosDoPasso("Coze a batata (20 min)."), 20);
   assert.equal(minutosDoPasso("Forno 200 °C, 50-60 min"), 50);
   assert.equal(minutosDoPasso("Serve com salsa."), null);
+});
+
+test("trocas com intenção: outra proteína, mais rápido, mais barato", () => {
+  const a = gerarPlano(prefs({ jantares: 5 }), { semente: 21 });
+  const antes = receitaPorId(a.dias[1].id);
+  const p = receitaPorId(trocarDia(a, 1, { semente: 3, modo: "proteina" }).dias[1].id);
+  assert.notEqual(p.proteina, antes.proteina);
+
+  // Para cada modo e cada dia: ou não há (mesmo plano), ou a nova cumpre.
+  for (const modo of MODOS_TROCA) {
+    for (const d of a.dias) {
+      const t = trocarDia(a, d.dia, { semente: 9, modo: modo.id });
+      if (t === a) continue;
+      assert.ok(modo.serve(receitaPorId(t.dias[d.dia].id), receitaPorId(d.id)), `${modo.id} dia ${d.dia}`);
+    }
+  }
+});
+
+test("não gosto: sai do plano e não volta a ser sugerida", () => {
+  const a = gerarPlano(prefs(), { semente: 4 });
+  const fora = a.dias[0].id;
+  const b = rejeitar(a, 0, { semente: 8 });
+  assert.notEqual(b.dias[0].id, fora);
+  assert.deepEqual(b.prefs.rejeitadas, [fora]);
+  assert.ok(!compativel(receitaPorId(fora), b.prefs));
+  for (let s = 1; s <= 30; s++) {
+    assert.ok(!regenerar(b, { semente: s }).dias.some((d) => d.id === fora), `voltou com a semente ${s}`);
+  }
+  const semSopa = rejeitar(a, "sopa", { semente: 8 });
+  assert.notEqual(semSopa.sopa.id, a.sopa.id);
+  assert.deepEqual(semSopa.prefs.rejeitadas, [a.sopa.id]);
+});
+
+test("ajustes do dia: fora, convidados e a dobrar mudam as compras e ficam", () => {
+  const a = gerarPlano(prefs({ pessoas: 2, jantares: 3, sopa: false }), { semente: 13 });
+  const qtd = (plano, key) => comprasDoPlano(plano).find((c) => c.key === key)?.q || 0;
+  const r0 = receitaPorId(a.dias[0].id);
+  // Um ingrediente que só o primeiro jantar usa.
+  const outros = new Set(a.dias.slice(1).flatMap((d) => receitaPorId(d.id).ingredientes.map((i) => i.key)));
+  const so = r0.ingredientes.find((i) => !outros.has(i.key));
+  assert.ok(so, "o primeiro jantar não tem ingrediente só dele");
+  const base = qtd(a, so.key);
+
+  assert.equal(dosesDoDia(a, a.dias[0]), 2);
+  const dobro = ajustarDia(a, 0, { dobro: true });
+  assert.equal(dosesDoDia(dobro, dobro.dias[0]), 4);
+  assert.ok(Math.abs(qtd(dobro, so.key) - base * 2) < 1e-9);
+
+  const visitas = ajustarDia(a, 0, { extra: 2 });
+  assert.ok(Math.abs(qtd(visitas, so.key) - base * 2) < 1e-9);
+  assert.equal(ajustarDia(a, 0, { extra: 99 }).dias[0].extra, MAX_CONVIDADOS);
+  assert.equal(ajustarDia(visitas, 0, { extra: 0 }).dias[0].extra, undefined);
+
+  const fora = ajustarDia(a, 0, { fora: true });
+  assert.equal(qtd(fora, so.key), 0);
+  assert.ok(!comprasDoPlano(fora).some((c) => c.receitas.includes(r0.nome) && c.receitas.length === 1));
+
+  // Ficam ao trocar a receita e ao gerar de novo.
+  const tudo = ajustarDia(ajustarDia(a, 1, { extra: 1, dobro: true }), 2, { fora: true });
+  const t = trocarDia(tudo, 1, { semente: 2 });
+  assert.equal(t.dias[1].extra, 1);
+  assert.ok(t.dias[1].dobro);
+  const g = regenerar(tudo, { semente: 5 });
+  assert.ok(g.dias[2].fora && g.dias[1].dobro);
+  assert.equal(g.dias[0].fora, undefined);
+});
+
+test("despensa: o que já há em casa sai das compras", () => {
+  const p = gerarPlano(prefs(), { semente: 11 });
+  const alvo = comprasDoPlano(p).find((c) => !c.despensa);
+  const c = comprasDoPlano(p, { tenho: [alvo.key] });
+  assert.ok(c.find((x) => x.key === alvo.key).emCasa);
+  assert.equal(c.filter((x) => x.emCasa).length, 1);
+});
+
+test("o que posso cozinhar: menos compras primeiro, só o que serve", () => {
+  assert.deepEqual(oQuePossoCozinhar([]), []);
+  const lista = ingredientesParaTer();
+  assert.ok(lista.length > 30);
+  assert.ok(lista.every((i) => !INGREDIENTES[i.key].desp));
+  assert.ok(lista[0].usos >= lista[lista.length - 1].usos);
+
+  const r = receitas().find((x) => x.tipo === "prato");
+  const tudo = r.ingredientes.filter((i) => !i.despensa).map((i) => i.key);
+  const res = oQuePossoCozinhar(tudo);
+  assert.equal(res[0].falta.length, 0, "com tudo em casa, há uma receita sem compras");
+  assert.ok(res.some((x) => x.r.id === r.id && !x.falta.length));
+  for (let i = 1; i < res.length; i++) assert.ok(res[i - 1].falta.length <= res[i].falta.length);
+  for (const x of res) {
+    assert.ok(x.tem.length >= 1);
+    assert.equal(x.tem.length + x.falta.length, x.r.ingredientes.filter((i) => !i.despensa).length);
+  }
+  const veg = oQuePossoCozinhar(tudo, { prefs: prefs({ dietas: ["vegano"] }) });
+  assert.ok(veg.every((x) => x.r.vegano));
+  assert.ok(oQuePossoCozinhar(tudo, { tipo: "sopa" }).every((x) => x.r.tipo === "sopa"));
 });
