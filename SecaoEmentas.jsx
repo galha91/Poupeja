@@ -3,7 +3,7 @@ import { Clock, ChefHat, Leaf, Lock, Unlock, RefreshCw, ShoppingCart, Check, Spa
 import {
   receitas, receitaPorId, compativel, gerarPlano, regenerar, trocarDia, alternarFixa, comprasDoPlano,
   mediaDoPlano, porcoesNoPlano, sugestaoDaSemana, formatarTempo, DIAS, DIETAS, VONTADES, EQUIPAMENTOS,
-  rejeitar, ajustarDia, dosesDoDia, MODOS_TROCA, MAX_CONVIDADOS,
+  rejeitar, ajustarDia, dosesDoDia, MODOS_TROCA, MAX_CONVIDADOS, almocoDe, marmitasDoPlano,
 } from "./lib/receitas/motor";
 import DespensaReceitas from "./DespensaReceitas";
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes } from "./ReceitaDetalhe";
@@ -109,7 +109,7 @@ const ETIQUETA = { padding: "2px 8px", borderRadius: 8, background: "var(--pj-ac
  * "Ajustar" abre o painel do dia (`painel`): trocas com intenção, jantar
  * fora, convidados e cozinhar a dobrar.
  */
-function DiaPlano({ rotulo, r, entrada, nota, onAbrir, onFixar, onTrocar, onAjustar, ajustando, painel }) {
+function DiaPlano({ rotulo, r, entrada, nota, almoco, onAbrir, onAbrirAlmoco, onFixar, onTrocar, onAjustar, ajustando, painel }) {
   if (!r) return null;
   const fixa = !!entrada.fixa;
   return (
@@ -130,6 +130,13 @@ function DiaPlano({ rotulo, r, entrada, nota, onAbrir, onFixar, onTrocar, onAjus
             </button>
           )}
         </div>
+      )}
+      {almoco && (
+        <button onClick={onAbrirAlmoco} className="pj-tap w-full text-left flex items-center gap-2 mb-1.5 px-3 py-2 rounded-xl"
+          style={{ background: "var(--pj-brand-wash)", border: 0, fontSize: 12.5, color: "var(--pj-brand-ink)" }}>
+          <span aria-hidden="true">🥡</span>
+          <span style={{ minWidth: 0 }}><strong>Almoço:</strong> marmita de {almoco.nome.charAt(0).toLowerCase() + almoco.nome.slice(1)} (jantar de ontem)</span>
+        </button>
       )}
       <div className="rounded-2xl flex items-center" style={{ background: "var(--pj-card)", border: `1px solid ${fixa ? "var(--pj-brand)" : "var(--pj-border)"}`, opacity: entrada.fora ? 0.55 : 1 }}>
         <button onClick={() => onAbrir(r)} className="pj-tap press flex-1 text-left flex items-center gap-3 p-3" style={{ minWidth: 0, background: "none", border: 0 }}>
@@ -333,6 +340,7 @@ export default function SecaoEmentas({ setTab }) {
   const aComprar = compras.filter((c) => !c.despensa && !c.emCasa);
   const jaEmCasa = compras.filter((c) => !c.despensa && c.emCasa).length;
   const rejeitadas = prefs?.rejeitadas || [];
+  const marmitas = plano ? marmitasDoPlano(plano) : [];
   // O total real (a loja mais barata) só vale para a lista que foi comparada.
   const chaveCompras = aComprar.map((c) => c.key).join();
   const [resumo, setResumo] = useState(null); // { chave, loja, nome, total, artigos }
@@ -463,6 +471,9 @@ export default function SecaoEmentas({ setTab }) {
           <div className="flex flex-col gap-4">
             {plano.dias.map((d) => (
               <DiaPlano key={d.dia} rotulo={DIAS[d.dia]} r={receitaPorId(d.id)} entrada={d}
+                almoco={receitaPorId(almocoDe(plano, d.dia))}
+                onAbrirAlmoco={() => { const r = receitaPorId(almocoDe(plano, d.dia)); if (r) abrir(r, { legenda: `Almoço de ${DIAS[d.dia]}`, pessoas: plano.prefs.pessoas + (plano.dias.find((x) => x.dia === (d.dia + 6) % 7)?.extra || 0) }); }}
+                nota={d.dobro && !d.fora ? `Metade fica para o almoço de ${DIAS[(d.dia + 1) % 7]}` : null}
                 onAbrir={(r) => abrir(r, { legenda: DIAS[d.dia], pessoas: dosesDoDia(plano, d) || plano.prefs.pessoas })}
                 onFixar={() => guardarPlano(alternarFixa(plano, d.dia))}
                 onTrocar={() => { setSemTroca(null); guardarPlano(trocarDia(plano, d.dia, { avaliacoes: aval })); evento("ementas_plano", { acao: "trocar" }); }}
@@ -519,7 +530,7 @@ export default function SecaoEmentas({ setTab }) {
                 plano.sopa && "a sopa",
                 plano.manha?.length && "os pequenos-almoços",
                 plano.sobremesa && "a sobremesa",
-              ].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1")} — já somados entre receitas{jaEmCasa > 0 && `, sem ${jaEmCasa === 1 ? "o artigo" : `os ${jaEmCasa} artigos`} que já tens em casa`}.
+              ].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1")}{marmitas.length > 0 && ` (${marmitas.length === 1 ? "um a dobrar, com a marmita" : `${marmitas.length} a dobrar, com as marmitas`} do dia seguinte)`} — já somados entre receitas{jaEmCasa > 0 && `, sem ${jaEmCasa === 1 ? "o artigo" : `os ${jaEmCasa} artigos`} que já tens em casa`}.
             </p>
             {naLista !== 0 ? (
               <div className="mt-3">

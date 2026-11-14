@@ -5,7 +5,7 @@ import { RECEITAS } from "../lib/receitas/dados.js";
 import {
   receitas, receitaPorId, compativel, gerarPlano, trocarDia, alternarFixa, regenerar, comprasDoPlano,
   formatarQtd, ingredientesPara, minutosDoPasso, faixaMaxima, PREFS_PADRAO, DIETAS, VONTADES, EQUIPAMENTOS,
-  MODOS_TROCA, MAX_CONVIDADOS, rejeitar, ajustarDia, dosesDoDia, oQuePossoCozinhar, ingredientesParaTer,
+  MODOS_TROCA, MAX_CONVIDADOS, rejeitar, ajustarDia, dosesDoDia, oQuePossoCozinhar, ingredientesParaTer, almocoDe, marmitasDoPlano,
 } from "../lib/receitas/motor.js";
 import { itemPorNome } from "../data/catalogo-lista.js";
 import { MAX_ARTIGOS } from "../lib/listaCompras.js";
@@ -109,7 +109,14 @@ test("plano: respeita dietas, evitar, nº de jantares, sem repetidas", () => {
 });
 
 test("plano: com poucas compatíveis, repete e diz que repetiu", () => {
-  const p = gerarPlano(prefs({ jantares: 7, dietas: ["vegano"] }), { semente: 3 });
+  // Uma combinação com menos de 7 pratos (o livro cresce: procura-se uma).
+  const combos = [["vegano", "sem-gluten"], ["vegano"], ["vegetariano", "sem-gluten", "sem-lactose"]];
+  const dietas = combos.find((d) => {
+    const n = receitas().filter((r) => r.tipo === "prato" && compativel(r, prefs({ dietas: d }))).length;
+    return n >= 1 && n < 7;
+  });
+  assert.ok(dietas, "nenhuma combinação com menos de 7 pratos");
+  const p = gerarPlano(prefs({ jantares: 7, dietas }), { semente: 3 });
   assert.equal(p.dias.length, 7);
   assert.ok(p.dias.every((d) => d.id));
   assert.ok(p.dias.some((d) => d.repetida));
@@ -342,4 +349,19 @@ test("o que posso cozinhar: menos compras primeiro, só o que serve", () => {
   const veg = oQuePossoCozinhar(tudo, { prefs: prefs({ dietas: ["vegano"] }) });
   assert.ok(veg.every((x) => x.r.vegano));
   assert.ok(oQuePossoCozinhar(tudo, { tipo: "sopa" }).every((x) => x.r.tipo === "sopa"));
+});
+
+test("marmitas: o jantar a dobrar é o almoço do dia seguinte", () => {
+  const a = gerarPlano(prefs({ jantares: 7 }), { semente: 6 });
+  assert.deepEqual(marmitasDoPlano(a), []);
+  const b = ajustarDia(ajustarDia(a, 2, { dobro: true }), 6, { dobro: true });
+  assert.equal(almocoDe(b, 3), b.dias[2].id);
+  assert.equal(almocoDe(b, 2), null);
+  // Domingo a dobrar: almoço de segunda.
+  assert.equal(almocoDe(b, 0), b.dias[6].id);
+  assert.deepEqual(marmitasDoPlano(b), [{ dia: 3, id: b.dias[2].id }, { dia: 0, id: b.dias[6].id }]);
+  // Jantar fora: não há marmita.
+  const c = ajustarDia(b, 2, { fora: true });
+  assert.equal(almocoDe(c, 3), null);
+  assert.equal(marmitasDoPlano(c).length, 1);
 });
