@@ -100,12 +100,47 @@ Não pode, nunca:
 Se uma experiência precisar de algo desta lista, o motor prepara tudo o
 que puder e deixa o pedido no resumo.
 
+## Prioridade do Ricardo (14 nov 2026): subir de posição no Google
+
+O objetivo principal é subir as páginas de preços dos lugares 7 a 10 para
+o top 3. Os cliques vêm depois. As experiências que mexem na posição passam
+à frente das que só mexem no texto do resultado.
+
+O que faz subir, por esta ordem:
+
+1. **Responder exatamente à pesquisa.** A pesquisa é "artigo + loja". A
+   página do artigo tem de ter uma secção por cadeia, com título próprio
+   ("Bacalhau no Continente"), o preço de hoje, o produto, o preço por kg
+   e o histórico dessa cadeia. Dados reais, nunca texto de enchimento.
+2. **Perguntas frequentes reais** no fim de cada página ("Onde está o
+   bacalhau mais barato hoje?", "Quanto custa o kg de bacalhau no
+   Continente?"), com a resposta tirada dos dados do dia e marcadas com
+   `FAQPage` só se o Google ainda as mostrar para este tipo de site.
+3. **Ligações internas.** Cada loja, categoria e receita liga às páginas de
+   artigo com o texto da pesquisa ("preço do bacalhau no Continente").
+4. **Frescura visível.** Data dos preços no topo, `dateModified` no JSON-LD,
+   `lastmod` real no sitemap.
+5. **Velocidade.** Core Web Vitals das páginas de preços no verde
+   (`metricas_dia`, tipo `vital`).
+6. **Ligações de fora (backlinks).** É o que mais pesa e não é automático:
+   o motor prepara material (dados do cabaz, comparações) e pede ao
+   Ricardo que o envie a jornalistas, blogs de poupança e fóruns.
+
+Expectativa: semanas a meses. A página da própria loja (continente.pt)
+fica quase sempre em 1.º para "artigo + loja"; o alvo realista é o top 3.
+Medir a posição média por pesquisa no Search Console, semana a semana.
+
 ## Fila de experiências
 
 Por ordem. O motor pode reordenar com base nos dados, e acrescenta ideias
 novas no fim.
 
-0. **Preço de um artigo numa loja.** O Google mostra o PoupeJá em
+0. **Secção por cadeia nas páginas de artigo (para subir de posição).**
+   Ver "Prioridade do Ricardo" acima, pontos 1 a 3. Inclui a descrição com
+   o preço de cada cadeia (0c). Medir a posição média de "preço do
+   bacalhau no continente", "castanhas preço kg pingo doce", "castanhas
+   aldi", "preço banana continente" antes e 2 e 4 semanas depois.
+0a. **Preço de um artigo numa loja.** O Google mostra o PoupeJá em
    pesquisas como "preço do bacalhau no continente" (250 impressões, 2
    cliques, posição 9,8), "castanhas preço kg pingo doce" (131, 3, 9,6),
    "preço banana continente", "ovos aldi preço", "óleo fula pingo doce
