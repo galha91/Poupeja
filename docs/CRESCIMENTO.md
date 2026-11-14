@@ -63,8 +63,10 @@ publica todos os dias (reel, 2 stories, carrosséis) e trouxe 10 visitas em
    ou a criar.
 2. **Avaliar a experiência anterior.** Resultado no registo abaixo:
    funcionou, não funcionou ou ainda sem dados.
-3. **Escolher uma experiência.** A primeira da fila que ataque o passo
-   mais fraco do funil. Uma por semana, pequena, com medida definida antes.
+3. **Escolher duas experiências.** As duas primeiras da fila (decisão do
+   Ricardo a 14 nov 2026: duas por semana). Pequenas, com medida definida
+   antes de escrever código. Vão no mesmo PR e no mesmo deploy de
+   produção. Se uma correr mal nos testes, segue só a outra.
 4. **Executar.** Código, testes, PR, merge, confirmar o deploy.
 5. **Registar.** Uma entrada no registo, com a medida e a data de revisão.
 6. **Resumir ao Ricardo.** Três linhas: o que mudou nos números, o que foi
