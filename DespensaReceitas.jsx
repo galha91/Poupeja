@@ -33,7 +33,8 @@ export default function DespensaReceitas({ tenho, onMudar, prefs, onAbrir, onAdi
     ? opcoes.filter((o) => semAcento(o.nome).includes(termo)).slice(0, 24)
     : [...opcoes.filter((o) => marcados.has(o.key)), ...opcoes.filter((o) => !marcados.has(o.key)).slice(0, ATALHOS)];
 
-  const resultados = useMemo(() => oQuePossoCozinhar(tenho, { prefs }), [tenho, prefs]);
+  // Jantares e sopas: é a pergunta de quem abre o frigorífico ao fim do dia.
+  const resultados = useMemo(() => oQuePossoCozinhar(tenho, { prefs, tipos: ["prato", "sopa"] }), [tenho, prefs]);
   const mostrados = todas ? resultados.slice(0, 30) : resultados.slice(0, PRIMEIRAS);
 
   async function juntar(x) {
@@ -86,7 +87,7 @@ export default function DespensaReceitas({ tenho, onMudar, prefs, onAbrir, onAdi
           </div>
           {!termo && (
             <p className="mt-2" style={{ fontSize: 11, color: "var(--pj-text-faint)", lineHeight: 1.5 }}>
-              Azeite, sal, alho e outros básicos contam-se como havendo sempre.
+              Azeite, sal, açúcar e outros básicos contam-se como havendo sempre.
               {tenho.length > 0 && (
                 <> · <button onClick={() => { onMudar([]); setJuntas({}); }} className="font-semibold" style={{ background: "none", border: 0, padding: 0, color: "var(--pj-text-muted)", textDecoration: "underline" }}>Limpar tudo</button></>
               )}

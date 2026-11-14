@@ -349,6 +349,7 @@ test("o que posso cozinhar: menos compras primeiro, só o que serve", () => {
   const veg = oQuePossoCozinhar(tudo, { prefs: prefs({ dietas: ["vegano"] }) });
   assert.ok(veg.every((x) => x.r.vegano));
   assert.ok(oQuePossoCozinhar(tudo, { tipo: "sopa" }).every((x) => x.r.tipo === "sopa"));
+  assert.ok(oQuePossoCozinhar(tudo, { tipos: ["prato", "sopa"] }).every((x) => ["prato", "sopa"].includes(x.r.tipo)));
 });
 
 test("marmitas: o jantar a dobrar é o almoço do dia seguinte", () => {
