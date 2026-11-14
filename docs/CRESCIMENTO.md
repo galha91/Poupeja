@@ -130,6 +130,55 @@ Expectativa: semanas a meses. A página da própria loja (continente.pt)
 fica quase sempre em 1.º para "artigo + loja"; o alvo realista é o top 3.
 Medir a posição média por pesquisa no Search Console, semana a semana.
 
+## Leque de pesquisa: aparecer em pesquisas mais gerais (14 nov 2026)
+
+O Ricardo quer que o site apareça também em pesquisas gerais
+(supermercado, compras, poupança, combustível), não só em "artigo + loja".
+
+Palavras soltas como "poupança", "compras" ou "supermercado" são dominadas
+por bancos, pelas próprias cadeias, pela DECO e por jornais. Não são alvo
+realista a meses. O caminho é ganhar as perguntas gerais que as pessoas
+fazem, uma página forte por pergunta, e com isso ganhar autoridade no
+tema inteiro.
+
+Onde já aparecemos sem página feita para isso (Search Console, 28 dias):
+
+| Pesquisa | Página que aparece | Posição |
+|---|---|---|
+| supermercado mais barato (e "... 2023") | `/precos` | 13 a 14 |
+| qual o supermercado mais barato | `/`, `/comparar` | 11 a 12 |
+| comparar preços supermercado | `/comparar`, `/precos` | 58 a 72 |
+| comparador de preços supermercado | `/comparar` | 97 |
+| combustível / gasolina mais barato perto de mim | `/combustiveis/distrito/braga` | 9 a 12 |
+| combustiveis | `/combustiveis/distrito/braga` | 9,8 |
+| perguntas longas tipo IA ("qual destes supermercados tem as melhores promoções, Pingo Doce, Lidl ou Continente?") | `/comparar`, `/precos` | 4 a 8 |
+
+Grupos a construir, um por experiência, por esta ordem:
+
+1. **"Supermercado mais barato".** Página própria (ex. `/supermercado-mais-barato`)
+   com o ranking das cadeias pelo cabaz de hoje e do mês, calculado no
+   GitHub (regra 1 do `CLAUDE.md`), metodologia explicada, histórico mês a
+   mês e respostas às perguntas reais acima. Título com "Portugal" e o mês.
+   Ligada do início, de `/precos` e de `/comparar`.
+2. **"Comparador de preços de supermercados".** `/comparar` passa a ser a
+   página dessa pesquisa: título, H1 e texto dizem exatamente isso, com a
+   tabela das comparações entre cadeias.
+3. **"Combustível mais barato perto de mim".** Hoje é a página de Braga
+   que aparece; `/combustiveis` tem de ser a página forte (texto, ligações
+   aos distritos, dados do dia). Verificar porque é Braga.
+4. **Guias de poupança com dados próprios.** "Como poupar no
+   supermercado", "lista de compras barata para uma semana", "cabaz básico
+   preço", "quanto custa um cabaz por mês". Cada guia usa números reais do
+   site (é o que os distingue de blogues e o que faz outros sites ligarem
+   para cá).
+5. **Respostas para as pesquisas das IAs.** As perguntas longas acima vêm
+   do modo IA do Google e de assistentes. Cada página de grupo tem uma
+   secção de perguntas e respostas curtas, com números do dia e data.
+
+Medir: posição média de cada pesquisa da tabela, e o número de pesquisas
+diferentes em que o site aparece por semana (Search Console). O alvo é
+esse número subir todas as semanas.
+
 ## Fila de experiências
 
 Por ordem. O motor pode reordenar com base nos dados, e acrescenta ideias
