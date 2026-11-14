@@ -39,7 +39,7 @@ test("etiquetas nos links", async () => {
   assert.equal(origemEtiqueta(undefined), null);
 });
 
-import { regiaoDe, tipoDispositivo, modoValido, recorrenciaValida } from "../lib/visitas.js";
+import { regiaoDe, tipoDispositivo, modoValido, recorrenciaValida, origemEtiqueta } from "../lib/visitas.js";
 test("região: distrito, estrangeiro, desconhecida", () => {
   assert.equal(regiaoDe("PT", "11"), "Lisboa");
   assert.equal(regiaoDe("PT", "PT-13"), "Porto");
@@ -71,4 +71,20 @@ test("etiquetas por publicação: origem pelo prefixo e campanha válida", async
   assert.equal(campanhaValida("IG-Reel-Azeite"), "ig-reel-azeite");
   assert.equal(campanhaValida("a b"), null);
   assert.equal(campanhaValida("x".repeat(50)), null);
+});
+
+test("origens da campanha: Reddit, Telegram, YouTube e LinkedIn", () => {
+  assert.equal(classificarOrigem("https://www.reddit.com/r/literaciafinanceira/", "poupeja.com"), "reddit");
+  assert.equal(classificarOrigem("https://t.me/poupeja", "poupeja.com"), "telegram");
+  assert.equal(classificarOrigem("https://www.youtube.com/shorts/x", "poupeja.com"), "youtube");
+  assert.equal(classificarOrigem("https://lnkd.in/abc", "poupeja.com"), "linkedin");
+  assert.equal(classificarOrigem("https://internet.me/", "poupeja.com"), "outro");
+  assert.equal(origemEtiqueta("rd-cabaz-s1"), "reddit");
+  assert.equal(origemEtiqueta("tg"), "telegram");
+  assert.equal(origemEtiqueta("yt-g1"), "youtube");
+  assert.equal(origemEtiqueta("li-historia"), "linkedin");
+  // Etiquetas que já existiam e não podem mudar de dono.
+  assert.equal(origemEtiqueta("partilha-lista"), null);
+  assert.equal(origemEtiqueta("lista"), null);
+  assert.equal(origemEtiqueta("fb-pais-s1"), "facebook");
 });
