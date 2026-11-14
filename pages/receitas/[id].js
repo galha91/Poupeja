@@ -8,6 +8,8 @@ import { custoReceita, hojeLisboa } from "../../lib/seoPrecos";
 import { resumosRecentes } from "../../lib/seoPrecosDados";
 
 import { jsonLdSeguro } from "../../lib/escapar";
+import ColecaoReceitas from "../../ColecaoReceitas";
+import { COLECOES, GRUPOS_COLECAO, colecaoPorSlug, receitasDaColecao, colecoesDaReceita, parecidas } from "../../lib/receitas/colecoes";
 const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
 
 const EMENTAS = receitas();
@@ -18,8 +20,14 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * Página pública SEO — uma receita económica.
  * Estática; alvo: "receita caldo verde barata", "jantar económico 4 pessoas", etc.
  * O JSON-LD Recipe torna-a elegível para rich results do Google (cartões de receita).
+ *
+ * O mesmo caminho serve as coleções (/receitas/frango…): ver ColecaoReceitas.
  */
-export default function Receita({ receita, outras, custo = null }) {
+export default function Pagina(props) {
+  return props.colecao ? <ColecaoReceitas {...props} /> : <Receita {...props} />;
+}
+
+function Receita({ receita, outras, colecoes = [], custo = null }) {
   const rende = rendimento(receita.porcoes, receita.un);
   const porUm = rendimento(1, receita.un).slice(2);
   const descricao = `Receita económica de ${receita.nome} (${rende}), pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
@@ -188,8 +196,38 @@ export default function Receita({ receita, outras, custo = null }) {
         )}
         <BotaoAbrirPoupeja href="/?atalho=ementas" tipo="receita" texto="Pôr esta receita no plano da semana, com lista de compras" />
 
+        {receita.tipo === "prato" && (
+          <>
+            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36 }}>
+              Para a marmita
+            </h2>
+            <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginTop: 10 }}>
+              Cozinha a dobrar e o almoço do dia seguinte fica feito: com as quantidades para 8 em vez de 4, metade vai para
+              caixas logo depois do jantar e entra no frigorífico em menos de 2 horas (tampa só quando arrefecer). Come-se em 2 ou 3 dias;
+              aquece até ficar bem quente no meio.
+              No plano da semana da app, «Ajustar» → «A dobrar, para a marmita» soma as compras sozinho.
+            </p>
+          </>
+        )}
+
+        {colecoes.length > 0 && (
+          <>
+            <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
+              Esta receita está em
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {colecoes.map((c) => (
+                <a key={c.slug} href={`/receitas/${c.slug}`} className="pj-tap no-underline"
+                  style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}>
+                  {c.titulo}
+                </a>
+              ))}
+            </div>
+          </>
+        )}
+
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, marginBottom: 14 }}>
-          Mais receitas baratas
+          Receitas parecidas
         </h2>
         <div className="flex flex-wrap gap-2">
           {outras.map(o => (
@@ -218,19 +256,32 @@ export default function Receita({ receita, outras, custo = null }) {
 
 export async function getStaticPaths() {
   return {
-    paths: EMENTAS.map(e => ({ params: { id: e.id } })),
+    paths: [...EMENTAS.map(e => ({ params: { id: e.id } })), ...COLECOES.map(c => ({ params: { id: c.slug } }))],
     fallback: false,
   };
 }
 
 export async function getStaticProps({ params }) {
+  const colecao = colecaoPorSlug(params.id);
+  if (colecao) {
+    // Só código: sem Supabase e sem revalidate (muda com um deploy).
+    const lista = receitasDaColecao(colecao).map((r) => ({
+      id: r.id, nome: r.nome, emoji: r.emoji, tempoMin: r.tempoMin, custo: r.custo, kcal: r.nutricao.kcal, veg: r.veg, vegano: r.vegano,
+    }));
+    const grupos = GRUPOS_COLECAO.map((g) => ({
+      titulo: g.titulo,
+      itens: COLECOES.filter((c) => c.grupo === g.id && c.slug !== colecao.slug).map((c) => ({ slug: c.slug, curto: c.curto })),
+    })).filter((g) => g.itens.length);
+    return { props: { colecao: { slug: colecao.slug, titulo: colecao.titulo, intro: colecao.intro, curto: colecao.curto }, lista, grupos } };
+  }
   const receita = EMENTAS.find(e => e.id === params.id);
   if (!receita) return { notFound: true };
   const custo = custoReceita(receita.ingredientes, await resumosRecentes(hojeLisboa()));
   return {
     props: {
       receita,
-      outras: EMENTAS.filter(e => e.id !== params.id).map(e => ({ id: e.id, nome: e.nome, emoji: e.emoji })),
+      outras: parecidas(receita).map(e => ({ id: e.id, nome: e.nome, emoji: e.emoji })),
+      colecoes: colecoesDaReceita(receita).map(c => ({ slug: c.slug, titulo: c.titulo })),
       custo: JSON.parse(JSON.stringify(custo)),
     },
     // Os preços dos ingredientes mudam: a página regenera-se de 3 em 3 horas.

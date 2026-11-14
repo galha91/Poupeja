@@ -67,7 +67,7 @@ export async function compararArtigos(itens, aoAvancar = () => {}) {
   return resultado;
 }
 
-export default function CompararLista({ itens, nota = true }) {
+export default function CompararLista({ itens, nota = true, onResumo }) {
   const [estado, setEstado] = useState("inicio"); // inicio | a-carregar | pronto
   const [feitos, setFeitos] = useState(0);
   const [linhas, setLinhas] = useState([]);
@@ -114,5 +114,5 @@ export default function CompararLista({ itens, nota = true }) {
     );
   }
 
-  return <ResultadoLista linhas={linhas} nota={nota} onAtualizar={comparar} />;
+  return <ResultadoLista linhas={linhas} nota={nota} onAtualizar={comparar} onResumo={onResumo} />;
 }

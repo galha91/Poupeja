@@ -5,6 +5,7 @@ import { DestaqueEmentasPublico } from "../../DestaqueEmentas";
 import { receitas, formatarTempo } from "../../lib/receitas/motor";
 
 import { jsonLdSeguro } from "../../lib/escapar";
+import { COLECOES, GRUPOS_COLECAO } from "../../lib/receitas/colecoes";
 const EMENTAS = receitas();
 const GRUPOS = [
   { tipo: "prato", titulo: "Jantares", ancora: "jantares" },
@@ -61,6 +62,21 @@ export default function Receitas() {
 
         {/* O planeador logo no topo: é o que distingue estas receitas. */}
         <DestaqueEmentasPublico />
+
+        {/* As coleções: "receitas de frango", "jantares rápidos"… */}
+        {GRUPOS_COLECAO.map((g) => (
+          <nav key={g.id} aria-label={`Receitas ${g.titulo.toLowerCase()}`} style={{ marginTop: 20 }}>
+            <p style={{ fontSize: 11, color: "var(--pj-text-faint)", fontWeight: 600, letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 8 }}>{g.titulo}</p>
+            <div className="flex flex-wrap gap-2">
+              {COLECOES.filter((c) => c.grupo === g.id).map((c) => (
+                <a key={c.slug} href={`/receitas/${c.slug}`} className="pj-tap no-underline"
+                  style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "var(--pj-card)", border: "1px solid var(--pj-border)", borderRadius: 12, padding: "8px 14px" }}>
+                  {c.curto}
+                </a>
+              ))}
+            </div>
+          </nav>
+        ))}
 
         {GRUPOS.map((g) => {
           const doGrupo = EMENTAS.filter((e) => e.tipo === g.tipo);

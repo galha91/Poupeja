@@ -100,6 +100,10 @@ export default function Barometro({ semanas = [], atual = false }) {
                 : <>O {barata.nome} fica {eur(diferenca, 2)} € abaixo do {cara.nome} neste cabaz.</>}
             </p>
 
+            <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 6, lineHeight: 1.55 }}>
+              Quem foi o mais barato nas últimas semanas: <a href="/supermercado-mais-barato" style={estiloLink}>qual é o supermercado mais barato em Portugal</a>.
+            </p>
+
             <h2 className="font-display" style={estiloH2}>O que entra no cabaz</h2>
             <p style={{ ...estiloTexto, marginTop: 0 }}>
               {s.artigos.join(", ")}. Uma unidade de cada, o produto mais barato de cada cadeia na mesma quantidade.
