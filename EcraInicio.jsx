@@ -53,7 +53,7 @@ function Porta({ Icone, titulo, sub, aoTocar }) {
 
 const naLoja = (c) => `${c.loja === "apolonia" ? "na" : "no"} ${c.nome}`;
 
-function CartaoCabaz({ cabaz, onTrocar }) {
+function CartaoCabaz({ cabaz, onTrocar, primeiro = false }) {
   // Visto: a primeira vitória passou a ser automática; conta-se uma vez por sessão.
   useEffect(() => {
     try {
@@ -65,7 +65,7 @@ function CartaoCabaz({ cabaz, onTrocar }) {
   const deHoje = cabaz.dia === new Date().toLocaleDateString("sv-SE");
   const n = cabaz.artigos.length;
   return (
-    <div style={{ marginTop: 32, padding: "18px 16px", borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }} className="anim-up anim-up-2">
+    <div style={{ marginTop: primeiro ? 20 : 32, padding: "18px 16px", borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }} className="anim-up anim-up-2">
       <Rotulo>{n} básicos do supermercado{deHoje ? " · hoje" : ""}</Rotulo>
       {cabaz.empate ? (
         <>
@@ -91,7 +91,7 @@ function CartaoCabaz({ cabaz, onTrocar }) {
       </p>
       <button onClick={onTrocar} className="pj-tap press inline-flex items-center"
         style={{ gap: 7, marginTop: 14, padding: "10px 16px", borderRadius: 12, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 600 }}>
-        <Search size={15} strokeWidth={1.9} /> Trocar pelos meus artigos
+        <Search size={15} strokeWidth={1.9} /> Comparar a minha lista
       </button>
     </div>
   );
@@ -102,8 +102,18 @@ function PrimeiraVisita({ gasoleo, cabaz, onComparar, onCombustivel, onEmentas }
   return (
     <>
       {/* Sem a streak nem o convite ao talão: quem acabou de chegar ainda não tem nada disso. */}
-      {!gasoleo.falhou && <HeroCombustivel gasoleo={gasoleo} streak={0} onVerPostos={porta("combustivel", onCombustivel)} onGuardarTalao={null} />}
-      {cabaz && <CartaoCabaz cabaz={cabaz} onTrocar={() => { evento("inicio_cabaz", { acao: "trocar" }); onComparar(); }} />}
+      {/* 16/11/2026: a comparação passa para cima do combustível. Só 1 em 10
+          convidados chegava a comparar, e são esses que voltam (25% contra
+          4%). O gasóleo "no país" era o maior número do ecrã e não servia a
+          quase ninguém. */}
+      <p className="font-display anim-up" style={{ fontSize: 27, fontWeight: 600, lineHeight: 1.18, letterSpacing: "-0.015em", color: "var(--pj-text)", marginTop: 26 }}>
+        Vê onde a tua lista de compras fica mais barata
+      </p>
+      <p className="anim-up" style={{ fontSize: 14, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.45 }}>
+        Preços de hoje nos supermercados com loja online. Grátis e sem conta.
+      </p>
+      {cabaz && <CartaoCabaz primeiro cabaz={cabaz} onTrocar={() => { evento("inicio_cabaz", { acao: "trocar" }); onComparar(); }} />}
+      {!gasoleo.falhou && <HeroCombustivel secundario={!!cabaz} gasoleo={gasoleo} streak={0} onVerPostos={porta("combustivel", onCombustivel)} onGuardarTalao={null} />}
       <div className="flex flex-col anim-up anim-up-2" style={{ gap: 10, marginTop: cabaz && !gasoleo.falhou ? 14 : 32 }}>
         {!cabaz && (
           <Porta Icone={Search} titulo="Onde fica mais barata a tua compra?"
@@ -334,7 +344,7 @@ const Streak = ({ streak }) => streak >= 2 && (
  * ─────────────────────────────────────────────────────────────── */
 const LS_EMAIL_COMB = "poupeja_email_combustivel"; // concelho já subscrito neste browser
 
-function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
+function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao, secundario = false }) {
   const { dados, aLocalizar, pedirLocalizacao } = gasoleo;
   const [emailAberto, setEmailAberto] = useState(false);
   const [subscrito, setSubscrito] = useState(null);
@@ -360,7 +370,7 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
   }
 
   return (
-    <div style={{ marginTop: 44 }} className="anim-up anim-up-1">
+    <div style={{ marginTop: secundario ? 30 : 44 }} className="anim-up anim-up-1">
       <div className="flex items-center justify-between" style={{ gap: 12 }}>
         {/* "Hoje" só se a consulta à DGEG for mesmo de hoje. */}
         <Rotulo>Gasóleo mais barato {onde}{idade?.deHoje ? " · hoje" : ""}</Rotulo>
@@ -370,10 +380,10 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
       {dados ? (
         // Inteiro: no gasóleo é sempre "1" — o que distingue um preço do
         // outro são as milésimas, e essas não podem ficar a meia altura.
-        <Numero inteiro={eur(dados.preco, 3)} />
+        <Numero inteiro={eur(dados.preco, 3)} tamanho={secundario ? 46 : 78} />
       ) : (
         // A carregar: o mesmo corpo de letra, para a página não saltar.
-        <div className="font-display" aria-hidden="true" style={{ fontSize: 78, lineHeight: 1, marginTop: 16, color: "var(--pj-border)" }}>€—</div>
+        <div className="font-display" aria-hidden="true" style={{ fontSize: secundario ? 46 : 78, lineHeight: 1, marginTop: 16, color: "var(--pj-border)" }}>€—</div>
       )}
 
       <p className="truncate" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12, fontWeight: 500 }}>
@@ -387,7 +397,10 @@ function HeroCombustivel({ gasoleo, streak, onVerPostos, onGuardarTalao }) {
         onClick={exata ? verPostos : localizar}
         disabled={aLocalizar}
         className="pj-tap press inline-flex items-center"
-        style={{ gap: 7, marginTop: 18, padding: "10px 16px", borderRadius: 12, background: "var(--pj-brand)", color: "#fff", fontSize: 13.5, fontWeight: 600 }}
+        style={{ gap: 7, marginTop: 18, padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontWeight: 600,
+          ...(secundario
+            ? { background: "transparent", color: "var(--pj-brand-ink)", border: "1px solid var(--pj-border)" }
+            : { background: "var(--pj-brand)", color: "#fff" }) }}
       >
         <Fuel size={15} strokeWidth={1.9} />
         {aLocalizar ? "A localizar…" : exata ? "Ver postos no mapa" : dados?.nivel === "aproximada" ? "Usar a minha localização exata" : "Ver o mais barato perto de mim"}
@@ -645,7 +658,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {/* Cabeçalho */}
         <div className="flex items-center justify-between anim-up">
           <h1 style={{ fontSize: 15, color: "var(--pj-text-muted)", fontWeight: 500, margin: 0 }}>
-            {saudacaoHora()}{primeiroNome && <>, <span className="capitalize" style={{ color: "var(--pj-text)", fontWeight: 600 }}>{primeiroNome}</span></>}
+            {explorar ? <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)" }}>PoupeJá</span> : saudacaoHora()}{!explorar && primeiroNome && <>, <span className="capitalize" style={{ color: "var(--pj-text)", fontWeight: 600 }}>{primeiroNome}</span></>}
           </h1>
           <div className="flex items-center" style={{ gap: 16, color: "var(--pj-text)" }}>
             <button onClick={onAbrirAvisos} className="pj-tap pj-alvo relative flex" aria-label="Avisos">

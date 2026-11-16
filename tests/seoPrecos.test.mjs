@@ -233,3 +233,17 @@ test("«Hoje» só se os dois preços comparados forem de hoje", () => {
   const d2 = montarArtigo([l(HOJE, "aldi", 7), l(HOJE, "continente", 8)], HOJE);
   assert.match(frasesArtigo(artigoPorSlug("azeite"), d2, HOJE)[0], /^Hoje é/);
 });
+
+test("montarArtigo: linhas guardadas de outro produto saem da comparação e do histórico", async () => {
+  const { montarArtigo } = await import("../lib/seoPrecos.js");
+  const l = (loja, valor, produto, dia = "2026-11-16") => ({ q: "bacalhau", dia, loja, unidade: "kg", valor, preco: valor, produto });
+  const d = montarArtigo([
+    l("auchan", 11.09, "Bacalhau auchan postas 450g"),
+    l("auchan", 5.99, "Bacalhau auchan postas 450g", "2026-10-30"),
+    l("continente", 17.99, "Bacalhau Corrente 1ª da Noruega Seco"),
+    l("pingo-doce", 20.99, "Bacalhau Crescido 1ª"),
+    l("aldi", 25.62, "Lombo de Bacalhau"),
+  ], "2026-11-16");
+  assert.deepEqual(d.ofertas.map((o) => o.loja), ["continente", "pingo-doce"]);
+  assert.ok(d.serie.every((s) => s.minimo >= 17.99));
+});

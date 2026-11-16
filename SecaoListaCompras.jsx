@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
 import { ArrowLeft, Bookmark, ShoppingBasket, BookmarkCheck, BookmarkPlus, Check, ChevronDown, ChevronRight, Minus, Plus, Share2, Trash2, X } from "lucide-react";
 import { N_COMPARADAS } from "./lib/cobertura";
-import { eGenerico, opcoesGenerico } from "./lib/comparacao";
+import { eGenerico, opcoesGenerico, perguntaComCatalogo } from "./lib/comparacao";
 import { eur } from "./lib/formato";
 import { evento } from "./lib/analytics";
 import { textoPeso } from "./lib/quantidadeFresca";
@@ -389,7 +389,7 @@ export default function SecaoListaCompras({ onVoltar, onCriarConta = null }) {
   // Com a lista vazia, o "Já comparaste" aparece por baixo, à vista (não em menu).
   // O menu só aparece enquanto se escreve: com o campo vazio não tapa a lista.
   // Palavra geral ("pão"): as opções vêm logo à frente, antes de se acabar de escrever.
-  const geral = focado && texto.trim() && eGenerico(texto) && !catalogo?.doCatalogo(texto) ? opcoesGenerico(texto) : [];
+  const geral = focado && texto.trim() && eGenerico(texto) && (!catalogo?.doCatalogo(texto) || perguntaComCatalogo(texto)) ? opcoesGenerico(texto) : [];
   const opcoes = geral.map(nome => ({ nome, origem: "opcao" }));
   const sugestoes = focado && texto.trim()
     ? [...opcoes, ...(catalogo ? catalogo.sugerir(texto, { comparados }).filter(s => !geral.some(o => semAcentos(o) === semAcentos(s.nome))) : [])]

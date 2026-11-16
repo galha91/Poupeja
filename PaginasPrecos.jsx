@@ -73,25 +73,28 @@ export function TabelaPrecos({ ofertas, unidade }) {
   const cab = { fontSize: 11, fontWeight: 600, color: "var(--pj-text-faint)", textTransform: "uppercase", letterSpacing: "0.06em", padding: "10px 12px", textAlign: "left" };
   return (
     <div className="rounded-2xl overflow-hidden mt-6" style={estiloCartao}>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      {/* Larguras fixas: a 360 px a coluna do preço saía do cartão e o
+          número que a pessoa veio ver ficava cortado. */}
+      <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+        <colgroup><col /><col style={{ width: 86 }} /><col style={{ width: 92 }} /></colgroup>
         <thead>
           <tr>
             <th scope="col" style={cab}>Cadeia</th>
-            <th scope="col" style={{ ...cab, textAlign: "right" }}>Embalagem</th>
-            <th scope="col" style={{ ...cab, textAlign: "right" }}>{u ? `Preço €${u}` : "Preço"}</th>
+            <th scope="col" style={{ ...cab, textAlign: "right", padding: "10px 6px" }}>Embalagem</th>
+            <th scope="col" style={{ ...cab, textAlign: "right" }}>{u ? `€${u}` : "Preço"}</th>
           </tr>
         </thead>
         <tbody>
           {ofertas.map((o, i) => (
             <tr key={o.loja} style={{ borderTop: "1px solid var(--pj-subtle)", background: i === 0 ? "var(--pj-brand-wash)" : "transparent" }}>
-              <td style={{ padding: "12px", borderLeft: `3px solid ${i === 0 ? "var(--pj-brand)" : "transparent"}` }}>
+              <td style={{ padding: "12px", overflowWrap: "anywhere", borderLeft: `3px solid ${i === 0 ? "var(--pj-brand)" : "transparent"}` }}>
                 <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>
                   {o.lojaNome}{i === 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--pj-brand-ink)", marginLeft: 8, whiteSpace: "nowrap" }}>MAIS BARATO</span>}
                 </span>
                 {o.produto && <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-faint)", marginTop: 2 }}>{o.produto}</span>}
                 {o.dia && o.dia < recente && <span style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--pj-warn)", marginTop: 2 }}>Preço visto a {dataCurta(o.dia, { ano: false })}</span>}
               </td>
-              <td className="pj-num" style={{ padding: "12px", textAlign: "right", fontSize: 13.5, color: "var(--pj-text-muted)", whiteSpace: "nowrap" }}>
+              <td className="pj-num" style={{ padding: "12px 6px", textAlign: "right", fontSize: 13.5, color: "var(--pj-text-muted)", whiteSpace: "nowrap" }}>
                 {o.preco > 0 ? `${euros(o.preco)} €` : "—"}
               </td>
               <td className="pj-num font-display" style={{ padding: "12px", textAlign: "right", fontSize: 17, fontWeight: 600, color: i === 0 ? "var(--pj-brand-ink)" : "var(--pj-text)", whiteSpace: "nowrap" }}>

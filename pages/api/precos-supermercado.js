@@ -1,4 +1,5 @@
 import { pesquisarTudo } from "../../lib/supermercados";
+import { pesquisaCanonica } from "../../lib/supermercados/relevancia";
 import { excedeuLimite } from "../../lib/protecao-api";
 import { registar, resumo, registarEmbalagens, registarMarcas, reduflacaoDe } from "../../lib/supermercados/historico";
 import { armadilhasEmbalagem } from "../../lib/reduflacao";
@@ -29,7 +30,7 @@ function normalizarPesquisa(q) {
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ erro: "Método não permitido." });
 
-  const q = normalizarPesquisa(req.query.q);
+  const q = pesquisaCanonica(normalizarPesquisa(req.query.q));
   if (q.length < 2) return res.status(400).json({ erro: "Escreve pelo menos 2 letras." });
 
   const guardado = memoria.get(q);
