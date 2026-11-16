@@ -263,3 +263,16 @@ test("auditoria de 16/11/2026: formas e produtos que não são o artigo pedido",
     assert.equal(outroProduto(nome, q), esperado === 1, `outroProduto «${q}» → ${nome}`);
   }
 });
+
+test("bacalhau pergunta qual; «bacalhau seco» pesquisa como «bacalhau»", async () => {
+  const { opcoesGenerico, eGenerico, perguntaComCatalogo } = await import("../lib/comparacao.js");
+  const { pesquisaCanonica } = await import("../lib/supermercados/relevancia.js");
+  assert.deepEqual(opcoesGenerico("Bacalhau"), ["Bacalhau seco", "Bacalhau demolhado", "Lombos de bacalhau", "Bacalhau desfiado"]);
+  assert.ok(perguntaComCatalogo("bacalhau") && !perguntaComCatalogo("esponjas"));
+  assert.ok(!eGenerico("bacalhau seco") && !eGenerico("lombos de bacalhau"));
+  assert.equal(pesquisaCanonica("bacalhau seco"), "bacalhau");
+  assert.equal(pesquisaCanonica("bacalhau demolhado"), "bacalhau demolhado");
+  const q = pesquisaCanonica("bacalhau seco");
+  assert.equal(classificar({ nome: "Bacalhau Crescido 1ª", categoria: "" }, palavras(q), "pingo-doce", undefined, q), 2);
+  assert.equal(classificar({ nome: "Lombos de Bacalhau Ultracongelado Pescanorte", categoria: "" }, palavras("lombos de bacalhau"), "continente", undefined, "lombos de bacalhau"), 2);
+});

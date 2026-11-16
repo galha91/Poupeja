@@ -73,7 +73,7 @@ test("palavra geral: as opções para escolher são artigos, não outra palavra 
   assert.deepEqual(opcoesGenerico("Pão").slice(0, 3), ["Pão de forma", "Carcaças", "Baguete"]);
   assert.ok(opcoesGenerico("leite").includes("Leite magro"));
   assert.deepEqual(opcoesGenerico("maçãs"), []); // não é geral
-  for (const palavra of ["pão", "leite", "queijo", "café", "iogurte", "sumo", "vinho", "refrigerante", "bolachas", "feijão", "couve", "detergente", "carne", "fruta", "peixe", "legumes"]) {
+  for (const palavra of ["pão", "leite", "queijo", "café", "iogurte", "sumo", "vinho", "refrigerante", "bolachas", "feijão", "couve", "detergente", "carne", "fruta", "peixe", "legumes", "bacalhau"]) {
     const ops = opcoesGenerico(palavra);
     assert.ok(ops.length >= 2, `«${palavra}» sem opções`);
     for (const o of ops) {
