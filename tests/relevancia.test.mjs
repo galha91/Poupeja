@@ -242,15 +242,9 @@ test("tamanho impossível na ficha da loja: a pasta de dentes de «750 ml» é d
   assert.equal(corrigirPrecoPorCem(0.8, 0.16, { qtd: 5, unidade: "l" }), 0.16); // água a 0,16 €/L é verdade
 });
 
-test("auditoria de 16/11/2026: formas e produtos que não são o artigo pedido", async () => {
+test("auditoria de 16/11/2026: produtos que não são o artigo pedido", async () => {
   const { outroProduto } = await import("../lib/supermercados/relevancia.js");
   const casos = [
-    ["bacalhau", "Bacalhau auchan postas 450g", 1],
-    ["bacalhau", "Lombo de Bacalhau", 1],
-    ["bacalhau", "Filetes de Bacalhau sem Espinhas Sublime Riberalves", 1],
-    ["bacalhau", "Bacalhau Crescido 1ª", 2],
-    ["bacalhau", "Bacalhau Corrente 1ª da Noruega Seco", 2],
-    ["bacalhau demolhado", "Bacalhau demolhado bomporto postas 800g", 2],
     ["óleo", "Óleo/ Manteiga de Limpeza Facial", 1],
     ["óleo", "Óleo Alimentar Frigi", 2],
     ["cebolas", "Cebola Confitada", 1],
@@ -264,15 +258,69 @@ test("auditoria de 16/11/2026: formas e produtos que não são o artigo pedido",
   }
 });
 
-test("bacalhau pergunta qual; «bacalhau seco» pesquisa como «bacalhau»", async () => {
+/* Nomes reais das lojas (produtos_embalagem, 16/11/2026). */
+const FAMILIAS_REAIS = {
+  bacalhau: {
+    "Bacalhau seco": ["Bacalhau Crescido 1ª", "Bacalhau Corrente 1ª da Noruega Seco", "Bacalhau Graúdo Especial"],
+    "Postas de bacalhau": ["Bacalhau auchan postas 450g", "Postas de Bacalhau Ultracongelado Pescanorte", "Bacalhau demolhado auchan posta média msc 800g", "Postas de Bacalhau Embalado", "Cachaços bacalhau riberalves 12m cura 750g", "Bacalhau do Chefe Riberalves"],
+    "Lombos de bacalhau": ["Lombo de Bacalhau", "Lombos de bacalhau premium nördsson", "Bacalhau demolhado auchan lombos noruega msc", "Bacalhau riberalves posta do lombo 9m cura msc 500g", "Supremas de bacalhau ultracongeladas pescanova"],
+    "Bacalhau desfiado": ["Bacalhau Desfiado Congelado Pescanova", "Bacalhau pacífico desfiado seco continente", "Bacalhau demolhado auchan desfiado msc 500g"],
+    fora: ["Bacalhau com natas auchan 300 g", "Pastel de bacalhau", "Bacalhau à brás iglo", "Caras de bacalhau ultracongelado riberalves", "Línguas de bacalhau ultracongelado lugrade", "Bacalhau em azeite e alho bom petisco", "Caldeirada de bacalhau auchan demolhado msc"],
+  },
+  pescada: {
+    "Pescada fresca": ["Pescada Pequena Fresca", "Pescada rede cabeça kg", "Pescada Média Inteira Kg"],
+    "Postas de pescada": ["Postas de pescada nº5 do chile", "Rodelas de pescada congeladas 500 gr", "Rabos de Pescada para Cozer Embalada", "Pescada rabo na boca congelada 700g"],
+    "Filetes de pescada": ["Filete de pescada congelado 800g", "Filetes pescanova pescada do cabo 400g"],
+    "Lombos de pescada": ["Lombos pescada iglo msc 1kg", "Medalhões de pescada auchan 400g", "Mimos de pescada congelados"],
+    fora: ["Filetes de pescada panados continente", "Douradinhos pescada iglo 10 un = 280g", "Ovas de pescada cozidas continente", "Rissóis de pescada congelados"],
+  },
+  salmão: {
+    "Salmão fresco": ["Salmão", "Posta de salmão fresco"],
+    "Lombos de salmão": ["Lombos de salmão fresco continente", "Porções de salmão fresco"],
+    "Salmão congelado": ["Posta de salmão asc congelado", "Lombos de salmão congelados"],
+    "Salmão fumado": ["Salmão fumado fatiado noruega", "Salmão fumado gravadlax st james 120g"],
+    fora: ["Salmão ao natural minerva 120g", "Hambúrgueres de salmão congelados", "Sashimi de salmão continente seleção"],
+  },
+  camarão: {
+    "Camarão inteiro": ["Camarão vannamei 24/40 pescanova 800g", "Camarão moçambique médio 48/64 ultracongelado"],
+    "Miolo de camarão": ["Miolo de camarão auchan selvagem 60/80 250g", "Miolo camarão cozido 31/50 250 gr"],
+    "Camarão cozido": ["Camarão cozido 30/50 fresco embalado", "Camarão selvagem cozido 10/20 refrigerado"],
+    fora: ["Noodles camarão indómie", "Rissóis de camarão congelados", "Camarão auchan panado 300g"],
+  },
+  amêijoas: {
+    "Amêijoas frescas": ["Amêijoa macha fresca", "Ameijoa japonesa 500 gr"],
+    "Amêijoas congeladas": ["Amêijoa vietnamita 60/80 1kg", "Ameijoa branca grande ultracongelada 500 gr"],
+    "Miolo de amêijoa": ["Miolo de ameijoa congelado", "Miolo amêijoa zebra auchan 250g"],
+    fora: [],
+  },
+};
+
+test("famílias: cada tipo apanha todos os seus produtos e só esses", async () => {
   const { opcoesGenerico, eGenerico, perguntaComCatalogo } = await import("../lib/comparacao.js");
-  const { pesquisaCanonica } = await import("../lib/supermercados/relevancia.js");
-  assert.deepEqual(opcoesGenerico("Bacalhau"), ["Bacalhau seco", "Bacalhau demolhado", "Lombos de bacalhau", "Bacalhau desfiado"]);
-  assert.ok(perguntaComCatalogo("bacalhau") && !perguntaComCatalogo("esponjas"));
-  assert.ok(!eGenerico("bacalhau seco") && !eGenerico("lombos de bacalhau"));
-  assert.equal(pesquisaCanonica("bacalhau seco"), "bacalhau");
-  assert.equal(pesquisaCanonica("bacalhau demolhado"), "bacalhau demolhado");
-  const q = pesquisaCanonica("bacalhau seco");
-  assert.equal(classificar({ nome: "Bacalhau Crescido 1ª", categoria: "" }, palavras(q), "pingo-doce", undefined, q), 2);
-  assert.equal(classificar({ nome: "Lombos de Bacalhau Ultracongelado Pescanorte", categoria: "" }, palavras("lombos de bacalhau"), "continente", undefined, "lombos de bacalhau"), 2);
+  const { pesquisaCanonica, outroProduto } = await import("../lib/supermercados/relevancia.js");
+  for (const [base, tipos] of Object.entries(FAMILIAS_REAIS)) {
+    const opcoes = opcoesGenerico(base);
+    const nomesTipos = Object.keys(tipos).filter((t) => t !== "fora");
+    assert.deepEqual([...opcoes].sort(), [...nomesTipos].sort(), `opções de «${base}»`);
+    assert.ok(eGenerico(base) && perguntaComCatalogo(base));
+    // A palavra sozinha é o primeiro tipo das opções (o do catálogo).
+    assert.equal(pesquisaCanonica(opcoes[0]), base);
+    for (const opcao of opcoes) {
+      assert.ok(!eGenerico(opcao), `«${opcao}» não pode voltar a perguntar`);
+      const q = pesquisaCanonica(opcao.toLowerCase());
+      for (const [tipo, nomes] of Object.entries(tipos)) for (const nome of nomes) {
+        const esperado = tipo === opcao ? 2 : 1;
+        assert.equal(classificar({ nome, categoria: "" }, palavras(q), "auchan", undefined, q), esperado, `«${opcao}» → ${nome}`);
+        assert.equal(outroProduto(nome, q), esperado === 1, `outroProduto «${opcao}» → ${nome}`);
+      }
+    }
+    // Nenhum produto da família fica sem tipo.
+    for (const nomes of nomesTipos.map((t) => tipos[t])) for (const nome of nomes) {
+      const n = opcoes.filter((o) => { const q = pesquisaCanonica(o.toLowerCase()); return classificar({ nome, categoria: "" }, palavras(q), "auchan", undefined, q) === 2; }).length;
+      assert.equal(n, 1, `«${nome}» devia estar em exatamente um tipo`);
+    }
+  }
+  assert.equal(pesquisaCanonica("postas de bacalhau"), "bacalhau demolhado");
+  assert.equal(pesquisaCanonica("filetes de pescada"), "filetes pescada");
+  assert.equal(pesquisaCanonica("arroz"), "arroz");
 });

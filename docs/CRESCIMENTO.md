@@ -280,8 +280,10 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
 
 ### 16 nov 2026: comparações equivalentes e início para quem chega de novo
 
-- **O quê:** o bacalhau passa a comparar só o seco inteiro (postas, lombos
-  e filetes saem; quem os quer escreve "bacalhau demolhado"); regras novas
+- **O quê:** famílias de produtos (`FAMILIAS` em
+  `lib/supermercados/relevancia.js`): bacalhau, pescada, salmão, camarão e
+  amêijoas perguntam o tipo (seco, postas, lombos, desfiado…) e cada tipo
+  apanha todos os seus produtos, mesmo sem a palavra no nome; regras novas
   para óleo, cebola, maçã e gel de banho; as páginas de preços deixam de
   mostrar linhas já guardadas de outro produto. A tabela de preços deixa de
   sair do ecrã a 360 px. Na primeira visita, o início mostra a marca, uma
