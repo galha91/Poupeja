@@ -278,6 +278,22 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
 
 ## Registo
 
+### 16 nov 2026: comparações equivalentes e início para quem chega de novo
+
+- **O quê:** o bacalhau passa a comparar só o seco inteiro (postas, lombos
+  e filetes saem; quem os quer escreve "bacalhau demolhado"); regras novas
+  para óleo, cebola, maçã e gel de banho; as páginas de preços deixam de
+  mostrar linhas já guardadas de outro produto. A tabela de preços deixa de
+  sair do ecrã a 360 px. Na primeira visita, o início mostra a marca, uma
+  frase e o cabaz com "Comparar a minha lista" antes do combustível.
+- **Porquê:** `/precos/bacalhau` dava postas do Auchan como 6,90 €/kg mais
+  baratas do que o bacalhau seco do Continente. Só 1 em 10 convidados
+  comparava, e são esses que voltam (25% contra 4%).
+- **Medida:** convidados que comparam (`convidados_site.comparou_em`) acima
+  de 10%; `inicio_cabaz` com `acao: trocar`; cadeias em `/precos/bacalhau`.
+- **Rever em:** 30 nov 2026.
+- **Resultado:** por medir.
+
 ### 14 nov 2026: arranque da campanha de 16 nov a 13 dez
 
 - **O quê:** página `/barometro` (custo do cabaz básico por cadeia, semana

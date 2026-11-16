@@ -241,3 +241,25 @@ test("tamanho impossível na ficha da loja: a pasta de dentes de «750 ml» é d
   assert.equal(corrigirPrecoPorCem(2.99, 0.01, { qtd: 0.2, unidade: "kg" }), 14.95);
   assert.equal(corrigirPrecoPorCem(0.8, 0.16, { qtd: 5, unidade: "l" }), 0.16); // água a 0,16 €/L é verdade
 });
+
+test("auditoria de 16/11/2026: formas e produtos que não são o artigo pedido", async () => {
+  const { outroProduto } = await import("../lib/supermercados/relevancia.js");
+  const casos = [
+    ["bacalhau", "Bacalhau auchan postas 450g", 1],
+    ["bacalhau", "Lombo de Bacalhau", 1],
+    ["bacalhau", "Filetes de Bacalhau sem Espinhas Sublime Riberalves", 1],
+    ["bacalhau", "Bacalhau Crescido 1ª", 2],
+    ["bacalhau", "Bacalhau Corrente 1ª da Noruega Seco", 2],
+    ["bacalhau demolhado", "Bacalhau demolhado bomporto postas 800g", 2],
+    ["óleo", "Óleo/ Manteiga de Limpeza Facial", 1],
+    ["óleo", "Óleo Alimentar Frigi", 2],
+    ["cebolas", "Cebola Confitada", 1],
+    ["maçãs", "Maçã para Recheio Princes 395g", 1],
+    ["gel de banho", "Gel de Limpeza para Casa de Banho", 1],
+    ["gel de banho", "Gel de Banho Frutado", 2],
+  ];
+  for (const [q, nome, esperado] of casos) {
+    assert.equal(classificar({ nome, categoria: "" }, palavras(q), "auchan", undefined, q), esperado, `«${q}» → ${nome}`);
+    assert.equal(outroProduto(nome, q), esperado === 1, `outroProduto «${q}» → ${nome}`);
+  }
+});
