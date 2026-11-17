@@ -108,6 +108,17 @@ export const CATEGORIAS = [
       { nome: "Camarão", un: "kg", sin: ["gambas"] },
       { nome: "Amêijoas", un: "kg", sin: ["ameijoa"] },
       { nome: "Mexilhão", un: "kg" },
+      // Tipos das famílias (lib/supermercados/relevancia.js, FAMILIAS): o q
+      // tem de ser o q do tipo, para a página e o histórico baterem certo.
+      { nome: "Lombos de bacalhau", un: "kg", q: "lombos bacalhau", sin: ["lombo de bacalhau"] },
+      { nome: "Bacalhau desfiado", un: "kg", sin: ["migas de bacalhau"] },
+      { nome: "Lombos de pescada", un: "kg", sin: ["medalhões de pescada"] },
+      { nome: "Postas de pescada", un: "kg" },
+      { nome: "Lombos de salmão", un: "kg", sin: ["filetes de salmão"] },
+      { nome: "Salmão fumado", un: "emb." },
+      { nome: "Miolo de camarão", un: "emb." },
+      { nome: "Camarão cozido", un: "kg" },
+      { nome: "Miolo de amêijoa", un: "emb." },
     ],
   },
   {
@@ -242,7 +253,7 @@ export const CATEGORIAS = [
   },
   {
     id: "congelados", nome: "Congelados", outro: "rissóis, lasanha", itens: [
-      { nome: "Bacalhau demolhado", un: "kg", sin: ["bacalhau congelado"] },
+      { nome: "Bacalhau demolhado", un: "kg", sin: ["bacalhau congelado", "postas de bacalhau"] },
       { nome: "Filetes de pescada", un: "emb.", q: "filetes pescada", sin: ["pescada congelada", "filetes"] },
       { nome: "Douradinhos", un: "emb.", sin: ["palitos de peixe"] },
       { nome: "Legumes para sopa", un: "emb.", q: "legumes para sopa", sin: ["legumes congelados", "sopa congelada"] },

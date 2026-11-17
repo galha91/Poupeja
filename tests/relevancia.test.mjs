@@ -262,7 +262,7 @@ test("auditoria de 16/11/2026: produtos que não são o artigo pedido", async ()
 const FAMILIAS_REAIS = {
   bacalhau: {
     "Bacalhau seco": ["Bacalhau Crescido 1ª", "Bacalhau Corrente 1ª da Noruega Seco", "Bacalhau Graúdo Especial"],
-    "Postas de bacalhau": ["Bacalhau auchan postas 450g", "Postas de Bacalhau Ultracongelado Pescanorte", "Bacalhau demolhado auchan posta média msc 800g", "Postas de Bacalhau Embalado", "Cachaços bacalhau riberalves 12m cura 750g", "Bacalhau do Chefe Riberalves"],
+    "Bacalhau demolhado": ["Bacalhau auchan postas 450g", "Postas de Bacalhau Ultracongelado Pescanorte", "Bacalhau demolhado auchan posta média msc 800g", "Postas de Bacalhau Embalado", "Cachaços bacalhau riberalves 12m cura 750g", "Bacalhau do Chefe Riberalves"],
     "Lombos de bacalhau": ["Lombo de Bacalhau", "Lombos de bacalhau premium nördsson", "Bacalhau demolhado auchan lombos noruega msc", "Bacalhau riberalves posta do lombo 9m cura msc 500g", "Supremas de bacalhau ultracongeladas pescanova"],
     "Bacalhau desfiado": ["Bacalhau Desfiado Congelado Pescanova", "Bacalhau pacífico desfiado seco continente", "Bacalhau demolhado auchan desfiado msc 500g"],
     fora: ["Bacalhau com natas auchan 300 g", "Pastel de bacalhau", "Bacalhau à brás iglo", "Caras de bacalhau ultracongelado riberalves", "Línguas de bacalhau ultracongelado lugrade", "Bacalhau em azeite e alho bom petisco", "Caldeirada de bacalhau auchan demolhado msc"],
@@ -321,6 +321,14 @@ test("famílias: cada tipo apanha todos os seus produtos e só esses", async () 
     }
   }
   assert.equal(pesquisaCanonica("postas de bacalhau"), "bacalhau demolhado");
+  assert.equal(pesquisaCanonica("lombos de bacalhau"), "lombos bacalhau");
+  // Cada opção de família é um artigo do catálogo, com o mesmo q (página e histórico batem certo).
+  const { doCatalogo } = await import("../lib/catalogoLista.js");
+  for (const base of Object.keys(FAMILIAS_REAIS)) for (const o of opcoesGenerico(base)) {
+    const cat = doCatalogo(o) || doCatalogo(base);
+    assert.ok(cat, `«${o}» sem artigo no catálogo`);
+    if (doCatalogo(o)) assert.equal(cat.q, pesquisaCanonica(o.toLowerCase()), `q de «${o}»`);
+  }
   assert.equal(pesquisaCanonica("filetes de pescada"), "filetes pescada");
   assert.equal(pesquisaCanonica("arroz"), "arroz");
 });
