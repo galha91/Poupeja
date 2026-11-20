@@ -38,7 +38,15 @@
       { "q": "grão cozido", "nome": "Grão cozido", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "milho doce", "nome": "Milho doce", "qtd": 0.3, "rotulo": "300 g" },
       { "q": "café em grão", "nome": "Café em grão", "qtd": 0.5, "rotulo": "500 g" },
-      { "q": "azeitonas", "nome": "Azeitonas", "qtd": 0.3, "rotulo": "300 g" }
+      { "q": "azeitonas", "nome": "Azeitonas", "qtd": 0.3, "rotulo": "300 g" },
+      { "q": "arroz agulha", "nome": "Arroz agulha", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "arroz basmati", "nome": "Arroz basmati", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "feijão frade", "nome": "Feijão-frade", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "grão de bico", "nome": "Grão-de-bico", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "lentilhas", "nome": "Lentilhas", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "polpa de tomate", "nome": "Polpa de tomate", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "sardinhas em azeite", "nome": "Sardinhas em azeite", "qtd": 0.25, "rotulo": "2 latas" },
+      { "q": "filetes de cavala", "nome": "Filetes de cavala", "qtd": 0.25, "rotulo": "2 latas" }
     ] },
     "jantar-de-semana": { "titulo": "Jantares de semana", "artigos": [
       { "q": "frango", "nome": "Frango", "qtd": 1.5, "rotulo": "1,5 kg" },

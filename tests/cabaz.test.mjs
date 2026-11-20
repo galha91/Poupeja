@@ -36,7 +36,8 @@ test("cabaz: 10 artigos, totais e poupança certos", () => {
 
 test("artigos que saíram há mais tempo têm prioridade", () => {
   const usados = {};
-  const artigos = config.temas.despensa.artigos;
+  // Só os 12 primeiros: o tema cresce, o teste não deve depender do tamanho.
+  const artigos = config.temas.despensa.artigos.slice(0, 12);
   ["2026-11-02", "2026-11-03", "2026-11-04"].forEach((d, k) => (usados[artigos[k].q] = d));
   const { escolhidos } = escolherArtigos(artigos, linhas("despensa"), config.lojas, usados);
   assert.equal(escolhidos.length, 10);
@@ -55,8 +56,9 @@ test("artigo sem preço numa loja ou com preços incomparáveis sai do cabaz", (
 });
 
 test("falha se não há artigos comparáveis suficientes", () => {
+  const curto = { ...config, temas: { despensa: { ...config.temas.despensa, artigos: config.temas.despensa.artigos.slice(0, 12) } } };
   const l = linhas("despensa").filter((x) => x.q !== "arroz" && x.q !== "farinha" && x.q !== "azeite");
-  assert.throws(() => calcularCabaz({ tema: "despensa", config, linhas: l }), /comparáveis/);
+  assert.throws(() => calcularCabaz({ tema: "despensa", config: curto, linhas: l }), /comparáveis/);
 });
 
 test("artigos de preço consistente entram antes dos suspeitos (2x a 3x)", () => {
