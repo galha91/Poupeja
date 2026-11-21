@@ -1,0 +1,228 @@
+# Auditoria da comparação — 2026-11-15
+
+331 pesquisas (228 do catálogo, 103 escritas à mão) · 35 com preço fora do normal · 13 com menos de 2 lojas · 0 com produto diferente da última vez · 0 falharam.
+
+46 palavras soltas pedem ao utilizador o artigo, em vez de comparar às cegas (pão, leite, carne, peixe, queijo, iogurte, café, sumo, vinho, refrigerante, bolachas, salsichas…).
+
+Rever sobretudo os ⚠: quase sempre é outro produto (ou outra embalagem) a passar pelo artigo. Corrige-se em lib/supermercados/relevancia.js e junta-se o caso a tests/relevancia.test.mjs. Uma pesquisa que falhou na vida real acrescenta-se a data/pesquisas-livres.js.
+
+## Preço fora do normal (35)
+- **Maçãs** (`maçãs`)
+  - aldi: Maçã Fuji — 1.26 €/kg
+  - auchan: Maçã golden beira alta igp 1kg — 1.49 €/kg
+  - pingo-doce: Maçã Gala Embalada — 1.66 €/kg
+  - continente: Maçã Golden Sem Resíduos de Pesticidas Continente — 1.69 €/kg
+  - lidl: Maçã Gala — 1.99 €/kg
+  - **⚠ apolonia: Maçã para Recheio Princes 395g — 10.1 €/kg**
+- **Laranjas** (`laranjas`)
+  - continente: Laranja Citrinos do Algarve - IGP IGP Algarve — 1.33 €/kg
+  - auchan: Laranja 2 kg — 1.39 €/kg
+  - pingo-doce: Laranjas Embaladas — 1.5 €/kg
+  - **⚠ apolonia: Laranja Bio Biofrade 800g — 8.61 €/kg**
+- **Limões** (`limões`)
+  - continente: Limão Continente — 2.69 €/kg
+  - pingo-doce: Limão — 2.49 €/kg
+  - auchan: Limão kg — 2.49 €/kg
+  - **⚠ apolonia: Limão Bio Biofrade 500g — 9.98 €/kg**
+- **Ananás** (`ananás`)
+  - **⚠ continente: Abacaxi Continente — 1.49 €/kg**
+  - **⚠ pingo-doce: Abacaxi — 1.49 €/kg**
+  - auchan: Ananás dos açores kg — 9.99 €/kg
+  - apolonia: Ananás Açores Kg — 14.99 €/kg
+- **Espinafres** (`espinafres`)
+  - **⚠ auchan: Espinafres auchan folhas porções 1kg — 1.69 €/kg**
+  - **⚠ continente: Espinafres em Folha Continente — 1.72 €/kg**
+  - pingo-doce: Espinafres Embalados — 5.99 €/kg
+  - apolonia: Espinafres Folhas Iglo 450g — 8.2 €/kg
+- **Frango inteiro** (`frango inteiro`)
+  - continente: Frango Inteiro com Miúdos Continente — 2.49 €/kg
+  - pingo-doce: Frango Inteiro com Miúdos — 2.49 €/kg
+  - auchan: Frango inteiro com miúdos em saco auchan kg — 2.49 €/kg
+  - **⚠ apolonia: Frango Inteiro Biologic Kg — 16.95 €/kg**
+- **Bifes de peru** (`bifes de peru`)
+  - pingo-doce: Peito/Bife de Peru Embalado — 8.49 €/kg
+  - auchan: Bife de peru auchan emb.familiar kg — 8.79 €/kg
+  - continente: Bifes de Peru Continente — 8.99 €/kg
+  - **⚠ apolonia: Bife de Peru com Tomilho & Limão bio Kg — 37.95 €/kg**
+- **Vitela** (`vitela`)
+  - **⚠ pingo-doce: Meia Mão de Vitelão — 5.99 €/kg**
+  - continente: Bife do Coração de Alcatra de Vitela Fatiado no Balcão Continente — 16.99 €/kg
+  - apolonia: Vitela de 1ª Kg — 25.95 €/kg
+  - auchan: Vitela de alcatra europa 200g — 34.95 €/kg
+- **Amêijoas** (`amêijoas`)
+  - **⚠ apolonia: Amêijoa Vietnamita 60/80 1Kg — 3.99 €/kg**
+  - auchan: Amêijoa auchan vietnamita com casca 500g — 4.98 €/kg
+  - pingo-doce: Amêijoa Branca Grande Fresca Embalada — 12.99 €/kg
+  - continente: Amêijoa Macha Fresca — 33.98 €/kg
+- **Margarina** (`creme vegetal`)
+  - auchan: Creme vegetal banquete culinária 1kg — 1.5 €/kg
+  - continente: Creme Vegetal Culinário Continente — 2.49 €/kg
+  - pingo-doce: Creme Vegetal Culinário — 2.49 €/kg
+  - aldi: Creme Vegetal — 6.36 €/kg
+  - **⚠ apolonia: Creme Vegetal Schlagfix 200g — 8.75 €/kg**
+- **Vinagre** (`vinagre`)
+  - continente: Vinagre de Vinho Branco Continente — 0.75 €/l
+  - pingo-doce: Vinagre de Vinho Branco — 0.75 €/l
+  - auchan: Vinagre auchan de vinho branco 1l — 0.75 €/l
+  - **⚠ apolonia: Vinagre Vinho Branco Leziria 500ml — 2.3 €/l**
+- **Louro** (`louro`)
+  - continente: Louro Fresco Continente — 54.5 €/kg
+  - auchan: Louro 25g — 43.6 €/kg
+  - **⚠ apolonia: Louro Fresco Louriplanta 20g — 174.5 €/kg**
+- **Canela** (`canela`)
+  - **⚠ auchan: Canela auchan frasco 32 g — 20.31 €/kg**
+  - continente: Canela em Pau em Frasco Margão — 72.42 €/kg
+  - pingo-doce: Canela em Pau Especial Café — 72.42 €/kg
+  - apolonia: Canela Condimar Pacote Pequeno 14g — 89.29 €/kg
+- **Pão ralado** (`pão ralado`)
+  - aldi: Pão Ralado — 1.89 €/kg
+  - continente: Pão Ralado — 1.97 €/kg
+  - pingo-doce: Pão Ralado — 2 €/kg
+  - auchan: Pão ralado auchan 240g — 2 €/kg
+  - **⚠ apolonia: Pão Ralado Espiga 200g — 7.45 €/kg**
+- **Frutos secos** (`frutos secos`)
+  - continente: Mix Frutos Secos Mediterrâneo Continente — 7.95 €/kg
+  - auchan: Mistura frutos secos polegar party 500 g — 7.98 €/kg
+  - pingo-doce: Mix 5 Frutos Secos — 11.81 €/kg
+  - lidl: FRUTORRA Mix Frutos Secos Aperitivo — 16.64 €/kg
+  - **⚠ apolonia: Frutos Secos Mix Florette 70g — 35.57 €/kg**
+- **Água com gás** (`água com gás`)
+  - auchan: Água com gás auchan 1.5l — 0.33 €/l
+  - continente: Água com Gás Continente — 0.33 €/l
+  - apolonia: Água com Gás Cristaline Volta 1.5L — 0.5 €/l
+  - pingo-doce: Água com Gás Pack 4 — 0.79 €/l
+  - **⚠ aldi: Água com Gás — 1.51 €/l**
+- **Vinho tinto** (`vinho tinto`)
+  - continente: Continente Vinho Tinto — 0.99 €/l
+  - pingo-doce: Vinho Tinto Pingo Doce — 0.99 €/l
+  - auchan: Vinho tinto colheita secular tinto 1l — 0.99 €/l
+  - lidl: CHÃO DE PIAS Vinho Tinto — 1.14 €/l
+  - aldi: Vinho Tinto DOC — 2.65 €/l
+  - **⚠ apolonia: Vinho Tinto Meandro 75cl — 21.27 €/l**
+- **Gelado** (`gelado`)
+  - continente: Gelado Nata Continente — 2.69 €/l
+  - pingo-doce: Gelado Tripla Delícia — 1.65 €/l
+  - auchan: Gelado auchan de nata 1l — 2.69 €/l
+  - **⚠ apolonia: Gelado Brookies & Cream Ben & Jerry`s 465ml — 15.03 €/l**
+  - **⚠ lidl: DELUXE Gelado Mini — 10.64 €/l**
+- **Gel de banho** (`gel de banho`)
+  - pingo-doce: Gel de Banho Frutado — 0.99 €/l
+  - continente: Gel de Banho Multifrutos MYLABEL — 1.05 €/l
+  - aldi: Gel de Limpeza para Casa de Banho 3 em 1 — 1.13 €/l
+  - auchan: Gel de banho cosmia recarga amora e romã 1l — 1.59 €/l
+  - **⚠ apolonia: Gel de Banho Leite de Burra Confiança 800ml — 5.61 €/l**
+- **Escova de dentes** (`escova de dentes`)
+  - pingo-doce: Escovas de Dentes Clássicas Médias Pack 4 — 0.32 €/un
+  - auchan: Escova dentes auchan clássica média 4 un — 0.32 €/un
+  - continente: Escova de Dentes Freshstart Continente — 0.4 €/un
+  - aldi: Escova de Dentes Triple Action Média — 0.75 €/un
+  - **⚠ apolonia: Escova Dentífrica Dentes Leite Aquafresh — 3.49 €/un**
+- **Desodorizante** (`desodorizante`)
+  - **⚠ pingo-doce: Desodorizante Stick DRy Impact — 4.18 €/l**
+  - continente: Desodorizante Roll-On Active MYLABEL — 17 €/l
+  - auchan: Desodorizante roll on cosmia romã sem alumínio 50ml — 17 €/l
+  - apolonia: Desodorizante Shower Fresh 48H Rexona 200ml — 23.25 €/l
+- **Detergente da loiça** (`detergente loiça`)
+  - auchan: Detergente loiça manual higs limão 5l — 0.73 €/l
+  - pingo-doce: Detergente Loiça Manual Limão — 0.79 €/l
+  - continente: Detergente Manual Loiça Power+ Limão Continente — 0.83 €/l
+  - apolonia: Detergente Loiça Maçã Limpa Bem 1L — 1.29 €/l
+  - lidl: Detergente de Loiça de Limão — 2 €/l
+  - **⚠ aldi: Detergente Manual da Loiça Ultra Original — 4.57 €/l**
+- **Guardanapos** (`guardanapos`)
+  - continente: Guardanapo 1 Folha Branco Continente — 0.01 €/un
+  - pingo-doce: Guardanapos 2 Folhas - 100un — 0.01 €/un
+  - auchan: Guardanapos actuel folha dupla 22x22cm 100 unidades — 0.01 €/un
+  - aldi: Guardanapos — 0.01 €/un
+  - **⚠ apolonia: Guardanapos Vermelho Hodecor 40x40cm 50un — 0.07 €/un**
+- **Esponjas** (`esponjas`)
+  - pingo-doce: Esponja Puff — 0.99 €/un
+  - continente: Esponja Cozinha Natsil — 1.19 €/un
+  - **⚠ auchan: Esponjas banho neosanit com sabão uso único 25un — 0.28 €/un**
+  - apolonia: Esponja Salva Unhas Scotch-Brite 2un — 1.04 €/un
+- **Ração para cão** (`ração cão`)
+  - continente: Ração para Cão Adulto Mypet — 0.72 €/kg
+  - pingo-doce: Comida Seca para Cão — 0.77 €/kg
+  - auchan: Ração para cão polegar adulto 20 kg — 0.77 €/kg
+  - aldi: Ração para Cão Adulto de Raça Média / Grande com Vaca — 1.2 €/kg
+  - **⚠ apolonia: Ração Húmida de Borrego para Cão Bribon 1250g — 3.19 €/kg**
+- **Ração para gato** (`ração gato`)
+  - auchan: Ração para gato auchan essencial mix cereais carne e peixe 7kg — 1.21 €/kg
+  - pingo-doce: Comida Seca para Gato com Carne — 1.45 €/kg
+  - continente: Ração para Gato Adulto Croquetes Peixe Continente Pet Basic — 1.5 €/kg
+  - **⚠ apolonia: Ração Original Fish Select para Gato Felix 12x85g — 8.32 €/kg**
+- **massa** (`massa`, escrita à mão)
+  - continente: Massa Esparguete Pack Poupança Continente — 0.99 €/kg
+  - pingo-doce: Massa Espirais — 1.29 €/kg
+  - auchan: Massa penne auchan 500g — 1.3 €/kg
+  - apolonia: Massa Esparguete Nacional 500g — 2.7 €/kg
+  - **⚠ aldi: Massa Proteica — 4.48 €/kg**
+- **bifes** (`bifes`, escrita à mão)
+  - pingo-doce: Bife/Peito de Frango a granel — 6.49 €/kg
+  - continente: Bifes de Frango Continente — 6.99 €/kg
+  - auchan: Bife de frango auchan kg — 6.99 €/kg
+  - aldi: Bife do Dianteiro dos Açores — 13.3 €/kg
+  - **⚠ apolonia: Bife da Vazia de Novilho Bellechalotte Kg — 30.95 €/kg**
+- **mortadela** (`mortadela`, escrita à mão)
+  - continente: Mortadela de Porco Fatias Finas Continente — 4.95 €/kg
+  - pingo-doce: Mortadela Fatiada — 4.95 €/kg
+  - auchan: Mortadela com azeitonas auchan fatias 200g — 4.95 €/kg
+  - apolonia: Mortadela Económica Fatias Nobre 120g — 11.67 €/kg
+  - **⚠ aldi: Mortadela — 18.95 €/kg**
+- **leite achocolatado** (`leite achocolatado`, escrita à mão)
+  - continente: Leite Achocolatado Continente — 1.58 €/l
+  - pingo-doce: Leite Achocolatado Pack 4 — 1.65 €/l
+  - **⚠ auchan: Leite meio gordo uht grandeur nature achocolatado bio 200ml — 6.95 €/l**
+- **pipocas** (`pipocas`, escrita à mão)
+  - continente: Milho para Pipocas Continente — 1.56 €/kg
+  - pingo-doce: Milho para Pipocas — 1.56 €/kg
+  - auchan: Pipocas micro-ondas auchan com sal 270g (3x90 — 4.63 €/kg
+  - apolonia: Pipocas com Manteiga para Microondas Bop 90g — 11 €/kg
+  - **⚠ aldi: Pipocas com Caramelo Toffee — 15.92 €/kg**
+- **fanta** (`fanta`, escrita à mão)
+  - **⚠ continente: Refrigerante com Gás Limão sem Açúcar Fanta — 0.66 €/l**
+  - auchan: Refrigerante c/gás fanta uva lata 6x0.33l (sdr) — 2.42 €/l
+  - pingo-doce: Refrigerante Fanta Laranja — 0.99 €/l
+  - apolonia: Refrigerante Fanta Laranja Volta 50cl — 2.38 €/l
+- **chá verde** (`chá verde`, escrita à mão)
+  - continente: Chá Verde Saquetas Continente — 0.04 €/un
+  - pingo-doce: Chá Verde — 0.04 €/un
+  - **⚠ auchan: Chá lipton verde menta 20 pyramides — 0.14 €/un**
+- **meloa** (`meloa`, escrita à mão)
+  - **⚠ auchan: Meloa kg produto local — 0.99 €/kg**
+  - continente: Meloa Cantalupe/Charentais Continente — 2.49 €/kg
+  - pingo-doce: Meloa Galia — 2.99 €/kg
+  - apolonia: Meloa Gália Kg — 3.49 €/kg
+- **tampões** (`tampões`, escrita à mão)
+  - auchan: Tampões auchan normal sem aplicador 24un — 0.06 €/un
+  - continente: Tampão sem Aplicador Regular MYLABEL — 0.06 €/un
+  - pingo-doce: Tampão Digital Normal — 0.06 €/un
+  - **⚠ apolonia: Tampões O.B. Pro Comfort Super 16un — 0.21 €/un**
+  - **⚠ aldi: Tampões Pearl Compak com Aplicador — 0.27 €/un**
+
+## Produto diferente da última auditoria (0)
+
+## Menos de 2 lojas (13)
+- **Couve galega** (`couve galega`)
+  - apolonia: Couve Galega Embalada Kg — 9.99 €/kg
+- **Febras de porco** (`febras`)
+  - apolonia: Febra de Porco Kg — 5.95 €/kg
+- **Legumes para sopa** (`legumes para sopa`)
+  - auchan: Legumes para sopa auchan 1kg — 2.2 €/kg
+- **Espinafres congelados** (`espinafres congelados`)
+  - pingo-doce: Espinafres em Folha Congelados — 1.88 €/kg
+- **Multiusos** (`multiusos`)
+  - continente: Multiusos com Lixívia Spray Power+ Continente — 2.12 €/l
+- **Puré de fruta para bebé** (`boião fruta`)
+  - auchan: Boião de fruta auchan bio cultivamos o bom de maçã 580g — 4.12 €/kg
+- **Areia para gato** (`areia gato`)
+  - auchan: Areia para gato auchan mineral aglomerante compacta 5l — 0.58 €/l
+- **planta** (`planta`, escrita à mão) — nenhuma
+- **torradas** (`torradas`, escrita à mão) — nenhuma
+- **cereais crianças** (`cereais crianças`, escrita à mão)
+  - auchan: Cereais nacional criança chocomax 650g — 5.15 €/kg
+- **frutos vermelhos** (`frutos vermelhos`, escrita à mão)
+  - apolonia: Frutos Vermelhos Bio Origens 300g — 13.3 €/kg
+- **lava loiça** (`lava loiça`, escrita à mão) — nenhuma
+- **ariel** (`ariel`, escrita à mão)
+  - continente: Intensificador Perfume Pérolas Unstoppables Ariel Lenor — 26.24 €/kg
