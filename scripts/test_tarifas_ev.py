@@ -1,4 +1,5 @@
 """Testes do extractor de tarifas MOBI.E (python3 -m unittest scripts/test_tarifas_ev.py)."""
+import io
 import json
 import os
 import sys
@@ -56,6 +57,38 @@ class TestTarifasEV(unittest.TestCase):
             self.assertEqual(linha["id"], "mobie")
             self.assertEqual(linha["n_postos"], 2)
             self.assertEqual(linha["publicado_em"], "2026-11-06T10:00:00Z")
+
+
+class TestDownloadIncompleto(unittest.TestCase):
+    def test_xml_cortado_repete_e_troca_de_servidor(self):
+        # Simula o caso real: o 1.º download chega cortado, o 2.º vem inteiro.
+        with open(INFRA, "rb") as f:
+            completo = f.read()
+        chamadas = []
+
+        def abrir_falso(urls):
+            chamadas.append(list(urls))
+            dados = completo[: len(completo) // 2] if len(chamadas) == 1 else completo
+            return io.BytesIO(dados)
+
+        original, dormir = tarifas_ev.abrir, tarifas_ev.time.sleep
+        tarifas_ev.abrir, tarifas_ev.time.sleep = abrir_falso, lambda s: None
+        try:
+            sites, _ = tarifas_ev.com_tentativas(["u1", "u2"], tarifas_ev.ler_inventario, "teste")
+        finally:
+            tarifas_ev.abrir, tarifas_ev.time.sleep = original, dormir
+        self.assertEqual(set(sites), {"SITE-A", "SITE-B", "SITE-C"})
+        self.assertEqual(chamadas, [["u1", "u2"], ["u2", "u1"]])
+
+    def test_desiste_ao_fim_das_tentativas(self):
+        original, dormir = tarifas_ev.abrir, tarifas_ev.time.sleep
+        tarifas_ev.abrir = lambda urls: io.BytesIO(b"<a><b>")
+        tarifas_ev.time.sleep = lambda s: None
+        try:
+            with self.assertRaises(tarifas_ev.ET.ParseError):
+                tarifas_ev.com_tentativas(["u1", "u2"], tarifas_ev.ler_inventario, "teste")
+        finally:
+            tarifas_ev.abrir, tarifas_ev.time.sleep = original, dormir
 
 
 if __name__ == "__main__":
