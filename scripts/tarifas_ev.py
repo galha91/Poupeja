@@ -33,6 +33,7 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import os
 import sys
@@ -155,12 +156,43 @@ def percorrer(fonte, tratar, rotulo):
                     el.clear()
             if lidos % (20 << 20) < (1 << 16):
                 print(f"  {rotulo}: {lidos >> 20} MB ({time.time() - t0:.0f}s)", flush=True)
+        # Se o servidor anunciou o tamanho e chegou menos, a ligação caiu a meio.
+        total = f.headers.get("Content-Length") if hasattr(f, "headers") else None
+        if total and total.isdigit() and lidos < int(total):
+            raise http.client.IncompleteRead(b"", int(total) - lidos)
     parser.close()
     for _, el in parser.read_events():
         if tratar(el):
             el.clear()
     print(f"  {rotulo}: {lidos >> 20} MB lidos em {time.time() - t0:.0f}s", flush=True)
     return publicado
+
+
+# Erros de um download que caiu a meio: XML cortado, ligação fechada, timeout.
+ERROS_DOWNLOAD = (ET.ParseError, http.client.HTTPException, urllib.error.URLError, TimeoutError, OSError)
+
+
+def com_tentativas(fonte, ler, rotulo, tentativas=3):
+    """Corre ler(fonte) e repete o download inteiro se vier incompleto.
+
+    O feed do MOBI.E (~180 MB) às vezes chega cortado: a ligação cai a meio
+    e o XML fica por fechar. abrir() só repete falhas ao abrir a ligação;
+    aqui repetimos a leitura toda, alternando entre os servidores. ler()
+    tem de começar do zero em cada chamada (estado novo).
+    Ficheiros locais não são repetidos.
+    """
+    if isinstance(fonte, str):
+        return ler(fonte)
+    urls = list(fonte)
+    for n in range(tentativas):
+        try:
+            return ler(urls)
+        except ERROS_DOWNLOAD as e:
+            if n == tentativas - 1:
+                raise
+            print(f"  {rotulo}: download incompleto ({e}); a repetir ({n + 2}/{tentativas})…", flush=True)
+            urls = urls[1:] + urls[:1]  # começa pelo outro servidor
+            time.sleep(10 * (n + 1))
 
 
 # ─── inventário ─────────────────────────────────────────────────────────────
@@ -332,11 +364,13 @@ def main(argv=None):
     agora = args.agora or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     print("A ler o inventário…", flush=True)
-    sites, pub_infra = ler_inventario(args.infra or INFRA_URLS)
+    sites, pub_infra = com_tentativas(args.infra or INFRA_URLS, ler_inventario, "inventário")
     print(f"  {len(sites)} postos", flush=True)
 
     print("A ler estado e tarifas…", flush=True)
-    tarifas, pub_estado = ler_estado(args.status or STATUS_URLS, agora)
+    tarifas, pub_estado = com_tentativas(
+        args.status or STATUS_URLS, lambda fonte: ler_estado(fonte, agora), "estado"
+    )
     print(f"  {len(tarifas)} pontos com tarifa", flush=True)
 
     postos = juntar(sites, tarifas)
