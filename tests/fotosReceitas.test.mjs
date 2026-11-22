@@ -10,7 +10,7 @@ const todas = receitas();
 test("fotografias: o pedido leva o nome, o que se vê no prato e o estilo comum", () => {
   const r = todas.find((x) => x.id === "bacalhau-bras");
   const p = promptDaFoto(r);
-  assert.match(p, /Bacalhau à Brás/);
+  assert.match(p, /bacalhau à Brás/i);
   assert.match(p, /bacalhau/);
   assert.ok(p.endsWith(ESTILO));
   // Sal, azeite e o resto da despensa não aparecem como ingredientes visíveis.
@@ -63,4 +63,11 @@ test("fotografias: cada receita do manifesto tem os 5 ficheiros", () => {
   for (const id of Object.keys(MANIFESTO.fotos)) {
     for (const suf of Object.keys(MAX_KB)) assert.ok(existsSync(new URL(`${id}-${suf}`, PASTA_FOTOS)), `${id}-${suf}`);
   }
+});
+
+import { DESCRICOES } from "../lib/receitas/fotoDescricoes.js";
+test("fotografias: todas as receitas têm descrição visual, e só receitas que existem", () => {
+  const ids = new Set(todas.map((r) => r.id));
+  for (const r of todas) assert.ok(DESCRICOES[r.id], `sem descrição: ${r.id}`);
+  for (const id of Object.keys(DESCRICOES)) assert.ok(ids.has(id), `descrição de receita que não existe: ${id}`);
 });

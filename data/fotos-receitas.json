@@ -1,3 +1,19 @@
 {
-  "fotos": {}
+  "fotos": {
+    "aletria": {
+      "fonte": "ia"
+    },
+    "arroz-doce": {
+      "fonte": "ia"
+    },
+    "bacalhau-bras": {
+      "fonte": "ia"
+    },
+    "bacalhau-gomes-sa": {
+      "fonte": "ia"
+    },
+    "rabanadas": {
+      "fonte": "ia"
+    }
+  }
 }
