@@ -35,3 +35,4 @@ DerivedData/
 
 # Python
 __pycache__/
+.fotos-geradas/

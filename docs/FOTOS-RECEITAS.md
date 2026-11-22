@@ -28,6 +28,37 @@
 Próximo passo, mais tarde: fotografias reais de quem fez a receita ("Fiz
 esta receita") passam à frente das da IA.
 
+## Gerar de graça, automaticamente (Cloudflare Workers AI)
+
+O caminho principal. O Cloudflare dá a cada conta grátis 10 000 "neurons"
+por dia no Workers AI; uma imagem do modelo FLUX.1 [schnell] (licença
+Apache 2.0, uso comercial permitido) gasta cerca de 77. São ~130 imagens por
+dia, sem pagar nada: as 153 receitas ficam feitas em dois dias.
+
+Preparar uma vez:
+
+1. Criar uma conta grátis em dash.cloudflare.com (não pede cartão).
+2. Copiar o **Account ID** (no painel, em Workers & Pages, coluna da direita).
+3. Criar um **API token**: My Profile → API Tokens → Create Token → modelo
+   "Workers AI" → Create. Copiar o token (só aparece uma vez).
+4. No GitHub do PoupeJá: Settings → Secrets and variables → Actions → New
+   repository secret: `CLOUDFLARE_ACCOUNT_ID` e `CLOUDFLARE_API_TOKEN`.
+
+Gerar:
+
+- GitHub → Actions → "Fotografias das receitas" → Run workflow, com o número
+  de receitas (30 por omissão; o Natal vem primeiro). O workflow gera as
+  imagens com o estilo único (`lib/receitas/fotoPrompt.js`), prepara os 5
+  tamanhos e abre um **pull request em rascunho**. Nada vai para o site sem
+  revisão.
+- Rever as imagens no PR. Uma que não sirva: apagar os 5 ficheiros dela e a
+  linha em `data/fotos-receitas.json`; voltar a gerar com outro pedido mais
+  tarde.
+- Juntar várias levas antes do merge: cada merge é um deploy.
+
+À mão, no computador: `CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node
+scripts/fotos-receitas/gerar.mjs --quantas 10` (ou `--ids rabanadas,aletria`).
+
 ## Fotografias reais com licença livre (Wikimedia Commons)
 
 Alternativa às imagens de IA, sem custos: fotografias reais com licença
