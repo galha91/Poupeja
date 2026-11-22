@@ -286,12 +286,6 @@ function useGasoleoHoje() {
 }
 
 
-function LogoFolheto({ loja }) {
-  // 44 era para uma linha de nome + uma de subtítulo. O subtítulo era a
-  // mesma frase repetida nas 9 lojas e saiu — o logótipo acompanha.
-  return <LogoLoja loja={loja} size={36} radius={10} bg="#eeece4" />;
-}
-
 /* ─── Herói do Início ───────────────────────────────────────────
  * A poupança é um indicador atrasado: só existe depois de haver um
  * talão guardado. Mostrar "€0,00" a 78px faz com que a coisa maior
@@ -822,7 +816,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {/* Folhetos a acabar */}
         {folhetos.length > 0 && (
           <div className="anim-up anim-up-4">
-            <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
+            <div className="flex items-baseline justify-between" style={{ marginBottom: 12 }}>
               {/*
                 Chamava-se "Folhetos a acabar" — e não havia lógica de fim
                 nenhuma: é a lista do ficheiro, por ordem alfabética. Nada
@@ -830,26 +824,19 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
                 reais de nenhum deles. Saem todas as lojas, sem "Ver todos".
               */}
               <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos desta semana</span>
+              <button onClick={() => setTab("mercados", "folhetos")} className="pj-tap pj-alvo" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "none", border: 0 }}>Ver todos</button>
             </div>
-            <div className="flex flex-col">
+            {/* Fila de logótipos em vez de 9 linhas iguais: a lista ocupava
+                um ecrã inteiro só com nomes. Desliza para o lado; quem quer
+                ver todos tem "Ver todos" no título. */}
+            <div className="flex overflow-x-auto" style={{ gap: 8, margin: "0 -24px", padding: "2px 24px 4px", scrollbarWidth: "none" }}>
               {folhetos.map((f, i) => (
-                <div key={f.id || i}>
-                  {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
-                  <button onClick={() => embutivel(f.loja) ? setFolhetoAberto(f) : f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
-                    <LogoFolheto loja={f.loja} />
-                    {/*
-                      Eram três colunas e duas não diziam nada: o `titulo` é a
-                      string "Folheto desta semana" gravada igual nas 9 lojas,
-                      e a `validade` era a semana civil, também igual em todas
-                      e inventada. Cinco linhas a repetir o mesmo texto duas
-                      vezes. Fica o que distingue mesmo cada linha: a loja.
-                    */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{f.loja}</div>
-                    </div>
-                    <ChevronRight size={18} style={{ color: "var(--pj-text-faint)", flex: "none" }} />
-                  </button>
-                </div>
+                <button key={f.id || i} onClick={() => { evento("inicio_folheto", { loja: f.loja }); embutivel(f.loja) ? setFolhetoAberto(f) : f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos"); }}
+                  className="pj-tap flex flex-col items-center flex-none" aria-label={`Folheto ${f.loja}`}
+                  style={{ gap: 6, width: 72, padding: "8px 2px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  <LogoLoja loja={f.loja} size={40} radius={11} bg="#eeece4" />
+                  <span className="truncate" style={{ maxWidth: 66, fontSize: 11.5, fontWeight: 600, color: "var(--pj-text)" }}>{f.loja}</span>
+                </button>
               ))}
             </div>
           </div>

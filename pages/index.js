@@ -99,7 +99,7 @@ const NAV_IDS = ["inicio","mercados","receitas","contas","mobilidade","poupanca"
 const TITULOS = {
   inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
   mercados:   { t: "Compras",                           s: "Onde fica mais barato, e os folhetos da semana" },
-  receitas:   { t: "Receitas baratas",                  s: "Ementas da semana com lista de compras" },
+  receitas:   { t: "Receitas",                          s: "O que fazer para o jantar, e quanto custa" },
   lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
   mobilidade: { t: "Combustível",                       s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },

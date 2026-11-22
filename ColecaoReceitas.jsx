@@ -63,7 +63,7 @@ export default function ColecaoReceitas({ colecao, lista, grupos }) {
                 <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--pj-text)" }}>{r.nome}</span>
                 <span className="flex flex-wrap items-center gap-x-3" style={{ fontSize: 12.5, color: "var(--pj-text-muted)", marginTop: 2 }}>
                   <span className="inline-flex items-center gap-1"><Clock size={11} /> {tempo(r.tempoMin)}</span>
-                  <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>{"€".repeat(r.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - r.custo)}</span></span>
+                  <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>{"€".repeat(r.custo)}<span aria-hidden="true" style={{ color: "var(--pj-text-faint)", opacity: 0.45 }}>{"€".repeat(3 - r.custo)}</span></span>
                   <span>{r.kcal} kcal</span>
                   {r.vegano ? <span className="inline-flex items-center gap-1"><Leaf size={11} /> vegano</span>
                     : r.veg ? <span className="inline-flex items-center gap-1"><Leaf size={11} /> vegetariano</span> : null}

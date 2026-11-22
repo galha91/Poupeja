@@ -42,7 +42,7 @@ export function BadgeCusto({ custo, claro = false, id = null, un = "pessoas" }) 
   }
   return (
     <span className="font-semibold" style={{ fontSize: 12, color: claro ? "#fff" : "var(--pj-brand-ink)" }}>
-      {"€".repeat(custo)}<span style={{ color: claro ? "rgba(255,255,255,0.4)" : "#cfccbf" }}>{"€".repeat(3 - custo)}</span>
+      {"€".repeat(custo)}<span aria-hidden="true" style={{ color: claro ? "rgba(255,255,255,0.4)" : "var(--pj-text-faint)", opacity: claro ? 1 : 0.45 }}>{"€".repeat(3 - custo)}</span>
     </span>
   );
 }

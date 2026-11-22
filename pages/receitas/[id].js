@@ -121,7 +121,7 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
             </a>
           ) : (
             <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-              {"€".repeat(receita.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - receita.custo)}</span>
+              {"€".repeat(receita.custo)}<span aria-hidden="true" style={{ color: "var(--pj-text-faint)", opacity: 0.45 }}>{"€".repeat(3 - receita.custo)}</span>
               {" "}{receita.custo === 1 ? "muito barata" : "barata"}
             </span>
           )}
