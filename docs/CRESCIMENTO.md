@@ -287,7 +287,9 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
   `/receitas/[id]`: porções ajustáveis e "Adicionar à lista de compras"
   logo a seguir aos ingredientes (a lista é a mesma da app). No Início, quem
   compara listas sem guardar talões vê "Já poupaste X € em <mês>". O email
-  semanal de quinta-feira leva o "Jantar da semana" (a sugestão da app).
+  semanal passa de quinta para segunda-feira às 07:00 UTC (8 h em Lisboa
+  no verão) e leva o "Jantar da semana" (a sugestão da app, que muda à
+  segunda). O email do combustível continua à segunda às 08:00 UTC.
 - **Medida:** eventos `receita_lista` (onde: pagina) e `inicio_poupanca`;
   entradas `?o=email-receita`; instalações (antes e depois).
 - **Rever em:** 13 dez 2026.

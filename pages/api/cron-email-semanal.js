@@ -13,7 +13,10 @@ import { lerCustosReceitas } from "../../lib/receitasCusto";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
- * desativaram o resumo. Disparado pelo Vercel Cron (ver vercel.json).
+ * desativaram o resumo. Disparado pelo Vercel Cron (ver vercel.json), à
+ * segunda-feira às 07:00 UTC: as famílias planeiam a semana e as compras
+ * ao início da semana, e o "Jantar da semana" (a sugestão da app) muda à
+ * segunda.
  *
  * Protegido por CRON_SECRET: o Vercel envia o header
  * "Authorization: Bearer <CRON_SECRET>" automaticamente.
