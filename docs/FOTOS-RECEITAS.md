@@ -59,6 +59,20 @@ Gerar:
 À mão, no computador: `CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_API_TOKEN=… node
 scripts/fotos-receitas/gerar.mjs --quantas 10` (ou `--ids rabanadas,aletria`).
 
+### Garantir que cada imagem é da receita certa
+
+1. **Descrição visual em inglês** de cada prato (`lib/receitas/fotoDescricoes.js`):
+   o modelo não conhece os pratos portugueses pelo nome. Os testes falham se
+   uma receita não tiver descrição.
+2. **Verificação automática** (`scripts/fotos-receitas/verificar.mjs`): antes
+   de entrar, cada imagem nova é vista por um modelo de visão (Llama 3.2
+   Vision, na mesma conta grátis), que diz se mostra o prato descrito. Se não
+   mostrar, gera-se outra; à segunda, a receita fica de fora. Para verificar as
+   que já existem: `node scripts/fotos-receitas/verificar.mjs`.
+3. **Revisão humana**: folha de revisão com cada fotografia ao lado do nome e
+   dos ingredientes, e as erradas voltam a ser geradas com a descrição
+   corrigida.
+
 ## Fotografias reais com licença livre (Wikimedia Commons)
 
 Alternativa às imagens de IA, sem custos: fotografias reais com licença
