@@ -4,7 +4,7 @@ export const config = { runtime: "edge" };
 
 export default function handler(req) {
   let variante = "default", valorRaw = null, mesRaw = "", taloesRaw = null, streakRaw = null;
-  let nomeRaw = "", tempoRaw = 0, custoRaw = 1;
+  let nomeRaw = "", tempoRaw = 0, custoRaw = 1, ppRaw = 0;
   try {
     const sp = new URL(req.url).searchParams;
     variante = sp.get("v") || "default";
@@ -15,6 +15,8 @@ export default function handler(req) {
     nomeRaw = (sp.get("nome") || "").slice(0, 60);
     tempoRaw = Math.min(parseInt(sp.get("tempo")) || 0, 999);
     custoRaw = Math.min(Math.max(parseInt(sp.get("custo")) || 1, 1), 3);
+    // Custo por pessoa com os preços de hoje (as receitas mandam-no quando o sabem).
+    ppRaw = Math.min(Math.max(parseFloat(sp.get("pp")) || 0, 0), 99);
   } catch {}
   const lista = variante === "lista";
   const retrato = variante === "retrato";
@@ -34,7 +36,7 @@ export default function handler(req) {
     : poupanca ? `${retrato ? "Poupei" : "Já poupei"} €${valorFmt}`
     : "Poupa nas compras";
   const titulo2 = lista ? "de compras"
-    : receita ? `${tempoRaw ? `${tempoRaw < 60 ? `${tempoRaw} min` : `${Math.floor(tempoRaw / 60)} h${tempoRaw % 60 ? ` ${String(tempoRaw % 60).padStart(2, "0")}` : ""}`} · ` : ""}${"€".repeat(custoRaw)} 🍲`
+    : receita ? `${tempoRaw ? `${tempoRaw < 60 ? `${tempoRaw} min` : `${Math.floor(tempoRaw / 60)} h${tempoRaw % 60 ? ` ${String(tempoRaw % 60).padStart(2, "0")}` : ""}`} · ` : ""}${ppRaw > 0 ? `${ppRaw.toFixed(2).replace(".", ",")} € por pessoa` : "€".repeat(custoRaw)} 🍲`
     : retrato ? "num só mês 🐷"
     : poupanca ? "nas compras 🐷"
     : "do dia a dia";

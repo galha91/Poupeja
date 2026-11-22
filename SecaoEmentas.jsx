@@ -6,7 +6,8 @@ import {
   rejeitar, ajustarDia, dosesDoDia, MODOS_TROCA, MAX_CONVIDADOS, almocoDe, marmitasDoPlano,
 } from "./lib/receitas/motor";
 import DespensaReceitas from "./DespensaReceitas";
-import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes } from "./ReceitaDetalhe";
+import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes, CustosReceitas } from "./ReceitaDetalhe";
+import { adicionarALista } from "./lib/receitas/paraLista";
 import EmentasAssistente from "./EmentasAssistente";
 import { marcarEmentasVistas, Azulejos } from "./DestaqueEmentas";
 import CompararLista from "./CompararLista";
@@ -29,7 +30,6 @@ import { eur } from "./lib/formato";
  * Fica tudo no dispositivo (preferências, plano, despensa e estrelas).
  */
 
-const LS_LISTA = "poupeja_lista_compras";
 const LS_PREFS = "poupeja_ementas_prefs";
 const LS_PLANO = "poupeja_ementas_plano";
 const LS_DESPENSA = "poupeja_despensa";
@@ -46,34 +46,12 @@ function segunda(d) {
   return x.getTime();
 }
 
-/*
- * Junta artigos à Lista de Compras com o nome do catálogo (assim a
- * comparação de preços reconhece-os). Os que já lá estão por comprar não
- * se duplicam. Devolve quantos entraram.
- */
-async function adicionarALista(artigos) {
-  const [{ adicionar }, { doCatalogo }] = await Promise.all([import("./lib/listaCompras"), import("./lib/catalogoLista")]);
-  let lista = [];
-  try { lista = JSON.parse(localStorage.getItem(LS_LISTA) || "[]"); } catch {}
-  const norm = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-  let novos = 0;
-  for (const a of artigos) {
-    const nome = a.compra || a.nome;
-    const final = doCatalogo(nome)?.nome || nome;
-    if (lista.some((i) => !i.feito && norm(i.nome) === norm(final))) continue;
-    lista = adicionar(lista, nome, { doCatalogo });
-    novos++;
-  }
-  try { localStorage.setItem(LS_LISTA, JSON.stringify(lista)); } catch {}
-  return novos;
-}
-
 function Meta({ r, claro = false }) {
   const cor = claro ? "rgba(255,255,255,0.75)" : "var(--pj-text-muted)";
   return (
     <span className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mt-0.5" style={{ fontSize: 12, color: cor }}>
       <span className="inline-flex items-center gap-1"><Clock size={11} /> {formatarTempo(r.tempoMin)}</span>
-      <BadgeCusto custo={r.custo} claro={claro} />
+      <BadgeCusto custo={r.custo} claro={claro} id={r.id} un={r.un} />
       <span className="tabular-nums">{r.nutricao.kcal} kcal</span>
       {r.vegano ? <span className="inline-flex items-center gap-1"><Leaf size={11} /> vegano</span>
         : r.veg ? <span className="inline-flex items-center gap-1"><Leaf size={11} /> veggie</span> : null}
@@ -236,7 +214,11 @@ function resumoPrefs(p) {
   return [...partes, ...nomes].join(" · ");
 }
 
-export default function SecaoEmentas({ setTab }) {
+export default function SecaoEmentas(props) {
+  return <CustosReceitas.Provider value={props.custos || null}><SecaoEmentasConteudo {...props} /></CustosReceitas.Provider>;
+}
+
+function SecaoEmentasConteudo({ setTab }) {
   const [prefs, setPrefs] = useState(null);
   const [plano, setPlano] = useState(null);
   const [aval, setAval] = useState({});

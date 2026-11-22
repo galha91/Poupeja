@@ -95,6 +95,7 @@ export default function BlackFriday() {
           { href: "/garantias", texto: "Garantia de 3 anos" },
           { href: "/devolucoes", texto: "Devolver compras online" },
           { href: "/reduflacao", texto: "Produtos que encolheram" },
+          { href: "/ceia-de-natal", texto: "Ceia de Natal mais barata" },
           { href: "/precos", texto: "Preços de supermercado", fraco: true },
         ]} />
       </div>

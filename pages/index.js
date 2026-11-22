@@ -55,21 +55,26 @@ function convidadoLocalNovo() {
 /* ─── nav config ─── */
 /* A barra de baixo leva 5 separadores. Com 7 sobravam ~55px cada num
    telemóvel normal, o que obrigava a etiquetas de 8px — ilegíveis.
-   Estes 5 são o que a app promete na entrada (folhetos, talões/poupança,
-   combustível) mais o Início e as Contas, que trazem gente de volta pelos
-   avisos de vencimento. */
+   As etiquetas dizem o que a pessoa vem fazer, em palavras do dia a dia:
+   "Compras" e não "Mercado" (soava a bolsa ou a mercado municipal),
+   "Combustível" e não "Mobilidade". As Receitas saíram de um terceiro
+   nível (Mercado → Ementas) para a barra: é o que se usa todos os dias
+   ("o que faço para o jantar?") e o caminho natural para a lista e os
+   preços. A Poupança é um painel de resultados: fica no Início (o
+   desafio do mês e a lista "Mais") e na barra lateral do desktop. */
 const NAV = [
-  { id: "inicio",     label: "Início",     icon: Home },
-  { id: "mercados",   label: "Mercado",    icon: ShoppingCart },
-  { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
-  { id: "contas",     label: "Contas",     icon: CalendarClock },
-  { id: "mobilidade", label: "Mobilidade", icon: Fuel },
+  { id: "inicio",     label: "Início",      icon: Home },
+  { id: "mercados",   label: "Compras",     icon: ShoppingCart },
+  { id: "receitas",   label: "Receitas",    icon: ChefHat },
+  { id: "contas",     label: "Contas",      icon: CalendarClock },
+  { id: "mobilidade", label: "Combustível", icon: Fuel },
 ];
 
 /* Usados menos vezes. Saem da barra de baixo, mas continuam a um toque
-   no "Explorar tudo" do Início — e a barra lateral do desktop, que tem
+   na lista "Mais" do Início — e a barra lateral do desktop, que tem
    espaço vertical de sobra, mostra-os na mesma. */
 const NAV_SECUNDARIO = [
+  { id: "poupanca",   label: "Poupança",   icon: PiggyBank },
   { id: "apoios",     label: "Apoios",     icon: Landmark },
   { id: "lojas",      label: "Lojas",      icon: Store },
 ];
@@ -78,8 +83,10 @@ const ATALHOS_SUB = {
   garantias:  ["taloes", "garantias"],
   renovacoes: ["contas", "renovacoes"],
   prazos:     ["apoios", "prazos"],
-  ementas:    ["mercados", "ementas"],
 };
+/* Atalhos antigos que hoje abrem outro separador (links já publicados,
+   emails, notificações e o manifest continuam a funcionar). */
+const ATALHOS_ALIAS = { ementas: "receitas" };
 function subDoAtalho(tab) {
   if (typeof window === "undefined") return null;
   try {
@@ -87,13 +94,14 @@ function subDoAtalho(tab) {
     return par && par[0] === tab ? par[1] : null;
   } catch { return null; }
 }
-const NAV_IDS = ["inicio","poupanca","mercados","contas","mobilidade","apoios","lojas","irs","taloes","lista"];
+const NAV_IDS = ["inicio","mercados","receitas","contas","mobilidade","poupanca","apoios","lojas","irs","taloes","lista"];
 
 const TITULOS = {
   inicio:     { t: "Olá! Bem-vindo de volta",          s: "Vamos poupar nas compras de hoje?" },
-  mercados:   { t: "Supermercados",                     s: "Preços, folhetos e ementas da semana" },
+  mercados:   { t: "Compras",                           s: "Onde fica mais barato, e os folhetos da semana" },
+  receitas:   { t: "Receitas",                          s: "O que fazer para o jantar, e quanto custa" },
   lojas:      { t: "Lojas",                             s: "Moda, eletrónica e desporto com desconto" },
-  mobilidade: { t: "Mobilidade",                        s: "Combustíveis e pontos de carregamento" },
+  mobilidade: { t: "Combustível",                       s: "Combustíveis e pontos de carregamento" },
   poupanca:   { t: "A tua poupança",                    s: "Quanto já poupaste este mês" },
   apoios:     { t: "Apoios do Estado",                  s: "Benefícios e prazos a não perder" },
   contas:     { t: "Contas",                            s: "Despesas fixas, renovações e crédito" },
@@ -117,18 +125,14 @@ function BotaoVoltar({ onClick }) {
 }
 
 /* ─── Wrapper Mercados ─── */
-function SecaoMercados({ setTab, inicioAba = "comparar" }) {
-  const [sub, setSub] = useState(inicioAba);
-  // Selo "Novo" nas Ementas até serem abertas pela primeira vez.
-  const [ementasNovas, setEmentasNovas] = useState(false);
-  useEffect(() => { setEmentasNovas(!jaViuEmentas()); }, [sub]);
+function SecaoMercados({ inicioAba = "comparar" }) {
+  const [sub, setSub] = useState(inicioAba === "folhetos" ? "folhetos" : "comparar");
   return (
     <div className="pb-28 pt-4">
       <div className="flex gap-1 p-1 rounded-2xl mx-4 mb-4" style={{ background: "var(--pj-subtle)" }}>
         {[
           { id: "comparar", icon: Scale, label: "Preços" },
           { id: "folhetos", icon: Tag, label: "Folhetos" },
-          { id: "ementas", icon: ChefHat, label: "Ementas" },
         ].map(o => (
           <button
             key={o.id}
@@ -137,22 +141,18 @@ function SecaoMercados({ setTab, inicioAba = "comparar" }) {
             style={sub === o.id ? { background: "var(--pj-card)", color: "var(--pj-text)" } : { color: "var(--pj-text-faint)" }}
           >
             <o.icon size={13} /> {o.label}
-            {o.id === "ementas" && ementasNovas && sub !== "ementas" && (
-              <span aria-label="novo" style={{ width: 7, height: 7, borderRadius: 4, background: "#e3b341", boxShadow: "0 0 0 2px var(--pj-subtle)" }} />
-            )}
           </button>
         ))}
       </div>
       {sub === "comparar" && <SecaoComparar />}
       {sub === "folhetos" && <SecaoFolhetos />}
-      {sub === "ementas" && <SecaoEmentas setTab={setTab} />}
     </div>
   );
 }
 
 /* ─── Root App ─── */
-export default function Pagina({ cabaz = null }) {
-  return <><HeadInicio /><PoupeJa cabaz={cabaz} /></>;
+export default function Pagina({ cabaz = null, custosReceitas = null }) {
+  return <><HeadInicio /><PoupeJa cabaz={cabaz} custosReceitas={custosReceitas} /></>;
 }
 
 /*
@@ -163,12 +163,14 @@ export default function Pagina({ cabaz = null }) {
  * mais de 2 dias), o Início mostra a porta "comparar" de sempre.
  */
 export async function getStaticProps() {
-  const { lerCabazInicio } = await import("../lib/cabazInicio");
-  const cabaz = await lerCabazInicio();
-  return { props: { cabaz }, revalidate: cabaz ? 6 * 3600 : 3600 };
+  const [{ lerCabazInicio }, { lerCustosReceitas }] = await Promise.all([import("../lib/cabazInicio"), import("../lib/receitasCusto")]);
+  // Duas linhas pequenas de paginas_marca: o cabaz e o custo por pessoa
+  // das receitas (~3 KB), lidas 4 vezes por dia.
+  const [cabaz, custosReceitas] = await Promise.all([lerCabazInicio(), lerCustosReceitas()]);
+  return { props: { cabaz, custosReceitas }, revalidate: cabaz ? 6 * 3600 : 3600 };
 }
 
-function PoupeJa({ cabaz }) {
+function PoupeJa({ cabaz, custosReceitas }) {
   const [user, setUser]           = useState(null);
   const [hydrated, setHydrated]   = useState(false);
   const [recovery, setRecovery]   = useState(false);
@@ -186,12 +188,16 @@ function PoupeJa({ cabaz }) {
         // já, em paralelo com o arranque, e não só quando o separador desenha.
         if (a === "lista") import("../SecaoListaCompras");
         if (a && NAV_IDS.includes(a)) return a;
+        if (a && ATALHOS_ALIAS[a]) return ATALHOS_ALIAS[a];
         if (a && ATALHOS_SUB[a]) return ATALHOS_SUB[a][0];
       } catch {}
     }
     return "inicio";
   });
   const [dir, setDir]             = useState("right");
+  // Selo "Novo" nas Receitas da barra até serem abertas pela primeira vez.
+  const [receitasNovas, setReceitasNovas] = useState(false);
+  useEffect(() => { setReceitasNovas(tab !== "receitas" && !jaViuEmentas()); }, [tab]);
   const [bounce, setBounce]       = useState(null);
   const [verAvisos, setVerAvisos]       = useState(false);
   const [verDefs, setVerDefs]           = useState(false);
@@ -379,6 +385,8 @@ function PoupeJa({ cabaz }) {
     return () => { cancelado = true; clearTimeout(timer); };
   }, [user?.id, user?.convidado]);
 
+  const tabAtual = useRef(tab);
+  tabAtual.current = tab;
   /* Convite a instalar: na 2ª visita (a 1ª é para ver o que a app faz), depois na 5ª e a cada 5 */
   useEffect(() => {
     if (!hydrated || !installModo || installModo === "instalado") return;
@@ -388,8 +396,13 @@ function PoupeJa({ cabaz }) {
     const visitas = parseInt(localStorage.getItem("poupeja_visitas") || "0") + 1;
     localStorage.setItem("poupeja_visitas", String(visitas));
     if (visitas === 2 || (visitas >= 5 && visitas % 5 === 0)) {
-      sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
-      setTimeout(() => setModalInstalarAberto(true), 2500);
+      // Só no Início: quem abre uma receita ou uma comparação veio fazer
+      // isso, e uma janela por cima interrompe-o.
+      setTimeout(() => {
+        if (tabAtual.current !== "inicio") return;
+        sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
+        setModalInstalarAberto(true);
+      }, 2500);
     }
   }, [hydrated, installModo]);
 
@@ -495,6 +508,8 @@ function PoupeJa({ cabaz }) {
   function go(newTab, sub) {
     if (newTab === tab) return;
     if (newTab === "taloes") setSubTabTaloes("compras");
+    // Quem ainda chama go("mercados", "ementas") vai para as Receitas.
+    if (newTab === "mercados" && sub === "ementas") return go("receitas");
     if (newTab === "mercados") setSubTabMercados(sub || "comparar");
     if (newTab === "contas") setSubTabContas(sub || "contas");
     if (newTab === "apoios") setSubTabApoios(sub || "apoios");
@@ -578,9 +593,9 @@ function PoupeJa({ cabaz }) {
   // "Ementas económicas" no Início abria os Supermercados em Folhetos —
   // o separador certo só se alcançava com mais um toque, às cegas.
   function goEmentas() {
-    setSubTabMercados("ementas");
     setDir("up");
-    setTabRaw("mercados");
+    setTabRaw("receitas");
+    ecra("receitas");
   }
 
   function navClick(id) {
@@ -722,8 +737,9 @@ function PoupeJa({ cabaz }) {
               </div>
             </header>)}
 
-            {/* Barra de instalação — todos os ecrãs */}
-            {installModo !== "instalado" && (
+            {/* Barra de instalação — só no Início. Nos outros separadores
+                empurrava para baixo o que a pessoa veio ver. */}
+            {installModo !== "instalado" && tab === "inicio" && (
               <BarraInstalacao
                 modo={installModo}
                 onAbrir={() => setModalInstalarAberto(true)}
@@ -739,7 +755,8 @@ function PoupeJa({ cabaz }) {
                     Talões). Nos 5 da barra era um botão a mais por cima de cada
                     ecrã; a lista tem o seu, ao lado do "Partilhar". */}
                 {!NAV.some(n => n.id === tab) && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
-                {tab === "mercados"   && <SecaoMercados setTab={go} inicioAba={subTabMercados} />}
+                {tab === "mercados"   && <SecaoMercados inicioAba={subTabMercados} />}
+                {tab === "receitas"   && <div className="pb-28 pt-4"><SecaoEmentas setTab={go} custos={custosReceitas} /></div>}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}
@@ -777,8 +794,11 @@ function PoupeJa({ cabaz }) {
                         strokeWidth={active ? 2.5 : 1.8}
                       />
                       <span className="text-[10px] font-semibold transition-colors duration-150"
-                        style={{ color: active ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
+                        style={{ position: "relative", color: active ? "var(--pj-brand-ink)" : "var(--pj-text-faint)" }}>
                         {it.label}
+                        {it.id === "receitas" && receitasNovas && (
+                          <span aria-label="novo" style={{ position: "absolute", top: -2, right: -8, width: 6, height: 6, borderRadius: 3, background: "#e3b341" }} />
+                        )}
                       </span>
                       <span
                         className="w-1 h-1 rounded-full transition-all duration-200"

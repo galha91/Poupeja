@@ -547,7 +547,7 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               <Mail size={17} style={{ color: "var(--pj-text-muted)" }} />
               <div>
                 <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Resumo automático semanal</p>
-                <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>Todas as quintas, com os folhetos da semana.</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>Todas as segundas de manhã, com os folhetos e o jantar da semana.</p>
               </div>
             </div>
             <Toggle on={!user?.convidado && prefs.emailSemanal !== false} onChange={v => { if (user?.convidado) { onCriarConta?.(); return; } set("emailSemanal", v); }} />

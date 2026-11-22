@@ -278,6 +278,42 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
 
 ## Registo
 
+### 22 nov 2026 (2): retenção, custo por pessoa na lista e receitas que compram
+
+- **O quê:** a barra e a janela "Instala a app" só aparecem no Início. O
+  custo por pessoa de cada receita é calculado no `cron-paginas-marca`
+  (`lib/receitasCusto*.js`, linha `inicio/receitas-custo`) e aparece na lista
+  de receitas da app e em `/receitas` no lugar de "€€". Nas páginas
+  `/receitas/[id]`: porções ajustáveis e "Adicionar à lista de compras"
+  logo a seguir aos ingredientes (a lista é a mesma da app). No Início, quem
+  compara listas sem guardar talões vê "Já poupaste X € em <mês>". O email
+  semanal passa de quinta para segunda-feira às 07:00 UTC (8 h em Lisboa
+  no verão) e leva o "Jantar da semana" (a sugestão da app, que muda à
+  segunda). O email do combustível continua à segunda às 08:00 UTC.
+- **Medida:** eventos `receita_lista` (onde: pagina) e `inicio_poupanca`;
+  entradas `?o=email-receita`; instalações (antes e depois).
+- **Rever em:** 13 dez 2026.
+- **Resultado:** por medir.
+
+### 22 nov 2026: Receitas na barra, ceia de Natal e custo por pessoa
+
+- **O quê:** barra de baixo passa a Início · Compras · Receitas · Contas ·
+  Combustível ("Mercado" e "Mobilidade" mudam de nome; as Receitas saem de
+  Mercado → Ementas; a Poupança passa para a lista "Mais" do Início e a
+  barra lateral). Página `/ceia-de-natal` com a consoada por cadeia,
+  calculada no `cron-paginas-marca` de novembro ao Dia de Reis
+  (`lib/natal.js`, `lib/natalGerar.js`). Nas receitas, o custo por pessoa
+  com os preços de hoje vai para o topo, a descrição do Google e a imagem
+  de partilha (só com 75% ou mais dos ingredientes com preço).
+- **Porquê:** as ementas estavam no terceiro nível e passavam
+  despercebidas; o Natal é a maior época de pesquisas de preços de
+  supermercado; um preço por pessoa partilha-se melhor do que "€€".
+- **Medida:** `ecra` = `receitas` contra o `mercados`/`ementas` de antes;
+  visitas a `/ceia-de-natal` e entradas `wa-natal-*` e `email-natal-*`;
+  cliques no Google das páginas `/receitas/*` (Search Console).
+- **Rever em:** 13 dez 2026.
+- **Resultado:** por medir.
+
 ### 16 nov 2026: comparações equivalentes e início para quem chega de novo
 
 - **O quê:** famílias de produtos (`FAMILIAS` em

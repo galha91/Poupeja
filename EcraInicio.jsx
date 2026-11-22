@@ -3,7 +3,7 @@ import { CartaoEmentasInicio } from "./DestaqueEmentas";
 import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
-  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail, User,
+  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail, User, PiggyBank,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
@@ -13,6 +13,7 @@ import { calcularEstado } from "./lib/desafios";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
+import { lerRegistos, somarPeriodos } from "./lib/poupancaListas";
 import { mostrarIRS } from "./lib/atalhos";
 import { descreverFrescura } from "./lib/frescura";
 import { evento } from "./lib/analytics";
@@ -284,12 +285,6 @@ function useGasoleoHoje() {
   return { dados, aLocalizar, falhou, pedirLocalizacao };
 }
 
-
-function LogoFolheto({ loja }) {
-  // 44 era para uma linha de nome + uma de subtítulo. O subtítulo era a
-  // mesma frase repetida nas 9 lojas e saiu — o logótipo acompanha.
-  return <LogoLoja loja={loja} size={36} radius={10} bg="#eeece4" />;
-}
 
 /* ─── Herói do Início ───────────────────────────────────────────
  * A poupança é um indicador atrasado: só existe depois de haver um
@@ -564,6 +559,8 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   // Até ler o localStorage não se sabe quem é quem: escolher o herói antes
   // disso mostrava o de quem explora a toda a gente durante um instante.
   const [lido, setLido]           = useState(false);
+  // Poupança das listas comparadas (escolher a loja mais barata), este mês.
+  const [poupancaListasMes, setPoupancaListasMes] = useState(0);
   const gasoleo = useGasoleoHoje();
   useEffect(() => {
     try {
@@ -606,6 +603,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
       setLista({ n: pendentes.length, usou, resumo: lerResumo(pendentes) });
       setIrsUsado(!!localStorage.getItem("poupeja_irs"));
     } catch {}
+    try { setPoupancaListasMes(somarPeriodos(lerRegistos()).mes); } catch {}
     setEstadoDesafio(calcularEstado());
     setStreak(calcStreak());
     setLido(true);
@@ -647,6 +645,8 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
     { icon: Receipt,    label: "Talões e garantias", desc: garantiasCount > 0 ? `${garantiasCount} ${garantiasCount === 1 ? "garantia a acabar" : "garantias a acabar"}` : "Compras guardadas e prazos de garantia", ir: garantiasCount > 0 ? goGarantias : () => setTab("taloes") },
     { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e prazos (IRS, IMI, abono…)",   ir: () => setTab("apoios"), soMovel: true },
     { icon: Store,      label: "Lojas",              desc: "Moda, eletrónica e desporto",          ir: () => setTab("lojas"), soMovel: true },
+    // A Poupança saiu da barra de baixo (deu lugar às Receitas): no telemóvel a entrada fixa é esta.
+    { icon: PiggyBank,  label: "A tua poupança",     desc: "Quanto já poupaste, mês a mês",        ir: () => setTab("poupanca"), soMovel: true },
     ...(mostrarIRS(new Date(), irsUsado) ? [{ icon: Calculator, label: "Simulador de IRS", desc: "Estima o teu IRS antes da hora", ir: () => setTab("irs") }] : []),
   ];
 
@@ -707,7 +707,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             cabaz={cabaz}
             onComparar={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
             onCombustivel={() => setTab("mobilidade")}
-            onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))}
+            onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("receitas"))}
           />
         ) : !lido ? (
           <div style={{ marginTop: 44, minHeight: 190 }} />
@@ -746,9 +746,27 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
           />
         )}
 
+        {/* Quem compara listas mas não guarda talões não via a poupança em
+            lado nenhum do Início (o herói conta só os talões). Ver o número
+            crescer é o que faz voltar. */}
+        {lido && !explorar && totalSempre <= 0 && poupancaListasMes > 0 && (
+          <button onClick={() => { evento("inicio_poupanca", { acao: "abrir", origem: "listas" }); setTab("poupanca"); }}
+            className="pj-tap w-full text-left flex items-center anim-up"
+            style={{ gap: 12, marginTop: 18, padding: "13px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+            <PiggyBank size={20} strokeWidth={1.8} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+            <span style={{ flex: 1 }}>
+              <span className="pj-num" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
+                Já poupaste {eur(poupancaListasMes, 2)} € em {mesNome}
+              </span>
+              <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Ao escolher a loja mais barata para a tua lista</span>
+            </span>
+            <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
+          </button>
+        )}
+
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
             ou o convite para planear a semana. */}
-        {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />}
+        {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("receitas"))} />}
 
         {/* Lista de compras — sempre, a toda a gente (nova ou não), com o
             resultado da lista otimizada quando há. */}
@@ -798,7 +816,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {/* Folhetos a acabar */}
         {folhetos.length > 0 && (
           <div className="anim-up anim-up-4">
-            <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
+            <div className="flex items-baseline justify-between" style={{ marginBottom: 12 }}>
               {/*
                 Chamava-se "Folhetos a acabar" — e não havia lógica de fim
                 nenhuma: é a lista do ficheiro, por ordem alfabética. Nada
@@ -806,26 +824,19 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
                 reais de nenhum deles. Saem todas as lojas, sem "Ver todos".
               */}
               <span className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", letterSpacing: "-0.01em" }}>Folhetos desta semana</span>
+              <button onClick={() => setTab("mercados", "folhetos")} className="pj-tap pj-alvo" style={{ fontSize: 13, fontWeight: 600, color: "var(--pj-brand-ink)", background: "none", border: 0 }}>Ver todos</button>
             </div>
-            <div className="flex flex-col">
+            {/* Fila de logótipos em vez de 9 linhas iguais: a lista ocupava
+                um ecrã inteiro só com nomes. Desliza para o lado; quem quer
+                ver todos tem "Ver todos" no título. */}
+            <div className="flex overflow-x-auto" style={{ gap: 8, margin: "0 -24px", padding: "2px 24px 4px", scrollbarWidth: "none" }}>
               {folhetos.map((f, i) => (
-                <div key={f.id || i}>
-                  {i > 0 && <div style={{ height: 1, background: "var(--pj-subtle)" }} />}
-                  <button onClick={() => embutivel(f.loja) ? setFolhetoAberto(f) : f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos")} className="pj-tap flex items-center w-full text-left" style={{ gap: 12, padding: "9px 0" }}>
-                    <LogoFolheto loja={f.loja} />
-                    {/*
-                      Eram três colunas e duas não diziam nada: o `titulo` é a
-                      string "Folheto desta semana" gravada igual nas 9 lojas,
-                      e a `validade` era a semana civil, também igual em todas
-                      e inventada. Cinco linhas a repetir o mesmo texto duas
-                      vezes. Fica o que distingue mesmo cada linha: a loja.
-                    */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{f.loja}</div>
-                    </div>
-                    <ChevronRight size={18} style={{ color: "var(--pj-text-faint)", flex: "none" }} />
-                  </button>
-                </div>
+                <button key={f.id || i} onClick={() => { evento("inicio_folheto", { loja: f.loja }); embutivel(f.loja) ? setFolhetoAberto(f) : f.url ? window.open(f.url, "_blank", "noopener") : setTab("mercados", "folhetos"); }}
+                  className="pj-tap flex flex-col items-center flex-none" aria-label={`Folheto ${f.loja}`}
+                  style={{ gap: 6, width: 72, padding: "8px 2px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+                  <LogoLoja loja={f.loja} size={40} radius={11} bg="#eeece4" />
+                  <span className="truncate" style={{ maxWidth: 66, fontSize: 11.5, fontWeight: 600, color: "var(--pj-text)" }}>{f.loja}</span>
+                </button>
               ))}
             </div>
           </div>

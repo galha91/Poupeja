@@ -53,7 +53,7 @@
   "crons": [
     {
       "path": "/api/cron-email-semanal",
-      "schedule": "0 8 * * 4"
+      "schedule": "0 7 * * 1"
     },
     {
       "path": "/api/cron-email-combustiveis",

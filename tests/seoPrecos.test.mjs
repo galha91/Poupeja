@@ -247,3 +247,11 @@ test("montarArtigo: linhas guardadas de outro produto saem da comparação e do 
   assert.deepEqual(d.ofertas.map((o) => o.loja), ["continente", "pingo-doce"]);
   assert.ok(d.serie.every((s) => s.minimo >= 17.99));
 });
+
+import { custoPorPessoa } from "../lib/seoPrecos.js";
+test("receitas: custo por pessoa só com 75% dos ingredientes com preço", () => {
+  assert.equal(custoPorPessoa({ total: 7.4, comPreco: 6, contados: 8 }, 4), 1.85);
+  assert.equal(custoPorPessoa({ total: 7.4, comPreco: 5, contados: 8 }, 4), null);
+  assert.equal(custoPorPessoa({ total: null, comPreco: 8, contados: 8 }, 4), null);
+  assert.equal(custoPorPessoa(null, 4), null);
+});

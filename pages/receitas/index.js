@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Clock, ChefHat, Leaf } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { DestaqueEmentasPublico } from "../../DestaqueEmentas";
-import { receitas, formatarTempo } from "../../lib/receitas/motor";
+import { receitas, formatarTempo, rendimento } from "../../lib/receitas/motor";
 
 import { jsonLdSeguro } from "../../lib/escapar";
 import { COLECOES, GRUPOS_COLECAO } from "../../lib/receitas/colecoes";
@@ -21,7 +21,8 @@ const SITE_URL = "https://xn--poupej-uta.com";
  * Estática; alvo: "receitas baratas", "receitas económicas",
  * "jantar barato para 4 pessoas", "refeições económicas".
  */
-export default function Receitas() {
+export default function Receitas({ custos = null }) {
+  const pp = (r) => custos?.[r.id] ? `${custos[r.id].toFixed(2).replace(".", ",")} €/${rendimento(1, r.un).slice(2)}` : null;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -98,7 +99,7 @@ export default function Receitas() {
                 <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>{e.nome}</span>
                 <span className="flex items-center gap-2.5" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>
                   <span className="inline-flex items-center gap-1"><Clock size={11} /> {formatarTempo(e.tempoMin)}</span>
-                  <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>{"€".repeat(e.custo)}</span>
+                  <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>{pp(e) || "€".repeat(e.custo)}</span>
                   {e.airfryer && <span className="inline-flex items-center gap-1"><ChefHat size={11} /> air fryer</span>}
                   {e.veg && <span className="inline-flex items-center gap-1"><Leaf size={11} /> vegetariano</span>}
                 </span>
@@ -127,4 +128,15 @@ export default function Receitas() {
       </div>
     </LayoutPublico>
   );
+}
+
+/*
+ * O custo por pessoa de cada receita vem de uma linha pequena de
+ * paginas_marca, calculada no GitHub (lib/receitasCusto). Sem ela, a
+ * página fica igual à de sempre, com a faixa € / €€.
+ */
+export async function getStaticProps() {
+  const { lerCustosReceitas } = await import("../../lib/receitasCusto");
+  const custos = await lerCustosReceitas();
+  return { props: { custos }, revalidate: 12 * 3600 };
 }
