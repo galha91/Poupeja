@@ -12,7 +12,7 @@
  * Cada original chama-se <id-da-receita>.png|jpg|jpeg|webp (o id é o do
  * URL /receitas/<id>). Para cada um escreve em public/receitas/fotos:
  *   <id>-1200.webp (1200×900), <id>-480.webp (480×360), <id>-1x1.webp
- *   (900×900), <id>-16x9.webp (1200×675) e <id>-og.jpg (1200×630)
+ *   (720×720), <id>-16x9.webp (1200×675) e <id>-og.jpg (1200×630)
  * e junta o id a data/fotos-receitas.json. Recorta ao centro. Ids que não
  * existem nas receitas são recusados (um erro de nome não chega ao site).
  */
@@ -33,13 +33,25 @@ const manifesto = path.join(raiz, "data/fotos-receitas.json");
 mkdirSync(destino, { recursive: true });
 
 const ids = new Set(receitas().map((r) => r.id));
+/*
+ * Tamanho e peso máximo de cada ficheiro (o mesmo que tests/fotosReceitas
+ * verifica). Se um ficheiro passar do limite, a qualidade desce até caber.
+ * As versões 1:1 e 16:9 só as lê o Google: vão mais leves.
+ */
 const SAIDAS = [
-  { suf: "1200.webp", w: 1200, h: 900, fmt: (s) => s.webp({ quality: 72 }) },
-  { suf: "480.webp", w: 480, h: 360, fmt: (s) => s.webp({ quality: 70 }) },
-  { suf: "1x1.webp", w: 900, h: 900, fmt: (s) => s.webp({ quality: 72 }) },
-  { suf: "16x9.webp", w: 1200, h: 675, fmt: (s) => s.webp({ quality: 72 }) },
-  { suf: "og.jpg", w: 1200, h: 630, fmt: (s) => s.jpeg({ quality: 78, mozjpeg: true }) },
+  { suf: "1200.webp", w: 1200, h: 900, q: 70, maxKB: 140, tipo: "webp" },
+  { suf: "480.webp", w: 480, h: 360, q: 68, maxKB: 35, tipo: "webp" },
+  { suf: "1x1.webp", w: 720, h: 720, q: 60, maxKB: 70, tipo: "webp" },
+  { suf: "16x9.webp", w: 1200, h: 675, q: 58, maxKB: 90, tipo: "webp" },
+  { suf: "og.jpg", w: 1200, h: 630, q: 74, maxKB: 120, tipo: "jpeg" },
 ];
+async function escrever(origemImg, s, destinoFicheiro) {
+  for (let q = s.q; ; q -= 6) {
+    const base = sharp(origemImg).resize(s.w, s.h, { fit: "cover", position: "centre" });
+    const buf = await (s.tipo === "jpeg" ? base.jpeg({ quality: q, mozjpeg: true }) : base.webp({ quality: q })).toBuffer();
+    if (buf.length <= s.maxKB * 1024 || q <= 40) { writeFileSync(destinoFicheiro, buf); return buf.length; }
+  }
+}
 
 const ficheiroCreditos = path.join(origem, "creditos.json");
 const creditos = existsSync(ficheiroCreditos) ? JSON.parse(readFileSync(ficheiroCreditos, "utf8")) : {};
@@ -54,10 +66,7 @@ for (const f of readdirSync(origem)) {
   if (credito.fonte !== "ia" && !(LICENCAS_LIVRES.test(credito.licenca || "") && credito.autor && credito.pagina)) {
     console.warn(`ignorado: ${f} (fotografia real sem licença livre, autor ou página)`); continue;
   }
-  for (const s of SAIDAS) {
-    await s.fmt(sharp(path.join(origem, f)).resize(s.w, s.h, { fit: "cover", position: "centre" }))
-      .toFile(path.join(destino, `${id}-${s.suf}`));
-  }
+  for (const s of SAIDAS) await escrever(path.join(origem, f), s, path.join(destino, `${id}-${s.suf}`));
   feitos[id] = credito;
 }
 

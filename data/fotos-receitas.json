@@ -1,3 +1,364 @@
 {
-  "fotos": {}
+  "fotos": {
+    "aletria": {
+      "fonte": "ia"
+    },
+    "alheira-grelos": {
+      "fonte": "ia"
+    },
+    "almondegas": {
+      "fonte": "ia"
+    },
+    "arroz-atum": {
+      "fonte": "ia"
+    },
+    "arroz-carne-picada": {
+      "fonte": "ia"
+    },
+    "arroz-cogumelos": {
+      "fonte": "ia"
+    },
+    "arroz-doce": {
+      "fonte": "ia"
+    },
+    "arroz-feijao-ovo": {
+      "fonte": "ia"
+    },
+    "arroz-frango": {
+      "fonte": "ia"
+    },
+    "arroz-grelos": {
+      "fonte": "ia"
+    },
+    "arroz-salsichas": {
+      "fonte": "ia"
+    },
+    "arroz-salteado": {
+      "fonte": "ia"
+    },
+    "aveia-vespera": {
+      "fonte": "ia"
+    },
+    "bacalhau-bras": {
+      "fonte": "ia"
+    },
+    "bacalhau-broa": {
+      "fonte": "ia"
+    },
+    "bacalhau-gomes-sa": {
+      "fonte": "ia"
+    },
+    "bacalhau-grao": {
+      "fonte": "ia"
+    },
+    "bacalhau-natas": {
+      "fonte": "ia"
+    },
+    "batata-recheada-microondas": {
+      "fonte": "ia"
+    },
+    "batido-banana-aveia": {
+      "fonte": "ia"
+    },
+    "batido-frutos-vermelhos": {
+      "fonte": "ia"
+    },
+    "beringelas-recheadas": {
+      "fonte": "ia"
+    },
+    "bifanas": {
+      "fonte": "ia"
+    },
+    "bitoque": {
+      "fonte": "ia"
+    },
+    "bolinhos-bacalhau": {
+      "fonte": "ia"
+    },
+    "bolo-banana": {
+      "fonte": "ia"
+    },
+    "bolonhesa-lentilhas": {
+      "fonte": "ia"
+    },
+    "bruschetta-atum": {
+      "fonte": "ia"
+    },
+    "canja": {
+      "fonte": "ia"
+    },
+    "carapaus-forno": {
+      "fonte": "ia"
+    },
+    "caril-frango": {
+      "fonte": "ia"
+    },
+    "caril-grao": {
+      "fonte": "ia"
+    },
+    "caril-lentilhas": {
+      "fonte": "ia"
+    },
+    "carne-estufada-pressao": {
+      "fonte": "ia"
+    },
+    "chili-carne": {
+      "fonte": "ia"
+    },
+    "chili-sem-carne": {
+      "fonte": "ia"
+    },
+    "costeletas-feijao-verde": {
+      "fonte": "ia"
+    },
+    "couve-flor-gratinada": {
+      "fonte": "ia"
+    },
+    "coxas-limao-alho": {
+      "fonte": "ia"
+    },
+    "creme-alho-frances": {
+      "fonte": "ia"
+    },
+    "creme-brocolos": {
+      "fonte": "ia"
+    },
+    "creme-cenoura-robo": {
+      "fonte": "ia"
+    },
+    "creme-couve-flor": {
+      "fonte": "ia"
+    },
+    "curgetes-recheadas": {
+      "fonte": "ia"
+    },
+    "cuscuz-atum": {
+      "fonte": "ia"
+    },
+    "cuscuz-grao-legumes": {
+      "fonte": "ia"
+    },
+    "douradinhos-arroz-tomate": {
+      "fonte": "ia"
+    },
+    "empadao-atum": {
+      "fonte": "ia"
+    },
+    "empadao-carne": {
+      "fonte": "ia"
+    },
+    "entrecosto-forno": {
+      "fonte": "ia"
+    },
+    "esparguete-alho": {
+      "fonte": "ia"
+    },
+    "esparguete-atum": {
+      "fonte": "ia"
+    },
+    "esparguete-bolonhesa": {
+      "fonte": "ia"
+    },
+    "esparguete-requeijao": {
+      "fonte": "ia"
+    },
+    "esparguete-sardinhas": {
+      "fonte": "ia"
+    },
+    "febras-cebolada": {
+      "fonte": "ia"
+    },
+    "feijoada": {
+      "fonte": "ia"
+    },
+    "feijoada-legumes": {
+      "fonte": "ia"
+    },
+    "filetes-airfryer": {
+      "fonte": "ia"
+    },
+    "frango-batata-doce": {
+      "fonte": "ia"
+    },
+    "frango-desfiado-lento": {
+      "fonte": "ia"
+    },
+    "frango-estufado": {
+      "fonte": "ia"
+    },
+    "frango-forno": {
+      "fonte": "ia"
+    },
+    "frango-grelhado-grao": {
+      "fonte": "ia"
+    },
+    "gaspacho": {
+      "fonte": "ia"
+    },
+    "granola-caseira": {
+      "fonte": "ia"
+    },
+    "grao-abobora-lento": {
+      "fonte": "ia"
+    },
+    "grao-espinafres": {
+      "fonte": "ia"
+    },
+    "hamburguer-caseiro": {
+      "fonte": "ia"
+    },
+    "jardineira-frango": {
+      "fonte": "ia"
+    },
+    "legumes-airfryer": {
+      "fonte": "ia"
+    },
+    "lentilhas": {
+      "fonte": "ia"
+    },
+    "lombo-assado": {
+      "fonte": "ia"
+    },
+    "lulas-estufadas": {
+      "fonte": "ia"
+    },
+    "macarrao-salsicha": {
+      "fonte": "ia"
+    },
+    "massa-bacon-ervilhas": {
+      "fonte": "ia"
+    },
+    "massa-cogumelos-natas": {
+      "fonte": "ia"
+    },
+    "massa-grao-tomate": {
+      "fonte": "ia"
+    },
+    "massa-lavrador": {
+      "fonte": "ia"
+    },
+    "muffins-banana-aveia": {
+      "fonte": "ia"
+    },
+    "omelete-legumes": {
+      "fonte": "ia"
+    },
+    "ovos-mexidos-torradas": {
+      "fonte": "ia"
+    },
+    "panquecas-banana": {
+      "fonte": "ia"
+    },
+    "panquecas-classicas": {
+      "fonte": "ia"
+    },
+    "pao-forno": {
+      "fonte": "ia"
+    },
+    "pao-leite-maquina": {
+      "fonte": "ia"
+    },
+    "pao-maquina": {
+      "fonte": "ia"
+    },
+    "papas-aveia-banana": {
+      "fonte": "ia"
+    },
+    "pataniscas": {
+      "fonte": "ia"
+    },
+    "peru-batata-doce": {
+      "fonte": "ia"
+    },
+    "peru-cogumelos": {
+      "fonte": "ia"
+    },
+    "pescada-forno": {
+      "fonte": "ia"
+    },
+    "pescada-microondas": {
+      "fonte": "ia"
+    },
+    "pimentos-recheados": {
+      "fonte": "ia"
+    },
+    "pizza-caseira": {
+      "fonte": "ia"
+    },
+    "rabanadas": {
+      "fonte": "ia"
+    },
+    "rancho": {
+      "fonte": "ia"
+    },
+    "risotto-cogumelos-robo": {
+      "fonte": "ia"
+    },
+    "salada-grao-atum": {
+      "fonte": "ia"
+    },
+    "salada-massa-atum": {
+      "fonte": "ia"
+    },
+    "salmao-forno": {
+      "fonte": "ia"
+    },
+    "sardinhas-assadas": {
+      "fonte": "ia"
+    },
+    "shakshuka": {
+      "fonte": "ia"
+    },
+    "sopa-abobora": {
+      "fonte": "ia"
+    },
+    "sopa-feijao": {
+      "fonte": "ia"
+    },
+    "sopa-feijao-verde": {
+      "fonte": "ia"
+    },
+    "sopa-grao-espinafres": {
+      "fonte": "ia"
+    },
+    "sopa-legumes": {
+      "fonte": "ia"
+    },
+    "sopa-legumes-rapida": {
+      "fonte": "ia"
+    },
+    "sopa-lentilhas": {
+      "fonte": "ia"
+    },
+    "sopa-pedra": {
+      "fonte": "ia"
+    },
+    "strogonoff-frango": {
+      "fonte": "ia"
+    },
+    "taca-iogurte-fruta": {
+      "fonte": "ia"
+    },
+    "torradas-abacate-ovo": {
+      "fonte": "ia"
+    },
+    "torradas-abacate-tomate": {
+      "fonte": "ia"
+    },
+    "torradas-queijo-fresco": {
+      "fonte": "ia"
+    },
+    "tortilha": {
+      "fonte": "ia"
+    },
+    "tosta-atum": {
+      "fonte": "ia"
+    },
+    "waffles-aveia": {
+      "fonte": "ia"
+    },
+    "waffles-classicos": {
+      "fonte": "ia"
+    }
+  }
 }

@@ -9,8 +9,9 @@
  * cada imagem (1024×1024, 6 passos) gasta cerca de 77, ou seja ~130 por dia.
  * Quando a quota do dia acaba, o script pára e guarda o que já fez.
  *
- * Usa os pedidos de lib/receitas/fotoPrompt (o estilo único do PoupeJá) e
- * uma semente fixa por receita: correr de novo dá a mesma imagem. No fim
+ * Usa os pedidos de lib/receitas/fotoPrompt (o estilo único do PoupeJá).
+ * O modelo no Cloudflare não aceita semente: cada corrida dá uma imagem
+ * nova, por isso só se geram as receitas que ainda não têm. No fim
  * chama o processar.mjs, que prepara os 5 tamanhos e atualiza o manifesto.
  * Corre no GitHub Actions (.github/workflows/fotos-receitas.yml).
  */
@@ -40,8 +41,6 @@ const fila = (idsPedidos.length ? idsPedidos : [...PRIMEIRO, ...todas.map((r) =>
   .filter((id, i, a) => a.indexOf(id) === i && porId.has(id) && !manifesto[id])
   .slice(0, quantas);
 
-/* Semente estável a partir do id (a mesma receita dá sempre a mesma imagem). */
-const semente = (id) => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % 2147483647;
 const espera = (ms) => new Promise((ok) => setTimeout(ok, ms));
 
 async function gerar(r) {
@@ -49,7 +48,7 @@ async function gerar(r) {
     const res = await fetch(URL_MODELO, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: promptDaFoto(r), steps: 6, seed: semente(r.id) }),
+      body: JSON.stringify({ prompt: promptDaFoto(r), steps: 6 }),
     });
     const corpo = await res.json().catch(() => ({}));
     if (res.ok && corpo?.result?.image) return Buffer.from(corpo.result.image, "base64");

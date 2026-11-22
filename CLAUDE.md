@@ -56,6 +56,16 @@ afiliados. Se começar a dar rendimento a sério, o Pro é o plano certo.
    `tests/robots.test.mjs` garantem isso.
 7. **Não depender do Pro.** Nada que só exista no plano pago (funções acima
    de 300 s, mais regras de firewall, etc.).
+8. **Imagens já no tamanho certo.** Nunca usar a otimização de imagens da
+   Vercel (`next/image` com `loader` por omissão): no Hobby é limitada. As
+   fotografias das receitas são geradas e comprimidas fora da Vercel
+   (`scripts/fotos-receitas/`, GitHub Actions + Cloudflare Workers AI
+   grátis), servidas como ficheiros estáticos de `public/receitas/fotos`,
+   com um mês de cache no browser (`next.config.js`) e `loading="lazy"`
+   nas listas. Orçamento verificado em `tests/fotosReceitas.test.mjs`:
+   ≤ 140 KB a maior, ≤ 35 KB a miniatura, ≤ 60 MB no total. Cada pedido de
+   imagem conta para os CDN Requests: nada de imagens grandes em listas
+   longas, nem imagens decorativas a mais.
 
 ## Onde ver o consumo
 
