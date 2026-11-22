@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X, Clock, ShoppingCart, Check, ChefHat, Minus, Plus, Star, ChevronLeft, ChevronRight, Timer, Pause, Play, RotateCcw, Info } from "lucide-react";
 import { ingredientesPara, minutosDoPasso, emojiIngrediente, formatarTempo, rendimento, DIETAS } from "./lib/receitas/motor";
 import { evento } from "./lib/analytics";
+import FotoReceita from "./FotoReceita";
 
 /*
  * Uma receita: porções, nutrição, ingredientes, passos e o modo "Cozinhar"
@@ -283,6 +284,9 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
         style={{ maxHeight: "92vh", overflowY: "auto", background: "var(--pj-surface)", paddingBottom: "max(32px, env(safe-area-inset-bottom))" }}
         onClick={(e) => e.stopPropagation()}>
 
+        <div style={{ marginBottom: 14 }}>
+          <FotoReceita id={receita.id} nome={receita.nome} aviso={false} />
+        </div>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3" style={{ minWidth: 0 }}>
             <span className="flex items-center justify-center flex-shrink-0" style={{ fontSize: 34, width: 60, height: 60, borderRadius: 18, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>{receita.emoji}</span>

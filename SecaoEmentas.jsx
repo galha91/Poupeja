@@ -8,6 +8,8 @@ import {
 import DespensaReceitas from "./DespensaReceitas";
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes, CustosReceitas } from "./ReceitaDetalhe";
 import { adicionarALista } from "./lib/receitas/paraLista";
+import FotoReceita from "./FotoReceita";
+import { temFoto } from "./lib/receitas/fotos";
 import EmentasAssistente from "./EmentasAssistente";
 import { marcarEmentasVistas, Azulejos } from "./DestaqueEmentas";
 import CompararLista from "./CompararLista";
@@ -63,7 +65,9 @@ function CartaoReceita({ r, onAbrir, estrelas, destaque }) {
   return (
     <button onClick={() => onAbrir(r)} className="pj-tap press w-full text-left rounded-2xl p-3.5 flex items-center gap-3.5"
       style={destaque ? { background: "var(--pj-brand)" } : { background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-      <span className="flex items-center justify-center flex-shrink-0" style={{ fontSize: 26, width: 48, height: 48, borderRadius: 14, background: destaque ? "rgba(255,255,255,0.12)" : "var(--pj-surface)" }}>{r.emoji}</span>
+      {temFoto(r.id)
+        ? <FotoReceita id={r.id} nome={r.nome} tamanho="mini" px={48} />
+        : <span className="flex items-center justify-center flex-shrink-0" style={{ fontSize: 26, width: 48, height: 48, borderRadius: 14, background: destaque ? "rgba(255,255,255,0.12)" : "var(--pj-surface)" }}>{r.emoji}</span>}
       <span style={{ flex: 1, minWidth: 0 }}>
         {destaque && (
           <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.09em]" style={{ color: "#a7cbbb" }}>

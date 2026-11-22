@@ -3,6 +3,10 @@ import { Clock, ChefHat, Leaf } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { DestaqueEmentasPublico } from "../../DestaqueEmentas";
 import { receitas, formatarTempo, rendimento } from "../../lib/receitas/motor";
+import FotoReceita from "../../FotoReceita";
+import { temFoto } from "../../lib/receitas/fotos";
+// Com fotografias na lista, o emoji ocupa o mesmo espaço e os nomes ficam alinhados.
+const COM_FOTOS = receitas().some((r) => temFoto(r.id));
 
 import { jsonLdSeguro } from "../../lib/escapar";
 import { COLECOES, GRUPOS_COLECAO } from "../../lib/receitas/colecoes";
@@ -94,7 +98,9 @@ export default function Receitas({ custos = null }) {
               className="flex items-center gap-3.5 px-4 py-3.5 no-underline"
               style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}
             >
-              <span style={{ fontSize: 28, flexShrink: 0 }}>{e.emoji}</span>
+              {temFoto(e.id)
+                ? <FotoReceita id={e.id} nome={e.nome} tamanho="mini" px={52} />
+                : <span className="flex items-center justify-center" style={{ fontSize: 28, flexShrink: 0, width: COM_FOTOS ? 52 : "auto" }}>{e.emoji}</span>}
               <span style={{ flex: 1, minWidth: 0 }}>
                 <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: "var(--pj-text)" }}>{e.nome}</span>
                 <span className="flex items-center gap-2.5" style={{ fontSize: 12, color: "var(--pj-text-muted)", marginTop: 2 }}>

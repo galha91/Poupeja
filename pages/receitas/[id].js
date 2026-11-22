@@ -10,6 +10,8 @@ import { resumosRecentes } from "../../lib/seoPrecosDados";
 import { jsonLdSeguro } from "../../lib/escapar";
 import ColecaoReceitas from "../../ColecaoReceitas";
 import IngredientesReceita from "../../IngredientesReceita";
+import FotoReceita from "../../FotoReceita";
+import { fotosDe } from "../../lib/receitas/fotos";
 import { COLECOES, GRUPOS_COLECAO, colecaoPorSlug, receitasDaColecao, colecoesDaReceita, parecidas } from "../../lib/receitas/colecoes";
 const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
 
@@ -47,7 +49,10 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
      disso fica a faixa € / €€ de sempre. */
   const pessoa = porPessoa(custo, receita.porcoes);
   const pessoaTxt = pessoa ? `${euros(pessoa)} €` : null;
-  const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}${pessoa ? `&pp=${pessoa.toFixed(2)}` : ""}`;
+  const fotos = fotosDe(receita.id);
+  const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}${pessoa ? `&pp=${pessoa.toFixed(2)}` : ""}${fotos ? `&foto=${receita.id}` : ""}`;
+  // O Google pede a mesma fotografia em 1:1, 4:3 e 16:9 para os cartões de receita.
+  const imagensLd = fotos ? [fotos.quadrada, fotos.grande, fotos.larga].map((u) => `${SITE_URL}${u}`) : [ogImage];
 
   const dietasLd = [
     receita.vegano && "https://schema.org/VeganDiet",
@@ -60,7 +65,7 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
     "@type": "Recipe",
     name: receita.nome,
     description: descricao,
-    image: [ogImage],
+    image: imagensLd,
     author: { "@type": "Organization", name: "PoupeJá", url: SITE_URL },
     recipeYield: rende,
     totalTime: `PT${receita.tempoMin}M`,
@@ -128,6 +133,10 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
           {receita.airfryer && <span className="inline-flex items-center gap-1.5"><ChefHat size={13} /> air fryer</span>}
           {receita.veg && <span className="inline-flex items-center gap-1.5"><Leaf size={13} /> vegetariano</span>}
         </p>
+
+        <div style={{ marginTop: 20 }}>
+          <FotoReceita id={receita.id} nome={receita.nome} prioridade preco={pessoaTxt ? `${pessoaTxt} por ${porUm}` : null} />
+        </div>
 
         <div className="grid grid-cols-4 gap-1 text-center rounded-2xl" style={{ marginTop: 20, padding: "14px 8px", background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
           {[
