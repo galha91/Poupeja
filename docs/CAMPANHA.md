@@ -159,6 +159,38 @@ Assunto: "Cabaz básico: [x,xx] € de diferença entre cadeias esta semana"
 Um email por jornalista, com o nome, nunca em cópia para vários. Enviar a
 quem já escreveu sobre preços de supermercado nos últimos meses.
 
+## Natal (23 nov a 24 dez): a ceia de Natal
+
+A página `/ceia-de-natal` compara a consoada para 6 pessoas (bacalhau,
+batata, couve, ovos, azeite, polvo, leite, açúcar, bolo-rei) nas cadeias
+com preços online, todos os dias até ao Dia de Reis. Os números têm a
+data da página e as mesmas regras do barómetro: sem vencedor quando a
+página diz empate.
+
+**Canal de WhatsApp (uma mensagem por semana, à sexta, até 18 dez)**
+
+> 🎄 Ceia de Natal desta semana, para 6 pessoas: de [x,xx] € ([cadeia]) a [x,xx] € ([cadeia]), preços online a [data].
+> O bacalhau está mais barato [no/na] [cadeia] ([x,xx] € por 1,5 kg).
+> Receita da semana: [Bacalhau à Gomes de Sá / Rabanadas], cerca de [x,xx] € por pessoa.
+> Tudo comparado aqui: https://xn--poupej-uta.com/ceia-de-natal?o=wa-natal-s1
+
+Trocar `s1` por `s2`, `s3`, `s4` em cada semana. O custo por pessoa da
+receita tira-se do topo da página da receita (só aparece quando quase
+todos os ingredientes têm preço; sem ele, não pôr número).
+
+**Email a jornalistas de consumo (seg 7 dez e seg 14 dez)**
+
+Assunto: "Ceia de Natal: [x,xx] € de diferença entre supermercados esta semana"
+
+> Bom dia, [nome].
+> Comparo todos os dias quanto custa a consoada tradicional para 6 pessoas (bacalhau, polvo, batata, couve, ovos, azeite, bolo-rei) nas cadeias com preços online. Esta semana vai de [x,xx] € ([cadeia]) a [x,xx] € ([cadeia]), preços recolhidos a [data]. [Face à semana passada, o cabaz está x,xx € mais caro/barato.]
+> A tabela por cadeia, o preço de cada artigo e o método estão em https://xn--poupej-uta.com/ceia-de-natal?o=email-natal-s3 e podem ser usados com indicação da fonte.
+> Sou enfermeiro e fiz o PoupeJá sozinho, fora do horário de trabalho. É gratuito e não pede registo. Mais informação em https://xn--poupej-uta.com/imprensa
+> Com os melhores cumprimentos,
+> Ricardo
+
+Mesmas regras do email do barómetro: um por jornalista, com o nome.
+
 ## O que só o Ricardo pode fazer
 
 - Juntar este ramo à `main` (um só deploy; o barómetro fica com dados na

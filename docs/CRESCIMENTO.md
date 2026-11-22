@@ -278,6 +278,25 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
 
 ## Registo
 
+### 22 nov 2026: Receitas na barra, ceia de Natal e custo por pessoa
+
+- **O quê:** barra de baixo passa a Início · Compras · Receitas · Contas ·
+  Combustível ("Mercado" e "Mobilidade" mudam de nome; as Receitas saem de
+  Mercado → Ementas; a Poupança passa para a lista "Mais" do Início e a
+  barra lateral). Página `/ceia-de-natal` com a consoada por cadeia,
+  calculada no `cron-paginas-marca` de novembro ao Dia de Reis
+  (`lib/natal.js`, `lib/natalGerar.js`). Nas receitas, o custo por pessoa
+  com os preços de hoje vai para o topo, a descrição do Google e a imagem
+  de partilha (só com 75% ou mais dos ingredientes com preço).
+- **Porquê:** as ementas estavam no terceiro nível e passavam
+  despercebidas; o Natal é a maior época de pesquisas de preços de
+  supermercado; um preço por pessoa partilha-se melhor do que "€€".
+- **Medida:** `ecra` = `receitas` contra o `mercados`/`ementas` de antes;
+  visitas a `/ceia-de-natal` e entradas `wa-natal-*` e `email-natal-*`;
+  cliques no Google das páginas `/receitas/*` (Search Console).
+- **Rever em:** 13 dez 2026.
+- **Resultado:** por medir.
+
 ### 16 nov 2026: comparações equivalentes e início para quem chega de novo
 
 - **O quê:** famílias de produtos (`FAMILIAS` em

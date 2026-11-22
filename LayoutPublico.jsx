@@ -77,6 +77,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
           <a href="/garantias" style={{ color: "var(--pj-text-muted)" }}>Garantias</a>
           <a href="/devolucoes" style={{ color: "var(--pj-text-muted)" }}>Devoluções</a>
           <a href="/barometro" style={{ color: "var(--pj-text-muted)" }}>Barómetro do cabaz</a>
+          <a href="/ceia-de-natal" style={{ color: "var(--pj-text-muted)" }}>Ceia de Natal mais barata</a>
           <a href="/fontes" style={{ color: "var(--pj-text-muted)" }}>Fontes oficiais</a>
           <a href="/imprensa" style={{ color: "var(--pj-text-muted)" }}>Imprensa</a>
           <a href="/privacidade" style={{ color: "var(--pj-text-muted)" }}>Privacidade</a>

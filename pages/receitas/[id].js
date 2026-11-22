@@ -4,7 +4,7 @@ import LayoutPublico from "../../LayoutPublico";
 import { receitas, emojiIngrediente, formatarTempo, rendimento } from "../../lib/receitas/motor";
 import { BotaoAbrirPoupeja } from "../../PaginasPrecos";
 import { euros, porUnidade } from "../../lib/seoFormato";
-import { custoReceita, hojeLisboa } from "../../lib/seoPrecos";
+import { custoReceita, custoPorPessoa as porPessoa, hojeLisboa } from "../../lib/seoPrecos";
 import { resumosRecentes } from "../../lib/seoPrecosDados";
 
 import { jsonLdSeguro } from "../../lib/escapar";
@@ -30,14 +30,23 @@ export default function Pagina(props) {
 function Receita({ receita, outras, colecoes = [], custo = null }) {
   const rende = rendimento(receita.porcoes, receita.un);
   const porUm = rendimento(1, receita.un).slice(2);
-  const descricao = `Receita económica de ${receita.nome} (${rende}), pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
+  const pessoaDesc = porPessoa(custo, receita.porcoes);
+  const descricao = pessoaDesc
+    ? `${receita.nome} por cerca de ${euros(pessoaDesc)} € por ${rendimento(1, receita.un).slice(2)}, com os preços de hoje nos supermercados. Pronta em ${formatarTempo(receita.tempoMin)}, ${rende}, passo a passo simples.`
+    : `Receita económica de ${receita.nome} (${rende}), pronta em ${formatarTempo(receita.tempoMin)}. Ingredientes com quantidades e passo a passo simples — poupa nas compras com o PoupeJá.`;
   // Até ~60 caracteres: o que passa disso o Google corta no resultado.
   const titulo = [
     `${receita.nome} — receita barata (${rende}, ${formatarTempo(receita.tempoMin)}) | PoupeJá`,
     `${receita.nome} — receita barata (${rende}) | PoupeJá`,
     `${receita.nome} — receita barata | PoupeJá`,
   ].find(t => t.length <= 60) || `${receita.nome} | PoupeJá`;
-  const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}`;
+  /* Custo por pessoa em destaque (título, imagem de partilha, Google) só
+     quando quase todos os ingredientes têm preço: com metade, o número
+     ficava baixo demais e prometia o que a receita não cumpre. Abaixo
+     disso fica a faixa € / €€ de sempre. */
+  const pessoa = porPessoa(custo, receita.porcoes);
+  const pessoaTxt = pessoa ? `${euros(pessoa)} €` : null;
+  const ogImage = `${SITE_URL}/api/og?v=receita&nome=${encodeURIComponent(receita.nome)}&tempo=${receita.tempoMin}&custo=${receita.custo}${pessoa ? `&pp=${pessoa.toFixed(2)}` : ""}`;
 
   const dietasLd = [
     receita.vegano && "https://schema.org/VeganDiet",
@@ -105,10 +114,16 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1" style={{ fontSize: 13.5, color: "var(--pj-text-muted)", marginTop: 12 }}>
           <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {formatarTempo(receita.tempoMin)}</span>
           <span className="inline-flex items-center gap-1.5"><Users size={13} /> {rende}</span>
-          <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>
-            {"€".repeat(receita.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - receita.custo)}</span>
-            {" "}{receita.custo === 1 ? "muito barata" : "barata"}
-          </span>
+          {pessoaTxt ? (
+            <a href="#quanto-custa" style={{ fontWeight: 700, color: "var(--pj-brand-ink)" }}>
+              ≈ {pessoaTxt} por {porUm}
+            </a>
+          ) : (
+            <span style={{ fontWeight: 600, color: "var(--pj-brand-ink)" }}>
+              {"€".repeat(receita.custo)}<span style={{ color: "#cfccbf" }}>{"€".repeat(3 - receita.custo)}</span>
+              {" "}{receita.custo === 1 ? "muito barata" : "barata"}
+            </span>
+          )}
           {receita.airfryer && <span className="inline-flex items-center gap-1.5"><ChefHat size={13} /> air fryer</span>}
           {receita.veg && <span className="inline-flex items-center gap-1.5"><Leaf size={13} /> vegetariano</span>}
         </p>
@@ -159,7 +174,7 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
           ))}
         </ol>
 
-        <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36 }}>
+        <h2 id="quanto-custa" className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 36, scrollMarginTop: 16 }}>
           Quanto custa esta receita?
         </h2>
         <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginTop: 10 }}>
@@ -175,7 +190,8 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
           <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.7, marginTop: 10 }}>
             Com os preços de hoje, no supermercado mais barato para cada um,{" "}
             <strong>{custo.comPreco} dos {custo.contados} ingredientes</strong> custam cerca de{" "}
-            <strong style={{ color: "var(--pj-brand-ink)" }}>{euros(custo.total)} €</strong> para {rende}.
+            <strong style={{ color: "var(--pj-brand-ink)" }}>{euros(custo.total)} €</strong> para {rende}
+            {pessoaTxt ? <> (<strong>{pessoaTxt} por {porUm}</strong>)</> : null}.
             Os da despensa ficam de fora, e para o que se compra à unidade usamos pesos médios: é uma estimativa.
           </p>
         )}

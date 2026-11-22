@@ -3,7 +3,7 @@ import { CartaoEmentasInicio } from "./DestaqueEmentas";
 import dynamic from "next/dynamic";
 import {
   Store, Fuel, Bell, UserPlus, ChefHat, Receipt, ChevronRight,
-  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail, User,
+  Flame, ListChecks, Landmark, Calculator, Search, Gift, Mail, User, PiggyBank,
 } from "lucide-react";
 import LogoLoja from "./LogoLoja";
 import FonteOficial from "./FonteOficial";
@@ -647,6 +647,8 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
     { icon: Receipt,    label: "Talões e garantias", desc: garantiasCount > 0 ? `${garantiasCount} ${garantiasCount === 1 ? "garantia a acabar" : "garantias a acabar"}` : "Compras guardadas e prazos de garantia", ir: garantiasCount > 0 ? goGarantias : () => setTab("taloes") },
     { icon: Landmark,   label: "Apoios do Estado",   desc: "Benefícios e prazos (IRS, IMI, abono…)",   ir: () => setTab("apoios"), soMovel: true },
     { icon: Store,      label: "Lojas",              desc: "Moda, eletrónica e desporto",          ir: () => setTab("lojas"), soMovel: true },
+    // A Poupança saiu da barra de baixo (deu lugar às Receitas): no telemóvel a entrada fixa é esta.
+    { icon: PiggyBank,  label: "A tua poupança",     desc: "Quanto já poupaste, mês a mês",        ir: () => setTab("poupanca"), soMovel: true },
     ...(mostrarIRS(new Date(), irsUsado) ? [{ icon: Calculator, label: "Simulador de IRS", desc: "Estima o teu IRS antes da hora", ir: () => setTab("irs") }] : []),
   ];
 
@@ -707,7 +709,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             cabaz={cabaz}
             onComparar={() => { try { sessionStorage.setItem("poupeja_arranque", "1"); } catch {} setTab("lista"); }}
             onCombustivel={() => setTab("mobilidade")}
-            onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))}
+            onEmentas={() => (abrirEmentas ? abrirEmentas() : setTab("receitas"))}
           />
         ) : !lido ? (
           <div style={{ marginTop: 44, minHeight: 190 }} />
@@ -748,7 +750,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
 
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
             ou o convite para planear a semana. */}
-        {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("mercados", "ementas"))} />}
+        {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("receitas"))} />}
 
         {/* Lista de compras — sempre, a toda a gente (nova ou não), com o
             resultado da lista otimizada quando há. */}
