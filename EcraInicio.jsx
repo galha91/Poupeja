@@ -13,6 +13,7 @@ import { calcularEstado } from "./lib/desafios";
 import { N_COMPARADAS } from "./lib/cobertura";
 import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
+import { lerRegistos, somarPeriodos } from "./lib/poupancaListas";
 import { mostrarIRS } from "./lib/atalhos";
 import { descreverFrescura } from "./lib/frescura";
 import { evento } from "./lib/analytics";
@@ -564,6 +565,8 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
   // Até ler o localStorage não se sabe quem é quem: escolher o herói antes
   // disso mostrava o de quem explora a toda a gente durante um instante.
   const [lido, setLido]           = useState(false);
+  // Poupança das listas comparadas (escolher a loja mais barata), este mês.
+  const [poupancaListasMes, setPoupancaListasMes] = useState(0);
   const gasoleo = useGasoleoHoje();
   useEffect(() => {
     try {
@@ -606,6 +609,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
       setLista({ n: pendentes.length, usou, resumo: lerResumo(pendentes) });
       setIrsUsado(!!localStorage.getItem("poupeja_irs"));
     } catch {}
+    try { setPoupancaListasMes(somarPeriodos(lerRegistos()).mes); } catch {}
     setEstadoDesafio(calcularEstado());
     setStreak(calcStreak());
     setLido(true);
@@ -746,6 +750,24 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             resumo={resumo}
             onGuardarTalao={() => setTab("taloes")}
           />
+        )}
+
+        {/* Quem compara listas mas não guarda talões não via a poupança em
+            lado nenhum do Início (o herói conta só os talões). Ver o número
+            crescer é o que faz voltar. */}
+        {lido && !explorar && totalSempre <= 0 && poupancaListasMes > 0 && (
+          <button onClick={() => { evento("inicio_poupanca", { acao: "abrir", origem: "listas" }); setTab("poupanca"); }}
+            className="pj-tap w-full text-left flex items-center anim-up"
+            style={{ gap: 12, marginTop: 18, padding: "13px 14px", borderRadius: 14, background: "var(--pj-brand-wash)" }}>
+            <PiggyBank size={20} strokeWidth={1.8} style={{ color: "var(--pj-brand-ink)", flexShrink: 0 }} />
+            <span style={{ flex: 1 }}>
+              <span className="pj-num" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>
+                Já poupaste {eur(poupancaListasMes, 2)} € em {mesNome}
+              </span>
+              <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>Ao escolher a loja mais barata para a tua lista</span>
+            </span>
+            <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
+          </button>
         )}
 
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje

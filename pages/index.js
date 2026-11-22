@@ -151,8 +151,8 @@ function SecaoMercados({ inicioAba = "comparar" }) {
 }
 
 /* ─── Root App ─── */
-export default function Pagina({ cabaz = null }) {
-  return <><HeadInicio /><PoupeJa cabaz={cabaz} /></>;
+export default function Pagina({ cabaz = null, custosReceitas = null }) {
+  return <><HeadInicio /><PoupeJa cabaz={cabaz} custosReceitas={custosReceitas} /></>;
 }
 
 /*
@@ -163,12 +163,14 @@ export default function Pagina({ cabaz = null }) {
  * mais de 2 dias), o Início mostra a porta "comparar" de sempre.
  */
 export async function getStaticProps() {
-  const { lerCabazInicio } = await import("../lib/cabazInicio");
-  const cabaz = await lerCabazInicio();
-  return { props: { cabaz }, revalidate: cabaz ? 6 * 3600 : 3600 };
+  const [{ lerCabazInicio }, { lerCustosReceitas }] = await Promise.all([import("../lib/cabazInicio"), import("../lib/receitasCusto")]);
+  // Duas linhas pequenas de paginas_marca: o cabaz e o custo por pessoa
+  // das receitas (~3 KB), lidas 4 vezes por dia.
+  const [cabaz, custosReceitas] = await Promise.all([lerCabazInicio(), lerCustosReceitas()]);
+  return { props: { cabaz, custosReceitas }, revalidate: cabaz ? 6 * 3600 : 3600 };
 }
 
-function PoupeJa({ cabaz }) {
+function PoupeJa({ cabaz, custosReceitas }) {
   const [user, setUser]           = useState(null);
   const [hydrated, setHydrated]   = useState(false);
   const [recovery, setRecovery]   = useState(false);
@@ -383,6 +385,8 @@ function PoupeJa({ cabaz }) {
     return () => { cancelado = true; clearTimeout(timer); };
   }, [user?.id, user?.convidado]);
 
+  const tabAtual = useRef(tab);
+  tabAtual.current = tab;
   /* Convite a instalar: na 2ª visita (a 1ª é para ver o que a app faz), depois na 5ª e a cada 5 */
   useEffect(() => {
     if (!hydrated || !installModo || installModo === "instalado") return;
@@ -392,8 +396,13 @@ function PoupeJa({ cabaz }) {
     const visitas = parseInt(localStorage.getItem("poupeja_visitas") || "0") + 1;
     localStorage.setItem("poupeja_visitas", String(visitas));
     if (visitas === 2 || (visitas >= 5 && visitas % 5 === 0)) {
-      sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
-      setTimeout(() => setModalInstalarAberto(true), 2500);
+      // Só no Início: quem abre uma receita ou uma comparação veio fazer
+      // isso, e uma janela por cima interrompe-o.
+      setTimeout(() => {
+        if (tabAtual.current !== "inicio") return;
+        sessionStorage.setItem("poupeja_modal_ja_aberto", "1");
+        setModalInstalarAberto(true);
+      }, 2500);
     }
   }, [hydrated, installModo]);
 
@@ -728,8 +737,9 @@ function PoupeJa({ cabaz }) {
               </div>
             </header>)}
 
-            {/* Barra de instalação — todos os ecrãs */}
-            {installModo !== "instalado" && (
+            {/* Barra de instalação — só no Início. Nos outros separadores
+                empurrava para baixo o que a pessoa veio ver. */}
+            {installModo !== "instalado" && tab === "inicio" && (
               <BarraInstalacao
                 modo={installModo}
                 onAbrir={() => setModalInstalarAberto(true)}
@@ -746,7 +756,7 @@ function PoupeJa({ cabaz }) {
                     ecrã; a lista tem o seu, ao lado do "Partilhar". */}
                 {!NAV.some(n => n.id === tab) && tab !== "lista" && <BotaoVoltar onClick={() => go("inicio")} />}
                 {tab === "mercados"   && <SecaoMercados inicioAba={subTabMercados} />}
-                {tab === "receitas"   && <div className="pb-28 pt-4"><SecaoEmentas setTab={go} /></div>}
+                {tab === "receitas"   && <div className="pb-28 pt-4"><SecaoEmentas setTab={go} custos={custosReceitas} /></div>}
                 {tab === "lojas"      && <SecaoLojas />}
                 {tab === "mobilidade" && <SecaoMobilidade />}
                 {tab === "poupanca"   && <SecaoPoupanca setTab={go} retrato={retrato} onAbrirRetrato={() => setRetratoAberto(true)} />}

@@ -278,6 +278,21 @@ vídeo tem de estar alojado no Higgsfield (`media_import_url` a partir do
 
 ## Registo
 
+### 22 nov 2026 (2): retenção, custo por pessoa na lista e receitas que compram
+
+- **O quê:** a barra e a janela "Instala a app" só aparecem no Início. O
+  custo por pessoa de cada receita é calculado no `cron-paginas-marca`
+  (`lib/receitasCusto*.js`, linha `inicio/receitas-custo`) e aparece na lista
+  de receitas da app e em `/receitas` no lugar de "€€". Nas páginas
+  `/receitas/[id]`: porções ajustáveis e "Adicionar à lista de compras"
+  logo a seguir aos ingredientes (a lista é a mesma da app). No Início, quem
+  compara listas sem guardar talões vê "Já poupaste X € em <mês>". O email
+  semanal de quinta-feira leva o "Jantar da semana" (a sugestão da app).
+- **Medida:** eventos `receita_lista` (onde: pagina) e `inicio_poupanca`;
+  entradas `?o=email-receita`; instalações (antes e depois).
+- **Rever em:** 13 dez 2026.
+- **Resultado:** por medir.
+
 ### 22 nov 2026: Receitas na barra, ceia de Natal e custo por pessoa
 
 - **O quê:** barra de baixo passa a Início · Compras · Receitas · Contas ·

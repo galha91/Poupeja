@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, Clock, ShoppingCart, Check, ChefHat, Minus, Plus, Star, ChevronLeft, ChevronRight, Timer, Pause, Play, RotateCcw, Info } from "lucide-react";
 import { ingredientesPara, minutosDoPasso, emojiIngrediente, formatarTempo, rendimento, DIETAS } from "./lib/receitas/motor";
@@ -26,7 +26,20 @@ function guardarAvaliacao(id, dados) {
 
 const ROT = "text-[11px] font-semibold uppercase tracking-[0.09em]";
 
-export function BadgeCusto({ custo, claro = false }) {
+/* O custo por pessoa de cada receita, { id: euros } (lib/receitasCusto). */
+export const CustosReceitas = createContext(null);
+
+export function BadgeCusto({ custo, claro = false, id = null, un = "pessoas" }) {
+  const custos = useContext(CustosReceitas);
+  const pp = id ? custos?.[id] : null;
+  // Com preço de hoje: o número diz mais do que "€€".
+  if (pp) {
+    return (
+      <span className="font-semibold tabular-nums" style={{ fontSize: 12, color: claro ? "#fff" : "var(--pj-brand-ink)" }}>
+        {pp.toFixed(2).replace(".", ",")} €/{rendimento(1, un).slice(2)}
+      </span>
+    );
+  }
   return (
     <span className="font-semibold" style={{ fontSize: 12, color: claro ? "#fff" : "var(--pj-brand-ink)" }}>
       {"€".repeat(custo)}<span style={{ color: claro ? "rgba(255,255,255,0.4)" : "#cfccbf" }}>{"€".repeat(3 - custo)}</span>
@@ -278,7 +291,7 @@ export default function ReceitaDetalhe({ receita, pessoasIniciais = 4, dietasDaP
               <p className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--pj-text)", lineHeight: 1.2 }}>{receita.nome}</p>
               <p className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mt-1" style={{ fontSize: 12, color: "var(--pj-text-muted)" }}>
                 <span className="inline-flex items-center gap-1"><Clock size={11} /> {formatarTempo(receita.tempoMin)}</span>
-                <BadgeCusto custo={receita.custo} />
+                <BadgeCusto custo={receita.custo} id={receita.id} un={receita.un} />
                 {receita.airfryer && <span className="inline-flex items-center gap-1"><ChefHat size={11} /> air fryer</span>}
                 {aval.estrelas ? <span className="inline-flex items-center gap-0.5"><Star size={11} fill="#e0a526" style={{ color: "#e0a526" }} /> {aval.estrelas}</span> : null}
               </p>

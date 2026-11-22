@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Clock, Users, Leaf, ChefHat } from "lucide-react";
 import LayoutPublico from "../../LayoutPublico";
-import { receitas, emojiIngrediente, formatarTempo, rendimento } from "../../lib/receitas/motor";
+import { receitas, formatarTempo, rendimento } from "../../lib/receitas/motor";
 import { BotaoAbrirPoupeja } from "../../PaginasPrecos";
 import { euros, porUnidade } from "../../lib/seoFormato";
 import { custoReceita, custoPorPessoa as porPessoa, hojeLisboa } from "../../lib/seoPrecos";
@@ -9,6 +9,7 @@ import { resumosRecentes } from "../../lib/seoPrecosDados";
 
 import { jsonLdSeguro } from "../../lib/escapar";
 import ColecaoReceitas from "../../ColecaoReceitas";
+import IngredientesReceita from "../../IngredientesReceita";
 import { COLECOES, GRUPOS_COLECAO, colecaoPorSlug, receitasDaColecao, colecoesDaReceita, parecidas } from "../../lib/receitas/colecoes";
 const CATEGORIA = { prato: "Prato principal", sopa: "Sopa", "pequeno-almoco": "Pequeno-almoço", sobremesa: "Sobremesa" };
 
@@ -145,22 +146,7 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
           Por {porUm}, valores aproximados calculados a partir dos ingredientes.
         </p>
 
-        <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>
-          Ingredientes
-        </h2>
-        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
-          {receita.ingredientes.map((ing, i) => (
-            <div key={i} className="flex items-center justify-between px-4 py-2.5" style={i > 0 ? { borderTop: "1px solid var(--pj-subtle)" } : {}}>
-              <span style={{ fontSize: 14, fontWeight: ing.despensa ? 500 : 600, color: ing.despensa ? "var(--pj-text-faint)" : "var(--pj-text)" }}>
-                {emojiIngrediente(ing.nome)} {ing.nome}{ing.despensa ? " · da despensa" : ""}
-              </span>
-              <span style={{ fontSize: 13, color: "var(--pj-text-muted)" }}>{ing.qtd}</span>
-            </div>
-          ))}
-        </div>
-        <p style={{ fontSize: 12.5, color: "var(--pj-text-faint)", marginTop: 10 }}>
-          Os ingredientes "da despensa" são básicos que quase toda a gente tem em casa.
-        </p>
+        <IngredientesReceita receita={receita} />
 
         <h2 className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>
           Preparação
