@@ -11,7 +11,7 @@ import { promptDaFoto } from "../../lib/receitas/fotoPrompt.js";
 import MANIFESTO from "../../data/fotos-receitas.json" with { type: "json" };
 
 const todas = process.argv.includes("--todas");
-const feitas = new Set(MANIFESTO.ids);
+const feitas = new Set(Object.keys(MANIFESTO.fotos || {}));
 const lista = receitas().filter((r) => todas || !feitas.has(r.id)).map((r) => ({ id: r.id, nome: r.nome, prompt: promptDaFoto(r) }));
 const destino = new URL("./prompts.json", import.meta.url);
 writeFileSync(destino, JSON.stringify(lista, null, 2) + "\n");

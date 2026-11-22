@@ -1,4 +1,4 @@
-import { fotosDe, AVISO_IA } from "./lib/receitas/fotos";
+import { fotosDe, creditoDe } from "./lib/receitas/fotos";
 
 /*
  * Fotografia de uma receita (lib/receitas/fotos). Sem fotografia devolve
@@ -36,7 +36,14 @@ export default function FotoReceita({ id, nome, tamanho = "grande", px = 56, pre
           </span>
         )}
       </div>
-      {aviso && <figcaption style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 6 }}>{AVISO_IA}</figcaption>}
+      {aviso && (() => {
+        const c = creditoDe(id);
+        return c && (
+          <figcaption style={{ fontSize: 11.5, color: "var(--pj-text-faint)", marginTop: 6 }}>
+            {c.url ? <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>{c.texto}</a> : c.texto}
+          </figcaption>
+        );
+      })()}
     </figure>
   );
 }

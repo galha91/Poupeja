@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { promptDaFoto, ingredientesVisiveis, ESTILO } from "../lib/receitas/fotoPrompt.js";
-import { fotosDe, temFoto } from "../lib/receitas/fotos.js";
+import { fotosDe, temFoto, LICENCAS_LIVRES } from "../lib/receitas/fotos.js";
 import { receitas } from "../lib/receitas/motor.js";
 import MANIFESTO from "../data/fotos-receitas.json";
 
@@ -23,7 +23,11 @@ test("fotografias: todas as receitas têm pedido", () => {
 
 test("fotografias: o manifesto só tem receitas que existem", () => {
   const ids = new Set(todas.map((r) => r.id));
-  for (const id of MANIFESTO.ids) assert.ok(ids.has(id), id);
+  for (const [id, f] of Object.entries(MANIFESTO.fotos)) {
+    assert.ok(ids.has(id), id);
+    // Uma fotografia real só entra com autor, licença livre e página de origem.
+    if (f.fonte !== "ia") assert.ok(f.autor && f.pagina && LICENCAS_LIVRES.test(f.licenca), id);
+  }
 });
 
 test("fotografias: sem fotografia, nada (fica o emoji)", () => {

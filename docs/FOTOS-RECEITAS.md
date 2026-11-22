@@ -28,6 +28,24 @@
 Próximo passo, mais tarde: fotografias reais de quem fez a receita ("Fiz
 esta receita") passam à frente das da IA.
 
+## Fotografias reais com licença livre (Wikimedia Commons)
+
+Alternativa às imagens de IA, sem custos: fotografias reais com licença
+CC0, domínio público, CC BY ou CC BY-SA. Só servem com o crédito do autor e
+da licença por baixo da fotografia ("Fotografia: Adriao, CC BY-SA 3.0
+(Wikimedia Commons)", com ligação à página de origem). O site faz isso
+sozinho a partir do `creditos.json` (ver o passo 3 abaixo). Licenças "NC"
+(não comercial) e "ND" ficam de fora: o site tem links de afiliados.
+
+Cobertura vista a 22 nov 2026: boa nos clássicos (Bacalhau à Brás, Gomes de
+Sá, caldo verde), fraca nos pratos do dia a dia (massa com atum: nenhuma) e
+nos doces portugueses (rabanadas e arroz-doce só aparecem em versões de
+outros países). Na prática: Commons para os clássicos, IA ou fotografias
+próprias para o resto.
+
+Nunca usar fotografias de sites de receitas, blogs, supermercados ou
+Instagram: têm direitos de autor, mesmo quando aparecem no Google Imagens.
+
 ## Como acrescentar fotografias
 
 1. Gerar os pedidos de imagem das receitas que ainda não têm fotografia:
@@ -47,8 +65,18 @@ esta receita") passam à frente das da IA.
    node scripts/fotos-receitas/processar.mjs <pasta>
    ```
 
-   Escreve 5 ficheiros por receita em `public/receitas/fotos` e acrescenta o id
-   a `data/fotos-receitas.json`. Ids que não existem são ignorados, com aviso.
+   Escreve 5 ficheiros por receita em `public/receitas/fotos` e acrescenta a
+   receita a `data/fotos-receitas.json`. Ids que não existem são ignorados,
+   com aviso. Para fotografias reais, pôr na mesma pasta um `creditos.json`:
+
+   ```json
+   { "bacalhau-gomes-sa": { "fonte": "commons", "autor": "Adriao",
+     "licenca": "CC BY-SA 3.0",
+     "pagina": "https://commons.wikimedia.org/wiki/File:Bacalhau_à_Gomes_de_Sá.jpg" } }
+   ```
+
+   Sem entrada no `creditos.json`, a fotografia conta como gerada por IA. Uma
+   fotografia real sem licença livre, autor ou página é recusada.
 4. Rever as imagens. Recusar as que mostram ingredientes que a receita não
    leva, texto, mãos ou embalagens.
 5. Fazer commit de tudo junto. É um deploy (regra 5 do CLAUDE.md): juntar
