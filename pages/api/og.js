@@ -4,7 +4,7 @@ export const config = { runtime: "edge" };
 
 export default function handler(req) {
   let variante = "default", valorRaw = null, mesRaw = "", taloesRaw = null, streakRaw = null;
-  let nomeRaw = "", tempoRaw = 0, custoRaw = 1, ppRaw = 0;
+  let nomeRaw = "", tempoRaw = 0, custoRaw = 1, ppRaw = 0, fotoRaw = null, origem = "";
   try {
     const sp = new URL(req.url).searchParams;
     variante = sp.get("v") || "default";
@@ -17,6 +17,10 @@ export default function handler(req) {
     custoRaw = Math.min(Math.max(parseInt(sp.get("custo")) || 1, 1), 3);
     // Custo por pessoa com os preços de hoje (as receitas mandam-no quando o sabem).
     ppRaw = Math.min(Math.max(parseFloat(sp.get("pp")) || 0, 0), 99);
+    // Fotografia da receita (public/receitas/fotos/<id>-og.jpg), quando existe.
+    const f = sp.get("foto") || "";
+    if (/^[a-z0-9-]{1,80}$/.test(f)) fotoRaw = f;
+    origem = new URL(req.url).origin;
   } catch {}
   const lista = variante === "lista";
   const retrato = variante === "retrato";
@@ -24,6 +28,29 @@ export default function handler(req) {
   const poupanca = variante === "poupanca" || retrato;
   const valorNum = poupanca ? Math.min(Math.max(parseFloat(valorRaw) || 0, 0), 99999) : 0;
   const valorFmt = valorNum.toFixed(2).replace(".", ",");
+
+  /* Receita com fotografia: a fotografia ocupa tudo, com o nome e o preço
+     por pessoa em baixo. É o que se vê no WhatsApp quando alguém partilha. */
+  if (receita && fotoRaw && origem) {
+    const tempo = tempoRaw ? (tempoRaw < 60 ? `${tempoRaw} min` : `${Math.floor(tempoRaw / 60)} h${tempoRaw % 60 ? ` ${String(tempoRaw % 60).padStart(2, "0")}` : ""}`) : "";
+    const linha = [ppRaw > 0 ? `${ppRaw.toFixed(2).replace(".", ",")} € por pessoa` : "", tempo].filter(Boolean).join("  ·  ");
+    return new ImageResponse(
+      (
+        <div style={{ width: "1200px", height: "630px", display: "flex", position: "relative", fontFamily: "system-ui", color: "#fff" }}>
+          <img src={`${origem}/receitas/fotos/${fotoRaw}-og.jpg`} width={1200} height={630} style={{ position: "absolute", top: 0, left: 0, width: 1200, height: 630, objectFit: "cover" }} />
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 300, display: "flex", background: "linear-gradient(180deg, rgba(8,76,57,0) 0%, rgba(8,76,57,0.92) 75%)" }} />
+          <div style={{ position: "absolute", left: 64, right: 64, bottom: 48, display: "flex", flexDirection: "column" }}>
+            <div style={{ fontSize: 60, fontWeight: 800, lineHeight: 1.05, display: "flex" }}>{nomeRaw || "Receita barata"}</div>
+            <div style={{ display: "flex", alignItems: "center", marginTop: 16, gap: 24 }}>
+              {linha && <div style={{ fontSize: 32, fontWeight: 700, display: "flex", background: "#fff", color: "#084c39", padding: "8px 20px", borderRadius: 16 }}>{linha}</div>}
+              <div style={{ fontSize: 28, display: "flex", color: "rgba(255,255,255,0.9)" }}>poupejá.com</div>
+            </div>
+          </div>
+        </div>
+      ),
+      { width: 1200, height: 630, headers: { "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800" } }
+    );
+  }
 
   const statsRetrato = [taloesRaw > 0 ? `${taloesRaw} tal${taloesRaw !== 1 ? "ões" : "ão"}` : null, streakRaw >= 2 ? `${streakRaw} semanas seguidas` : null].filter(Boolean).join(" · ");
   const eyebrow = lista ? "Lista de compras partilhada"

@@ -1,0 +1,767 @@
+[
+  {
+    "id": "sopa-legumes",
+    "nome": "Sopa de legumes da avó",
+    "prompt": "Dish: \"Sopa de legumes da avó\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: batata, cenoura, curgete, cebola, espinafres. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "caldo-verde",
+    "nome": "Caldo verde",
+    "prompt": "Dish: \"Caldo verde\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: batata, couve galega, chouriço, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-feijao",
+    "nome": "Sopa de feijão com massa",
+    "prompt": "Dish: \"Sopa de feijão com massa\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: feijão cozido, macarrão, cenoura, cebola, couve portuguesa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "canja",
+    "nome": "Canja de galinha",
+    "prompt": "Dish: \"Canja de galinha\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: coxas de frango, massinhas para sopa, cebola, cenoura, hortelã. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-abobora",
+    "nome": "Creme de abóbora",
+    "prompt": "Dish: \"Creme de abóbora\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: abóbora, batata, cenoura, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "creme-brocolos",
+    "nome": "Creme de brócolos",
+    "prompt": "Dish: \"Creme de brócolos\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: brócolos, batata, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "esparguete-atum",
+    "nome": "Esparguete com atum",
+    "prompt": "Dish: \"Esparguete com atum\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, atum, polpa de tomate, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "massa-lavrador",
+    "nome": "Massa à lavrador",
+    "prompt": "Dish: \"Massa à lavrador\", a home-style main course as cooked in Portugal. Visible ingredients: macarrão, feijão cozido, couve portuguesa, chouriço, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "esparguete-alho",
+    "nome": "Esparguete alho e azeite com ovo",
+    "prompt": "Dish: \"Esparguete alho e azeite com ovo\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, ovos, alho, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "macarrao-salsicha",
+    "nome": "Macarrão com salsichas",
+    "prompt": "Dish: \"Macarrão com salsichas\", a home-style main course as cooked in Portugal. Visible ingredients: macarrão, salsichas, polpa de tomate, cebola, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "massa-grao-tomate",
+    "nome": "Massa com grão, tomate e espinafres",
+    "prompt": "Dish: \"Massa com grão, tomate e espinafres\", a home-style main course as cooked in Portugal. Visible ingredients: massa curta, grão cozido, polpa de tomate, espinafres, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "esparguete-bolonhesa",
+    "nome": "Esparguete à bolonhesa",
+    "prompt": "Dish: \"Esparguete à bolonhesa\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, carne picada, polpa de tomate, cenoura, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "salada-massa-atum",
+    "nome": "Salada fria de massa com atum",
+    "prompt": "Dish: \"Salada fria de massa com atum\", a home-style main course as cooked in Portugal. Visible ingredients: massa curta, atum, milho doce, tomate, pepino. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-atum",
+    "nome": "Arroz de atum malandrinho",
+    "prompt": "Dish: \"Arroz de atum malandrinho\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, atum, tomate, cebola, alho, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-feijao-ovo",
+    "nome": "Arroz de feijão com ovo estrelado",
+    "prompt": "Dish: \"Arroz de feijão com ovo estrelado\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, feijão cozido, ovos, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-salsichas",
+    "nome": "Arroz de salsichas",
+    "prompt": "Dish: \"Arroz de salsichas\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, salsichas, ervilhas congeladas, cebola, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-grelos",
+    "nome": "Arroz de grelos com ovo",
+    "prompt": "Dish: \"Arroz de grelos com ovo\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, grelos, ovos, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-cogumelos",
+    "nome": "Arroz de cogumelos e ervilhas",
+    "prompt": "Dish: \"Arroz de cogumelos e ervilhas\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, cogumelos, ervilhas congeladas, cebola, alho, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "lentilhas",
+    "nome": "Lentilhas estufadas com arroz",
+    "prompt": "Dish: \"Lentilhas estufadas com arroz\", a home-style main course as cooked in Portugal. Visible ingredients: lentilhas secas, arroz, cenoura, cebola, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "caril-grao",
+    "nome": "Caril de grão e espinafres",
+    "prompt": "Dish: \"Caril de grão e espinafres\", a home-style main course as cooked in Portugal. Visible ingredients: grão cozido, polpa de tomate, espinafres, cebola, alho, caril em pó. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "chili-sem-carne",
+    "nome": "Chili de feijão (sem carne)",
+    "prompt": "Dish: \"Chili de feijão (sem carne)\", a home-style main course as cooked in Portugal. Visible ingredients: feijão cozido, milho doce, pimento, cebola, alho, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "jardineira-frango",
+    "nome": "Jardineira de frango",
+    "prompt": "Dish: \"Jardineira de frango\", a home-style main course as cooked in Portugal. Visible ingredients: coxas de frango, batata, cenoura, ervilhas congeladas, cebola, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "frango-forno",
+    "nome": "Frango assado com batatas",
+    "prompt": "Dish: \"Frango assado com batatas\", a home-style main course as cooked in Portugal. Visible ingredients: coxas de frango, batata, alho, limão, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "frango-estufado",
+    "nome": "Frango estufado com massa",
+    "prompt": "Dish: \"Frango estufado com massa\", a home-style main course as cooked in Portugal. Visible ingredients: coxas de frango, massa curta, cebola, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "frango-batata-doce",
+    "nome": "Frango com batata-doce e brócolos",
+    "prompt": "Dish: \"Frango com batata-doce e brócolos\", a home-style main course as cooked in Portugal. Visible ingredients: peito de frango, batata-doce, brócolos, alho, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "strogonoff-frango",
+    "nome": "Strogonoff de frango",
+    "prompt": "Dish: \"Strogonoff de frango\", a home-style main course as cooked in Portugal. Visible ingredients: peito de frango, cogumelos, natas, cebola, alho, arroz. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "empadao-carne",
+    "nome": "Empadão de carne picada",
+    "prompt": "Dish: \"Empadão de carne picada\", a home-style main course as cooked in Portugal. Visible ingredients: carne picada, batata, cebola, cenoura, polpa de tomate, leite. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "almondegas",
+    "nome": "Almôndegas em molho de tomate",
+    "prompt": "Dish: \"Almôndegas em molho de tomate\", a home-style main course as cooked in Portugal. Visible ingredients: carne picada, arroz, polpa de tomate, cebola, ovos, pão ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bifanas",
+    "nome": "Bifanas de porco no pão",
+    "prompt": "Dish: \"Bifanas de porco no pão\", a home-style main course as cooked in Portugal. Visible ingredients: febras de porco, carcaças, alho, vinho branco. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "hamburguer-caseiro",
+    "nome": "Hambúrguer no pão com batatas no forno",
+    "prompt": "Dish: \"Hambúrguer no pão com batatas no forno\", a home-style main course as cooked in Portugal. Visible ingredients: hambúrgueres, carcaças, batata, tomate, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "baguete-pizza",
+    "nome": "Baguete-pizza",
+    "prompt": "Dish: \"Baguete-pizza\", a home-style main course as cooked in Portugal. Visible ingredients: baguete, polpa de tomate, mozarela, fiambre, cogumelos, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pescada-cozida",
+    "nome": "Pescada cozida com todos",
+    "prompt": "Dish: \"Pescada cozida com todos\", a home-style main course as cooked in Portugal. Visible ingredients: pescada, batata, ovos, couve portuguesa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "filetes-airfryer",
+    "nome": "Filetes de pescada crocantes",
+    "prompt": "Dish: \"Filetes de pescada crocantes\", a home-style main course as cooked in Portugal. Visible ingredients: filetes de pescada, arroz, ovos, pão ralado, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bacalhau-bras",
+    "nome": "Bacalhau à Brás",
+    "prompt": "Dish: \"Bacalhau à Brás\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, batata palha, ovos, cebola, alho, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bacalhau-grao",
+    "nome": "Bacalhau com grão",
+    "prompt": "Dish: \"Bacalhau com grão\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, grão cozido, batata, ovos, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "salmao-forno",
+    "nome": "Salmão no forno com batatinhas",
+    "prompt": "Dish: \"Salmão no forno com batatinhas\", a home-style main course as cooked in Portugal. Visible ingredients: salmão, batata, feijão-verde, limão, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "omelete-legumes",
+    "nome": "Omelete de legumes com salada",
+    "prompt": "Dish: \"Omelete de legumes com salada\", a home-style main course as cooked in Portugal. Visible ingredients: ovos, curgete, pimento, cebola, alface, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "tortilha",
+    "nome": "Tortilha de batata",
+    "prompt": "Dish: \"Tortilha de batata\", a home-style main course as cooked in Portugal. Visible ingredients: batata, ovos, cebola, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "grao-espinafres",
+    "nome": "Grão com espinafres e ovo escalfado",
+    "prompt": "Dish: \"Grão com espinafres e ovo escalfado\", a home-style main course as cooked in Portugal. Visible ingredients: grão cozido, espinafres, ovos, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "salada-grao-atum",
+    "nome": "Salada de grão com atum",
+    "prompt": "Dish: \"Salada de grão com atum\", a home-style main course as cooked in Portugal. Visible ingredients: grão cozido, atum, ovos, cebola roxa, pimento, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "legumes-airfryer",
+    "nome": "Legumes assados com ovo",
+    "prompt": "Dish: \"Legumes assados com ovo\", a home-style main course as cooked in Portugal. Visible ingredients: batata-doce, curgete, pimento, cebola roxa, ovos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pescada-microondas",
+    "nome": "Pescada com batata e legumes no micro-ondas",
+    "prompt": "Dish: \"Pescada com batata e legumes no micro-ondas\", a home-style main course as cooked in Portugal. Visible ingredients: filetes de pescada, batata, curgete, cenoura, tomate, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "batata-recheada-microondas",
+    "nome": "Batata recheada com atum (micro-ondas)",
+    "prompt": "Dish: \"Batata recheada com atum (micro-ondas)\", a home-style main course as cooked in Portugal. Visible ingredients: batata, atum, milho doce, iogurte natural, cebola roxa, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "carne-estufada-pressao",
+    "nome": "Carne estufada com batatas (panela de pressão)",
+    "prompt": "Dish: \"Carne estufada com batatas (panela de pressão)\", a home-style main course as cooked in Portugal. Visible ingredients: carne de vaca para estufar, batata, cenoura, cebola, alho, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "feijao-frade-atum",
+    "nome": "Salada de feijão-frade com atum e ovo",
+    "prompt": "Dish: \"Salada de feijão-frade com atum e ovo\", a home-style main course as cooked in Portugal. Visible ingredients: feijão-frade seco, atum, ovos, cebola roxa, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "frango-desfiado-lento",
+    "nome": "Sandes de frango desfiado (cozedura lenta)",
+    "prompt": "Dish: \"Sandes de frango desfiado (cozedura lenta)\", a home-style main course as cooked in Portugal. Visible ingredients: peito de frango, polpa de tomate, pimento, cebola, alho, carcaças. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "grao-abobora-lento",
+    "nome": "Estufado de grão e abóbora (cozedura lenta)",
+    "prompt": "Dish: \"Estufado de grão e abóbora (cozedura lenta)\", a home-style main course as cooked in Portugal. Visible ingredients: grão cozido, abóbora, cebola, alho, polpa de tomate, espinafres. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "risotto-cogumelos-robo",
+    "nome": "Risotto de cogumelos no robô de cozinha",
+    "prompt": "Dish: \"Risotto de cogumelos no robô de cozinha\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, cogumelos, cebola, alho, vinho branco, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "creme-cenoura-robo",
+    "nome": "Creme de cenoura e coentros no robô",
+    "prompt": "Dish: \"Creme de cenoura e coentros no robô\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: cenoura, batata, cebola, alho, coentros. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pataniscas",
+    "nome": "Pataniscas de bacalhau com salada",
+    "prompt": "Dish: \"Pataniscas de bacalhau com salada\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, farinha de trigo, ovos, cebola, salsa, óleo. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolinhos-bacalhau",
+    "nome": "Bolinhos de bacalhau",
+    "prompt": "Dish: \"Bolinhos de bacalhau\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, batata, ovos, cebola, salsa, óleo. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "hamburguer-grao",
+    "nome": "Hambúrgueres de grão no pão",
+    "prompt": "Dish: \"Hambúrgueres de grão no pão\", a home-style main course as cooked in Portugal. Visible ingredients: grão cozido, cebola, alho, salsa, pão ralado, carcaças. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "frango-grelhado-grao",
+    "nome": "Frango grelhado com salada de grão",
+    "prompt": "Dish: \"Frango grelhado com salada de grão\", a home-style main course as cooked in Portugal. Visible ingredients: peito de frango, limão, alho, grão cozido, tomate, pepino. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "tostas-mistas",
+    "nome": "Tostas mistas com salada",
+    "prompt": "Dish: \"Tostas mistas com salada\", a home-style main course as cooked in Portugal. Visible ingredients: pão de forma, fiambre, queijo flamengo, manteiga, alface, tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "tosta-atum",
+    "nome": "Tosta de atum e queijo",
+    "prompt": "Dish: \"Tosta de atum e queijo\", a home-style main course as cooked in Portugal. Visible ingredients: pão de forma, atum, queijo flamengo, cebola roxa, tomate, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "torradas-abacate-ovo",
+    "nome": "Torradas com abacate e ovo",
+    "prompt": "Dish: \"Torradas com abacate e ovo\", a home-style main course as cooked in Portugal. Visible ingredients: pão de forma, abacate, ovos, tomate, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bruschetta-atum",
+    "nome": "Bruschetta de tomate e atum",
+    "prompt": "Dish: \"Bruschetta de tomate e atum\", a home-style main course as cooked in Portugal. Visible ingredients: baguete, tomate, atum, alho, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "cuscuz-grao-legumes",
+    "nome": "Cuscuz com grão e legumes",
+    "prompt": "Dish: \"Cuscuz com grão e legumes\", a home-style main course as cooked in Portugal. Visible ingredients: cuscuz, grão cozido, tomate, pepino, pimento, cebola roxa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "cuscuz-atum",
+    "nome": "Cuscuz com atum e pimentos",
+    "prompt": "Dish: \"Cuscuz com atum e pimentos\", a home-style main course as cooked in Portugal. Visible ingredients: cuscuz, atum, pimento, milho doce, tomate, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "gaspacho",
+    "nome": "Gaspacho alentejano",
+    "prompt": "Dish: \"Gaspacho alentejano\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: tomate, pepino, pimento, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bitoque",
+    "nome": "Bitoque com ovo e batata frita",
+    "prompt": "Dish: \"Bitoque com ovo e batata frita\", a home-style main course as cooked in Portugal. Visible ingredients: bifes de vaca, ovos, batata, alho, vinho branco, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-frango",
+    "nome": "Arroz de frango",
+    "prompt": "Dish: \"Arroz de frango\", a home-style main course as cooked in Portugal. Visible ingredients: coxas de frango, arroz, cebola, alho, polpa de tomate, chouriço. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "feijoada",
+    "nome": "Feijoada à portuguesa",
+    "prompt": "Dish: \"Feijoada à portuguesa\", a home-style main course as cooked in Portugal. Visible ingredients: feijão cozido, entremeada, chouriço, couve portuguesa, cenoura, cebola. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "douradinhos-arroz-tomate",
+    "nome": "Douradinhos com arroz de tomate",
+    "prompt": "Dish: \"Douradinhos com arroz de tomate\", a home-style main course as cooked in Portugal. Visible ingredients: douradinhos, arroz, tomate, cebola, alho, alface. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pizza-caseira",
+    "nome": "Pizza caseira",
+    "prompt": "Dish: \"Pizza caseira\", a home-style main course as cooked in Portugal. Visible ingredients: farinha de trigo, fermento de padeiro seco, polpa de tomate, mozarela, fiambre, cogumelos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-grao-espinafres",
+    "nome": "Sopa de grão com espinafres",
+    "prompt": "Dish: \"Sopa de grão com espinafres\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: batata, cebola, cenoura, alho, grão cozido, espinafres. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "creme-alho-frances",
+    "nome": "Creme de alho-francês e batata",
+    "prompt": "Dish: \"Creme de alho-francês e batata\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: alho-francês, batata, cebola, cenoura. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "creme-couve-flor",
+    "nome": "Creme de couve-flor",
+    "prompt": "Dish: \"Creme de couve-flor\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: couve-flor, batata, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-lentilhas",
+    "nome": "Sopa de lentilhas e cenoura",
+    "prompt": "Dish: \"Sopa de lentilhas e cenoura\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: lentilhas secas, cenoura, cebola, alho, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-pedra",
+    "nome": "Sopa da pedra (versão económica)",
+    "prompt": "Dish: \"Sopa da pedra (versão económica)\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: feijão cozido, chouriço, entremeada, batata, cebola, cenoura. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-feijao-verde",
+    "nome": "Sopa de feijão-verde",
+    "prompt": "Dish: \"Sopa de feijão-verde\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: batata, cenoura, cebola, abóbora, feijão-verde. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sopa-legumes-rapida",
+    "nome": "Sopa rápida de legumes congelados",
+    "prompt": "Dish: \"Sopa rápida de legumes congelados\", a home-style soup in a bowl as cooked in Portugal. Visible ingredients: legumes para sopa, batata, cebola. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pescada-forno",
+    "nome": "Pescada no forno com batatas",
+    "prompt": "Dish: \"Pescada no forno com batatas\", a home-style main course as cooked in Portugal. Visible ingredients: pescada, batata, cebola, tomate, pimento, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "carapaus-forno",
+    "nome": "Carapaus no forno com batata a murro",
+    "prompt": "Dish: \"Carapaus no forno com batata a murro\", a home-style main course as cooked in Portugal. Visible ingredients: carapaus, batata, alho, alface, tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "sardinhas-assadas",
+    "nome": "Sardinhas assadas com pimentos e batata",
+    "prompt": "Dish: \"Sardinhas assadas com pimentos e batata\", a home-style main course as cooked in Portugal. Visible ingredients: sardinhas frescas, batata, pimento, cebola. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "esparguete-sardinhas",
+    "nome": "Esparguete com sardinhas e tomate",
+    "prompt": "Dish: \"Esparguete com sardinhas e tomate\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, sardinhas em lata, polpa de tomate, cebola, alho, salsa. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "batata-cavala",
+    "nome": "Batata cozida com cavala, ovo e feijão-verde",
+    "prompt": "Dish: \"Batata cozida com cavala, ovo e feijão-verde\", a home-style main course as cooked in Portugal. Visible ingredients: batata, feijão-verde, ovos, cavala em lata, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "lulas-estufadas",
+    "nome": "Lulas estufadas com batata",
+    "prompt": "Dish: \"Lulas estufadas com batata\", a home-style main course as cooked in Portugal. Visible ingredients: lulas, batata, cebola, polpa de tomate, pimento, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bacalhau-natas",
+    "nome": "Bacalhau com natas",
+    "prompt": "Dish: \"Bacalhau com natas\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, batata, cebola, alho, natas, leite. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bacalhau-gomes-sa",
+    "nome": "Bacalhau à Gomes de Sá",
+    "prompt": "Dish: \"Bacalhau à Gomes de Sá\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, batata, cebola, ovos, azeitonas, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bacalhau-broa",
+    "nome": "Bacalhau com broa",
+    "prompt": "Dish: \"Bacalhau com broa\", a home-style main course as cooked in Portugal. Visible ingredients: bacalhau demolhado, broa de milho, batata, couve portuguesa, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "empadao-atum",
+    "nome": "Empadão de atum",
+    "prompt": "Dish: \"Empadão de atum\", a home-style main course as cooked in Portugal. Visible ingredients: batata, atum, leite, manteiga, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "caril-frango",
+    "nome": "Caril de frango com arroz",
+    "prompt": "Dish: \"Caril de frango com arroz\", a home-style main course as cooked in Portugal. Visible ingredients: peito de frango, cebola, alho, caril em pó, polpa de tomate, natas. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "coxas-limao-alho",
+    "nome": "Coxas de frango com limão e alho",
+    "prompt": "Dish: \"Coxas de frango com limão e alho\", a home-style main course as cooked in Portugal. Visible ingredients: coxas de frango, batata, limão, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "frango-bras",
+    "nome": "Frango à Brás",
+    "prompt": "Dish: \"Frango à Brás\", a home-style main course as cooked in Portugal. Visible ingredients: peito de frango, batata palha, ovos, cebola, alho, azeitonas. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "peru-cogumelos",
+    "nome": "Bifes de peru com cogumelos e arroz",
+    "prompt": "Dish: \"Bifes de peru com cogumelos e arroz\", a home-style main course as cooked in Portugal. Visible ingredients: bifes de peru, cogumelos, natas, cebola, alho, arroz. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "peru-batata-doce",
+    "nome": "Peru grelhado com batata-doce e salada",
+    "prompt": "Dish: \"Peru grelhado com batata-doce e salada\", a home-style main course as cooked in Portugal. Visible ingredients: bifes de peru, batata-doce, alface, tomate, pepino, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "lombo-assado",
+    "nome": "Lombo de porco assado com batatas",
+    "prompt": "Dish: \"Lombo de porco assado com batatas\", a home-style main course as cooked in Portugal. Visible ingredients: lombo de porco, batata, cebola, alho, vinho branco. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "costeletas-feijao-verde",
+    "nome": "Costeletas de porco com arroz de feijão-verde",
+    "prompt": "Dish: \"Costeletas de porco com arroz de feijão-verde\", a home-style main course as cooked in Portugal. Visible ingredients: costeletas de porco, arroz, feijão-verde, cebola, alho, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "entrecosto-forno",
+    "nome": "Entrecosto no forno com batatas",
+    "prompt": "Dish: \"Entrecosto no forno com batatas\", a home-style main course as cooked in Portugal. Visible ingredients: entrecosto, batata, alho, vinho branco, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "febras-cebolada",
+    "nome": "Febras de cebolada com batata cozida",
+    "prompt": "Dish: \"Febras de cebolada com batata cozida\", a home-style main course as cooked in Portugal. Visible ingredients: febras de porco, cebola, alho, vinho branco, batata. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "alheira-grelos",
+    "nome": "Alheira com ovo, batata e grelos",
+    "prompt": "Dish: \"Alheira com ovo, batata e grelos\", a home-style main course as cooked in Portugal. Visible ingredients: alheira, ovos, batata, grelos, alho, óleo. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-carne-picada",
+    "nome": "Arroz de carne picada com ervilhas",
+    "prompt": "Dish: \"Arroz de carne picada com ervilhas\", a home-style main course as cooked in Portugal. Visible ingredients: carne picada, arroz, ervilhas congeladas, cenoura, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pimentos-recheados",
+    "nome": "Pimentos recheados com carne e arroz",
+    "prompt": "Dish: \"Pimentos recheados com carne e arroz\", a home-style main course as cooked in Portugal. Visible ingredients: pimento, carne picada, arroz, cebola, alho, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "beringelas-recheadas",
+    "nome": "Beringelas recheadas com carne picada",
+    "prompt": "Dish: \"Beringelas recheadas com carne picada\", a home-style main course as cooked in Portugal. Visible ingredients: beringela, carne picada, cebola, alho, polpa de tomate, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "chili-carne",
+    "nome": "Chili com carne e arroz",
+    "prompt": "Dish: \"Chili com carne e arroz\", a home-style main course as cooked in Portugal. Visible ingredients: carne picada, feijão cozido, polpa de tomate, cebola, pimento, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "rancho",
+    "nome": "Rancho à portuguesa",
+    "prompt": "Dish: \"Rancho à portuguesa\", a home-style main course as cooked in Portugal. Visible ingredients: grão cozido, massa curta, chouriço, entremeada, couve portuguesa, batata. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "massa-bacon-ervilhas",
+    "nome": "Massa com bacon, ervilhas e natas",
+    "prompt": "Dish: \"Massa com bacon, ervilhas e natas\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, bacon, ervilhas congeladas, natas, queijo ralado, cebola. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "ovos-rotos",
+    "nome": "Ovos rotos com batata e chouriço",
+    "prompt": "Dish: \"Ovos rotos com batata e chouriço\", a home-style main course as cooked in Portugal. Visible ingredients: batata, ovos, chouriço, cebola. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "caril-lentilhas",
+    "nome": "Caril de lentilhas com espinafres",
+    "prompt": "Dish: \"Caril de lentilhas com espinafres\", a home-style main course as cooked in Portugal. Visible ingredients: lentilhas secas, cebola, alho, polpa de tomate, caril em pó, espinafres. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolonhesa-lentilhas",
+    "nome": "Esparguete à bolonhesa de lentilhas",
+    "prompt": "Dish: \"Esparguete à bolonhesa de lentilhas\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, lentilhas secas, cenoura, cebola, alho, polpa de tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "curgetes-recheadas",
+    "nome": "Curgetes recheadas com grão e queijo",
+    "prompt": "Dish: \"Curgetes recheadas com grão e queijo\", a home-style main course as cooked in Portugal. Visible ingredients: curgete, grão cozido, tomate, cebola, alho, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "couve-flor-gratinada",
+    "nome": "Couve-flor gratinada com ovo",
+    "prompt": "Dish: \"Couve-flor gratinada com ovo\", a home-style main course as cooked in Portugal. Visible ingredients: couve-flor, ovos, leite, farinha de trigo, manteiga, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "feijoada-legumes",
+    "nome": "Feijoada de legumes",
+    "prompt": "Dish: \"Feijoada de legumes\", a home-style main course as cooked in Portugal. Visible ingredients: feijão cozido, cenoura, abóbora, couve portuguesa, cebola, alho. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "shakshuka",
+    "nome": "Ovos escalfados em molho de tomate e pimento",
+    "prompt": "Dish: \"Ovos escalfados em molho de tomate e pimento\", a home-style main course as cooked in Portugal. Visible ingredients: ovos, polpa de tomate, pimento, cebola, alho, coentros. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "massa-cogumelos-natas",
+    "nome": "Massa com cogumelos e natas",
+    "prompt": "Dish: \"Massa com cogumelos e natas\", a home-style main course as cooked in Portugal. Visible ingredients: massa curta, cogumelos, natas, cebola, alho, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "esparguete-requeijao",
+    "nome": "Esparguete com requeijão e espinafres",
+    "prompt": "Dish: \"Esparguete com requeijão e espinafres\", a home-style main course as cooked in Portugal. Visible ingredients: esparguete, requeijão, espinafres, alho, limão, queijo ralado. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-salteado",
+    "nome": "Arroz salteado com legumes e ovo",
+    "prompt": "Dish: \"Arroz salteado com legumes e ovo\", a home-style main course as cooked in Portugal. Visible ingredients: arroz, ovos, ervilhas congeladas, cenoura, cebola, milho doce. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "papas-aveia-banana",
+    "nome": "Papas de aveia com banana e canela",
+    "prompt": "Dish: \"Papas de aveia com banana e canela\", a home-style breakfast as cooked in Portugal. Visible ingredients: flocos de aveia, leite, banana, mel. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "aveia-vespera",
+    "nome": "Aveia de véspera com iogurte e morangos",
+    "prompt": "Dish: \"Aveia de véspera com iogurte e morangos\", a home-style breakfast as cooked in Portugal. Visible ingredients: flocos de aveia, iogurte natural, leite, morangos, mel. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "panquecas-banana",
+    "nome": "Panquecas de banana e aveia",
+    "prompt": "Dish: \"Panquecas de banana e aveia\", a home-style breakfast as cooked in Portugal. Visible ingredients: banana, ovos, flocos de aveia, manteiga, mel. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "panquecas-classicas",
+    "nome": "Panquecas clássicas",
+    "prompt": "Dish: \"Panquecas clássicas\", a home-style breakfast as cooked in Portugal. Visible ingredients: farinha de trigo, leite, ovos, fermento em pó, manteiga, mel. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "waffles-aveia",
+    "nome": "Waffles de aveia e banana",
+    "prompt": "Dish: \"Waffles de aveia e banana\", a home-style breakfast as cooked in Portugal. Visible ingredients: flocos de aveia, banana, ovos, leite, fermento em pó, morangos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "waffles-classicos",
+    "nome": "Waffles clássicos com mirtilos",
+    "prompt": "Dish: \"Waffles clássicos com mirtilos\", a home-style breakfast as cooked in Portugal. Visible ingredients: farinha de trigo, leite, ovos, manteiga, fermento em pó, mirtilos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "ovos-mexidos-torradas",
+    "nome": "Ovos mexidos com torradas e tomate",
+    "prompt": "Dish: \"Ovos mexidos com torradas e tomate\", a home-style breakfast as cooked in Portugal. Visible ingredients: ovos, pão de forma, manteiga, tomate. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "torradas-queijo-fresco",
+    "nome": "Torradas com queijo fresco e compota",
+    "prompt": "Dish: \"Torradas com queijo fresco e compota\", a home-style breakfast as cooked in Portugal. Visible ingredients: pão de forma, queijo fresco, compota. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "torradas-abacate-tomate",
+    "nome": "Torradas com abacate e tomate",
+    "prompt": "Dish: \"Torradas com abacate e tomate\", a home-style breakfast as cooked in Portugal. Visible ingredients: pão de forma, abacate, tomate, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "batido-banana-aveia",
+    "nome": "Batido de banana, aveia e canela",
+    "prompt": "Dish: \"Batido de banana, aveia e canela\", a home-style breakfast as cooked in Portugal. Visible ingredients: banana, flocos de aveia, leite, mel. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "batido-frutos-vermelhos",
+    "nome": "Batido de frutos vermelhos (vegano)",
+    "prompt": "Dish: \"Batido de frutos vermelhos (vegano)\", a home-style breakfast as cooked in Portugal. Visible ingredients: morangos, mirtilos, banana, bebida vegetal. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "granola-caseira",
+    "nome": "Granola caseira",
+    "prompt": "Dish: \"Granola caseira\", a home-style breakfast as cooked in Portugal. Visible ingredients: flocos de aveia, frutos secos, mel, óleo. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "taca-iogurte-fruta",
+    "nome": "Taça de iogurte grego com fruta e frutos secos",
+    "prompt": "Dish: \"Taça de iogurte grego com fruta e frutos secos\", a home-style breakfast as cooked in Portugal. Visible ingredients: iogurte grego, kiwi, banana, flocos de aveia, frutos secos, mel. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "muffins-banana-aveia",
+    "nome": "Muffins de banana e aveia",
+    "prompt": "Dish: \"Muffins de banana e aveia\", a home-style breakfast as cooked in Portugal. Visible ingredients: banana, ovos, flocos de aveia, leite, mel, fermento em pó. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolo-banana",
+    "nome": "Bolo de banana",
+    "prompt": "Dish: \"Bolo de banana\", a home-style breakfast as cooked in Portugal. Visible ingredients: banana, ovos, farinha de trigo, óleo, fermento em pó. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pao-maquina",
+    "nome": "Pão caseiro na máquina de pão",
+    "prompt": "Dish: \"Pão caseiro na máquina de pão\", a home-style breakfast as cooked in Portugal. Visible ingredients: farinha de trigo, fermento de padeiro seco. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pao-leite-maquina",
+    "nome": "Pão de leite na máquina de pão",
+    "prompt": "Dish: \"Pão de leite na máquina de pão\", a home-style breakfast as cooked in Portugal. Visible ingredients: farinha de trigo, leite, manteiga, ovos, fermento de padeiro seco. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pao-forno",
+    "nome": "Pão rústico no forno",
+    "prompt": "Dish: \"Pão rústico no forno\", a home-style breakfast as cooked in Portugal. Visible ingredients: farinha de trigo, fermento de padeiro seco. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "iogurte-caseiro",
+    "nome": "Iogurte natural caseiro",
+    "prompt": "Dish: \"Iogurte natural caseiro\", a home-style breakfast as cooked in Portugal. Visible ingredients: leite, iogurte natural. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "iogurte-grego-caseiro",
+    "nome": "Iogurte grego caseiro",
+    "prompt": "Dish: \"Iogurte grego caseiro\", a home-style breakfast as cooked in Portugal. Visible ingredients: leite, natas, iogurte natural. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "iogurte-morango-caseiro",
+    "nome": "Iogurte de morango caseiro",
+    "prompt": "Dish: \"Iogurte de morango caseiro\", a home-style breakfast as cooked in Portugal. Visible ingredients: leite, iogurte natural, morangos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-doce",
+    "nome": "Arroz-doce",
+    "prompt": "Dish: \"Arroz-doce\", a home-style dessert as cooked in Portugal. Visible ingredients: arroz, leite, gemas de ovo, limão, manteiga. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "arroz-doce-robo",
+    "nome": "Arroz-doce no robô de cozinha",
+    "prompt": "Dish: \"Arroz-doce no robô de cozinha\", a home-style dessert as cooked in Portugal. Visible ingredients: arroz, leite, gemas de ovo, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "leite-creme",
+    "nome": "Leite-creme queimado",
+    "prompt": "Dish: \"Leite-creme queimado\", a home-style dessert as cooked in Portugal. Visible ingredients: leite, gemas de ovo, farinha de trigo, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "aletria",
+    "nome": "Aletria",
+    "prompt": "Dish: \"Aletria\", a home-style dessert as cooked in Portugal. Visible ingredients: aletria, leite, gemas de ovo, manteiga, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pudim-flan",
+    "nome": "Pudim flan caseiro",
+    "prompt": "Dish: \"Pudim flan caseiro\", a home-style dessert as cooked in Portugal. Visible ingredients: ovos, leite, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolo-iogurte",
+    "nome": "Bolo de iogurte",
+    "prompt": "Dish: \"Bolo de iogurte\", a home-style dessert as cooked in Portugal. Visible ingredients: iogurte natural, farinha de trigo, óleo, ovos, fermento em pó, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "pao-de-lo",
+    "nome": "Pão de ló",
+    "prompt": "Dish: \"Pão de ló\", a home-style dessert as cooked in Portugal. Visible ingredients: ovos, farinha de trigo. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolo-laranja",
+    "nome": "Bolo de laranja (com a laranja inteira)",
+    "prompt": "Dish: \"Bolo de laranja (com a laranja inteira)\", a home-style dessert as cooked in Portugal. Visible ingredients: laranja, ovos, farinha de trigo, óleo, fermento em pó. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolo-caneca",
+    "nome": "Bolo de chocolate na caneca",
+    "prompt": "Dish: \"Bolo de chocolate na caneca\", a home-style dessert as cooked in Portugal. Visible ingredients: farinha de trigo, cacau em pó, ovos, leite, óleo, fermento em pó. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "maca-assada",
+    "nome": "Maçã assada com canela",
+    "prompt": "Dish: \"Maçã assada com canela\", a home-style dessert as cooked in Portugal. Visible ingredients: maçã, mel, manteiga, frutos secos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "crumble-maca",
+    "nome": "Crumble de maçã e canela",
+    "prompt": "Dish: \"Crumble de maçã e canela\", a home-style dessert as cooked in Portugal. Visible ingredients: maçã, flocos de aveia, farinha de trigo, manteiga, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "mousse-chocolate",
+    "nome": "Mousse de chocolate (sem ovo cru)",
+    "prompt": "Dish: \"Mousse de chocolate (sem ovo cru)\", a home-style dessert as cooked in Portugal. Visible ingredients: chocolate de culinária, natas. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "suspiros",
+    "nome": "Suspiros",
+    "prompt": "Dish: \"Suspiros\", a home-style dessert as cooked in Portugal. Visible ingredients: claras de ovo, limão. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "salada-fruta",
+    "nome": "Salada de fruta da época",
+    "prompt": "Dish: \"Salada de fruta da época\", a home-style dessert as cooked in Portugal. Visible ingredients: laranja, maçã, banana, kiwi, morangos, hortelã. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "gelado-banana",
+    "nome": "Gelado de banana e cacau (sem açúcar)",
+    "prompt": "Dish: \"Gelado de banana e cacau (sem açúcar)\", a home-style dessert as cooked in Portugal. Visible ingredients: banana, cacau em pó, frutos secos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "rabanadas",
+    "nome": "Rabanadas",
+    "prompt": "Dish: \"Rabanadas\", a home-style dessert as cooked in Portugal. Visible ingredients: baguete, leite, ovos, limão, óleo. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "peras-bebadas",
+    "nome": "Peras bêbadas",
+    "prompt": "Dish: \"Peras bêbadas\", a home-style dessert as cooked in Portugal. Visible ingredients: pera, vinho tinto, laranja. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "salame-chocolate",
+    "nome": "Salame de chocolate (sem ovo)",
+    "prompt": "Dish: \"Salame de chocolate (sem ovo)\", a home-style dessert as cooked in Portugal. Visible ingredients: bolacha maria, chocolate de culinária, manteiga, leite. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolo-bolacha",
+    "nome": "Bolo de bolacha (sem ovo)",
+    "prompt": "Dish: \"Bolo de bolacha (sem ovo)\", a home-style dessert as cooked in Portugal. Visible ingredients: bolacha maria, manteiga, café forte. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "crepes",
+    "nome": "Crepes com compota",
+    "prompt": "Dish: \"Crepes com compota\", a home-style dessert as cooked in Portugal. Visible ingredients: farinha de trigo, leite, ovos, manteiga, compota. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "mousse-chocolate-tradicional",
+    "nome": "Mousse de chocolate tradicional",
+    "prompt": "Dish: \"Mousse de chocolate tradicional\", a home-style dessert as cooked in Portugal. Visible ingredients: chocolate de culinária, ovos, manteiga. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "baba-camelo",
+    "nome": "Baba de camelo",
+    "prompt": "Dish: \"Baba de camelo\", a home-style dessert as cooked in Portugal. Visible ingredients: leite condensado, ovos, frutos secos. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "salame-chocolate-tradicional",
+    "nome": "Salame de chocolate tradicional",
+    "prompt": "Dish: \"Salame de chocolate tradicional\", a home-style dessert as cooked in Portugal. Visible ingredients: bolacha maria, manteiga, ovos, cacau em pó. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  },
+  {
+    "id": "bolo-bolacha-tradicional",
+    "nome": "Bolo de bolacha tradicional",
+    "prompt": "Dish: \"Bolo de bolacha tradicional\", a home-style dessert as cooked in Portugal. Visible ingredients: bolacha maria, manteiga, gemas de ovo, café forte. Realistic home-cooked food photograph, Portuguese family kitchen. One single portion for one person, served as it comes out of the pot, not restaurant plating. Plain white ceramic plate (or white bowl for soups and desserts) on a light oak wooden table, a folded linen napkin with a thin blue stripe at the edge, a simple fork. Soft natural daylight from a window on the left, gentle shadows, warm but true colours. Camera at 45 degrees, plate centred with space around it, shallow depth of field. No text, no logos, no hands, no people, no packaging, no garnish that is not in the recipe."
+  }
+]

@@ -95,6 +95,12 @@ const nextConfig = {
     return [
       { source: "/(.*)", headers: securityHeaders },
       /*
+       * Fotografias das receitas: o nome não muda (uma fotografia nova
+       * leva outro id ou um deploy), por isso o browser guarda-as um mês.
+       * Cada pedido que não chega à CDN conta para o limite do plano Hobby.
+       */
+      { source: "/receitas/fotos/:ficheiro*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }] },
+      /*
        * A CSP fica fora do service worker (sw.js, workbox-*, worker-*). Lá,
        * cada fetch conta como connect-src: com a lista acima, o SW deixava
        * de ir buscar as fotos dos produtos às lojas e as imagens partiam.

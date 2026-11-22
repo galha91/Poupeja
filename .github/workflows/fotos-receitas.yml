@@ -1,0 +1,83 @@
+name: Fotografias das receitas
+
+# Gera, de graça, as fotografias das receitas que ainda não têm, com o
+# Cloudflare Workers AI (FLUX.1 schnell, licença Apache 2.0; a conta grátis
+# dá ~130 imagens por dia). Ver scripts/fotos-receitas/gerar.mjs e
+# docs/FOTOS-RECEITAS.md.
+#
+# Não publica nada sozinho: abre um pull request em rascunho com as
+# imagens, para rever antes do merge (cada merge é um deploy).
+#
+# Precisa dos segredos CLOUDFLARE_ACCOUNT_ID e CLOUDFLARE_API_TOKEN
+# (Settings → Secrets and variables → Actions).
+#
+# Correr: Actions → "Fotografias das receitas" → Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      quantas:
+        description: Quantas receitas gerar (máx. ~130 por dia na conta grátis)
+        type: number
+        default: 30
+      ids:
+        description: Só estas receitas (ids separados por vírgulas; vazio = as seguintes sem fotografia)
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fotos-receitas
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências
+        run: |
+          for i in 1 2 3; do
+            npm ci --ignore-scripts --no-audit --no-fund && exit 0
+            echo "npm ci falhou (tentativa $i); nova tentativa em $((i * 20)) s"
+            sleep $((i * 20))
+          done
+          exit 1
+
+      - name: Gerar fotografias
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          QUANTAS: ${{ inputs.quantas }}
+          IDS: ${{ inputs.ids }}
+        run: |
+          node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/fotos-receitas/gerar.mjs \
+            --quantas "$QUANTAS" ${IDS:+--ids "$IDS"}
+
+      - name: Abrir pull request com as fotografias
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- public/receitas/fotos data/fotos-receitas.json && \
+             [ -z "$(git ls-files --others --exclude-standard public/receitas/fotos)" ]; then
+            echo "Nenhuma fotografia nova."; exit 0
+          fi
+          ramo="fotos/receitas-${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$ramo"
+          git add public/receitas/fotos data/fotos-receitas.json
+          n=$(git diff --cached --name-only -- 'public/receitas/fotos/*-1200.webp' | wc -l)
+          git commit -m "Fotografias de $n receitas (IA, Cloudflare Workers AI)"
+          git push origin "$ramo"
+          gh pr create --draft --base "${{ github.ref_name }}" --head "$ramo" \
+            --title "Fotografias de $n receitas" \
+            --body "Geradas com o Cloudflare Workers AI (FLUX.1 schnell), no estilo único do PoupeJá (lib/receitas/fotoPrompt). Rever cada imagem antes do merge: recusar as que mostram ingredientes que a receita não leva, texto, mãos ou embalagens (docs/FOTOS-RECEITAS.md). Juntar várias levas num só merge: cada merge é um deploy."
