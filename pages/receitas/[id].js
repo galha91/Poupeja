@@ -178,8 +178,11 @@ function Receita({ receita, outras, colecoes = [], custo = null }) {
           Quanto custa esta receita?
         </h2>
         <p style={{ fontSize: 14, color: "var(--pj-text-muted)", lineHeight: 1.7, marginTop: 10 }}>
-          Indicamos uma faixa de custo ({"€".repeat(receita.custo)}) em vez de um total ao cêntimo,
-          porque os preços variam por loja e época. Para pagares o mínimo, espreita os{" "}
+          {pessoaTxt
+            ? <>O valor muda com as promoções de cada semana.</>
+            : <>Indicamos uma faixa de custo ({"€".repeat(receita.custo)}) em vez de um total ao cêntimo,
+              porque os preços variam por loja e época.</>}
+          {" "}Para pagares o mínimo, espreita os{" "}
           <a href="/folhetos" style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>folhetos dos supermercados desta semana</a>{" "}
           antes de ires às compras — na app PoupeJá os ingredientes desta receita entram na tua lista
           de compras num toque.
