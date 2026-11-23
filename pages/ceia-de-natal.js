@@ -26,6 +26,7 @@ const linha = (i) => (i ? { borderTop: "1px solid var(--pj-subtle)" } : {});
 const naLoja = (l) => `${l.loja === "apolonia" ? "na" : "no"} ${l.nome}`;
 
 const RECEITAS = [
+  { href: "/receitas/natal", texto: "Todas as receitas de Natal" },
   { href: "/receitas/bacalhau-gomes-sa", texto: "Bacalhau à Gomes de Sá" },
   { href: "/receitas/bacalhau-bras", texto: "Bacalhau à Brás (com as sobras)" },
   { href: "/receitas/rabanadas", texto: "Rabanadas" },

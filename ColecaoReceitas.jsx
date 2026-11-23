@@ -49,6 +49,11 @@ export default function ColecaoReceitas({ colecao, lista, grupos }) {
         <Migalhas passos={passos.slice(1)} />
         <h1 className="font-display" style={estiloH1}>{colecao.titulo}</h1>
         <p style={{ ...estiloTexto, color: "var(--pj-text)" }}>{colecao.intro}</p>
+        {colecao.ligacao && (
+          <p style={estiloTexto}>
+            <a href={colecao.ligacao.href} style={{ color: "var(--pj-brand-ink)", fontWeight: 600 }}>{colecao.ligacao.texto} →</a>
+          </p>
+        )}
         <p style={estiloTexto}>
           {lista.length} receitas para 4 pessoas, as mais baratas primeiro. O custo vai em faixas (€ a €€€): o preço a sério depende da loja e da semana,
           e a app PoupeJá compara-o nos supermercados quando os ingredientes vão para a lista.

@@ -10,6 +10,7 @@ import { comRegisto } from "../../lib/cronRegisto";
 import { receitaDoEmail } from "../../lib/emailFolhetos";
 import { sugestaoDaSemana } from "../../lib/receitas/motor";
 import { lerCustosReceitas } from "../../lib/receitasCusto";
+import { campanhaAtiva, hojeEmLisboa } from "../../lib/campanhas";
 
 /*
  * Envio AUTOMÁTICO do email semanal a todos os utilizadores que não
@@ -76,6 +77,8 @@ async function handler(req, res) {
 
   // O jantar da semana (o mesmo da app), com o custo por pessoa se houver.
   const receita = receitaDoEmail(sugestaoDaSemana(), await lerCustosReceitas());
+  // Black Friday ou Ceia de Natal, conforme a época (lib/campanhas).
+  const campanha = campanhaAtiva(hojeEmLisboa());
 
   // 3. Listar utilizadores (paginado) e enviar
   let enviados = 0, ignorados = 0, falhas = 0, pagina = 1;
@@ -97,7 +100,7 @@ async function handler(req, res) {
       const nome = u.user_metadata?.nome || u.email.split("@")[0];
       const unsubscribeUrl = urlUnsub(base, u.id);
       const resumo = calcularResumoUtilizador(taloesPorUser.get(u.id));
-      const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl, resumo, receita });
+      const { subject, html, text } = construirEmailFolhetos({ nome, folhetos, base, unsubscribeUrl, resumo, receita, campanha });
       try {
         await enviarEmail(resend, { tags: etiqueta("folhetos_conta"),
           from: "PoupeJá <noreply@xn--poupej-uta.com>",
@@ -136,7 +139,7 @@ async function handler(req, res) {
       .limit(5000);
     for (const sub of subs || []) {
       const unsubscribeUrl = urlCancelarSub(base, sub.id);
-      const { subject, html, text } = construirEmailFolhetos({ nome: "", folhetos, base, unsubscribeUrl, receita });
+      const { subject, html, text } = construirEmailFolhetos({ nome: "", folhetos, base, unsubscribeUrl, receita, campanha });
       try {
         await enviarEmail(resend, { tags: etiqueta("folhetos"),
           from: "PoupeJá <noreply@xn--poupej-uta.com>",

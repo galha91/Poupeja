@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Clock, ChefHat, Leaf, Lock, Unlock, RefreshCw, ShoppingCart, Check, Sparkles, SlidersHorizontal, ChevronDown, Star, CalendarDays, RotateCcw, Minus, Plus, ThumbsDown } from "lucide-react";
 import {
   receitas, receitaPorId, compativel, gerarPlano, regenerar, trocarDia, alternarFixa, comprasDoPlano,
   mediaDoPlano, porcoesNoPlano, sugestaoDaSemana, formatarTempo, DIAS, DIETAS, VONTADES, EQUIPAMENTOS,
-  rejeitar, ajustarDia, dosesDoDia, MODOS_TROCA, MAX_CONVIDADOS, almocoDe, marmitasDoPlano,
+  rejeitar, ajustarDia, dosesDoDia, MODOS_TROCA, MAX_CONVIDADOS, almocoDe, marmitasDoPlano, entradasDoPlano,
 } from "./lib/receitas/motor";
 import DespensaReceitas from "./DespensaReceitas";
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes, CustosReceitas } from "./ReceitaDetalhe";
 import { adicionarALista } from "./lib/receitas/paraLista";
+import { custoDoPlano, eurosPP } from "./lib/receitasCusto";
 import FotoReceita from "./FotoReceita";
 import { temFoto } from "./lib/receitas/fotos";
 import EmentasAssistente from "./EmentasAssistente";
@@ -223,6 +224,7 @@ export default function SecaoEmentas(props) {
 }
 
 function SecaoEmentasConteudo({ setTab }) {
+  const custos = useContext(CustosReceitas);
   const [prefs, setPrefs] = useState(null);
   const [plano, setPlano] = useState(null);
   const [aval, setAval] = useState({});
@@ -355,6 +357,8 @@ function SecaoEmentasConteudo({ setTab }) {
   const FILTROS = [
     { id: "todas", label: "Todas" },
     { id: "baratas", label: "€ mais baratas" },
+    // Com os preços de hoje: o número que a faixa € esconde.
+    ...(Object.keys(custos || {}).length >= 10 ? [{ id: "barato-hoje", label: "Até 2 €/pessoa" }] : []),
     { id: "rapidas", label: "≤ 25 min" },
     { id: "leves", label: "Leves" },
     { id: "veg", label: "Vegetariano" },
@@ -368,10 +372,13 @@ function SecaoEmentasConteudo({ setTab }) {
     { id: "pequeno-almoco", label: "Pequeno-almoço" },
     { id: "sobremesa", label: "Sobremesas" },
   ];
+  // O custo do plano com os preços de hoje (só com 75% das receitas com custo).
+  const estimativaPlano = useMemo(() => (plano ? custoDoPlano(entradasDoPlano(plano), custos) : null), [plano, custos]);
   const visiveis = receitas().filter((r) => {
     if (prefs && soMinhas && !compativel(r, prefs)) return false;
     if (categoria !== "todas" && r.tipo !== categoria) return false;
     if (filtro === "baratas") return r.custo === 1;
+    if (filtro === "barato-hoje") return custos?.[r.id] <= 2;
     if (filtro === "rapidas") return r.tempoMin <= 25;
     if (filtro === "leves") return r.vontades.includes("leve");
     if (filtro === "sopas") return r.tipo === "sopa";
@@ -379,6 +386,8 @@ function SecaoEmentasConteudo({ setTab }) {
     if (filtro === "airfryer") return r.airfryer;
     return true;
   });
+  // "Até 2 €/pessoa": as mais baratas primeiro.
+  if (filtro === "barato-hoje") visiveis.sort((a, b) => custos[a.id] - custos[b.id]);
 
   return (
     <div>
@@ -511,6 +520,7 @@ function SecaoEmentasConteudo({ setTab }) {
           <p className={`${ROT} mt-8 mb-2`} style={{ color: "var(--pj-text-faint)" }}>Compras do plano</p>
           <div className="rounded-2xl p-4" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
             <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5 }}>
+              {estimativaPlano && <><strong>Cerca de {eurosPP(estimativaPlano.total)}</strong> com os preços de hoje{estimativaPlano.conhecidas < estimativaPlano.de ? ` (${estimativaPlano.conhecidas} de ${estimativaPlano.de} receitas)` : ""}. </>}
               <strong>{aComprar.length} artigos</strong> para {[
                 `${plano.dias.filter((d) => d.id && !d.fora).length} jantares`,
                 plano.sopa && "a sopa",
@@ -654,7 +664,7 @@ function SecaoEmentasConteudo({ setTab }) {
 
       <div className="px-4 mb-4 flex gap-2 overflow-x-auto no-scrollbar">
         {FILTROS.map((f) => (
-          <button key={f.id} onClick={() => setFiltro(f.id)}
+          <button key={f.id} onClick={() => { setFiltro(f.id); evento("ementas_filtro", { filtro: f.id }); }}
             className="pj-tap press flex-shrink-0 px-3.5 py-2 rounded-xl text-[12px] font-semibold"
             style={filtro === f.id ? { background: "var(--pj-brand)", color: "#fff" } : { background: "var(--pj-subtle)", color: "var(--pj-text-muted)" }}>
             {f.label}

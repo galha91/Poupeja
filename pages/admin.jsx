@@ -42,6 +42,8 @@ const NOMES_EVENTO = {
   codigo_barras: "Leitor de código de barras", ementas_plano: "Plano de jantares", receita_cozinhada: "Cozinhou uma receita",
   abrir_poupeja: "Abriu a app a partir do site", feedback_util: "Respondeu «Isto foi útil?»", arranque_cabaz: "Comparou o cabaz básico (1 toque)",
   lembrete_compras_criado: "Pediu lembrete do dia das compras", lembrete_compras_cancelado: "Cancelou o lembrete", lista_guardada_usada: "Usou uma lista guardada",
+  receita_lista: "Pôs os ingredientes de uma receita na lista", inicio_poupanca: "Abriu «Já poupaste» no Início", inicio_folheto: "Abriu um folheto no Início",
+  inicio_campanha: "Campanha do Início (Black Friday, Natal)", ementas_filtro: "Filtrou as receitas",
   lista_pediu_artigo: "Escreveu palavra geral na lista", pedir_conta: "Tocou em criar conta", subscrever_folhetos: "Subscreveu os folhetos",
 };
 const NOMES_TAREFA = {
