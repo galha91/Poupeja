@@ -23,6 +23,7 @@ const PREFS_OMISSAO = {
   distancia: 10, favoritos: ["Continente","Pingo Doce"],
   avisoGarantias: true, avisoPrecos: true,
   emailSemanal: true,
+  emailCabaz: true,
 };
 
 /* As prefs guardadas são MISTURADAS com as de omissão, não usadas como
@@ -551,6 +552,18 @@ export default function SecaoDefinicoes({ user, onLogout, onVoltar, onCriarConta
               </div>
             </div>
             <Toggle on={!user?.convidado && prefs.emailSemanal !== false} onChange={v => { if (user?.convidado) { onCriarConta?.(); return; } set("emailSemanal", v); }} />
+          </div>
+        </Row>
+        <Row>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Mail size={17} style={{ color: "var(--pj-text-muted)" }} />
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "var(--pj-text)" }}>Cabaz da semana</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--pj-text-faint)" }}>Todas as quartas: onde fica mais barato o mesmo cabaz.</p>
+              </div>
+            </div>
+            <Toggle on={!user?.convidado && prefs.emailCabaz !== false} onChange={v => { if (user?.convidado) { onCriarConta?.(); return; } set("emailCabaz", v); }} />
           </div>
         </Row>
         <Row border={false}>

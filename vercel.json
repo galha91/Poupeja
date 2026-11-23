@@ -48,6 +48,9 @@
     },
     "pages/api/*.js": {
       "maxDuration": 30
+    },
+    "pages/api/cron-email-cabaz.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -102,6 +105,10 @@
     {
       "path": "/api/cron-lembrete-compras",
       "schedule": "30 7 * * *"
+    },
+    {
+      "path": "/api/cron-email-cabaz",
+      "schedule": "0 7 * * 3"
     }
   ]
 }

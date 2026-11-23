@@ -9,12 +9,13 @@ import { verificarTokenUnsub } from "../../lib/unsubscribeToken";
  * - GET   → o utilizador clicou no link; mostra uma página de confirmação.
  *
  * Em ambos os casos define poupeja_prefs.emailSemanal = false para o
- * utilizador, preservando as restantes preferências. Como a tabela é
+ * utilizador (ou emailCabaz = false, com tipo=cabaz: o email de quarta),
+ * preservando as restantes preferências. Como a tabela é
  * sincronizada por last-write-wins, usamos um timestamp atual para que a
  * app respeite a mudança no próximo arranque.
  */
 
-async function aplicarCancelamento(userId) {
+async function aplicarCancelamento(userId, chave = "emailSemanal") {
   const admin = getSupabaseAdmin();
   if (!admin) return { ok: false, motivo: "config" };
 
@@ -32,11 +33,11 @@ async function aplicarCancelamento(userId) {
     }
   } catch {}
 
-  if (prefs && prefs.emailSemanal === false) {
+  if (prefs && prefs[chave] === false) {
     return { ok: true, jaCancelado: true };
   }
 
-  prefs = { ...(prefs || {}), emailSemanal: false };
+  prefs = { ...(prefs || {}), [chave]: false };
 
   try {
     await admin.from("dados_utilizador").upsert(
@@ -80,11 +81,14 @@ export default async function handler(req, res) {
   const base = process.env.NEXT_PUBLIC_URL || "https://xn--poupej-uta.com";
   const u = req.query.u || req.body?.u;
   const t = req.query.t || req.body?.t;
+  const cabaz = (req.query.tipo || req.body?.tipo) === "cabaz";
+  const chave = cabaz ? "emailCabaz" : "emailSemanal";
+  const nomeEmail = cabaz ? "o cabaz de quarta-feira" : "o resumo semanal dos folhetos";
 
   // POST one-click: responde sempre 200, sem corpo, conforme RFC 8058.
   if (req.method === "POST") {
     if (verificarTokenUnsub(u, t)) {
-      await aplicarCancelamento(u);
+      await aplicarCancelamento(u, chave);
     }
     return res.status(200).end();
   }
@@ -103,7 +107,7 @@ export default async function handler(req, res) {
     );
   }
 
-  const r = await aplicarCancelamento(u);
+  const r = await aplicarCancelamento(u, chave);
   if (!r.ok) {
     return res.status(500).send(
       paginaHtml({
@@ -119,8 +123,8 @@ export default async function handler(req, res) {
     paginaHtml({
       titulo: r.jaCancelado ? "Já estavas cancelado" : "Cancelado com sucesso",
       mensagem: r.jaCancelado
-        ? "Já não estavas a receber o resumo semanal por email. Podes reativá-lo quando quiseres nas Definições."
-        : "Deixaste de receber o resumo semanal dos folhetos. Podes reativá-lo a qualquer momento nas Definições da app.",
+        ? `Já não estavas a receber ${nomeEmail} por email. Podes reativá-lo quando quiseres nas Definições.`
+        : `Deixaste de receber ${nomeEmail}. Podes reativá-lo a qualquer momento nas Definições da app.`,
       base,
     })
   );
