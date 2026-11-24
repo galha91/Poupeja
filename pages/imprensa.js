@@ -39,6 +39,20 @@ const ECRAS = [
   { f: "app-o-que-posso-cozinhar", nome: "O que posso cozinhar?", texto: "Receitas com o que já há em casa; o que falta vai para a lista." },
   { f: "site-receitas-frango", nome: "Receitas por ingrediente", texto: "Páginas públicas de receitas baratas, sem registo." },
 ];
+/* Peças publicadas sobre o PoupeJá. Acrescentar à cabeça quando sair outra. */
+const NA_IMPRENSA = [
+  { meio: "Pplware", data: "novembro de 2026", titulo: "Este site português reúne e compara preços de supermercados, combustíveis e muito mais",
+    href: "https://pplware.sapo.pt/informacao/este-site-portugues-reune-e-compara-precos-de-supermercados-combustiveis-e-muito-mais/" },
+  { meio: "HR Portugal", data: "7 de novembro de 2026", titulo: "Onde é mais barato? Nova app gratuita permite comparar preços de supermercados e combustíveis em tempo real",
+    href: "https://hrportugal.sapo.pt/nova-app-gratuita-permite-comparar-precos-de-supermercados-e-combustiveis-em-tempo-real/" },
+];
+const METODO = [
+  "Os preços de supermercado vêm das lojas online de cada cadeia e são atualizados todos os dias. Do Lidl entram as promoções do folheto e os preços dos talões que os utilizadores leem.",
+  "Compara-se o mesmo artigo pelo preço por kg, litro ou unidade, para que embalagens diferentes não enganem.",
+  "Quando uma cadeia não tem o artigo, fica de fora dessa comparação: nunca se estima nem se inventa um preço.",
+  "Os preços online podem ser diferentes dos da loja física. Os valores são indicativos e cada página mostra a data em que foram recolhidos.",
+  "Os combustíveis são os preços que os postos comunicam à DGEG.",
+];
 const FICHEIROS = [
   { href: "/icon.svg", nome: "Logótipo (SVG)" },
   { href: "/icon-512.png", nome: "Logótipo (PNG, 512 px)" },
@@ -71,6 +85,7 @@ export default function Imprensa() {
         <h2 className="font-display" style={estiloH2}>Em poucas linhas</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
           {[
+            "Acompanha os preços de mais de 18 mil produtos, todos os dias.",
             `Compara os preços online de ${COMPARADAS.length} cadeias: ${COMPARADAS.map((c) => c.nome).join(", ")}.`,
             "Os preços dos combustíveis são os que os postos comunicam à DGEG.",
             `Planeia as refeições da semana com ${receitas().length} receitas portuguesas baratas, ajusta-as à casa e faz a lista de compras.`,
@@ -82,8 +97,25 @@ export default function Imprensa() {
           ))}
         </div>
         <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 10, lineHeight: 1.55 }}>
-          Cadeias que ainda não entram na comparação: {NAO_INCLUIDAS.map((c) => c.nome).join(", ")}. Do Lidl só entram as promoções do folheto.
+          Cadeias que ainda não entram na comparação: {NAO_INCLUIDAS.map((c) => c.nome).join(", ")}. Do Lidl entram as promoções do folheto e os preços dos talões lidos pelos utilizadores.
         </p>
+
+        <h2 className="font-display" style={estiloH2}>Na imprensa</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {NA_IMPRENSA.map((n, i) => (
+            <a key={n.href} href={n.href} target="_blank" rel="noopener" className="pj-tap no-underline block px-4 py-3" style={linha(i)}>
+              <span className="block" style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text-faint)" }}>{n.meio} · {n.data}</span>
+              <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 2, lineHeight: 1.4 }}>{n.titulo}</span>
+            </a>
+          ))}
+        </div>
+
+        <h2 className="font-display" style={estiloH2}>Como recolhemos os preços</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {METODO.map((t, i) => (
+            <p key={i} className="px-4 py-3" style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5, ...linha(i) }}>{t}</p>
+          ))}
+        </div>
 
         <h2 className="font-display" style={estiloH2}>Dados que pode citar</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
@@ -142,8 +174,11 @@ export default function Imprensa() {
 
         <h2 className="font-display" style={estiloH2}>Contacto</h2>
         <p style={{ ...estiloTexto, marginTop: 0 }}>
-          Para pedir dados de um artigo, de uma cadeia ou de um concelho, ou marcar uma conversa:{" "}
+          Para pedir dados de um artigo, de uma cadeia ou de um concelho, marcar uma entrevista ou pedir uma correção:{" "}
           <a href={`mailto:${CONTACTO}`} style={estiloLink}>{CONTACTO}</a>.
+        </p>
+        <p style={estiloTexto}>
+          Fundador e contacto: Ricardo Galha.
         </p>
       </div>
     </LayoutPublico>
