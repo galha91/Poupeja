@@ -47,8 +47,18 @@ const NA_IMPRENSA = [
   { meio: "HR Portugal", data: "7 de novembro de 2026", titulo: "Onde é mais barato? Nova app gratuita permite comparar preços de supermercados e combustíveis em tempo real",
     href: "https://hrportugal.sapo.pt/nova-app-gratuita-permite-comparar-precos-de-supermercados-e-combustiveis-em-tempo-real/" },
 ];
+/*
+ * Números verificados na base de dados a 24 nov 2026. Fixos de propósito
+ * (nada de contagens por pedido); atualizar à mão quando mudarem muito.
+ */
+const DIA_NUMEROS = "24 de novembro de 2026";
+const NUMEROS = [
+  { valor: "19\u00a0600", texto: "produtos de marca com histórico diário de preços, desde outubro de 2026" },
+  { valor: "2\u00a0900+", texto: "postos de combustível de todo o país, com os preços da DGEG" },
+];
 const METODO = [
-  "Os preços de supermercado vêm das lojas online de cada cadeia e são atualizados todos os dias. Do Lidl entram as promoções do folheto e os preços dos talões que os utilizadores leem.",
+  "Quando alguém procura um artigo, o PoupeJá pesquisa-o em direto nas lojas online de cada cadeia, com uma cache de poucas horas. Do Lidl entram as promoções do folheto e os preços dos talões que os utilizadores leem.",
+  "Além disso, guarda todos os dias o preço dos produtos de marca e, desde 27 de setembro de 2026, o do cabaz básico em cada cadeia, para se ver como evoluem.",
   "Compara-se o mesmo artigo pelo preço por kg, litro ou unidade, para que embalagens diferentes não enganem.",
   "Quando uma cadeia não tem o artigo, fica de fora dessa comparação: nunca se estima nem se inventa um preço.",
   "Os preços online podem ser diferentes dos da loja física. Os valores são indicativos e cada página mostra a data em que foram recolhidos.",
@@ -86,7 +96,7 @@ export default function Imprensa() {
         <h2 className="font-display" style={estiloH2}>Em poucas linhas</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
           {[
-            "Acompanha os preços de mais de 18 mil produtos, todos os dias.",
+            "Pesquisa em direto o sortido online de cada cadeia e guarda o histórico de preços de quase 20 mil produtos de marca.",
             `Compara os preços online de ${COMPARADAS.length} cadeias: ${COMPARADAS.map((c) => c.nome).join(", ")}.`,
             "Os preços dos combustíveis são os que os postos comunicam à DGEG.",
             `Planeia as refeições da semana com ${receitas().length} receitas portuguesas baratas, ajusta-as à casa e faz a lista de compras.`,
@@ -100,6 +110,18 @@ export default function Imprensa() {
         <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 10, lineHeight: 1.55 }}>
           Cadeias que ainda não entram na comparação: {NAO_INCLUIDAS.map((c) => c.nome).join(", ")}. Do Lidl entram as promoções do folheto e os preços dos talões lidos pelos utilizadores.
         </p>
+
+        <h2 className="font-display" style={estiloH2}>Em números</h2>
+        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+          {[{ valor: String(receitas().length), texto: "receitas portuguesas baratas, com custo por pessoa" },
+            { valor: String(COMPARADAS.length), texto: "cadeias de supermercado na comparação" }, ...NUMEROS].map((n) => (
+            <div key={n.texto} className="rounded-2xl px-4 py-3" style={estiloCartao}>
+              <p className="font-display" style={{ fontSize: 24, fontWeight: 700, whiteSpace: "nowrap", color: "var(--pj-brand-ink)", lineHeight: 1.2 }}>{n.valor}</p>
+              <p style={{ fontSize: 13, color: "var(--pj-text-muted)", lineHeight: 1.45, marginTop: 4 }}>{n.texto}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 10 }}>Números a {DIA_NUMEROS}.</p>
 
         <h2 className="font-display" style={estiloH2}>Na imprensa</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
@@ -135,6 +157,7 @@ export default function Imprensa() {
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
           {[
             ["O que é", "Site e app web (instala-se no telemóvel a partir do browser) para poupar nas compras"],
+            ["Disponível em", `${DOMINIO_VISIVEL}, no browser do telemóvel ou do computador; a app Android está em teste fechado na Google Play`],
             ["Preço", "Grátis e sem registo"],
             ["Supermercados comparados", `${COMPARADAS.length}: ${COMPARADAS.map((c) => c.nome).join(", ")}`],
             ["Receitas", `${receitas().length}, em ${COLECOES.length} coleções públicas (por ingrediente, dieta e ocasião)`],
