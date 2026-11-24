@@ -30,14 +30,57 @@ const DADOS = [
  * 780 × 1688), com os preços reais do dia em que foram tiradas (obtidos da
  * API de produção). Refazem-se depois de mudanças visíveis.
  */
-const DIA_ECRAS = "14 de novembro de 2026";
+const DIA_ECRAS = "14 e 24 de novembro de 2026";
 const ECRAS = [
   { f: "app-plano-semana", nome: "Plano da semana", texto: "Os jantares da semana, com sopa, para a casa toda." },
   { f: "app-ajustar-jantar", nome: "Ajustar um jantar", texto: "Trocar por outra proteína, jantar fora, convidados, cozinhar a dobrar." },
   { f: "app-lista-comparada", nome: "A lista, comparada", texto: "A mesma lista em cada supermercado, com a loja mais barata à frente." },
   { f: "app-orcamento", nome: "Cabe no orçamento?", texto: "O total real da lista ao lado do orçamento da semana." },
   { f: "app-o-que-posso-cozinhar", nome: "O que posso cozinhar?", texto: "Receitas com o que já há em casa; o que falta vai para a lista." },
-  { f: "site-receitas-frango", nome: "Receitas por ingrediente", texto: "Páginas públicas de receitas baratas, sem registo." },
+  { f: "site-receita-foto", nome: "Uma receita", texto: "Fotografia, tempo, custo e valores por pessoa; as quantidades ajustam-se à casa." },
+  { f: "site-receitas-lista", nome: "Receitas baratas", texto: "Páginas públicas de receitas baratas, com fotografia, sem registo." },
+];
+/* Peças publicadas sobre o PoupeJá. Acrescentar à cabeça quando sair outra. */
+const NA_IMPRENSA = [
+  { meio: "Pplware", data: "novembro de 2026", titulo: "Este site português reúne e compara preços de supermercados, combustíveis e muito mais",
+    href: "https://pplware.sapo.pt/informacao/este-site-portugues-reune-e-compara-precos-de-supermercados-combustiveis-e-muito-mais/" },
+  { meio: "HR Portugal", data: "7 de novembro de 2026", titulo: "Onde é mais barato? Nova app gratuita permite comparar preços de supermercados e combustíveis em tempo real",
+    href: "https://hrportugal.sapo.pt/nova-app-gratuita-permite-comparar-precos-de-supermercados-e-combustiveis-em-tempo-real/" },
+];
+/*
+ * Números verificados na base de dados a 24 nov 2026. Fixos de propósito
+ * (nada de contagens por pedido); atualizar à mão quando mudarem muito.
+ */
+const DIA_NUMEROS = "24 de novembro de 2026";
+const NUMEROS = [
+  { valor: "19\u00a0600", texto: "produtos de marca com histórico diário de preços, desde outubro de 2026" },
+  { valor: "2\u00a0900+", texto: "postos de combustível de todo o país, com os preços da DGEG" },
+];
+const METODO = [
+  "Quando alguém procura um artigo, o PoupeJá pesquisa-o em direto nas lojas online de cada cadeia, com uma cache de poucas horas. Do Lidl entram as promoções do folheto e os preços dos talões que os utilizadores leem.",
+  "Além disso, guarda todos os dias o preço dos produtos de marca e, desde 27 de setembro de 2026, o do cabaz básico em cada cadeia, para se ver como evoluem.",
+  "Compara-se o mesmo artigo pelo preço por kg, litro ou unidade, para que embalagens diferentes não enganem.",
+  "Quando uma cadeia não tem o artigo, fica de fora dessa comparação: nunca se estima nem se inventa um preço.",
+  "Os preços online podem ser diferentes dos da loja física. Os valores são indicativos e cada página mostra a data em que foram recolhidos.",
+  "Os combustíveis são os preços que os postos comunicam à DGEG.",
+];
+/* Ângulos com dados que o PoupeJá já tem; cada um leva à página que os mostra. */
+const IDEIAS = [
+  { href: "/barometro", titulo: "O IVA zero chega às prateleiras?", texto: "O histórico diário permite comparar o preço de cada artigo antes e depois da descida, cadeia a cadeia." },
+  { href: "/barometro", titulo: "Quanto custa o cabaz esta semana", texto: "Os mesmos artigos básicos em cada cadeia, com a variação face à semana anterior." },
+  { href: "/combustiveis/esta-semana", titulo: "Combustível: quem subiu e quem desceu", texto: "O que cada marca mexeu nos últimos 7 dias e os postos mais baratos de cada concelho." },
+  { href: "/reduflacao", titulo: "Reduflação", texto: "Embalagens que encolheram sem o preço descer." },
+  { href: "/black-friday", titulo: "Black Friday: o desconto é verdadeiro?", texto: "O que a lei diz sobre o preço riscado e, com o histórico diário, a verificação de casos concretos no supermercado." },
+  { href: "/ceia-de-natal", titulo: "Quanto custa a ceia de Natal", texto: "A ementa tradicional, com o custo por pessoa." },
+];
+/* Marcos com a data em que entraram no site (histórico do repositório). */
+const NOVIDADES = [
+  { dia: "24 nov 2026", texto: "Fotografias em 152 receitas e páginas de Black Friday e Natal." },
+  { dia: "22 nov 2026", texto: "Custo por pessoa em cada receita e ementa da ceia de Natal." },
+  { dia: "13 nov 2026", texto: "Alertas de preço por email nas páginas de preços." },
+  { dia: "27 out 2026", texto: "Listas de compras guardadas (semanal, mensal)." },
+  { dia: "2 out 2026", texto: "A lista de compras dividida pelas duas lojas mais baratas." },
+  { dia: "27 set 2026", texto: "O Aldi entra na comparação e começa o histórico do cabaz básico." },
 ];
 const FICHEIROS = [
   { href: "/icon.svg", nome: "Logótipo (SVG)" },
@@ -59,6 +102,11 @@ export default function Imprensa() {
         <meta property="og:description" content={DESCRICAO} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro({
+          "@context": "https://schema.org", "@type": "Organization", name: "PoupeJá", url: URL_SITE, logo: `${URL_SITE}/icon-512.png`,
+          founder: { "@type": "Person", name: "Ricardo Galha" },
+          contactPoint: { "@type": "ContactPoint", contactType: "press", email: CONTACTO, availableLanguage: "pt-PT" },
+        }) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />
@@ -71,6 +119,7 @@ export default function Imprensa() {
         <h2 className="font-display" style={estiloH2}>Em poucas linhas</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
           {[
+            "Pesquisa em direto o sortido online de cada cadeia e guarda o histórico de preços de quase 20 mil produtos de marca.",
             `Compara os preços online de ${COMPARADAS.length} cadeias: ${COMPARADAS.map((c) => c.nome).join(", ")}.`,
             "Os preços dos combustíveis são os que os postos comunicam à DGEG.",
             `Planeia as refeições da semana com ${receitas().length} receitas portuguesas baratas, ajusta-as à casa e faz a lista de compras.`,
@@ -82,8 +131,48 @@ export default function Imprensa() {
           ))}
         </div>
         <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 10, lineHeight: 1.55 }}>
-          Cadeias que ainda não entram na comparação: {NAO_INCLUIDAS.map((c) => c.nome).join(", ")}. Do Lidl só entram as promoções do folheto.
+          Cadeias que ainda não entram na comparação: {NAO_INCLUIDAS.map((c) => c.nome).join(", ")}. Do Lidl entram as promoções do folheto e os preços dos talões lidos pelos utilizadores.
         </p>
+
+        <h2 className="font-display" style={estiloH2}>Em números</h2>
+        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+          {[{ valor: String(receitas().length), texto: "receitas portuguesas baratas, com custo por pessoa" },
+            { valor: String(COMPARADAS.length), texto: "cadeias de supermercado na comparação" }, ...NUMEROS].map((n) => (
+            <div key={n.texto} className="rounded-2xl px-4 py-3" style={estiloCartao}>
+              <p className="font-display" style={{ fontSize: 24, fontWeight: 700, whiteSpace: "nowrap", color: "var(--pj-brand-ink)", lineHeight: 1.2 }}>{n.valor}</p>
+              <p style={{ fontSize: 13, color: "var(--pj-text-muted)", lineHeight: 1.45, marginTop: 4 }}>{n.texto}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 10 }}>Números a {DIA_NUMEROS}.</p>
+
+        <h2 className="font-display" style={estiloH2}>Na imprensa</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {NA_IMPRENSA.map((n, i) => (
+            <a key={n.href} href={n.href} target="_blank" rel="noopener" className="pj-tap no-underline block px-4 py-3" style={linha(i)}>
+              <span className="block" style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text-faint)" }}>{n.meio} · {n.data}</span>
+              <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 2, lineHeight: 1.4 }}>{n.titulo}</span>
+            </a>
+          ))}
+        </div>
+
+        <h2 className="font-display" style={estiloH2}>Como recolhemos os preços</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {METODO.map((t, i) => (
+            <p key={i} className="px-4 py-3" style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5, ...linha(i) }}>{t}</p>
+          ))}
+        </div>
+
+        <h2 className="font-display" style={estiloH2}>Ideias para peças</h2>
+        <p style={{ ...estiloTexto, marginTop: 0 }}>Temas em que os dados do PoupeJá podem ajudar. Preparamos os números de que precisar, com data e método.</p>
+        <div className="rounded-2xl overflow-hidden" style={{ ...estiloCartao, marginTop: 12 }}>
+          {IDEIAS.map((d, i) => (
+            <a key={d.titulo} href={d.href} className="pj-tap no-underline block px-4 py-3" style={linha(i)}>
+              <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>{d.titulo}</span>
+              <span className="block" style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 2, lineHeight: 1.45 }}>{d.texto}</span>
+            </a>
+          ))}
+        </div>
 
         <h2 className="font-display" style={estiloH2}>Dados que pode citar</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
@@ -102,6 +191,7 @@ export default function Imprensa() {
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
           {[
             ["O que é", "Site e app web (instala-se no telemóvel a partir do browser) para poupar nas compras"],
+            ["Disponível em", `${DOMINIO_VISIVEL}, no browser do telemóvel ou do computador; a app Android está em teste fechado na Google Play`],
             ["Preço", "Grátis e sem registo"],
             ["Supermercados comparados", `${COMPARADAS.length}: ${COMPARADAS.map((c) => c.nome).join(", ")}`],
             ["Receitas", `${receitas().length}, em ${COLECOES.length} coleções públicas (por ingrediente, dieta e ocasião)`],
@@ -111,6 +201,16 @@ export default function Imprensa() {
             <div key={k} className="px-4 py-3" style={linha(i)}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text-faint)" }}>{k}</p>
               <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5, marginTop: 2 }}>{v}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="font-display" style={estiloH2}>Novidades</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {NOVIDADES.map((n, i) => (
+            <div key={n.dia} className="px-4 py-3 flex gap-3" style={linha(i)}>
+              <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text-faint)", minWidth: 78, flex: "none", paddingTop: 1 }}>{n.dia}</span>
+              <span style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.45 }}>{n.texto}</span>
             </div>
           ))}
         </div>
@@ -142,8 +242,11 @@ export default function Imprensa() {
 
         <h2 className="font-display" style={estiloH2}>Contacto</h2>
         <p style={{ ...estiloTexto, marginTop: 0 }}>
-          Para pedir dados de um artigo, de uma cadeia ou de um concelho, ou marcar uma conversa:{" "}
+          Para pedir dados de um artigo, de uma cadeia ou de um concelho, marcar uma entrevista ou pedir uma correção:{" "}
           <a href={`mailto:${CONTACTO}`} style={estiloLink}>{CONTACTO}</a>.
+        </p>
+        <p style={estiloTexto}>
+          Fundador e contacto: Ricardo Galha.
         </p>
       </div>
     </LayoutPublico>
