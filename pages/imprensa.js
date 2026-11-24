@@ -30,14 +30,15 @@ const DADOS = [
  * 780 × 1688), com os preços reais do dia em que foram tiradas (obtidos da
  * API de produção). Refazem-se depois de mudanças visíveis.
  */
-const DIA_ECRAS = "14 de novembro de 2026";
+const DIA_ECRAS = "14 e 24 de novembro de 2026";
 const ECRAS = [
   { f: "app-plano-semana", nome: "Plano da semana", texto: "Os jantares da semana, com sopa, para a casa toda." },
   { f: "app-ajustar-jantar", nome: "Ajustar um jantar", texto: "Trocar por outra proteína, jantar fora, convidados, cozinhar a dobrar." },
   { f: "app-lista-comparada", nome: "A lista, comparada", texto: "A mesma lista em cada supermercado, com a loja mais barata à frente." },
   { f: "app-orcamento", nome: "Cabe no orçamento?", texto: "O total real da lista ao lado do orçamento da semana." },
   { f: "app-o-que-posso-cozinhar", nome: "O que posso cozinhar?", texto: "Receitas com o que já há em casa; o que falta vai para a lista." },
-  { f: "site-receitas-frango", nome: "Receitas por ingrediente", texto: "Páginas públicas de receitas baratas, sem registo." },
+  { f: "site-receita-foto", nome: "Uma receita", texto: "Fotografia, tempo, custo e valores por pessoa; as quantidades ajustam-se à casa." },
+  { f: "site-receitas-lista", nome: "Receitas baratas", texto: "Páginas públicas de receitas baratas, com fotografia, sem registo." },
 ];
 /* Peças publicadas sobre o PoupeJá. Acrescentar à cabeça quando sair outra. */
 const NA_IMPRENSA = [
