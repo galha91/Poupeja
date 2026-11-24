@@ -218,5 +218,6 @@ export async function getStaticProps() {
   const atual = !!p && ivaZeroServe(p);
   // A referência por produto fica na base de dados; a página só leva o resumo.
   const dados = p ? { fase: p.fase, dia: p.dia, resumo: p.resumo || null, serie: (p.serie || []).slice(-14) } : null;
-  return { props: { dados, atual }, revalidate: 12 * 3600 };
+  // Sem dados (por exemplo, publicada antes da primeira geração), tenta de novo de hora a hora.
+  return { props: { dados, atual }, revalidate: atual ? 12 * 3600 : 3600 };
 }
