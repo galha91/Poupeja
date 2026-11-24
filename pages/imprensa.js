@@ -7,6 +7,7 @@ import { URL_SITE, DOMINIO_VISIVEL } from "../lib/site";
 import { COMPARADAS, NAO_INCLUIDAS } from "../lib/cobertura";
 import { receitas } from "../lib/receitas/motor";
 import { COLECOES } from "../lib/receitas/colecoes";
+import { NA_IMPRENSA } from "../lib/imprensa";
 
 /*
  * Página de imprensa: o que é o PoupeJá em poucas linhas, os dados que
@@ -40,13 +41,6 @@ const ECRAS = [
   { f: "app-o-que-posso-cozinhar", nome: "O que posso cozinhar?", texto: "Receitas com o que já há em casa; o que falta vai para a lista." },
   { f: "site-receita-foto", nome: "Uma receita", texto: "Fotografia, tempo, custo e valores por pessoa; as quantidades ajustam-se à casa." },
   { f: "site-receitas-lista", nome: "Receitas baratas", texto: "Páginas públicas de receitas baratas, com fotografia, sem registo." },
-];
-/* Peças publicadas sobre o PoupeJá. Acrescentar à cabeça quando sair outra. */
-const NA_IMPRENSA = [
-  { meio: "Pplware", data: "novembro de 2026", titulo: "Este site português reúne e compara preços de supermercados, combustíveis e muito mais",
-    href: "https://pplware.sapo.pt/informacao/este-site-portugues-reune-e-compara-precos-de-supermercados-combustiveis-e-muito-mais/" },
-  { meio: "HR Portugal", data: "7 de novembro de 2026", titulo: "Onde é mais barato? Nova app gratuita permite comparar preços de supermercados e combustíveis em tempo real",
-    href: "https://hrportugal.sapo.pt/nova-app-gratuita-permite-comparar-precos-de-supermercados-e-combustiveis-em-tempo-real/" },
 ];
 /*
  * Números verificados na base de dados a 24 nov 2026. Fixos de propósito

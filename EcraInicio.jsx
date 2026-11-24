@@ -15,6 +15,8 @@ import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
 import { lerRegistos, somarPeriodos } from "./lib/poupancaListas";
 import { campanhaAtiva, hojeEmLisboa } from "./lib/campanhas";
+import { MEIOS_IMPRENSA } from "./lib/imprensa";
+import SubscreverFolhetos from "./SubscreverFolhetos";
 import { mostrarIRS } from "./lib/atalhos";
 import { descreverFrescura } from "./lib/frescura";
 import { evento } from "./lib/analytics";
@@ -114,6 +116,11 @@ function PrimeiraVisita({ gasoleo, cabaz, onComparar, onCombustivel, onEmentas }
       <p className="anim-up" style={{ fontSize: 14, color: "var(--pj-text-muted)", marginTop: 8, lineHeight: 1.45 }}>
         Preços de hoje nos supermercados com loja online. Grátis e sem conta.
       </p>
+      {/* Prova social para quem chega pelos artigos: uma linha, sem tirar o lugar ao cabaz. */}
+      <p className="anim-up" style={{ fontSize: 12, color: "var(--pj-text-faint)", marginTop: 6 }}>
+        Falaram de nós:{" "}
+        <a href="/imprensa" onClick={() => evento("inicio_imprensa", { acao: "aberto" })} style={{ color: "var(--pj-text-muted)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 2 }}>{MEIOS_IMPRENSA}</a>
+      </p>
       {cabaz && <CartaoCabaz primeiro cabaz={cabaz} onTrocar={() => { evento("inicio_cabaz", { acao: "trocar" }); onComparar(); }} />}
       {!gasoleo.falhou && <HeroCombustivel secundario={!!cabaz} gasoleo={gasoleo} streak={0} onVerPostos={porta("combustivel", onCombustivel)} onGuardarTalao={null} />}
       <div className="flex flex-col anim-up anim-up-2" style={{ gap: 10, marginTop: cabaz && !gasoleo.falhou ? 14 : 32 }}>
@@ -191,6 +198,14 @@ function CartaoCampanha() {
       <button onClick={dispensar} aria-label="Dispensar" className="pj-tap flex items-center justify-center" style={{ width: 36, height: 36, borderRadius: 10, background: "transparent", border: 0, color: "var(--pj-text-faint)", fontSize: 18, flexShrink: 0 }}>×</button>
     </div>
   );
+}
+
+function SubscreverInicio() {
+  const [mostrar, setMostrar] = useState(false);
+  useEffect(() => {
+    try { setMostrar(!localStorage.getItem("poupeja_subscrito")); } catch { setMostrar(true); }
+  }, []);
+  return mostrar ? <SubscreverFolhetos origem="inicio" /> : null;
 }
 
 function calcStreak() {
@@ -903,6 +918,10 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             ))}
           </div>
         </div>
+
+        {/* Quem chega sem conta (muitas vezes por um artigo) leva o resumo
+            semanal por email: é o que o faz voltar. Some depois de subscrever. */}
+        {user?.convidado && <SubscreverInicio />}
 
         {/* Conta: opcional, no fim. Quem chega a explorar não precisa
             dela para nada; quem quiser guardar na cloud encontra-a aqui. */}

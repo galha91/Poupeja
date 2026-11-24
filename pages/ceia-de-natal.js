@@ -34,6 +34,14 @@ const RECEITAS = [
   { href: "/receitas/aletria", texto: "Aletria" },
 ];
 
+/* As páginas de preço de cada artigo da época (/precos/<artigo>), para quem compara um a um. */
+const PRECOS_NATAL = [
+  ["bacalhau", "Bacalhau"], ["lombos-de-bacalhau", "Lombos de bacalhau"], ["polvo", "Polvo"], ["perna-de-peru", "Peru"],
+  ["cabrito", "Cabrito"], ["borrego", "Borrego"], ["bolo-rei", "Bolo-rei"], ["queijo-da-serra", "Queijo da Serra"],
+  ["castanhas", "Castanhas"], ["nozes", "Nozes"], ["amendoas", "Amêndoas"], ["pinhoes", "Pinhões"],
+  ["passas", "Passas"], ["tamaras", "Tâmaras"], ["aletria", "Aletria"], ["espumante", "Espumante"],
+].map(([slug, texto]) => ({ href: `/precos/${slug}`, texto }));
+
 export default function CeiaDeNatal({ natal = null, atual = false, ano }) {
   const canonical = `${URL_SITE}/ceia-de-natal`;
   const passos = [{ nome: "PoupeJá", path: "/" }, { nome: "Ceia de Natal", path: "/ceia-de-natal" }];
@@ -166,11 +174,12 @@ export default function CeiaDeNatal({ natal = null, atual = false, ano }) {
         <h2 className="font-display" style={estiloH2}>Receitas de Natal baratas</h2>
         <Pilulas itens={RECEITAS} />
 
+        <h2 className="font-display" style={estiloH2}>Preço de hoje dos artigos de Natal</h2>
+        <Pilulas itens={PRECOS_NATAL} />
+
         <h2 className="font-display" style={estiloH2}>Ver também</h2>
         <Pilulas itens={[
-          { href: "/precos/bacalhau", texto: "Preço do bacalhau hoje" },
-          { href: "/precos/polvo", texto: "Preço do polvo hoje" },
-          { href: "/precos/bolo-rei", texto: "Preço do bolo-rei" },
+          { href: "/iva-zero", texto: "IVA zero a 1 de janeiro" },
           { href: "/supermercado-mais-barato", texto: "Supermercado mais barato" },
           { href: "/barometro", texto: "Barómetro PoupeJá", fraco: true },
         ]} />
