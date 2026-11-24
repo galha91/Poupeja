@@ -4,6 +4,7 @@ import { gerarCabazInicio } from "../../lib/cabazInicioGerar";
 import { gerarCabazNegocios } from "../../lib/cabazNegociosGerar";
 import { gerarCabazNatal } from "../../lib/natalGerar";
 import { gerarCustosReceitas } from "../../lib/receitasCustoGerar";
+import { gerarIvaZero } from "../../lib/ivaZeroGerar";
 import { comRegisto } from "../../lib/cronRegisto";
 
 /*
@@ -25,6 +26,9 @@ import { comRegisto } from "../../lib/cronRegisto";
  *
  * E o custo por pessoa de cada receita (lib/receitasCusto), para a lista de
  * receitas da app e de /receitas: uma leitura dos preços recentes.
+ *
+ * E a página /iva-zero (lib/ivaZero): os preços diários dos alimentos
+ * essenciais, antes e depois do IVA zero de 2027. Sem ir às lojas.
  */
 async function handler(req, res) {
   if (!bearerValido(req.headers.authorization, process.env.CRON_SECRET)) {
@@ -35,8 +39,9 @@ async function handler(req, res) {
   const negocios = await gerarCabazNegocios().catch((e) => ({ ok: false, erro: String(e?.message || e).slice(0, 120) }));
   const natal = await gerarCabazNatal().catch((e) => ({ ok: false, erro: String(e?.message || e).slice(0, 120) }));
   const receitas = await gerarCustosReceitas().catch((e) => ({ ok: false, erro: String(e?.message || e).slice(0, 120) }));
-  console.log("cron-paginas-marca:", JSON.stringify({ ...r, cabaz, negocios, natal, receitas }));
-  return res.status(200).json({ ...r, cabaz, negocios, natal, receitas });
+  const ivaZero = await gerarIvaZero().catch((e) => ({ ok: false, erro: String(e?.message || e).slice(0, 120) }));
+  console.log("cron-paginas-marca:", JSON.stringify({ ...r, cabaz, negocios, natal, receitas, ivaZero }));
+  return res.status(200).json({ ...r, cabaz, negocios, natal, receitas, ivaZero });
 }
 
 // Cada execução fica registada para o /admin (Qualidade → Tarefas automáticas).
