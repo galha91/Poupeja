@@ -64,6 +64,24 @@ const METODO = [
   "Os preços online podem ser diferentes dos da loja física. Os valores são indicativos e cada página mostra a data em que foram recolhidos.",
   "Os combustíveis são os preços que os postos comunicam à DGEG.",
 ];
+/* Ângulos com dados que o PoupeJá já tem; cada um leva à página que os mostra. */
+const IDEIAS = [
+  { href: "/barometro", titulo: "O IVA zero chega às prateleiras?", texto: "O histórico diário permite comparar o preço de cada artigo antes e depois da descida, cadeia a cadeia." },
+  { href: "/barometro", titulo: "Quanto custa o cabaz esta semana", texto: "Os mesmos artigos básicos em cada cadeia, com a variação face à semana anterior." },
+  { href: "/combustiveis/esta-semana", titulo: "Combustível: quem subiu e quem desceu", texto: "O que cada marca mexeu nos últimos 7 dias e os postos mais baratos de cada concelho." },
+  { href: "/reduflacao", titulo: "Reduflação", texto: "Embalagens que encolheram sem o preço descer." },
+  { href: "/black-friday", titulo: "Black Friday: o desconto é verdadeiro?", texto: "O que a lei diz sobre o preço riscado e, com o histórico diário, a verificação de casos concretos no supermercado." },
+  { href: "/ceia-de-natal", titulo: "Quanto custa a ceia de Natal", texto: "A ementa tradicional, com o custo por pessoa." },
+];
+/* Marcos com a data em que entraram no site (histórico do repositório). */
+const NOVIDADES = [
+  { dia: "24 nov 2026", texto: "Fotografias em 152 receitas e páginas de Black Friday e Natal." },
+  { dia: "22 nov 2026", texto: "Custo por pessoa em cada receita e ementa da ceia de Natal." },
+  { dia: "13 nov 2026", texto: "Alertas de preço por email nas páginas de preços." },
+  { dia: "27 out 2026", texto: "Listas de compras guardadas (semanal, mensal)." },
+  { dia: "2 out 2026", texto: "A lista de compras dividida pelas duas lojas mais baratas." },
+  { dia: "27 set 2026", texto: "O Aldi entra na comparação e começa o histórico do cabaz básico." },
+];
 const FICHEIROS = [
   { href: "/icon.svg", nome: "Logótipo (SVG)" },
   { href: "/icon-512.png", nome: "Logótipo (PNG, 512 px)" },
@@ -84,6 +102,11 @@ export default function Imprensa() {
         <meta property="og:description" content={DESCRICAO} key="og:description" />
         <meta property="og:url" content={canonical} key="og:url" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro(breadcrumbLd(URL_SITE, passos)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSeguro({
+          "@context": "https://schema.org", "@type": "Organization", name: "PoupeJá", url: URL_SITE, logo: `${URL_SITE}/icon-512.png`,
+          founder: { "@type": "Person", name: "Ricardo Galha" },
+          contactPoint: { "@type": "ContactPoint", contactType: "press", email: CONTACTO, availableLanguage: "pt-PT" },
+        }) }} />
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />
@@ -140,6 +163,17 @@ export default function Imprensa() {
           ))}
         </div>
 
+        <h2 className="font-display" style={estiloH2}>Ideias para peças</h2>
+        <p style={{ ...estiloTexto, marginTop: 0 }}>Temas em que os dados do PoupeJá podem ajudar. Preparamos os números de que precisar, com data e método.</p>
+        <div className="rounded-2xl overflow-hidden" style={{ ...estiloCartao, marginTop: 12 }}>
+          {IDEIAS.map((d, i) => (
+            <a key={d.titulo} href={d.href} className="pj-tap no-underline block px-4 py-3" style={linha(i)}>
+              <span className="block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--pj-brand-ink)" }}>{d.titulo}</span>
+              <span className="block" style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 2, lineHeight: 1.45 }}>{d.texto}</span>
+            </a>
+          ))}
+        </div>
+
         <h2 className="font-display" style={estiloH2}>Dados que pode citar</h2>
         <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
           {DADOS.map((d, i) => (
@@ -167,6 +201,16 @@ export default function Imprensa() {
             <div key={k} className="px-4 py-3" style={linha(i)}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pj-text-faint)" }}>{k}</p>
               <p style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.5, marginTop: 2 }}>{v}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="font-display" style={estiloH2}>Novidades</h2>
+        <div className="rounded-2xl overflow-hidden" style={estiloCartao}>
+          {NOVIDADES.map((n, i) => (
+            <div key={n.dia} className="px-4 py-3 flex gap-3" style={linha(i)}>
+              <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--pj-text-faint)", minWidth: 78, flex: "none", paddingTop: 1 }}>{n.dia}</span>
+              <span style={{ fontSize: 14, color: "var(--pj-text)", lineHeight: 1.45 }}>{n.texto}</span>
             </div>
           ))}
         </div>
