@@ -2,7 +2,7 @@ import { getSupabaseAdmin } from "../../lib/supabaseAdmin";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
 import { campanhaValida } from "../../lib/visitas";
 
-const ORIGENS = new Set(["direto", "google", "pesquisa", "facebook", "instagram", "tiktok", "whatsapp", "email", "outro"]);
+const ORIGENS = new Set(["direto", "google", "pesquisa", "facebook", "instagram", "tiktok", "whatsapp", "email", "reddit", "telegram", "youtube", "linkedin", "imprensa", "outro"]);
 
 // Regista aberturas e conversões do modo convidado (ver lib/convidado.js).
 const MARCOS = ["comparou", "escolheu", "alerta", "pediu_conta"];

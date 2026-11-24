@@ -88,3 +88,14 @@ test("origens da campanha: Reddit, Telegram, YouTube e LinkedIn", () => {
   assert.equal(origemEtiqueta("lista"), null);
   assert.equal(origemEtiqueta("fb-pais-s1"), "facebook");
 });
+
+test("imprensa: notícias contam como imprensa, não como outros sites", () => {
+  assert.equal(classificarOrigem("https://pplware.sapo.pt/informacao/este-site-portugues/", "poupeja.com"), "imprensa");
+  assert.equal(classificarOrigem("https://www.publico.pt/2026/11/24/x", "poupeja.com"), "imprensa");
+  assert.equal(classificarOrigem("https://news.google.com/articles/x", "poupeja.com"), "imprensa");
+  assert.equal(classificarOrigem("https://www.noticiasaominuto.com/x", "poupeja.com"), "imprensa");
+  assert.equal(classificarOrigem("https://www.google.pt/", "poupeja.com"), "google");
+  // Domínios parecidos não contam.
+  assert.equal(classificarOrigem("https://naosapo.pt.evil.com/", "poupeja.com"), "outro");
+  assert.equal(classificarOrigem("https://falsosapo.pt/", "poupeja.com"), "outro");
+});

@@ -64,7 +64,8 @@ const NOMES_VITAL = {
 const NOMES_MODO = { "app-android": "App Android", pwa: "App instalada", browser: "Browser" };
 const NOMES_ORIGEM = {
   direto: "Direto / app", google: "Google", pesquisa: "Outros motores", facebook: "Facebook",
-  instagram: "Instagram", tiktok: "TikTok", whatsapp: "WhatsApp", outro: "Outros sites", interno: "Navegação interna",
+  instagram: "Instagram", tiktok: "TikTok", whatsapp: "WhatsApp", reddit: "Reddit", telegram: "Telegram",
+  youtube: "YouTube", linkedin: "LinkedIn", imprensa: "Imprensa / notícias", outro: "Outros sites", interno: "Navegação interna",
 };
 const NOMES_PLATAFORMA = { ios: "iOS", android: "Android", desktop: "Computador", semInfo: "Sem informação" };
 
