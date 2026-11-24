@@ -42,12 +42,14 @@ const NOMES_EVENTO = {
   codigo_barras: "Leitor de código de barras", ementas_plano: "Plano de jantares", receita_cozinhada: "Cozinhou uma receita",
   abrir_poupeja: "Abriu a app a partir do site", feedback_util: "Respondeu «Isto foi útil?»", arranque_cabaz: "Comparou o cabaz básico (1 toque)",
   lembrete_compras_criado: "Pediu lembrete do dia das compras", lembrete_compras_cancelado: "Cancelou o lembrete", lista_guardada_usada: "Usou uma lista guardada",
+  receita_lista: "Pôs os ingredientes de uma receita na lista", inicio_poupanca: "Abriu «Já poupaste» no Início", inicio_folheto: "Abriu um folheto no Início",
+  inicio_campanha: "Campanha do Início (Black Friday, Natal)", ementas_filtro: "Filtrou as receitas",
   lista_pediu_artigo: "Escreveu palavra geral na lista", pedir_conta: "Tocou em criar conta", subscrever_folhetos: "Subscreveu os folhetos",
 };
 const NOMES_TAREFA = {
   "cron-precos": "Preços dos combustíveis (DGEG)", "cron-saude-precos": "Verificação dos preços das lojas", "cron-historico-precos": "Histórico de preços (1/3)",
   "cron-historico-precos-2": "Histórico de preços (2/3)", "cron-historico-precos-3": "Histórico de preços (3/3)", "cron-paginas-marca": "Páginas de produtos e marcas", "cron-avisos": "Notificações personalizadas",
-  "cron-alertas-email": "Alertas de preço por email", "cron-lembrete-compras": "Lembrete do dia das compras", "cron-email-semanal": "Resumo semanal dos folhetos",
+  "cron-alertas-email": "Alertas de preço por email", "cron-lembrete-compras": "Lembrete do dia das compras", "cron-email-semanal": "Resumo semanal dos folhetos", "cron-email-cabaz": "Email do cabaz (quarta)",
   "cron-email-combustiveis": "Email semanal de combustível", "cron-previsao-combustiveis": "Previsão dos combustíveis", "cron-validar-urls": "Validação de links",
   "cron-indexnow": "Aviso de páginas novas aos motores (IndexNow)", "cron-resumo-admin": "Resumo do admin por email", "push-enviar": "Notificação geral de quinta",
 };

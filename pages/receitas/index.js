@@ -84,7 +84,9 @@ export default function Receitas({ custos = null }) {
         ))}
 
         {GRUPOS.map((g) => {
-          const doGrupo = EMENTAS.filter((e) => e.tipo === g.tipo);
+          // Com os preços de hoje, dentro de cada faixa € as mais baratas por pessoa vêm primeiro.
+          const doGrupo = EMENTAS.filter((e) => e.tipo === g.tipo)
+            .sort((a, b) => a.custo - b.custo || (custos?.[a.id] ?? 99) - (custos?.[b.id] ?? 99));
           return (
             <section key={g.tipo}>
               <h2 id={g.ancora} className="font-display" style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>

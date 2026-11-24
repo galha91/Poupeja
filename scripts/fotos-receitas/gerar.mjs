@@ -20,6 +20,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { receitas } from "../../lib/receitas/motor.js";
 import { promptDaFoto } from "../../lib/receitas/fotoPrompt.js";
+import { verificarImagem } from "./verificar.mjs";
 
 const raiz = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const args = process.argv.slice(2);
@@ -27,6 +28,8 @@ const opcao = (nome, def) => { const i = args.indexOf(nome); return i >= 0 ? arg
 const quantas = Math.max(1, Math.min(150, Number(opcao("--quantas", 30)) || 30));
 const pasta = path.resolve(opcao("--pasta", path.join(raiz, ".fotos-geradas")));
 const idsPedidos = (opcao("--ids", "") || "").split(",").map((s) => s.trim()).filter(Boolean);
+// Verificação com o modelo de visão (verificar.mjs): ligada por omissão.
+const verificar = !args.includes("--sem-verificar");
 
 const { CLOUDFLARE_ACCOUNT_ID: conta, CLOUDFLARE_API_TOKEN: token } = process.env;
 if (!conta || !token) { console.error("Faltam CLOUDFLARE_ACCOUNT_ID e CLOUDFLARE_API_TOKEN."); process.exit(1); }
@@ -64,13 +67,27 @@ async function gerar(r) {
 mkdirSync(pasta, { recursive: true });
 console.log(`${fila.length} receitas por gerar (máximo pedido: ${quantas}).`);
 let feitas = 0;
+const recusadas = [];
 for (const id of fila) {
   try {
-    const img = await gerar(porId.get(id));
-    if (!img) continue;
+    // Até duas tentativas: uma imagem que o modelo de visão diz não ser o
+    // prato certo não entra; gera-se outra. À segunda, a receita fica de fora.
+    let img = null, visto = "";
+    for (let tentativa = 1; tentativa <= 2 && !img; tentativa++) {
+      const nova = await gerar(porId.get(id));
+      if (!nova) break;
+      if (!verificar) { img = nova; break; }
+      const v = await verificarImagem(nova, porId.get(id), { conta, token });
+      if (v.quota) throw Object.assign(new Error("quota"), { quota: true });
+      visto = v.visto || v.erro || "";
+      // Sem resposta do modelo (null): fica, e a revisão humana decide.
+      if (v.corresponde !== false) img = nova;
+      else console.warn(`${id}: a imagem não corresponde (tentativa ${tentativa}): ${visto}`);
+    }
+    if (!img) { recusadas.push(id); continue; }
     writeFileSync(path.join(pasta, `${id}.jpg`), img);
     feitas++;
-    console.log(`ok ${id}`);
+    console.log(`ok ${id}${visto ? ` (${visto})` : ""}`);
   } catch (e) {
     if (e.quota) { console.warn("Quota grátis do dia esgotada; o resto fica para amanhã."); break; }
     console.warn(`${id}: ${e.message}`);
@@ -82,4 +99,4 @@ if (feitas) {
   const r = spawnSync(process.execPath, [path.join(raiz, "scripts/fotos-receitas/processar.mjs"), pasta], { stdio: "inherit" });
   if (r.status !== 0) process.exit(r.status || 1);
 }
-console.log(`${feitas} fotografias geradas.`);
+console.log(`${feitas} fotografias geradas.${recusadas.length ? ` Recusadas pela verificação: ${recusadas.join(", ")}.` : ""}`);

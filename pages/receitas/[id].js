@@ -286,7 +286,7 @@ export async function getStaticProps({ params }) {
       titulo: g.titulo,
       itens: COLECOES.filter((c) => c.grupo === g.id && c.slug !== colecao.slug).map((c) => ({ slug: c.slug, curto: c.curto })),
     })).filter((g) => g.itens.length);
-    return { props: { colecao: { slug: colecao.slug, titulo: colecao.titulo, intro: colecao.intro, curto: colecao.curto }, lista, grupos } };
+    return { props: { colecao: { slug: colecao.slug, titulo: colecao.titulo, intro: colecao.intro, curto: colecao.curto, ligacao: colecao.ligacao || null }, lista, grupos } };
   }
   const receita = EMENTAS.find(e => e.id === params.id);
   if (!receita) return { notFound: true };

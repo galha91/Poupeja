@@ -26,6 +26,7 @@ const linha = (i) => (i ? { borderTop: "1px solid var(--pj-subtle)" } : {});
 const naLoja = (l) => `${l.loja === "apolonia" ? "na" : "no"} ${l.nome}`;
 
 const RECEITAS = [
+  { href: "/receitas/natal", texto: "Todas as receitas de Natal" },
   { href: "/receitas/bacalhau-gomes-sa", texto: "Bacalhau à Gomes de Sá" },
   { href: "/receitas/bacalhau-bras", texto: "Bacalhau à Brás (com as sobras)" },
   { href: "/receitas/rabanadas", texto: "Rabanadas" },
@@ -44,7 +45,7 @@ export default function CeiaDeNatal({ natal = null, atual = false, ano }) {
 
   const resposta = !n ? ""
     : n.empate
-      ? `Esta semana a consoada para ${PESSOAS} pessoas custa entre ${eur(barata.total, 2)} € ${naLoja(barata)} e ${eur(cara.total, 2)} € ${naLoja(cara)}. As cadeias mais baratas quase empatam: a tua lista decide.`
+      ? `Esta semana a consoada para ${PESSOAS} pessoas custa entre ${eur(barata.total, 2)} € ${naLoja(barata)} e ${eur(cara.total, 2)} € ${naLoja(cara)}. O primeiro lugar depende de um ou dois artigos (ao tirar um, já é outra cadeia a mais barata), por isso a tua lista decide.`
       : `Esta semana, a consoada para ${PESSOAS} pessoas fica mais barata ${naLoja(barata)}: ${eur(barata.total, 2)} €. ${naLoja(cara).replace(/^./, (c) => c.toUpperCase())}, os mesmos artigos custam ${eur(cara.total, 2)} €, mais ${eur(cara.total - barata.total, 2)} €.`;
   const descricao = n
     ? `${resposta} Bacalhau, polvo, couve, batata e bolo-rei, comparados em ${n.porLoja.length} supermercados.`

@@ -14,6 +14,7 @@ import { N_COMPARADAS } from "./lib/cobertura";
 import { lerResumo } from "./lib/resumoLista";
 import { eur } from "./lib/formato";
 import { lerRegistos, somarPeriodos } from "./lib/poupancaListas";
+import { campanhaAtiva, hojeEmLisboa } from "./lib/campanhas";
 import { mostrarIRS } from "./lib/atalhos";
 import { descreverFrescura } from "./lib/frescura";
 import { evento } from "./lib/analytics";
@@ -153,6 +154,42 @@ function CartaoLista({ lista, onAbrir }) {
         ? <span className="pj-num flex-none" style={{ fontSize: 15, fontWeight: 700, color: "var(--pj-text)" }}>{eur(resumo.total, 2)} €</span>
         : <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />}
     </button>
+  );
+}
+
+/*
+ * Campanha da época (Black Friday, Ceia de Natal): um cartão pequeno por
+ * baixo das ementas, para quem já usa a app. Quem o dispensa não o volta a
+ * ver nessa campanha. Quem chega pela primeira vez não o vê: o primeiro
+ * ecrã já tem demasiadas portas.
+ */
+function CartaoCampanha() {
+  const [c, setC] = useState(null);
+  useEffect(() => {
+    const ativa = campanhaAtiva(hojeEmLisboa());
+    if (!ativa) return;
+    try { if (localStorage.getItem(`poupeja_campanha_${ativa.id}`)) return; } catch {}
+    setC(ativa);
+    evento("inicio_campanha", { id: ativa.id, acao: "visto" });
+  }, []);
+  if (!c) return null;
+  function dispensar() {
+    try { localStorage.setItem(`poupeja_campanha_${c.id}`, "1"); } catch {}
+    evento("inicio_campanha", { id: c.id, acao: "dispensado" });
+    setC(null);
+  }
+  return (
+    <div className="flex items-center anim-up" style={{ gap: 12, marginTop: 14, padding: "12px 12px 12px 14px", borderRadius: 14, background: "var(--pj-card)", border: "1px solid var(--pj-border)" }}>
+      <a href={c.href} onClick={() => evento("inicio_campanha", { id: c.id, acao: "aberto" })} className="flex items-center no-underline" style={{ gap: 12, flex: 1, minWidth: 0, color: "inherit" }}>
+        <span aria-hidden="true" style={{ fontSize: 24, flexShrink: 0 }}>{c.emoji}</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--pj-text)" }}>{c.titulo}</span>
+          <span style={{ display: "block", fontSize: 12, color: "var(--pj-text-muted)", marginTop: 1 }}>{c.texto}</span>
+        </span>
+        <ChevronRight size={16} style={{ color: "var(--pj-text-faint)", flexShrink: 0 }} />
+      </a>
+      <button onClick={dispensar} aria-label="Dispensar" className="pj-tap flex items-center justify-center" style={{ width: 36, height: 36, borderRadius: 10, background: "transparent", border: 0, color: "var(--pj-text-faint)", fontSize: 18, flexShrink: 0 }}>×</button>
+    </div>
   );
 }
 
@@ -767,6 +804,7 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
         {/* Ementas: cartão grande, logo a seguir ao herói — o jantar de hoje
             ou o convite para planear a semana. */}
         {!explorar && <CartaoEmentasInicio onAbrir={() => (abrirEmentas ? abrirEmentas() : setTab("receitas"))} />}
+        {!explorar && lido && <CartaoCampanha />}
 
         {/* Lista de compras — sempre, a toda a gente (nova ou não), com o
             resultado da lista otimizada quando há. */}

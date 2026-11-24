@@ -9,6 +9,8 @@ import dadosApoios from "../../public/apoios.json";
 import dadosPrazos from "../../data/prazos-estado.json";
 import { slugApoio, slugPrazo } from "../../lib/seoEstado";
 import { comRegisto } from "../../lib/cronRegisto";
+import { emEpoca } from "../../lib/natal";
+import { hojeEmLisboa } from "../../lib/campanhas";
 
 /*
  * Aviso diário IndexNow (Vercel Cron, ver vercel.json) — depois do cron
@@ -49,6 +51,9 @@ async function handler(req, res) {
   } catch (e) {
     console.warn("cron-indexnow: sem páginas de preços:", e.message);
   }
+
+  // A ceia de Natal tem preços novos todos os dias, de novembro ao Dia de Reis.
+  if (emEpoca(hojeEmLisboa())) caminhos.push("/ceia-de-natal");
 
   const quinta = new Date().getUTCDay() === 4;
   if (quinta || req.query.todas === "1") {
