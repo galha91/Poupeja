@@ -21,6 +21,9 @@
     "arroz-doce": {
       "fonte": "ia"
     },
+    "arroz-doce-robo": {
+      "fonte": "ia"
+    },
     "arroz-feijao-ovo": {
       "fonte": "ia"
     },
@@ -39,6 +42,9 @@
     "aveia-vespera": {
       "fonte": "ia"
     },
+    "baba-camelo": {
+      "fonte": "ia"
+    },
     "bacalhau-bras": {
       "fonte": "ia"
     },
@@ -52,6 +58,12 @@
       "fonte": "ia"
     },
     "bacalhau-natas": {
+      "fonte": "ia"
+    },
+    "baguete-pizza": {
+      "fonte": "ia"
+    },
+    "batata-cavala": {
       "fonte": "ia"
     },
     "batata-recheada-microondas": {
@@ -78,10 +90,28 @@
     "bolo-banana": {
       "fonte": "ia"
     },
+    "bolo-bolacha": {
+      "fonte": "ia"
+    },
+    "bolo-bolacha-tradicional": {
+      "fonte": "ia"
+    },
+    "bolo-caneca": {
+      "fonte": "ia"
+    },
+    "bolo-iogurte": {
+      "fonte": "ia"
+    },
+    "bolo-laranja": {
+      "fonte": "ia"
+    },
     "bolonhesa-lentilhas": {
       "fonte": "ia"
     },
     "bruschetta-atum": {
+      "fonte": "ia"
+    },
+    "caldo-verde": {
       "fonte": "ia"
     },
     "canja": {
@@ -127,6 +157,12 @@
       "fonte": "ia"
     },
     "creme-couve-flor": {
+      "fonte": "ia"
+    },
+    "crepes": {
+      "fonte": "ia"
+    },
+    "crumble-maca": {
       "fonte": "ia"
     },
     "curgetes-recheadas": {
@@ -180,6 +216,9 @@
     "frango-batata-doce": {
       "fonte": "ia"
     },
+    "frango-bras": {
+      "fonte": "ia"
+    },
     "frango-desfiado-lento": {
       "fonte": "ia"
     },
@@ -195,6 +234,9 @@
     "gaspacho": {
       "fonte": "ia"
     },
+    "gelado-banana": {
+      "fonte": "ia"
+    },
     "granola-caseira": {
       "fonte": "ia"
     },
@@ -207,10 +249,25 @@
     "hamburguer-caseiro": {
       "fonte": "ia"
     },
+    "hamburguer-grao": {
+      "fonte": "ia"
+    },
+    "iogurte-caseiro": {
+      "fonte": "ia"
+    },
+    "iogurte-grego-caseiro": {
+      "fonte": "ia"
+    },
+    "iogurte-morango-caseiro": {
+      "fonte": "ia"
+    },
     "jardineira-frango": {
       "fonte": "ia"
     },
     "legumes-airfryer": {
+      "fonte": "ia"
+    },
+    "leite-creme": {
       "fonte": "ia"
     },
     "lentilhas": {
@@ -220,6 +277,9 @@
       "fonte": "ia"
     },
     "lulas-estufadas": {
+      "fonte": "ia"
+    },
+    "maca-assada": {
       "fonte": "ia"
     },
     "macarrao-salsicha": {
@@ -237,6 +297,12 @@
     "massa-lavrador": {
       "fonte": "ia"
     },
+    "mousse-chocolate": {
+      "fonte": "ia"
+    },
+    "mousse-chocolate-tradicional": {
+      "fonte": "ia"
+    },
     "muffins-banana-aveia": {
       "fonte": "ia"
     },
@@ -246,10 +312,16 @@
     "ovos-mexidos-torradas": {
       "fonte": "ia"
     },
+    "ovos-rotos": {
+      "fonte": "ia"
+    },
     "panquecas-banana": {
       "fonte": "ia"
     },
     "panquecas-classicas": {
+      "fonte": "ia"
+    },
+    "pao-de-lo": {
       "fonte": "ia"
     },
     "pao-forno": {
@@ -267,10 +339,16 @@
     "pataniscas": {
       "fonte": "ia"
     },
+    "peras-bebadas": {
+      "fonte": "ia"
+    },
     "peru-batata-doce": {
       "fonte": "ia"
     },
     "peru-cogumelos": {
+      "fonte": "ia"
+    },
+    "pescada-cozida": {
       "fonte": "ia"
     },
     "pescada-forno": {
@@ -285,6 +363,9 @@
     "pizza-caseira": {
       "fonte": "ia"
     },
+    "pudim-flan": {
+      "fonte": "ia"
+    },
     "rabanadas": {
       "fonte": "ia"
     },
@@ -294,10 +375,19 @@
     "risotto-cogumelos-robo": {
       "fonte": "ia"
     },
+    "salada-fruta": {
+      "fonte": "ia"
+    },
     "salada-grao-atum": {
       "fonte": "ia"
     },
     "salada-massa-atum": {
+      "fonte": "ia"
+    },
+    "salame-chocolate": {
+      "fonte": "ia"
+    },
+    "salame-chocolate-tradicional": {
       "fonte": "ia"
     },
     "salmao-forno": {
@@ -336,6 +426,9 @@
     "strogonoff-frango": {
       "fonte": "ia"
     },
+    "suspiros": {
+      "fonte": "ia"
+    },
     "taca-iogurte-fruta": {
       "fonte": "ia"
     },
@@ -352,6 +445,9 @@
       "fonte": "ia"
     },
     "tosta-atum": {
+      "fonte": "ia"
+    },
+    "tostas-mistas": {
       "fonte": "ia"
     },
     "waffles-aveia": {
