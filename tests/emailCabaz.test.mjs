@@ -22,7 +22,10 @@ test("email do cabaz: o assunto diz o vencedor ou o empate", () => {
 
 test("email do cabaz: tabela, variação, ligações etiquetadas e cancelamento", () => {
   const e = construirEmailCabaz({ nome: "Ana Silva", cabaz: cabaz(false), variacao: { diff: -0.12 }, base, unsubscribeUrl: `${base}/u` });
-  assert.match(e.html, /Ana, o mais barato é no Continente/);
+  // O destaque vem antes de tudo: a cadeia mais barata e o preço, em grande.
+  assert.match(e.html, /Mais barato esta semana/);
+  assert.ok(e.html.indexOf("Mais barato esta semana") < e.html.indexOf("Ana, o cabaz fica mais barato no Continente"));
+  assert.match(e.html, /Ana, o cabaz fica mais barato no Continente/);
   assert.match(e.html, /9,87\u00a0€/);
   assert.match(e.html, /desceu 0,12\u00a0€/);
   assert.match(e.html, /\?atalho=lista&o=email-cabaz/);
@@ -36,7 +39,8 @@ test("email do cabaz: na época junta uma linha da ceia de Natal", () => {
   const e = construirEmailCabaz({ nome: "", cabaz: cabaz(true), natal, base, unsubscribeUrl: `${base}/u` });
   assert.match(e.html, /ceia de Natal para 6 pessoas vai de <strong>56,83\u00a0€<\/strong> no Auchan/);
   assert.match(e.html, /ceia-de-natal\?o=email-cabaz-natal/);
-  assert.match(e.html, /Olá, esta semana há empate/);
+  assert.match(e.html, /Esta semana há empate/);
+  assert.match(e.html, /Olá, o cabaz vai de/);
 });
 
 test("cancelamento: o link do cabaz só desliga o cabaz", () => {
