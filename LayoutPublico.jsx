@@ -27,7 +27,7 @@ export function SoForaDaApp({ children }) {
  * Conteúdo server-rendered visível ao Google, com o estilo editorial da app
  * e um caminho claro para instalar/abrir o PoupeJá.
  */
-export default function LayoutPublico({ children, destaqueEmentas = false }) {
+export default function LayoutPublico({ children, destaqueEmentas = false, subscrever = null }) {
   return (
     <div style={{ minHeight: "100vh", background: "var(--pj-surface)", color: "var(--pj-text)" }}>
       <header className="mx-auto flex items-center justify-between px-5 py-4" style={{ maxWidth: 720 }}>
@@ -49,7 +49,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false }) {
         {/* As Ementas em destaque em todas as páginas públicas (menos nas de receitas, que já são). */}
         {destaqueEmentas && <DestaqueEmentasPublico />}
         <PartilharPagina />
-        <SoForaDaApp><SubscreverFolhetos origem="paginas-publicas" /></SoForaDaApp>
+        <SoForaDaApp><SubscreverFolhetos origem="paginas-publicas" {...(subscrever || {})} /></SoForaDaApp>
       </main>
 
       <footer className="mx-auto px-5 pb-12" style={{ maxWidth: 720 }}>

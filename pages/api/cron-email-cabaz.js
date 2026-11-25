@@ -11,7 +11,9 @@ import { construirEmailCabaz } from "../../lib/emailCabaz";
 
 /*
  * Email de quarta-feira, só com o cabaz da semana (lib/emailCabaz).
- * Disparado pelo Vercel Cron (vercel.json), quarta às 07:00 UTC.
+ * Disparado pelo Vercel Cron (vercel.json), quarta às 07:00 UTC, e outra
+ * vez às 09:00 UTC como rede de segurança: graças a envios_email, a segunda
+ * só envia a quem a primeira não chegou (normalmente ninguém).
  *
  * Vai para as contas com email confirmado que não desligaram os emails
  * (prefs emailSemanal === false ou emailCabaz === false). Os subscritores

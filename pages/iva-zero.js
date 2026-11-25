@@ -61,7 +61,11 @@ export default function IvaZero({ dados = null, atual = false }) {
     : "";
 
   return (
-    <LayoutPublico>
+    <LayoutPublico subscrever={{
+      origem: "iva-zero",
+      titulo: "O IVA zero no teu email",
+      texto: "O resumo semanal por email (à segunda-feira) traz, de janeiro a março, onde ver se a descida do IVA chegou aos preços, além dos folhetos e do jantar da semana. Sem conta, grátis, cancelas num toque.",
+    }}>
       <Head>
         <title>{`${titulo} | PoupeJá`}</title>
         <meta name="description" content={descricao} />

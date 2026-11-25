@@ -6,7 +6,10 @@ import { idConvidadoAtual } from "./lib/convidado";
  * Resumo semanal dos folhetos por email, sem conta. Consentimento explícito
  * (caixa por marcar) e cancelamento num toque em cada email.
  */
-export default function SubscreverFolhetos({ origem = "pagina" }) {
+// titulo/texto: para uma página dar o motivo dela (ex.: /iva-zero). O email é sempre o mesmo resumo semanal.
+const TITULO = "Folhetos da semana no teu email";
+const TEXTO = "Um email por semana (à segunda-feira de manhã) com os folhetos e o jantar da semana. Sem conta, grátis, cancelas num toque.";
+export default function SubscreverFolhetos({ origem = "pagina", titulo = TITULO, texto = TEXTO }) {
   const [email, setEmail] = useState("");
   const [ok, setOk] = useState(false);
   const [aceito, setAceito] = useState(false);
@@ -27,6 +30,7 @@ export default function SubscreverFolhetos({ origem = "pagina" }) {
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.erro || "Não foi possível guardar.");
       evento("subscrever_folhetos", { origem });
+      try { localStorage.setItem("poupeja_subscrito", "1"); } catch {}
       setOk(true);
     } catch (err) {
       setErro(err.message);
@@ -37,10 +41,8 @@ export default function SubscreverFolhetos({ origem = "pagina" }) {
 
   return (
     <section className="mt-8 rounded-2xl px-5 py-5" style={{ background: "var(--pj-card)", border: "1px solid var(--pj-border)" }} aria-label="Receber os folhetos por email">
-      <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>Folhetos da semana no teu email</h2>
-      <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.55, marginTop: 6 }}>
-        Um email por semana (à segunda-feira de manhã) com os folhetos e o jantar da semana. Sem conta, grátis, cancelas num toque.
-      </p>
+      <h2 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>{titulo}</h2>
+      <p style={{ fontSize: 13.5, color: "var(--pj-text-muted)", lineHeight: 1.55, marginTop: 6 }}>{texto}</p>
       {ok ? (
         <p style={{ fontSize: 14, fontWeight: 600, color: "var(--pj-brand-ink)", marginTop: 12 }}>Feito! Recebes o próximo resumo esta semana.</p>
       ) : (
