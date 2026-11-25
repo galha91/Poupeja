@@ -109,6 +109,10 @@
     {
       "path": "/api/cron-email-cabaz",
       "schedule": "0 7 * * 3"
+    },
+    {
+      "path": "/api/cron-email-cabaz",
+      "schedule": "0 9 * * 3"
     }
   ]
 }
