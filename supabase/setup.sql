@@ -813,3 +813,16 @@ alter table public.interesse_negocios enable row level security;
 -- view_produtos_embalagem_mudancas_invoker.)
 alter view if exists public.produtos_embalagem_mudancas set (security_invoker = on);
 revoke all on table public.produtos_embalagem_mudancas from anon, authenticated;
+
+-- ── Envios de email (2026-11-25) ───────────────────────────────────────────
+-- Quem já recebeu cada email em cada dia (pages/api/cron-email-cabaz.js).
+-- Repetir a tarefa só envia aos que faltam. (Migração envios_email.)
+create table if not exists public.envios_email (
+  user_id    uuid not null,
+  tipo       text not null,
+  dia        date not null,
+  enviado_em timestamptz not null default now(),
+  primary key (user_id, tipo, dia)
+);
+alter table public.envios_email enable row level security;
+revoke all on table public.envios_email from anon, authenticated;
