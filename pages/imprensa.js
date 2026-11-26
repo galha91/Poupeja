@@ -20,7 +20,7 @@ const DESCRICAO = "O PoupeJá é um site português, grátis e sem registo, que 
 
 const DADOS = [
   { href: "/barometro", nome: "Barómetro do cabaz", texto: "O custo do cabaz básico em cada cadeia, semana a semana." },
-  { href: "/iva-zero", nome: "IVA zero 2027", texto: "Se a descida do IVA chega ao preço dos alimentos essenciais, produto a produto." },
+  { href: "/iva-zero", nome: "IVA zero 2027", texto: "O que acontece ao preço dos alimentos essenciais a partir de 1 de janeiro, produto a produto." },
   { href: "/precos", nome: "Preços por artigo", texto: "O preço de hoje de cada artigo básico em cada cadeia, com histórico." },
   { href: "/comparar", nome: "Cadeia contra cadeia", texto: "Qual de duas cadeias fica mais barata, artigo a artigo." },
   { href: "/combustiveis", nome: "Combustíveis por concelho", texto: "Os postos mais baratos de cada concelho, com dados oficiais da DGEG." },
@@ -61,7 +61,7 @@ const METODO = [
 ];
 /* Ângulos com dados que o PoupeJá já tem; cada um leva à página que os mostra. */
 const IDEIAS = [
-  { href: "/iva-zero", titulo: "O IVA zero chega às prateleiras?", texto: "O mesmo produto, na mesma loja, antes e depois de 1 de janeiro de 2027, cadeia a cadeia e por tipo de alimento." },
+  { href: "/iva-zero", titulo: "IVA zero: aprovado pelo Parlamento, recusado pelo Governo. E os preços?", texto: "O mesmo produto, na mesma loja, antes e depois de 1 de janeiro de 2027, cadeia a cadeia e por tipo de alimento: mostra o que acontece de facto, seja qual for o desfecho." },
   { href: "/barometro", titulo: "Quanto custa o cabaz esta semana", texto: "Os mesmos artigos básicos em cada cadeia, com a variação face à semana anterior." },
   { href: "/combustiveis/esta-semana", titulo: "Combustível: quem subiu e quem desceu", texto: "O que cada marca mexeu nos últimos 7 dias e os postos mais baratos de cada concelho." },
   { href: "/reduflacao", titulo: "Reduflação", texto: "Embalagens que encolheram sem o preço descer." },

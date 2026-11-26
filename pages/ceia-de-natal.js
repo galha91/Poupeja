@@ -179,7 +179,7 @@ export default function CeiaDeNatal({ natal = null, atual = false, ano }) {
 
         <h2 className="font-display" style={estiloH2}>Ver também</h2>
         <Pilulas itens={[
-          { href: "/iva-zero", texto: "IVA zero a 1 de janeiro" },
+          { href: "/iva-zero", texto: "IVA zero: os preços vão descer?" },
           { href: "/supermercado-mais-barato", texto: "Supermercado mais barato" },
           { href: "/barometro", texto: "Barómetro PoupeJá", fraco: true },
         ]} />
