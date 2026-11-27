@@ -7,7 +7,7 @@ import { eur } from "../lib/formato";
 import { dataExtenso } from "../lib/datas";
 import { URL_SITE, DOMINIO_VISIVEL } from "../lib/site";
 import {
-  lerIvaZero, ivaZeroServe, pctDe, INICIO, FIM_PREVISTO, DESCIDA_ESPERADA, DIAS_REFERENCIA, LISTA_OFICIAL, GRUPOS,
+  lerIvaZero, ivaZeroServe, pctDe, INICIO, FIM_PREVISTO, ESTADO, ESTADO_DESDE, DESCIDA_ESPERADA, DIAS_REFERENCIA, LISTA_OFICIAL, GRUPOS,
 } from "../lib/ivaZero";
 
 /*
@@ -52,10 +52,11 @@ export default function IvaZero({ dados = null, atual = false }) {
   const passos = [{ nome: "PoupeJá", path: "/" }, { nome: "IVA zero", path: "/iva-zero" }];
   const r = dados?.resumo;
   const depois = dados?.fase === "depois";
-  const titulo = "IVA zero 2027: a descida chega ao preço do supermercado?";
+  const incerto = ESTADO !== "em-vigor";
+  const titulo = "IVA zero 2027: os preços dos alimentos vão descer?";
   const descricao = r && depois
     ? `Desde 1 de janeiro, ${pctDe(r.total.desceu, r.total.n)}% de ${r.total.n} alimentos essenciais desceram o equivalente ao IVA. Variação média: ${pct(r.total.varMedia)}. Mesmo produto, mesma loja, antes e depois.`
-    : `O IVA zero volta a 1 de janeiro de 2027. O PoupeJá acompanha ${r ? `${r.total.n} ` : ""}alimentos essenciais, produto a produto, para ver se a descida chega ao preço final.`;
+    : `${incerto ? "O Parlamento aprovou o IVA zero para 1 de janeiro de 2027, mas o Governo diz que não o vai aplicar." : "O IVA zero volta a 1 de janeiro de 2027."} O PoupeJá acompanha ${r ? `${r.total.n} ` : ""}alimentos essenciais, produto a produto, para ver o que acontece ao preço final.`;
   const frase = r && depois
     ? `Segundo o PoupeJá, a ${dataExtenso(dados.dia)}, ${pctDe(r.total.desceu, r.total.n)}% de ${r.total.n} alimentos essenciais acompanhados tinham descido pelo menos 5% face ao preço de dezembro; a variação média era de ${pct(r.total.varMedia)} (preços online).`
     : "";
@@ -64,7 +65,7 @@ export default function IvaZero({ dados = null, atual = false }) {
     <LayoutPublico subscrever={{
       origem: "iva-zero",
       titulo: "O IVA zero no teu email",
-      texto: "O resumo semanal por email (à segunda-feira) traz, de janeiro a março, onde ver se a descida do IVA chegou aos preços, além dos folhetos e do jantar da semana. Sem conta, grátis, cancelas num toque.",
+      texto: "O resumo semanal por email (à segunda-feira) traz, de janeiro a março, o que está a acontecer aos preços dos alimentos essenciais, além dos folhetos e do jantar da semana. Sem conta, grátis, cancelas num toque.",
     }}>
       <Head>
         <title>{`${titulo} | PoupeJá`}</title>
@@ -78,15 +79,25 @@ export default function IvaZero({ dados = null, atual = false }) {
       </Head>
       <div style={{ paddingTop: 24 }}>
         <Migalhas passos={passos.slice(1)} />
-        <h1 className="font-display" style={estiloH1}>IVA zero: a descida chega ao preço do supermercado?</h1>
+        <h1 className="font-display" style={estiloH1}>IVA zero: os preços dos alimentos vão descer?</h1>
         <p style={{ ...estiloTexto, color: "var(--pj-text)", fontWeight: 500 }}>
-          O Orçamento do Estado para 2027 volta a tirar o IVA a um conjunto de alimentos essenciais de {dataExtenso(INICIO)} a {dataExtenso(FIM_PREVISTO)},
-          com possibilidade de prolongamento. Um alimento que pagava 6% de IVA devia ficar {virgula(DESCIDA_ESPERADA)}% mais barato.
-          Aqui vê-se se fica: o mesmo produto, na mesma loja, antes e depois.
+          {incerto ? (
+            <>
+              O Parlamento aprovou no Orçamento do Estado para 2027 a isenção de IVA num conjunto de alimentos essenciais, de {dataExtenso(INICIO)} a {dataExtenso(FIM_PREVISTO)}.
+              A {dataExtenso(ESTADO_DESDE)}, o Primeiro-Ministro disse que o Governo não vai criar a lista de alimentos nem aplicar a medida; a última palavra pode caber
+              ao Tribunal Constitucional. Seja qual for o desfecho, aqui vê-se o que acontece de facto aos preços: o mesmo produto, na mesma loja, antes e depois de 1 de janeiro.
+            </>
+          ) : (
+            <>
+              O Orçamento do Estado para 2027 tira o IVA a um conjunto de alimentos essenciais de {dataExtenso(INICIO)} a {dataExtenso(FIM_PREVISTO)},
+              com possibilidade de prolongamento. Um alimento que pagava 6% de IVA devia ficar {virgula(DESCIDA_ESPERADA)}% mais barato.
+              Aqui vê-se se fica: o mesmo produto, na mesma loja, antes e depois.
+            </>
+          )}
         </p>
         {!LISTA_OFICIAL && (
           <p style={{ fontSize: 13, color: "var(--pj-text-muted)", marginTop: 10, lineHeight: 1.55 }}>
-            A lista oficial dos alimentos abrangidos ainda não foi publicada. Até lá acompanhamos os alimentos essenciais das categorias abaixo; quando a lista sair, a página passa a contar só os abrangidos.
+            A lista oficial dos alimentos abrangidos não foi publicada{incerto ? " (o Governo diz que não a vai criar)" : ""}. Acompanhamos os alimentos essenciais das categorias abaixo; se a lista sair, a página passa a contar só os abrangidos. Um alimento que pagava 6% de IVA devia ficar {virgula(DESCIDA_ESPERADA)}% mais barato se a isenção for aplicada.
           </p>
         )}
 
@@ -95,7 +106,7 @@ export default function IvaZero({ dados = null, atual = false }) {
         ) : (
           <>
             <div className="rounded-2xl p-4 mt-6" style={estiloCartao}>
-              <p style={rotulo}>{depois ? "Desde 1 de janeiro" : "Antes do IVA zero"}</p>
+              <p style={rotulo}>{depois ? "Desde 1 de janeiro" : "Antes de 1 de janeiro"}</p>
               {depois ? (
                 <>
                   <p className="font-display" style={{ fontSize: 30, fontWeight: 700, color: "var(--pj-brand-ink)", marginTop: 6 }}>{pctDe(r.total.desceu, r.total.n)}%</p>
