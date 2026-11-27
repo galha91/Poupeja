@@ -65,7 +65,15 @@
       { "q": "atum", "nome": "Atum em lata", "qtd": 0.28, "rotulo": "2 latas" },
       { "q": "grão cozido", "nome": "Grão cozido", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "feijão cozido", "nome": "Feijão cozido", "qtd": 0.5, "rotulo": "500 g" },
-      { "q": "azeite", "nome": "Azeite", "qtd": 0.25, "rotulo": "250 ml" }
+      { "q": "azeite", "nome": "Azeite", "qtd": 0.25, "rotulo": "250 ml" },
+      { "q": "costeletas porco", "nome": "Costeletas de porco", "qtd": 0.6, "rotulo": "600 g" },
+      { "q": "hambúrgueres", "nome": "Hambúrgueres", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "entremeada", "nome": "Entremeada", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "dourada", "nome": "Dourada", "qtd": 0.4, "rotulo": "400 g" },
+      { "q": "couve-flor", "nome": "Couve-flor", "qtd": 1, "rotulo": "1 kg" },
+      { "q": "curgete", "nome": "Curgete", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "polpa de tomate", "nome": "Polpa de tomate", "qtd": 0.5, "rotulo": "500 g" },
+      { "q": "lombo de porco", "nome": "Lombo de porco", "qtd": 0.5, "rotulo": "500 g" }
     ] },
     "casa-e-banho": { "titulo": "Casa e casa de banho", "artigos": [
       { "q": "papel higiénico", "nome": "Papel higiénico", "qtd": 12, "rotulo": "12 rolos" },
