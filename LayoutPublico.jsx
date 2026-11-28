@@ -74,6 +74,7 @@ export default function LayoutPublico({ children, destaqueEmentas = false, subsc
           <a href="/salario-liquido" style={{ color: "var(--pj-text-muted)" }}>Salário líquido</a>
           <a href="/abono-de-familia" style={{ color: "var(--pj-text-muted)" }}>Abono de família</a>
           <a href="/ferramentas" style={{ color: "var(--pj-brand-ink)" }}>Todas as calculadoras</a>
+          <a href="/poupar" style={{ color: "var(--pj-text-muted)" }}>Poupar por perfil</a>
           <a href="/garantias" style={{ color: "var(--pj-text-muted)" }}>Garantias</a>
           <a href="/devolucoes" style={{ color: "var(--pj-text-muted)" }}>Devoluções</a>
           <a href="/barometro" style={{ color: "var(--pj-text-muted)" }}>Barómetro do cabaz</a>
