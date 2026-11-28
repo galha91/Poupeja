@@ -126,6 +126,27 @@
           "sizes": "192x192"
         }
       ]
+    },
+    {
+      "name": "Importar receita",
+      "short_name": "Importar receita",
+      "description": "Do TikTok, de um texto ou de uma fotografia, com o custo por pessoa",
+      "url": "/receitas/importar",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/receitas/importar",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

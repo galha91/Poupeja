@@ -6,6 +6,7 @@ import {
   rejeitar, ajustarDia, dosesDoDia, MODOS_TROCA, MAX_CONVIDADOS, almocoDe, marmitasDoPlano, entradasDoPlano,
 } from "./lib/receitas/motor";
 import DespensaReceitas from "./DespensaReceitas";
+import CartaoImportar from "./CartaoImportar";
 import ReceitaDetalhe, { BadgeCusto, lerAvaliacoes, CustosReceitas } from "./ReceitaDetalhe";
 import { adicionarALista } from "./lib/receitas/paraLista";
 import { custoDoPlano, eurosPP } from "./lib/receitasCusto";
@@ -628,6 +629,9 @@ function SecaoEmentasConteudo({ setTab }) {
           </button>
         </div>
       )}
+
+      {/* Receitas de fora: TikTok, texto ou fotografia, com o custo */}
+      <CartaoImportar onde="app" className="mx-4 mb-5" />
 
       {/* O que já há em casa */}
       <DespensaReceitas tenho={tenho} onMudar={guardarDespensa} prefs={prefs} onAbrir={(r) => abrir(r)} onAdicionar={adicionarALista} />
