@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import CartaoImportar from "./CartaoImportar";
 import { CartaoEmentasInicio } from "./DestaqueEmentas";
 import dynamic from "next/dynamic";
 import {
@@ -748,6 +749,9 @@ export default function EcraInicio({ user, setTab, goGarantias, abrirEmentas, on
             </p>
           </div>
         )}
+
+        {/* Novidade de 28/11/2026: importar receitas do TikTok, com o custo. */}
+        <CartaoImportar onde="inicio" style={{ marginTop: 18 }} />
 
         {/* Herói: o gasóleo de hoje, sempre primeiro. A poupança vem logo
             a seguir, mais pequena, para quem já a tem. Se a DGEG falhar,

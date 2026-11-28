@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { registarCusto, custoUsd } from "../../lib/custos";
 import { orcamentoIADisponivel, somarGasto } from "../../lib/limiteIA";
 import { origemValida, excedeuLimite } from "../../lib/protecao-api";
-import { primeiroLink, fonteDoLink, linkTikTok, promptReceita, limparReceita, jsonDaResposta, dadosOembed, comCustos, MAX_TEXTO } from "../../lib/receitaVideo";
+import { primeiroLink, fonteDoLink, linkTikTok, idVideoTikTok, dadosPaginaTikTok, promptReceita, limparReceita, jsonDaResposta, dadosOembed, comCustos, MAX_TEXTO } from "../../lib/receitaVideo";
 import { custoReceita } from "../../lib/seoPrecos";
 import { lerPrecosIngredientes } from "../../lib/receitasCusto";
 
@@ -30,21 +30,49 @@ async function comTempo(url, opcoes = {}, ms = 6000) {
   try { return await fetch(url, { ...opcoes, signal: ctrl.signal }); } finally { clearTimeout(t); }
 }
 
-/* A legenda e o autor de um vídeo do TikTok, pelo oEmbed público. */
-async function legendaTikTok(link) {
-  const pedir = async (l) => {
-    const r = await comTempo(`https://www.tiktok.com/oembed?url=${encodeURIComponent(l)}`, { headers: { accept: "application/json" } });
-    return r.ok ? dadosOembed(await r.json().catch(() => null)) : null;
-  };
-  let dados = await pedir(link);
-  if (!dados) {
-    // Links curtos (vm.tiktok.com/…): segue UM redirecionamento, e só se for para o TikTok.
-    const r = await comTempo(link, { redirect: "manual" }).catch(() => null);
-    const destino = linkTikTok(r?.headers?.get("location") || "");
-    if (destino && destino !== link) dados = await pedir(destino);
-    if (dados) dados.link = destino;
+/*
+ * A legenda e o autor de um vídeo do TikTok. O TikTok responde mal a
+ * pedidos sem cara de browser, por isso todos levam um User-Agent normal.
+ * 1) segue os links curtos (vm./vt.tiktok.com, até 3 saltos, só dentro do TikTok);
+ * 2) oEmbed público com o link final;
+ * 3) se falhar, a própria página do vídeo (legenda no JSON de hidratação).
+ */
+const UA = { "user-agent": "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Mobile Safari/537.36", "accept-language": "pt-PT,pt;q=0.9" };
+
+async function seguirLink(link) {
+  let atual = link;
+  for (let i = 0; i < 3; i++) {
+    if (idVideoTikTok(atual) && !/^https:\/\/(vm|vt)\./.test(atual)) return atual;
+    const r = await comTempo(atual, { redirect: "manual", headers: UA }).catch(() => null);
+    const loc = r?.headers?.get("location");
+    if (!loc) return atual;
+    const prox = linkTikTok(new URL(loc, atual).href);
+    if (!prox) return atual;
+    atual = prox;
   }
-  return dados ? { ...dados, link: dados.link || link } : null;
+  return atual;
+}
+
+async function legendaTikTok(link) {
+  const final = await seguirLink(link);
+  const id = idVideoTikTok(final);
+  const candidatos = [...new Set([final, link, id ? `https://www.tiktok.com/@/video/${id}` : null].filter(Boolean))];
+  for (const c of candidatos) {
+    const r = await comTempo(`https://www.tiktok.com/oembed?url=${encodeURIComponent(c)}`, { headers: { ...UA, accept: "application/json" } }).catch(() => null);
+    const dados = r?.ok ? dadosOembed(await r.json().catch(() => null)) : null;
+    if (dados) return { ...dados, link: id ? final : c };
+    console.warn("receita-video: oEmbed sem dados", r?.status ?? "falhou", c.slice(0, 80));
+  }
+  if (id) {
+    const pagina = /\/@[^/]+\/video\//.test(final) ? final : `https://www.tiktok.com/@/video/${id}`;
+    const r = await comTempo(pagina, { headers: { ...UA, accept: "text/html" } }, 8000).catch(() => null);
+    const html = r?.ok ? (await r.text().catch(() => "")).slice(0, 3_000_000) : "";
+    const dados = dadosPaginaTikTok(html);
+    if (dados) return { ...dados, link: final };
+    console.warn("receita-video: página sem legenda", r?.status ?? "falhou", html.length);
+  }
+  console.warn("receita-video: TikTok sem legenda", link.slice(0, 80), "→", final.slice(0, 120));
+  return null;
 }
 
 export default async function handler(req, res) {
