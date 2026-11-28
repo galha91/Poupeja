@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { calcularCabaz, escolherArtigos, legenda } from "../scripts/cabaz/calcular.mjs";
+import { calcularCabaz, escolherArtigos, legenda, MAX_GANCHO } from "../scripts/cabaz/calcular.mjs";
 
 const config = JSON.parse(fs.readFileSync(new URL("../data/cabazes-social.json", import.meta.url)));
 
@@ -31,7 +31,7 @@ test("cabaz: 10 artigos, totais e poupança certos", () => {
   const soma = c.itens.reduce((s, i) => s + i.custos.continente, 0);
   assert.ok(Math.abs(c.totais.continente - soma) < 0.02);
   assert.ok(c.poupanca > 0 && c.poupancaPct > 0);
-  assert.match(legenda(c), /Cabaz "Despensa"/);
+  assert.match(legenda(c), /10 artigos da despensa/);
 });
 
 test("artigos que saíram há mais tempo têm prioridade", () => {
@@ -92,4 +92,34 @@ test("vencedor claro não é empate; Apolónia leva o artigo feminino", () => {
   assert.equal(c.maisBarata, "continente");
   assert.equal(c.empate, false);
   assert.match(legenda(c), /na Apolónia/);
+});
+
+// Regra da legenda (docs/cabaz-social.md): gancho curto, números com data,
+// um só apelo, "Compara grátis: link na bio." e exatamente 5 hashtags.
+test("a legenda cumpre a regra em todos os temas, com e sem empate", () => {
+  const emojis = (t) => (t.match(/\p{Extended_Pictographic}/gu) || []).length;
+  const genericas = ["#portugal", "#poupar", "#poupanca", "#supermercado", "#dicasdepoupanca", "#fyp", "#viral"];
+  for (const tema of Object.keys(config.temas)) {
+    assert.ok(config.temas[tema].social?.contexto && config.temas[tema].social?.hashtag && config.temas[tema].social?.apelo, `${tema} sem dados da legenda`);
+    for (const ajustes of [{}, Object.fromEntries(config.temas[tema].artigos.flatMap((a) => [[`${a.q}|apolonia`, 1.8], [`${a.q}|auchan`, 1.3], [`${a.q}|pingo-doce`, 1.2]]))]) {
+      const c = calcularCabaz({ tema, config, linhas: linhas(tema, ajustes) });
+      const texto = legenda(c);
+      const [gancho] = texto.split("\n");
+      assert.ok([...gancho].length <= MAX_GANCHO, `gancho longo: ${gancho}`);
+      assert.ok(emojis(gancho) <= 1, "no máximo 1 emoji no gancho");
+      assert.match(texto, /Comparei os preços do supermercado/);
+      assert.match(texto, /04\/11\/2026; os preços podem variar\./);
+      assert.match(texto, /\d+,\d{2} €/);
+      assert.match(texto, /Compara grátis: link na bio\./);
+      assert.equal((texto.match(/\b(Guarda|Envia)\b/g) || []).length, 1, "um só apelo");
+      const tags = texto.trim().split("\n").pop().split(" ");
+      assert.equal(tags.length, 5);
+      assert.equal(new Set(tags).size, 5);
+      for (const t of tags) {
+        assert.match(t, /^#[a-z0-9]+$/);
+        assert.ok(!genericas.includes(t), `hashtag genérica: ${t}`);
+      }
+      assert.equal((texto.match(/#/g) || []).length, 5, "hashtags só no fim");
+    }
+  }
 });

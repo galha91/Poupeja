@@ -15,8 +15,10 @@ test("campanhas: depois da Black Friday vem a ceia de Natal, até 26 dez", () =>
   assert.equal(campanhaAtiva("2026-11-28").id, "natal-2026");
   assert.equal(campanhaAtiva("2026-12-24").href, "/ceia-de-natal");
   assert.equal(campanhaAtiva("2026-12-26").id, "natal-2026");
-  assert.equal(campanhaAtiva("2026-12-27"), null);
-  assert.equal(campanhaAtiva("2027-03-01"), null);
+  // A seguir ao Natal vem o IVA zero (27 dez a 31 mar), e depois nada.
+  assert.equal(campanhaAtiva("2026-12-27").id, "iva-zero-2027");
+  assert.equal(campanhaAtiva("2027-03-31").href, "/iva-zero");
+  assert.equal(campanhaAtiva("2027-04-01"), null);
   assert.equal(campanhaAtiva("ontem"), null);
 });
 

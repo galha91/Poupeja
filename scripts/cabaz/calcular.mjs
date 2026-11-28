@@ -52,7 +52,7 @@ export function calcularCabaz({ tema, config, linhas, usados = {} }) {
   const empate = (totais[ordem[1]] - totais[maisBarata]) / totais[maisBarata] < 0.03;
   const mediaOutras = ordem.slice(0, -1).reduce((s, l) => s + totais[l], 0) / (ordem.length - 1);
   return {
-    tema, titulo: t.titulo, dia: linhas.map((l) => String(l.dia).slice(0, 10)).sort().pop() || null,
+    tema, titulo: t.titulo, social: t.social || null, hashtagsLojas: config.hashtagsLojas || {}, dia: linhas.map((l) => String(l.dia).slice(0, 10)).sort().pop() || null,
     lojas: config.lojas, nomesLojas: config.nomesLojas, generoLojas: config.generoLojas || {}, itens, totais, ordem, maisBarata, maisCara,
     poupanca, poupancaPct: Math.round((poupanca / totais[maisCara]) * 100),
     robusto, empate: empate || !robusto, suspeitos,
@@ -61,26 +61,47 @@ export function calcularCabaz({ tema, config, linhas, usados = {} }) {
   };
 }
 
-const eur = (n) => n.toFixed(2).replace(".", ",") + " €";
+const eur = (n) => n.toFixed(2).replace(".", ",") + "\u00a0€";
+
+/*
+ * Legenda do Instagram/TikTok. Regra (docs/cabaz-social.md, "Legenda"):
+ *  1. gancho de curiosidade, até 125 caracteres e no máximo 1 emoji;
+ *  2. o tema, com 2-3 palavras-chave ditas com naturalidade;
+ *  3. 1-2 frases com os números desta execução, a data e "os preços podem variar";
+ *  4. um só apelo (guardar ou enviar) e "Compara grátis: link na bio.";
+ *  5. exatamente 5 hashtags específicas.
+ * Sempre na 1.ª pessoa, em PT-PT simples.
+ */
+export const MAX_GANCHO = 125;
+
+export function hashtagsCabaz(c) {
+  const tags = ["#precosdosupermercado", "#compararprecos", "#cabazdasemana",
+    c.social?.hashtag || "#cabaz", c.hashtagsLojas?.[c.maisBarata] || "#supermercados"];
+  return [...new Set(tags)];
+}
 
 export function legenda(c) {
   const n = c.nomesLojas;
   const g = (l) => (c.generoLojas?.[l] === "a" ? "a" : "o");
   const no = (l) => `${g(l) === "a" ? "na" : "no"} ${n[l]}`;
-  const linhas = c.ordem.map((l, i) => `${["🥇", "🥈", "🥉", "4º"][i]} ${n[l]}: ${eur(c.totais[l])}`);
-  const resumo = c.empate
-    ? [`🛒 Cabaz "${c.titulo}": 10 artigos. As lojas do topo quase empatam, mas ${g(c.maisCara)} ${n[c.maisCara]} custa ${c.extraMaisCaraPct}% mais que a média das outras.`,
-       `Do mais barato ao mais caro: ${eur(c.totais[c.maisBarata])} contra ${eur(c.totais[c.maisCara])} (${eur(c.poupanca)} de diferença).`]
-    : [`🛒 Cabaz "${c.titulo}": 10 artigos, ${eur(c.totais[c.maisBarata])} ${no(c.maisBarata)} e ${eur(c.totais[c.maisCara])} ${no(c.maisCara)}.`,
-       `Mesmo cabaz, ${eur(c.poupanca)} de diferença (${c.poupancaPct}%).`];
-  return [
-    ...resumo,
-    "", ...linhas, "",
-    `Artigos: ${c.itens.map((i) => `${i.nome.toLowerCase()} (${i.rotulo})`).join(", ")}.`,
-    "Preço mais baixo de cada artigo em cada loja, comparado ao quilo/litro/unidade. Preços de " + String(c.dia).split("-").reverse().join("/") + ", podem mudar.",
-    "", "Compara a tua lista grátis em PoupeJá.com (link na bio)",
-    "", "#poupar #supermercado #cabaz #poupanca #continente #pingodoce #auchan #dicasdepoupanca #portugal",
-  ].join("\n");
+  const artigo = (l) => `${g(l) === "a" ? "A" : "O"} ${n[l]}`;
+  const contexto = c.social?.contexto || `do cabaz "${c.titulo.toLowerCase()}"`;
+  const nLojas = c.ordem.length;
+  const lojasTexto = c.lojas.map((l) => n[l]).join(", ").replace(/, ([^,]*)$/, " e $1");
+  const data = String(c.dia).split("-").reverse().join("/");
+  const segunda = c.ordem[1];
+
+  const gancho = c.empate
+    ? `Pus o mesmo cabaz em ${nLojas} supermercados e dois quase empataram. Adivinhas qual ficou mais caro? 👀`
+    : `Pus o mesmo cabaz em ${nLojas} supermercados e a diferença foi de ${eur(c.poupanca)}. Adivinhas onde ficou mais barato? 👀`;
+  const tema = `Comparei os preços do supermercado de 10 artigos ${contexto} em ${nLojas} supermercados (${lojasTexto}), para ver onde o cabaz fica mais barato.`;
+  const numeros = c.empate
+    ? `${artigo(c.maisBarata)} (${eur(c.totais[c.maisBarata])}) e ${g(segunda)} ${n[segunda]} (${eur(c.totais[segunda])}) quase empatam, mas ${g(c.maisCara)} ${n[c.maisCara]} fica ${c.extraMaisCaraPct}% acima da média das outras (${eur(c.totais[c.maisCara])}).`
+    : `O cabaz mais barato ficou ${no(c.maisBarata)}, com ${eur(c.totais[c.maisBarata])}, e o mais caro ${no(c.maisCara)}, com ${eur(c.totais[c.maisCara])}.`;
+  const fonte = `Preços online de ${data}; os preços podem variar.`;
+  const apelo = c.social?.apelo || "Guarda para a próxima vez que fores às compras.";
+
+  return [gancho, "", tema, "", `${numeros} ${fonte}`, "", `${apelo} Compara grátis: link na bio.`, "", hashtagsCabaz(c).join(" ")].join("\n");
 }
 
 if (process.argv[1]?.endsWith("calcular.mjs")) {

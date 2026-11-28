@@ -2,9 +2,10 @@
   "nota": "Cabazes dos vídeos (Instagram/TikTok), segunda, quarta e sexta. q = termo em precos_supermercado_historico; qtd = quantas unidades do preço de referência (kg, L, ovo, rolo...) entram no cabaz; rotulo = o que aparece no vídeo. Cada cabaz usa 10 artigos do tema, dando prioridade aos que há mais tempo não saíram.",
   "lojas": ["continente", "pingo-doce", "auchan", "apolonia"],
   "nomesLojas": {"continente": "Continente", "pingo-doce": "Pingo Doce", "auchan": "Auchan", "apolonia": "Apolónia"},
+  "hashtagsLojas": {"continente": "#continente", "pingo-doce": "#pingodoce", "auchan": "#auchan", "apolonia": "#apolonia"},
   "generoLojas": {"continente": "o", "pingo-doce": "o", "auchan": "o", "apolonia": "a"},
   "temas": {
-    "pequeno-almoco": { "titulo": "Pequeno-almoço", "artigos": [
+    "pequeno-almoco": { "titulo": "Pequeno-almoço", "social": { "contexto": "para o pequeno-almoço", "hashtag": "#pequenoalmoco", "apelo": "Envia a quem faz as compras lá em casa." }, "artigos": [
       { "q": "leite meio gordo", "nome": "Leite meio-gordo", "qtd": 2, "rotulo": "2 L" },
       { "q": "ovos", "nome": "Ovos", "qtd": 6, "rotulo": "6 unidades" },
       { "q": "manteiga", "nome": "Manteiga", "qtd": 0.25, "rotulo": "250 g" },
@@ -26,7 +27,7 @@
       { "q": "néctar", "nome": "Néctar", "qtd": 1, "rotulo": "1 L" },
       { "q": "café em grão", "nome": "Café em grão", "qtd": 0.25, "rotulo": "250 g" }
     ] },
-    "despensa": { "titulo": "Despensa", "artigos": [
+    "despensa": { "titulo": "Despensa", "social": { "contexto": "da despensa", "hashtag": "#despensa", "apelo": "Guarda para a próxima vez que fores às compras." }, "artigos": [
       { "q": "arroz", "nome": "Arroz", "qtd": 1, "rotulo": "1 kg" },
       { "q": "massa esparguete", "nome": "Esparguete", "qtd": 1, "rotulo": "1 kg" },
       { "q": "azeite", "nome": "Azeite", "qtd": 0.75, "rotulo": "750 ml" },
@@ -48,7 +49,7 @@
       { "q": "sardinhas em azeite", "nome": "Sardinhas em azeite", "qtd": 0.25, "rotulo": "2 latas" },
       { "q": "filetes de cavala", "nome": "Filetes de cavala", "qtd": 0.25, "rotulo": "2 latas" }
     ] },
-    "jantar-de-semana": { "titulo": "Jantares de semana", "artigos": [
+    "jantar-de-semana": { "titulo": "Jantares de semana", "social": { "contexto": "para os jantares de semana", "hashtag": "#jantaresdesemana", "apelo": "Envia a quem faz as compras lá em casa." }, "artigos": [
       { "q": "frango", "nome": "Frango", "qtd": 1.5, "rotulo": "1,5 kg" },
       { "q": "carne picada", "nome": "Carne picada", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "cebolas", "nome": "Cebolas", "qtd": 1, "rotulo": "1 kg" },
@@ -75,7 +76,7 @@
       { "q": "polpa de tomate", "nome": "Polpa de tomate", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "lombo de porco", "nome": "Lombo de porco", "qtd": 0.5, "rotulo": "500 g" }
     ] },
-    "casa-e-banho": { "titulo": "Casa e casa de banho", "artigos": [
+    "casa-e-banho": { "titulo": "Casa e casa de banho", "social": { "contexto": "de limpeza para a casa e a casa de banho", "hashtag": "#produtosdelimpeza", "apelo": "Guarda para a próxima vez que fores às compras." }, "artigos": [
       { "q": "papel higiénico", "nome": "Papel higiénico", "qtd": 12, "rotulo": "12 rolos" },
       { "q": "detergente loiça", "nome": "Detergente da loiça", "qtd": 0.75, "rotulo": "750 ml" },
       { "q": "lixívia", "nome": "Lixívia", "qtd": 2, "rotulo": "2 L" },
@@ -89,7 +90,7 @@
       { "q": "guardanapos", "nome": "Guardanapos", "qtd": 100, "rotulo": "100 unidades" },
       { "q": "toalhitas", "nome": "Toalhitas", "qtd": 60, "rotulo": "60 unidades" }
     ] },
-    "petiscos-de-fim-de-semana": { "titulo": "Petiscos de fim de semana", "artigos": [
+    "petiscos-de-fim-de-semana": { "titulo": "Petiscos de fim de semana", "social": { "contexto": "para petiscar ao fim de semana", "hashtag": "#petiscos", "apelo": "Envia a quem vai tratar dos petiscos." }, "artigos": [
       { "q": "salsichas frankfurt", "nome": "Salsichas", "qtd": 0.4, "rotulo": "400 g" },
       { "q": "fiambre", "nome": "Fiambre", "qtd": 0.2, "rotulo": "200 g" },
       { "q": "queijo flamengo", "nome": "Queijo flamengo", "qtd": 0.3, "rotulo": "300 g" },
@@ -103,7 +104,7 @@
       { "q": "carne picada", "nome": "Carne picada", "qtd": 0.5, "rotulo": "500 g" },
       { "q": "guardanapos", "nome": "Guardanapos", "qtd": 100, "rotulo": "100 unidades" }
     ] },
-    "frutas-e-legumes": { "titulo": "Frutas e legumes", "artigos": [
+    "frutas-e-legumes": { "titulo": "Frutas e legumes", "social": { "contexto": "de fruta e legumes", "hashtag": "#frutaelegumes", "apelo": "Guarda para a próxima vez que fores às compras." }, "artigos": [
       { "q": "bananas", "nome": "Bananas", "qtd": 1, "rotulo": "1 kg" },
       { "q": "cenouras", "nome": "Cenouras", "qtd": 1, "rotulo": "1 kg" },
       { "q": "tomate", "nome": "Tomate", "qtd": 1, "rotulo": "1 kg" },
