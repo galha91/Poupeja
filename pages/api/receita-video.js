@@ -56,7 +56,7 @@ async function seguirLink(link) {
 async function legendaTikTok(link) {
   const final = await seguirLink(link);
   const id = idVideoTikTok(final);
-  const candidatos = [...new Set([final, link, id ? `https://www.tiktok.com/@/video/${id}` : null].filter(Boolean))];
+  const candidatos = [...new Set([final, link, id ? `https://www.tiktok.com/@/video/${id}` : null, id ? `https://www.tiktok.com/@tiktok/video/${id}` : null].filter(Boolean))];
   for (const c of candidatos) {
     const r = await comTempo(`https://www.tiktok.com/oembed?url=${encodeURIComponent(c)}`, { headers: { ...UA, accept: "application/json" } }).catch(() => null);
     const dados = r?.ok ? dadosOembed(await r.json().catch(() => null)) : null;
@@ -64,7 +64,7 @@ async function legendaTikTok(link) {
     console.warn("receita-video: oEmbed sem dados", r?.status ?? "falhou", c.slice(0, 80));
   }
   if (id) {
-    const pagina = /\/@[^/]+\/video\//.test(final) ? final : `https://www.tiktok.com/@/video/${id}`;
+    const pagina = /\/@[^/]+\/(video|photo)\//.test(final) ? final : `https://www.tiktok.com/@/video/${id}`;
     const r = await comTempo(pagina, { headers: { ...UA, accept: "text/html" } }, 8000).catch(() => null);
     const html = r?.ok ? (await r.text().catch(() => "")).slice(0, 3_000_000) : "";
     const dados = dadosPaginaTikTok(html);
@@ -90,7 +90,9 @@ export default async function handler(req, res) {
 
   // Um link sozinho: só o do TikTok se lê automaticamente.
   const link = primeiroLink(entrada);
-  const soLink = link && entrada.replace(link, "").trim().length < 40;
+  // "Vê este vídeo de … no TikTok! https://vm.tiktok.com/…": o texto à volta de um link do TikTok é o da partilha.
+  const resto = link ? entrada.replace(link, "").trim().length : Infinity;
+  const soLink = link && (resto < 40 || (linkTikTok(link) && resto < 250));
   let textoReceita = entrada;
   let origem = null;
   if (soLink) {
@@ -104,7 +106,7 @@ export default async function handler(req, res) {
     const guardado = cache.get(chave);
     if (guardado && guardado.ate > Date.now()) return res.status(200).json(guardado.corpo);
     const dados = await legendaTikTok(tiktok).catch(() => null);
-    if (!dados) return res.status(200).json({ erro: "Não consegui abrir esse vídeo. Confirma que é público, ou cola aqui a descrição.", pedirTexto: true });
+    if (!dados) return res.status(200).json({ erro: "Não consegui ler esse vídeo. Se for público, tira uma captura de ecrã da descrição e usa o separador Fotografia, ou cola aqui o texto.", pedirTexto: true });
     textoReceita = dados.legenda;
     origem = { link: dados.link, autor: dados.autor, autorUrl: dados.autorUrl, fonte: "tiktok" };
   }

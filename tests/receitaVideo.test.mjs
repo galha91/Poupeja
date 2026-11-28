@@ -83,6 +83,7 @@ test("importar receita: id do vídeo e legenda da página do TikTok", async () =
   assert.equal(idVideoTikTok("https://www.tiktok.com/@chef/video/7301234567890123456"), "7301234567890123456");
   assert.equal(idVideoTikTok("https://m.tiktok.com/v/7301234567890123456.html"), "7301234567890123456");
   assert.equal(idVideoTikTok("https://vm.tiktok.com/ZN8HPryTA/"), null);
+  assert.equal(idVideoTikTok("https://www.tiktok.com/@chef/photo/7301234567890123456"), "7301234567890123456");
   const html = '<script>{"itemInfo":{"itemStruct":{"desc":"Frango no forno 🍗\\n1 kg de frango, 2 cebolas \\"top\\"","author":{"uniqueId":"chef.pt"}}}}</script>';
   assert.deepEqual(dadosPaginaTikTok(html), { legenda: 'Frango no forno 🍗\n1 kg de frango, 2 cebolas "top"', autor: "chef.pt", autorUrl: "https://www.tiktok.com/@chef.pt" });
   assert.equal(dadosPaginaTikTok('<meta property="og:description" content="Massa com atum e tomate, 20 min">').legenda, "Massa com atum e tomate, 20 min");
