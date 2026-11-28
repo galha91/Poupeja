@@ -2,6 +2,7 @@ import Head from "next/head";
 import { Clock, ChefHat, Leaf } from "lucide-react";
 import LayoutPublico, { CtaApp } from "../../LayoutPublico";
 import { DestaqueEmentasPublico } from "../../DestaqueEmentas";
+import CartaoImportar from "../../CartaoImportar";
 import { receitas, formatarTempo, rendimento } from "../../lib/receitas/motor";
 import FotoReceita from "../../FotoReceita";
 import { temFoto } from "../../lib/receitas/fotos";
@@ -64,6 +65,8 @@ export default function Receitas({ custos = null }) {
           <strong style={{ color: "var(--pj-text)" }}>lista de compras num toque</strong> — e vês os folhetos
           antes de ir às compras.
         </p>
+
+        <CartaoImportar onde="receitas" style={{ marginTop: 20 }} />
 
         {/* O planeador logo no topo: é o que distingue estas receitas. */}
         <DestaqueEmentasPublico />
