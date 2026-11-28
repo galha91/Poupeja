@@ -413,6 +413,9 @@ function SecaoEmentasConteudo({ setTab }) {
         <div className="mt-4" style={{ height: 1, background: "var(--pj-border)" }} />
       </div>
 
+      {/* Receitas de fora (TikTok, texto, fotografia), com o custo: logo no topo */}
+      <CartaoImportar onde="receitas-app" className="mx-4 mb-5" />
+
       {/* Sem plano: o convite */}
       {!plano && (
         <div className="mx-4 mb-6 rounded-3xl overflow-hidden" style={{ background: "var(--pj-brand)", boxShadow: "0 8px 24px rgba(11,107,79,0.25)" }}>
@@ -629,9 +632,6 @@ function SecaoEmentasConteudo({ setTab }) {
           </button>
         </div>
       )}
-
-      {/* Receitas de fora: TikTok, texto ou fotografia, com o custo */}
-      <CartaoImportar onde="app" className="mx-4 mb-5" />
 
       {/* O que já há em casa */}
       <DespensaReceitas tenho={tenho} onMudar={guardarDespensa} prefs={prefs} onAbrir={(r) => abrir(r)} onAdicionar={adicionarALista} />
